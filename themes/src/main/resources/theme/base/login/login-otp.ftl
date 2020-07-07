@@ -9,13 +9,24 @@
                         <div class="${properties.kcFormGroupClass!}">
                             <div class="${properties.kcInputWrapperClass!}">
                                 <#list otpLogin.userOtpCredentials as otpCredential>
-                                    <div class="${properties.kcSelectOTPListClass!}">
+                                    <div class="${properties.kcOTPAuthContainerClass!}">
                                     <input type="hidden" value="${otpCredential.id}">
-                                        <div class="${properties.kcSelectOTPListItemClass!}">
-                                            <span class="${properties.kcAuthenticatorOtpCircleClass!}"></span>
-                                            <h2 class="${properties.kcSelectOTPItemHeadingClass!}">
-                                                ${otpCredential.userLabel}
-                                            </h2>
+                                        <div class="${properties.kcOTPAuthParentBoxClass!}">
+                                            <div class="${properties.kcOTPAuthIconBoxClass!}">
+                                                <i class="${properties.kcOTPAuthIconBoxClass!}"></i>
+                                            </div>
+                                            <div class="${properties.kcOTPAuthLabelBox!}">
+                                                <div div class="${properties.kcOTPAuthLabelBoxName!}">
+                                                    ${otpCredential.userLabel}
+                                                </div>
+                                                <div class="${properties.kcOTPAuthLabelBoxDescription!}">
+                                                    Description
+                                                </div>
+                                            </div>
+                                            <div class="${properties.kcOTPAuthFill!}"></div>
+                                            <div class="${properties.kcOTPAuthArrowBoxClass!}">
+                                                <i class="${properties.kcOTPAuthFAArrowIconClass!}"></i>
+                                            </div>
                                         </div>
                                     </div>
                                 </#list>
