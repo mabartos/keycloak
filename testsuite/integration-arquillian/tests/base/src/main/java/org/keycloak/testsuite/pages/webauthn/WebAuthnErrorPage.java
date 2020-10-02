@@ -2,6 +2,7 @@ package org.keycloak.testsuite.pages.webauthn;
 
 import org.junit.Assert;
 import org.keycloak.testsuite.pages.LanguageComboboxAwarePage;
+import org.keycloak.testsuite.util.UIUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -19,6 +20,9 @@ public class WebAuthnErrorPage extends LanguageComboboxAwarePage {
     @FindBy(id = "cancelWebAuthnAIA")
     private WebElement cancelRegistrationAIA;
 
+    @FindBy(className = "alert-error")
+    private WebElement loginErrorMessage;
+
     public void clickTryAgain() {
         tryAgainButton.click();
     }
@@ -28,6 +32,14 @@ public class WebAuthnErrorPage extends LanguageComboboxAwarePage {
             cancelRegistrationAIA.click();
         } catch (NoSuchElementException e) {
             Assert.fail("It only works with AIA");
+        }
+    }
+
+    public String getError() {
+        try {
+            return UIUtils.getTextFromElement(loginErrorMessage);
+        } catch (NoSuchElementException e) {
+            return null;
         }
     }
 

@@ -16,6 +16,10 @@
  */
 package org.keycloak.testsuite.webauthn;
 
+import org.keycloak.testsuite.pages.webauthn.WebAuthnErrorPage;
+import org.keycloak.testsuite.util.WaitUtils;
+import org.openqa.selenium.JavascriptExecutor;
+import org.hamcrest.Matchers;
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Assert;
 import org.junit.Before;
@@ -56,6 +60,8 @@ import java.util.List;
 
 import org.junit.Assume;
 import org.junit.BeforeClass;
+
+import static org.junit.Assert.assertThat;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
 
 @EnableFeature(value = Profile.Feature.WEB_AUTHN, skipRestart = true, onlyForProduct = true)
@@ -78,6 +84,9 @@ public class WebAuthnRegisterAndLoginTest extends AbstractTestRealmKeycloakTest 
 
     @Page
     protected WebAuthnRegisterPage webAuthnRegisterPage;
+
+    @Page
+    protected WebAuthnErrorPage webAuthnErrorPage;
 
     private static final String ALL_ZERO_AAGUID = "00000000-0000-0000-0000-000000000000";
 
@@ -287,6 +296,47 @@ public class WebAuthnRegisterAndLoginTest extends AbstractTestRealmKeycloakTest 
             realmRep.setBrowserFlow("browser-webauthn");
             testRealm().update(realmRep);
         }
+    }
+
+    public void testWebAuthnUnsupportedBrowserRegistration() {
+        final String NAME = "webAuthnTest";
+        assertThat(driver instanceof JavascriptExecutor, Matchers.is(true));
+
+        RealmRepresentation realmRep = testRealm().toRepresentation();
+        //TODO
+        realmRep.setBrowserFlow("browser-webauthn-passwordless");
+        testRealm().update(realmRep);
+
+        try {
+            JavascriptExecutor executor = (JavascriptExecutor) driver;
+
+            // Each browser, which supports WebAuthn, provides PublicKeyCredential function and it's able to execute actions at navigator.credentials
+            executor.executeScript("window.PublicKeyCredential = undefined");
+
+            loginPage.open();
+            loginPage.clickRegister();
+
+            registerPage.assertCurrent();
+            registerPage.register(NAME, NAME, NAME + "@keycloak", NAME, NAME, NAME);
+
+            WaitUtils.waitForPageToLoad();
+            webAuthnErrorPage.assertCurrent();
+
+            assertThat(webAuthnErrorPage.getError(), Matchers.notNullValue());
+            assertThat(webAuthnErrorPage.getError(), Matchers.containsString("WebAuthn is not supported by this browser. Use another one or contact your administrator."));
+
+            webAuthnErrorPage.clickTryAgain();
+            assertThat(webAuthnErrorPage.getError(), Matchers.notNullValue());
+            assertThat(webAuthnErrorPage.getError(), Matchers.containsString("WebAuthn is not supported by this browser. Use another one or contact your administrator."));
+        } finally {
+            // Revert binding to browser-webauthn
+            realmRep.setBrowserFlow("browser-webauthn");
+            testRealm().update(realmRep);
+        }
+    }
+
+    public void testWebAuthnUnsupportedBrowserAuthentication() {
+
     }
 
     private void assertUserRegistered(String userId, String username, String email) {
