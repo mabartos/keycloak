@@ -6,12 +6,14 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.common.Profile;
 import org.keycloak.models.Constants;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractKeycloakTest;
 import org.keycloak.testsuite.arquillian.AuthServerTestEnricher;
 import org.keycloak.testsuite.arquillian.ContainerInfo;
 import org.keycloak.testsuite.arquillian.annotation.AuthServerContainerExclude;
+import org.keycloak.testsuite.arquillian.annotation.DisableFeature;
 import org.keycloak.testsuite.client.KeycloakTestingClient;
 import org.keycloak.testsuite.util.ContainerAssume;
 import org.keycloak.testsuite.utils.tls.TLSUtils;
@@ -33,6 +35,7 @@ import static org.keycloak.testsuite.util.WaitUtils.pause;
  * @author tkyjovsk
  */
 @AuthServerContainerExclude(AuthServer.REMOTE)
+@DisableFeature(value = Profile.Feature.ACCOUNT2, skipRestart = true, clusterOrCrossDCTest = true)
 public abstract class AbstractClusterTest extends AbstractKeycloakTest {
 
     // Keep the following constants in sync with arquillian

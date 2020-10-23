@@ -38,4 +38,10 @@ public @interface EnableFeature {
      * If it's false, feature will be enabled before @Before method.
      */
     boolean executeAsLast() default true;
+
+    /**
+     * Cluster and CrossDC tests use more backend nodes, which are started in @Before method.
+     * If this flag is `true`, then the feature will be enabled after the last @Before method and never executed in @BeforeClass context.
+     */
+    boolean clusterOrCrossDCTest() default false;
 }

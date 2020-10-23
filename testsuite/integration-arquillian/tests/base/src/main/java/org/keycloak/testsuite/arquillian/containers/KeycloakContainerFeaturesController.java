@@ -22,12 +22,15 @@ import org.keycloak.testsuite.client.KeycloakTestingClient;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -160,6 +163,23 @@ public class KeycloakContainerFeaturesController {
         return !feature.onlyForProduct || Profile.getName().equals("product");
     }
 
+    private <T extends Annotation> boolean checkAnnotation(AnnotatedElement annotatedElement, Class<T> annotation, Predicate<T> predicate) {
+        // we can't rely on @Inherited annotations as it stops "searching" when it finds the first occurrence of given
+        // annotation, i.e. annotation from the most specific test class
+        if (annotatedElement instanceof Class) {
+            Class<?> clazz = ((Class<?>) annotatedElement).getSuperclass();
+            while (clazz != null) {
+                if (Arrays.stream(clazz.getAnnotationsByType(annotation)).anyMatch(predicate)) {
+                    return true;
+                }
+                clazz = clazz.getSuperclass();
+            }
+        } else if (annotatedElement instanceof Method) {
+            return Arrays.stream(annotatedElement.getAnnotationsByType(annotation)).anyMatch(predicate);
+        }
+        return false;
+    }
+
     private void checkAnnotatedElementForFeatureAnnotations(AnnotatedElement annotatedElement, State state) throws Exception {
         Set<UpdateFeature> updateFeatureSet = new HashSet<>();
 
@@ -205,26 +225,35 @@ public class KeycloakContainerFeaturesController {
         return (annotatedElement.isAnnotationPresent(DisableFeatures.class) || annotatedElement.isAnnotationPresent(DisableFeature.class));
     }
 
+    private boolean shouldExecuteAsLast(AnnotatedElement... annotatedElements) {
+        return Arrays.stream(annotatedElements).anyMatch(this::shouldExecuteAsLast);
+    }
+
     private boolean shouldExecuteAsLast(AnnotatedElement annotatedElement) {
         if (isEnableFeature(annotatedElement)) {
-            return Arrays.stream(annotatedElement.getAnnotationsByType(EnableFeature.class))
-                    .anyMatch(EnableFeature::executeAsLast);
+            return checkAnnotation(annotatedElement, EnableFeature.class, EnableFeature::executeAsLast);
         }
 
         if (isDisableFeature(annotatedElement)) {
-            return Arrays.stream(annotatedElement.getAnnotationsByType(DisableFeature.class))
-                    .anyMatch(DisableFeature::executeAsLast);
+            return checkAnnotation(annotatedElement, DisableFeature.class, DisableFeature::executeAsLast);
         }
 
         return false;
     }
-    
+
+    private boolean isClusterOrCrossDCTest(AnnotatedElement element) {
+        return checkAnnotation(element, DisableFeature.class, DisableFeature::clusterOrCrossDCTest)
+                || checkAnnotation(element, EnableFeature.class, EnableFeature::clusterOrCrossDCTest);
+    }
+
     public void handleEnableFeaturesAnnotationBeforeClass(@Observes(precedence = 1) BeforeClass event) throws Exception {
-        checkAnnotatedElementForFeatureAnnotations(event.getTestClass().getJavaClass(), State.BEFORE);
+        if (!isClusterOrCrossDCTest(event.getTestClass().getJavaClass())) {
+            checkAnnotatedElementForFeatureAnnotations(event.getTestClass().getJavaClass(), State.BEFORE);
+        }
     }
 
     public void handleEnableFeaturesAnnotationBeforeTest(@Observes(precedence = 1) Before event) throws Exception {
-        if (!shouldExecuteAsLast(event.getTestMethod())) {
+        if (!shouldExecuteAsLast(event.getTestMethod(), event.getTestClass().getJavaClass())) {
             checkAnnotatedElementForFeatureAnnotations(event.getTestMethod(), State.BEFORE);
         }
     }
@@ -232,7 +261,7 @@ public class KeycloakContainerFeaturesController {
     // KEYCLOAK-13572 Precedence is too low in order to ensure the feature change will be executed as last.
     // If some fail occurs in @Before method, the feature doesn't change its state.
     public void handleChangeStateFeaturePriorityBeforeTest(@Observes(precedence = -100) Before event) throws Exception {
-        if (shouldExecuteAsLast(event.getTestMethod())) {
+        if (shouldExecuteAsLast(event.getTestMethod(), event.getTestClass().getJavaClass())) {
             checkAnnotatedElementForFeatureAnnotations(event.getTestMethod(), State.BEFORE);
         }
     }

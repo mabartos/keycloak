@@ -17,11 +17,13 @@
 package org.keycloak.testsuite.crossdc;
 
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.common.Profile;
 import org.keycloak.testsuite.AbstractTestRealmKeycloakTest;
 import org.keycloak.testsuite.arquillian.AuthServerTestEnricher;
 import org.keycloak.testsuite.arquillian.ContainerInfo;
 import org.keycloak.testsuite.arquillian.LoadBalancerController;
 import org.keycloak.testsuite.arquillian.annotation.AuthServerContainerExclude;
+import org.keycloak.testsuite.arquillian.annotation.DisableFeature;
 import org.keycloak.testsuite.arquillian.annotation.LoadBalancer;
 
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ import org.keycloak.testsuite.arquillian.annotation.InitialDcState;
  */
 @InitialDcState
 @AuthServerContainerExclude(AuthServer.REMOTE)
+@DisableFeature(value = Profile.Feature.ACCOUNT2, skipRestart = true, clusterOrCrossDCTest = true)
 public abstract class AbstractCrossDCTest extends AbstractTestRealmKeycloakTest {
 
     // Keep the following constants in sync with arquillian
