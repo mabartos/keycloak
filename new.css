@@ -104,3 +104,19 @@ select.pf-c-form-control.pf-m-success {
     resize: vertical; }
 .pf-c-form-control.pf-m-resize-horizontal {
     resize: horizontal; }
+
+.pf-c-alert {
+    --pf-c-alert--grid-template-columns: max-content 1fr max-content;
+    --pf-c-alert--grid-template-rows: 1fr auto;
+    --pf-c-alert__icon--Padding: 8px;
+    --pf-c-alert__title--Color: #003737;
+    --pf-c-alert__title--PaddingTop: 8px;
+    --pf-c-alert__title--PaddingRight: 8px;
+    --pf-c-alert__title--PaddingBottom: 8px;
+    --pf-c-alert__title--PaddingLeft: 8px;
+    --pf-c-alert__description--PaddingRight: 8px;
+    --pf-c-alert__description--PaddingBottom: 8px;
+    --pf-c-alert__description--PaddingLeft: 8px;
+    --pf-c-alert__description--MarginTop: 5px;
+    --pf-c-alert__action--PaddingTop: 0.6875rem;
+}
