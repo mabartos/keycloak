@@ -4,14 +4,90 @@
     height: 100%;
 }
 
+/*IE compatibility*/
+.pf-c-form-control {
+    --pf-c-form-control--FontSize: 16px;
+    --pf-c-form-control--BorderTopColor: #EDEDED;
+    --pf-c-form-control--BorderRightColor: #EDEDED;
+    --pf-c-form-control--BorderBottomColor: #8A8D90;
+    --pf-c-form-control--BorderLeftColor: #EDEDED;
+    --pf-c-form-control--BackgroundColor: #FFFFFF;
+    --pf-c-form-control--Height: 36px;
+    --pf-c-form-control--PaddingTop: 5px;
+    --pf-c-form-control--PaddingBottom: 5px;
+    --pf-c-form-control--PaddingRight: 0.5rem;
+    --pf-c-form-control--PaddingLeft: 0.5rem;
+    --pf-c-form-control--hover--BorderBottomColor: #0066CC;
+    --pf-c-form-control--hover--BorderBottomWidth: 2px;
+    --pf-c-form-control--focus--BorderBottomColor: #0066CC;
+    --pf-c-form-control--placeholder--Color: #737679;
+    --pf-c-form-control--disabled--Color: #737679;
+    --pf-c-form-control--disabled--BackgroundColor: #EDEDED;
+    --pf-c-form-control--disabled--BorderColor: transparent;
+    --pf-c-form-control--readonly--focus--BackgroundColor: #EDEDED;
+    --pf-c-form-control--readonly--focus--BorderBottomColor: #737679;
+    --pf-c-form-control--invalid--BorderBottomColor: #C9190B;
+    --pf-c-form-control--success--BorderBottomColor: #92D400;
+
+    --pf-c-form-control--FontSize: var(--pf-global--FontSize--md);
+    --pf-c-form-control--BorderWidth: var(--pf-global--BorderWidth--sm);
+    --pf-c-form-control--BorderTopColor: var(--pf-global--BorderColor--300);
+    --pf-c-form-control--BorderRightColor: var(--pf-global--BorderColor--300);
+    --pf-c-form-control--BorderBottomColor: var(--pf-global--BorderColor--200);
+    --pf-c-form-control--BorderLeftColor: var(--pf-global--BorderColor--300);
+    --pf-c-form-control--BackgroundColor: var(--pf-global--BackgroundColor--100);
+    --pf-c-form-control--Height: calc(var(--pf-c-form-control--FontSize) * var(--pf-c-form-control--LineHeight) + var(--pf-c-form-control--BorderWidth) * 2 + var(--pf-c-form-control--PaddingTop) + var(--pf-c-form-control--PaddingBottom));
+    --pf-c-form-control--PaddingTop: calc(var(--pf-global--spacer--form-element) - var(--pf-global--BorderWidth--sm));
+    --pf-c-form-control--PaddingBottom: calc(var(--pf-global--spacer--form-element) - var(--pf-global--BorderWidth--sm));
+    --pf-c-form-control--PaddingRight: var(--pf-global--spacer--sm);
+    --pf-c-form-control--PaddingLeft: var(--pf-global--spacer--sm);
+    --pf-c-form-control--hover--BorderBottomColor: var(--pf-global--primary-color--100);
+    --pf-c-form-control--focus--BorderBottomColor: var(--pf-global--primary-color--100);
+    --pf-c-form-control--placeholder--Color: var(--pf-global--Color--dark-200);
+    --pf-c-form-control--disabled--Color: var(--pf-global--disabled-color--100);
+    --pf-c-form-control--disabled--BackgroundColor: var(--pf-global--disabled-color--300);
+    --pf-c-form-control--readonly--focus--BorderBottomColor: var(--pf-global--disabled-color--100);
+    --pf-c-form-control--invalid--BorderBottomColor: var(--pf-global--danger-color--100);
+    --pf-c-form-control--success--BorderBottomColor: var(--pf-global--success-color--100);
+}
+
 .pf-c-alert {
     margin-bottom: 0.5rem; /* default - IE compatibility */
     margin-bottom: var(--pf-global--spacer--sm);
 }
 
+.pf-c-alert.pf-m-success {
+    --pf-c-alert__title--Color: #486B00;
+    --pf-c-alert__title--Color: var(--pf-global--success-color--200);
+    --pf-c-alert--m-inline--before--BackgroundColor: #92D400;
+    --pf-c-alert--m-inline--before--BackgroundColor: var(--pf-global--success-color--100);
+    --pf-c-alert__icon--Color:#92D400;
+    --pf-c-alert__icon--Color:var(--pf-global--success-color--100);
+}
+
+.pf-c-alert.pf-m-danger {
+    --pf-c-alert__title--Color: #A30000;
+    --pf-c-alert__title--Color: var(--pf-global--danger-color--200);
+    --pf-c-alert__icon--Color: #470000;
+    --pf-c-alert__icon--Color: var(--pf-global--danger-color--300);
+    --pf-c-alert--m-inline--before--BackgroundColor: #C9190B;
+    --pf-c-alert--m-inline--before--BackgroundColor: var(--pf-global--danger-color--100);
+}
+
+.pf-c-alert.pf-m-warning {
+    --pf-c-alert__title--Color: #795600;
+    --pf-c-alert__title--Color: var(--pf-global--warning-color--200);
+    --pf-c-alert__icon--Color: #795600;
+    --pf-c-alert__icon--Color: var(--pf-global--warning-color--200);
+    --pf-c-alert--m-inline--before--BackgroundColor: #F0AB00;
+    --pf-c-alert--m-inline--before--BackgroundColor: var(--pf-global--warning-color--100);
+}
+
 .pf-c-alert__title {
     font-size: 0.875rem; /* default - IE compatibility */
     font-size: var(--pf-global--FontSize--sm);
+    padding: 1rem;
+    padding: var(--pf-global--spacer--md);
 }
 
 /* default - IE compatibility */
@@ -33,6 +109,7 @@
     border: solid var(--pf-global--BorderWidth--sm);
     border-color: rgba(230, 230, 230, 0.5);
 }
+/*End of IE compatibility*/
 
 #kc-locale ul {
     display: none;
@@ -401,8 +478,6 @@ ul#kc-totp-supported-apps {
 
     #kc-info-wrapper {
         border-top: 1px solid rgba(255, 255, 255, 0.1);
-        padding-left: 0;
-        padding-right: 15px;
         background-color: transparent;
     }
 
