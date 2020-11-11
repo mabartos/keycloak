@@ -32,6 +32,7 @@ jobs:
           name: keycloak-artifacts.zip
           retention-days: 2
           path: |
+            ~/.m2/repository
             ~/.m2/repository/org/keycloak
             !~/.m2/repository/org/keycloak/**/*.tar.gz
 
