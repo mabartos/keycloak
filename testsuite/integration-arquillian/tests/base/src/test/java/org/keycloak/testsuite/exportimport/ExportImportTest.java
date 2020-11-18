@@ -233,6 +233,11 @@ public class ExportImportTest extends AbstractKeycloakTest {
         addTestRealmToTestRealmReps("import-without-clients");
     }
 
+    @Test
+    public void testImportExportTestRealm(){
+
+    }
+
     private boolean isRealmPresent(String realmId) {
         return adminClient.realms().findAll().stream().filter(realm -> realmId.equals(realm.getId())).findFirst().isPresent();
     }

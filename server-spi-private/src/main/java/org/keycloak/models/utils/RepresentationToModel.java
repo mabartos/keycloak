@@ -17,21 +17,6 @@
 
 package org.keycloak.models.utils;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import org.jboss.logging.Logger;
 import org.keycloak.Config;
 import org.keycloak.OAuth2Constants;
@@ -138,6 +123,24 @@ import org.keycloak.storage.federated.UserFederatedStorageProvider;
 import org.keycloak.util.JsonSerialization;
 import org.keycloak.validation.ValidationUtil;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 public class RepresentationToModel {
 
     private static Logger logger = Logger.getLogger(RepresentationToModel.class);
@@ -156,6 +159,8 @@ public class RepresentationToModel {
     }
 
     public static void importRealm(KeycloakSession session, RealmRepresentation rep, RealmModel newRealm, boolean skipUserDependent) {
+        boolean isImport = true;
+
         convertDeprecatedSocialProviders(rep);
         convertDeprecatedApplications(session, rep);
         convertDeprecatedClientTemplates(rep);
@@ -164,7 +169,8 @@ public class RepresentationToModel {
         if (rep.getDisplayName() != null) newRealm.setDisplayName(rep.getDisplayName());
         if (rep.getDisplayNameHtml() != null) newRealm.setDisplayNameHtml(rep.getDisplayNameHtml());
         if (rep.isEnabled() != null) newRealm.setEnabled(rep.isEnabled());
-        if (rep.isUserManagedAccessAllowed() != null) newRealm.setUserManagedAccessAllowed(rep.isUserManagedAccessAllowed());
+        if (rep.isUserManagedAccessAllowed() != null)
+            newRealm.setUserManagedAccessAllowed(rep.isUserManagedAccessAllowed());
         if (rep.isBruteForceProtected() != null) newRealm.setBruteForceProtected(rep.isBruteForceProtected());
         if (rep.isPermanentLockout() != null) newRealm.setPermanentLockout(rep.isPermanentLockout());
         if (rep.getMaxFailureWaitSeconds() != null) newRealm.setMaxFailureWaitSeconds(rep.getMaxFailureWaitSeconds());
@@ -303,7 +309,7 @@ public class RepresentationToModel {
 
         Map<String, ClientScopeModel> clientScopes = new HashMap<>();
         if (rep.getClientScopes() != null) {
-            clientScopes = createClientScopes(session, rep.getClientScopes(), newRealm);
+            clientScopes = createClientScopes(session, rep.getClientScopes(), newRealm, isImport);
         }
         if (rep.getDefaultDefaultClientScopes() != null) {
             for (String clientScopeName : rep.getDefaultDefaultClientScopes()) {
@@ -328,10 +334,10 @@ public class RepresentationToModel {
 
         Map<String, ClientModel> createdClients = new HashMap<>();
         if (rep.getClients() != null) {
-            createdClients = createClients(session, rep, newRealm, mappedFlows);
+            createdClients = createClients(session, rep, newRealm, mappedFlows, isImport);
         }
 
-        importRoles(rep.getRoles(), newRealm);
+        importRoles(rep.getRoles(), newRealm, isImport);
 
         // Setup realm default roles
         if (rep.getDefaultRoles() != null) {
@@ -395,7 +401,7 @@ public class RepresentationToModel {
             String parentId = newRealm.getId();
             importComponents(newRealm, components, parentId);
         }
-        importUserFederationProvidersAndMappers(session, rep, newRealm);
+        importUserFederationProvidersAndMappers(session, rep, newRealm, isImport);
 
 
         if (rep.getGroups() != null) {
@@ -551,15 +557,21 @@ public class RepresentationToModel {
         else webAuthnPolicy.setCreateTimeout(0);
 
         Boolean webAuthnPolicyAvoidSameAuthenticatorRegister = rep.isWebAuthnPolicyPasswordlessAvoidSameAuthenticatorRegister();
-        if (webAuthnPolicyAvoidSameAuthenticatorRegister != null) webAuthnPolicy.setAvoidSameAuthenticatorRegister(webAuthnPolicyAvoidSameAuthenticatorRegister);
+        if (webAuthnPolicyAvoidSameAuthenticatorRegister != null)
+            webAuthnPolicy.setAvoidSameAuthenticatorRegister(webAuthnPolicyAvoidSameAuthenticatorRegister);
 
         List<String> webAuthnPolicyAcceptableAaguids = rep.getWebAuthnPolicyPasswordlessAcceptableAaguids();
-        if (webAuthnPolicyAcceptableAaguids != null) webAuthnPolicy.setAcceptableAaguids(webAuthnPolicyAcceptableAaguids);
+        if (webAuthnPolicyAcceptableAaguids != null)
+            webAuthnPolicy.setAcceptableAaguids(webAuthnPolicyAcceptableAaguids);
 
         return webAuthnPolicy;
     }
 
     public static void importUserFederationProvidersAndMappers(KeycloakSession session, RealmRepresentation rep, RealmModel newRealm) {
+        importUserFederationProvidersAndMappers(session, rep, newRealm, false);
+    }
+
+    public static void importUserFederationProvidersAndMappers(KeycloakSession session, RealmRepresentation rep, RealmModel newRealm, boolean isImport) {
         // providers to convert to component model
         Set<String> convertSet = new HashSet<>();
         convertSet.add(LDAPConstants.LDAP_PROVIDER);
@@ -573,7 +585,7 @@ public class RepresentationToModel {
         if (rep.getUserFederationProviders() != null) {
             for (UserFederationProviderRepresentation fedRep : rep.getUserFederationProviders()) {
                 if (convertSet.contains(fedRep.getProviderName())) {
-                    ComponentModel component = convertFedProviderToComponent(newRealm.getId(), fedRep);
+                    ComponentModel component = convertFedProviderToComponent(newRealm, fedRep, isImport);
                     userStorageModels.put(fedRep.getDisplayName(), newRealm.importComponentModel(component));
                 }
             }
@@ -587,7 +599,7 @@ public class RepresentationToModel {
                 if (userStorageModels.containsKey(representation.getFederationProviderDisplayName())) {
                     ComponentModel parent = userStorageModels.get(representation.getFederationProviderDisplayName());
                     String newMapperType = mapperConvertSet.get(parent.getProviderId());
-                    ComponentModel mapper = convertFedMapperToComponent(newRealm, parent, representation, newMapperType);
+                    ComponentModel mapper = convertFedMapperToComponent(newRealm, parent, representation, newMapperType, isImport);
                     newRealm.importComponentModel(mapper);
 
 
@@ -606,8 +618,9 @@ public class RepresentationToModel {
         for (Map.Entry<String, List<ComponentExportRepresentation>> entry : components.entrySet()) {
             String providerType = entry.getKey();
             for (ComponentExportRepresentation compRep : entry.getValue()) {
+                final String COMPONENT_ID = (newRealm.getComponent(compRep.getId()) != null) ? KeycloakModelUtils.generateId() : compRep.getId();
                 ComponentModel component = new ComponentModel();
-                component.setId(compRep.getId());
+                component.setId(COMPONENT_ID);
                 component.setName(compRep.getName());
                 component.setConfig(compRep.getConfig());
                 component.setProviderType(providerType);
@@ -623,11 +636,15 @@ public class RepresentationToModel {
     }
 
     public static void importRoles(RolesRepresentation realmRoles, RealmModel realm) {
+        importRoles(realmRoles, realm, false);
+    }
+
+    public static void importRoles(RolesRepresentation realmRoles, RealmModel realm, boolean isImport) {
         if (realmRoles == null) return;
 
         if (realmRoles.getRealm() != null) { // realm roles
             for (RoleRepresentation roleRep : realmRoles.getRealm()) {
-                createRole(realm, roleRep);
+                createRole(realm, roleRep, true);
             }
         }
         if (realmRoles.getClient() != null) {
@@ -638,10 +655,10 @@ public class RepresentationToModel {
                 }
                 for (RoleRepresentation roleRep : entry.getValue()) {
                     // Application role may already exists (for example if it is defaultRole)
-                    RoleModel role = roleRep.getId() != null ? client.addRole(roleRep.getId(), roleRep.getName()) : client.addRole(roleRep.getName());
+                    RoleModel role = (roleRep.getId() != null) ? client.addRole(roleRep.getId(), roleRep.getName()) : client.addRole(roleRep.getName());
                     role.setDescription(roleRep.getDescription());
                     if (roleRep.getAttributes() != null) {
-                        roleRep.getAttributes().forEach((key, value) -> role.setAttribute(key, value));
+                        roleRep.getAttributes().forEach(role::setAttribute);
                     }
                 }
             }
@@ -668,17 +685,26 @@ public class RepresentationToModel {
     }
 
     public static void importGroups(RealmModel realm, RealmRepresentation rep) {
+        importGroups(realm, rep, false);
+    }
+
+    public static void importGroups(RealmModel realm, RealmRepresentation rep, boolean isImport) {
         List<GroupRepresentation> groups = rep.getGroups();
         if (groups == null) return;
 
         GroupModel parent = null;
         for (GroupRepresentation group : groups) {
-            importGroup(realm, parent, group);
+            importGroup(realm, parent, group, isImport);
         }
     }
 
     public static void importGroup(RealmModel realm, GroupModel parent, GroupRepresentation group) {
-        GroupModel newGroup = realm.createGroup(group.getId(), group.getName(), parent);
+        importGroup(realm, parent, group, false);
+    }
+
+    public static void importGroup(RealmModel realm, GroupModel parent, GroupRepresentation group, boolean isImport) {
+        final String groupID = isImport ? KeycloakModelUtils.generateId() : group.getId();
+        GroupModel newGroup = realm.createGroup(groupID, group.getName(), parent);
         if (group.getAttributes() != null) {
             for (Map.Entry<String, List<String>> attr : group.getAttributes().entrySet()) {
                 newGroup.setAttribute(attr.getKey(), attr.getValue());
@@ -713,7 +739,7 @@ public class RepresentationToModel {
         }
         if (group.getSubGroups() != null) {
             for (GroupRepresentation subGroup : group.getSubGroups()) {
-                importGroup(realm, newGroup, subGroup);
+                importGroup(realm, newGroup, subGroup, isImport);
             }
         }
     }
@@ -1183,12 +1209,19 @@ public class RepresentationToModel {
 
     // Basic realm stuff
 
+    public static ComponentModel convertFedProviderToComponent(RealmModel realm, UserFederationProviderRepresentation fedModel) {
+        return convertFedProviderToComponent(realm, fedModel, false);
+    }
 
-    public static ComponentModel convertFedProviderToComponent(String realmId, UserFederationProviderRepresentation fedModel) {
+    private static ComponentModel convertFedProviderToComponent(RealmModel realm, UserFederationProviderRepresentation fedModel, boolean isImport) {
         UserStorageProviderModel model = new UserStorageProviderModel();
-        model.setId(fedModel.getId());
+
+        final boolean EXISTS_IN_DB = ModelToRepresentation.toRepresentation(realm, true).getUserFederationProviders().stream().anyMatch(f -> f.getId().equals(fedModel.getId()));
+        final String ID = !isImport || !EXISTS_IN_DB ? fedModel.getId() : KeycloakModelUtils.generateId();
+
+        model.setId(ID);
         model.setName(fedModel.getDisplayName());
-        model.setParentId(realmId);
+        model.setParentId(realm.getId());
         model.setProviderId(fedModel.getProviderName());
         model.setProviderType(UserStorageProvider.class.getName());
         model.setFullSyncPeriod(fedModel.getFullSyncPeriod());
@@ -1204,8 +1237,16 @@ public class RepresentationToModel {
     }
 
     public static ComponentModel convertFedMapperToComponent(RealmModel realm, ComponentModel parent, UserFederationMapperRepresentation rep, String newMapperType) {
+        return convertFedMapperToComponent(realm, parent, rep, newMapperType, false);
+    }
+
+    private static ComponentModel convertFedMapperToComponent(RealmModel realm, ComponentModel parent, UserFederationMapperRepresentation rep, String newMapperType, boolean isImport) {
         ComponentModel mapper = new ComponentModel();
-        mapper.setId(rep.getId());
+
+        final boolean EXISTS_IN_DB = ModelToRepresentation.toRepresentation(realm, true).getUserFederationMappers().stream().anyMatch(f -> f.getId().equals(rep.getId()));
+        final String ID = !isImport || !EXISTS_IN_DB ? rep.getId() : KeycloakModelUtils.generateId();
+
+        mapper.setId(ID);
         mapper.setName(rep.getName());
         mapper.setProviderId(rep.getFederationMapperType());
         mapper.setProviderType(newMapperType);
@@ -1222,7 +1263,11 @@ public class RepresentationToModel {
     // Roles
 
     public static void createRole(RealmModel newRealm, RoleRepresentation roleRep) {
-        RoleModel role = roleRep.getId() != null ? newRealm.addRole(roleRep.getId(), roleRep.getName()) : newRealm.addRole(roleRep.getName());
+        createRole(newRealm, roleRep, false);
+    }
+
+    private static void createRole(RealmModel newRealm, RoleRepresentation roleRep, boolean isImport) {
+        RoleModel role = (roleRep.getId() != null && !isImport) ? newRealm.addRole(roleRep.getId(), roleRep.getName()) : newRealm.addRole(roleRep.getName());
         if (roleRep.getDescription() != null) role.setDescription(roleRep.getDescription());
         if (roleRep.getAttributes() != null) {
             for (Map.Entry<String, List<String>> attribute : roleRep.getAttributes().entrySet()) {
@@ -1260,10 +1305,10 @@ public class RepresentationToModel {
 
     // CLIENTS
 
-    private static Map<String, ClientModel> createClients(KeycloakSession session, RealmRepresentation rep, RealmModel realm, Map<String, String> mappedFlows) {
+    private static Map<String, ClientModel> createClients(KeycloakSession session, RealmRepresentation rep, RealmModel realm, Map<String, String> mappedFlows, boolean isImport) {
         Map<String, ClientModel> appMap = new HashMap<String, ClientModel>();
         for (ClientRepresentation resourceRep : rep.getClients()) {
-            ClientModel app = createClient(session, realm, resourceRep, false, mappedFlows);
+            ClientModel app = createClient(session, realm, resourceRep, false, mappedFlows, isImport);
             appMap.put(app.getClientId(), app);
 
             ValidationUtil.validateClient(session, app, false, r -> {
@@ -1281,17 +1326,25 @@ public class RepresentationToModel {
      * @return
      */
     public static ClientModel createClient(KeycloakSession session, RealmModel realm, ClientRepresentation resourceRep, boolean addDefaultRoles) {
-        return createClient(session, realm, resourceRep, addDefaultRoles, null);
+        return createClient(session, realm, resourceRep, addDefaultRoles, null, false);
     }
 
-    private static ClientModel createClient(KeycloakSession session, RealmModel realm, ClientRepresentation resourceRep, boolean addDefaultRoles, Map<String, String> mappedFlows) {
+    private static boolean useExistingClient(String id, boolean isImport, Function<String, ClientModel> consumer) {
+        return Objects.nonNull(id) && !(isImport && consumer.apply(id) != null);
+    }
+
+    private static ClientModel createClient(KeycloakSession session, RealmModel realm, ClientRepresentation resourceRep, boolean addDefaultRoles, Map<String, String> mappedFlows, boolean isImport) {
         logger.debugv("Create client: {0}", resourceRep.getClientId());
 
-        ClientModel client = resourceRep.getId() != null ? realm.addClient(resourceRep.getId(), resourceRep.getClientId()) : realm.addClient(resourceRep.getClientId());
+        final String ID = useExistingClient(resourceRep.getId(), isImport, realm::getClientById) ? resourceRep.getId() : KeycloakModelUtils.generateId();
+        final String CLIENT_ID = useExistingClient(resourceRep.getClientId(), isImport, realm::getClientByClientId) ? resourceRep.getClientId() : KeycloakModelUtils.generateId();
+
+        ClientModel client = realm.addClient(ID, CLIENT_ID);
         if (resourceRep.getName() != null) client.setName(resourceRep.getName());
         if (resourceRep.getDescription() != null) client.setDescription(resourceRep.getDescription());
         if (resourceRep.isEnabled() != null) client.setEnabled(resourceRep.isEnabled());
-        if (resourceRep.isAlwaysDisplayInConsole() != null) client.setAlwaysDisplayInConsole(resourceRep.isAlwaysDisplayInConsole());
+        if (resourceRep.isAlwaysDisplayInConsole() != null)
+            client.setAlwaysDisplayInConsole(resourceRep.isAlwaysDisplayInConsole());
         client.setManagementUrl(resourceRep.getAdminUrl());
         if (resourceRep.isSurrogateAuthRequired() != null)
             client.setSurrogateAuthRequired(resourceRep.isSurrogateAuthRequired());
@@ -1417,7 +1470,7 @@ public class RepresentationToModel {
             client.getProtocolMappersStream().collect(Collectors.toList()).forEach(client::removeProtocolMapper);
 
             for (ProtocolMapperRepresentation mapper : resourceRep.getProtocolMappers()) {
-                client.addProtocolMapper(toModel(mapper));
+                client.addProtocolMapper(toModel(mapper, isImport));
             }
 
             MigrationUtils.updateProtocolMappers(client);
@@ -1555,7 +1608,7 @@ public class RepresentationToModel {
     public static void updateClientProtocolMappers(ClientRepresentation rep, ClientModel resource) {
 
         if (rep.getProtocolMappers() != null) {
-            Map<String,ProtocolMapperModel> existingProtocolMappers =
+            Map<String, ProtocolMapperModel> existingProtocolMappers =
                     resource.getProtocolMappersStream().collect(Collectors.toMap(mapper ->
                             generateProtocolNameKey(mapper.getProtocol(), mapper.getName()), Function.identity()));
 
@@ -1588,18 +1641,26 @@ public class RepresentationToModel {
     // CLIENT SCOPES
 
     private static Map<String, ClientScopeModel> createClientScopes(KeycloakSession session, List<ClientScopeRepresentation> clientScopes, RealmModel realm) {
+        return createClientScopes(session, clientScopes, realm, false);
+    }
+
+    private static Map<String, ClientScopeModel> createClientScopes(KeycloakSession session, List<ClientScopeRepresentation> clientScopes, RealmModel realm, boolean isImport) {
         Map<String, ClientScopeModel> appMap = new HashMap<>();
         for (ClientScopeRepresentation resourceRep : clientScopes) {
-            ClientScopeModel app = createClientScope(session, realm, resourceRep);
+            ClientScopeModel app = createClientScope(session, realm, resourceRep, isImport);
             appMap.put(app.getName(), app);
         }
         return appMap;
     }
 
     public static ClientScopeModel createClientScope(KeycloakSession session, RealmModel realm, ClientScopeRepresentation resourceRep) {
+        return createClientScope(session, realm, resourceRep, false);
+    }
+
+    public static ClientScopeModel createClientScope(KeycloakSession session, RealmModel realm, ClientScopeRepresentation resourceRep, boolean isImport) {
         logger.debugv("Create client scope: {0}", resourceRep.getName());
 
-        ClientScopeModel clientScope = resourceRep.getId() != null ? realm.addClientScope(resourceRep.getId(), resourceRep.getName()) : realm.addClientScope(resourceRep.getName());
+        ClientScopeModel clientScope = (resourceRep.getId() != null && !isImport) ? realm.addClientScope(resourceRep.getId(), resourceRep.getName()) : realm.addClientScope(resourceRep.getName());
         if (resourceRep.getName() != null) clientScope.setName(resourceRep.getName());
         if (resourceRep.getDescription() != null) clientScope.setDescription(resourceRep.getDescription());
         if (resourceRep.getProtocol() != null) clientScope.setProtocol(resourceRep.getProtocol());
@@ -1608,7 +1669,7 @@ public class RepresentationToModel {
             clientScope.getProtocolMappersStream().collect(Collectors.toList()).forEach(clientScope::removeProtocolMapper);
 
             for (ProtocolMapperRepresentation mapper : resourceRep.getProtocolMappers()) {
-                clientScope.addProtocolMapper(toModel(mapper));
+                clientScope.addProtocolMapper(toModel(mapper, isImport));
             }
             MigrationUtils.updateProtocolMappers(clientScope);
         }
@@ -1890,7 +1951,7 @@ public class RepresentationToModel {
     private static void importIdentityProviders(RealmRepresentation rep, RealmModel newRealm, KeycloakSession session) {
         if (rep.getIdentityProviders() != null) {
             for (IdentityProviderRepresentation representation : rep.getIdentityProviders()) {
-                newRealm.addIdentityProvider(toModel(newRealm, representation, session));
+                newRealm.addIdentityProvider(toModel(newRealm, representation, session, true));
             }
         }
     }
@@ -1898,27 +1959,31 @@ public class RepresentationToModel {
     private static void importIdentityProviderMappers(RealmRepresentation rep, RealmModel newRealm) {
         if (rep.getIdentityProviderMappers() != null) {
             for (IdentityProviderMapperRepresentation representation : rep.getIdentityProviderMappers()) {
-                newRealm.addIdentityProviderMapper(toModel(representation));
+                newRealm.addIdentityProviderMapper(toModel(representation, true));
             }
         }
     }
 
     public static IdentityProviderModel toModel(RealmModel realm, IdentityProviderRepresentation representation, KeycloakSession session) {
+        return toModel(realm, representation, session, false);
+    }
+
+    public static IdentityProviderModel toModel(RealmModel realm, IdentityProviderRepresentation representation, KeycloakSession session, boolean isImport) {
         IdentityProviderFactory providerFactory = (IdentityProviderFactory) session.getKeycloakSessionFactory().getProviderFactory(
                 IdentityProvider.class, representation.getProviderId());
-        
+
         if (providerFactory == null) {
             providerFactory = (IdentityProviderFactory) session.getKeycloakSessionFactory().getProviderFactory(
                     SocialIdentityProvider.class, representation.getProviderId());
         }
-        
+
         if (providerFactory == null) {
             throw new IllegalArgumentException("Invalid identity provider id [" + representation.getProviderId() + "]");
         }
-        
+
         IdentityProviderModel identityProviderModel = providerFactory.createConfig();
 
-        identityProviderModel.setInternalId(representation.getInternalId());
+        identityProviderModel.setInternalId(isImport ? KeycloakModelUtils.generateId() : representation.getInternalId());
         identityProviderModel.setAlias(representation.getAlias());
         identityProviderModel.setDisplayName(representation.getDisplayName());
         identityProviderModel.setProviderId(representation.getProviderId());
@@ -1951,15 +2016,19 @@ public class RepresentationToModel {
             }
             identityProviderModel.setPostBrokerLoginFlowId(flowModel.getId());
         }
-        
+
         identityProviderModel.validate(realm);
 
         return identityProviderModel;
     }
 
     public static ProtocolMapperModel toModel(ProtocolMapperRepresentation rep) {
+        return toModel(rep, false);
+    }
+
+    public static ProtocolMapperModel toModel(ProtocolMapperRepresentation rep, boolean isImport) {
         ProtocolMapperModel model = new ProtocolMapperModel();
-        model.setId(rep.getId());
+        model.setId(isImport ? KeycloakModelUtils.generateId() : rep.getId());
         model.setName(rep.getName());
         model.setProtocol(rep.getProtocol());
         model.setProtocolMapper(rep.getProtocolMapper());
@@ -1968,8 +2037,12 @@ public class RepresentationToModel {
     }
 
     public static IdentityProviderMapperModel toModel(IdentityProviderMapperRepresentation rep) {
+        return toModel(rep, false);
+    }
+
+    public static IdentityProviderMapperModel toModel(IdentityProviderMapperRepresentation rep, boolean isImport) {
         IdentityProviderMapperModel model = new IdentityProviderMapperModel();
-        model.setId(rep.getId());
+        model.setId(isImport ? KeycloakModelUtils.generateId() : rep.getId());
         model.setName(rep.getName());
         model.setIdentityProviderAlias(rep.getIdentityProviderAlias());
         model.setIdentityProviderMapper(rep.getIdentityProviderMapper());
