@@ -94,6 +94,7 @@ import org.keycloak.sessions.RootAuthenticationSessionModel;
 import org.keycloak.util.JsonSerialization;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -412,15 +413,13 @@ public class IdentityBrokerService implements IdentityProvider.AuthenticationCal
         return redirectToErrorPage(Response.Status.INTERNAL_SERVER_ERROR, Messages.COULD_NOT_PROCEED_WITH_AUTHENTICATION_REQUEST);
     }
 
-    @GET
     @Path("{provider_id}/endpoint")
     public Object getEndpoint(@PathParam("provider_id") String providerId) {
         IdentityProvider identityProvider;
-
         try {
             identityProvider = getIdentityProvider(session, realmModel, providerId);
         } catch (IdentityBrokerException e) {
-            return redirectToErrorPage(Status.NOT_FOUND, e.getMessage());
+            throw new NotFoundException(e.getMessage());
         }
 
         Object callback = identityProvider.callback(realmModel, this, event);

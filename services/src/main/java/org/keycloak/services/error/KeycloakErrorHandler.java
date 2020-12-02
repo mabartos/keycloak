@@ -45,6 +45,7 @@ public class KeycloakErrorHandler implements ExceptionMapper<Throwable> {
     private static final Pattern realmNamePattern = Pattern.compile(".*/realms/([^/]+).*");
 
     public static final String UNCAUGHT_SERVER_ERROR_TEXT = "Uncaught server error";
+    private static final String UNKNOWN_ERROR = "unknown_error";
 
     @Context
     private HttpHeaders headers;
@@ -60,15 +61,14 @@ public class KeycloakErrorHandler implements ExceptionMapper<Throwable> {
 
         int statusCode = getStatusCode(throwable);
 
-        if (statusCode >= 500 && statusCode <= 599) {
+        if (isServerError(statusCode)) {
             logger.error(UNCAUGHT_SERVER_ERROR_TEXT, throwable);
         }
 
-        if (!MediaTypeMatcher.isHtmlRequest(headers)) {
-            OAuth2ErrorRepresentation error = new OAuth2ErrorRepresentation();
+        OAuth2ErrorRepresentation error = new OAuth2ErrorRepresentation();
+        error.setError(getErrorCode(throwable));
 
-            error.setError(getErrorCode(throwable));
-            
+        if (!MediaTypeMatcher.isHtmlRequest(headers)) {
             return Response.status(statusCode)
                     .header(HttpHeaders.CONTENT_TYPE, javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE.toString())
                     .entity(error)
@@ -83,7 +83,7 @@ public class KeycloakErrorHandler implements ExceptionMapper<Throwable> {
             Locale locale = session.getContext().resolveLocale(null);
 
             FreeMarkerUtil freeMarker = new FreeMarkerUtil();
-            Map<String, Object> attributes = initAttributes(session, realm, theme, locale, statusCode);
+            Map<String, Object> attributes = initAttributes(session, realm, theme, locale, statusCode, error.getError());
 
             String templateName = "error.ftl";
 
@@ -120,8 +120,7 @@ public class KeycloakErrorHandler implements ExceptionMapper<Throwable> {
         if (throwable instanceof WebApplicationException && throwable.getMessage() != null) {
             return throwable.getMessage();
         }
-
-        return "unknown_error";
+        return UNKNOWN_ERROR;
     }
 
     private RealmModel resolveRealm(KeycloakSession session) {
@@ -145,7 +144,7 @@ public class KeycloakErrorHandler implements ExceptionMapper<Throwable> {
         return realm;
     }
 
-    private Map<String, Object> initAttributes(KeycloakSession session, RealmModel realm, Theme theme, Locale locale, int statusCode) throws IOException {
+    private Map<String, Object> initAttributes(KeycloakSession session, RealmModel realm, Theme theme, Locale locale, int statusCode, String error) throws IOException {
         Map<String, Object> attributes = new HashMap<>();
         Properties messagesBundle = theme.getMessages(locale);
 
@@ -155,10 +154,7 @@ public class KeycloakErrorHandler implements ExceptionMapper<Throwable> {
         attributes.put("url", new UrlBean(realm, theme, session.getContext().getUri().getBaseUri(), null));
         attributes.put("locale", new LocaleBean(realm, locale, session.getContext().getUri().getBaseUriBuilder(), messagesBundle));
 
-
-        String errorKey = statusCode == 404 ? Messages.PAGE_NOT_FOUND : Messages.INTERNAL_SERVER_ERROR;
-        String errorMessage = messagesBundle.getProperty(errorKey);
-
+        String errorMessage = getErrorMessageKey(messagesBundle, statusCode, error);
         attributes.put("message", new MessageBean(errorMessage, MessageType.ERROR));
 
         try {
@@ -176,4 +172,24 @@ public class KeycloakErrorHandler implements ExceptionMapper<Throwable> {
         return attributes;
     }
 
+    private static String getErrorMessageKey(Properties properties, Integer statusCode, String error) {
+        if (isServerError(statusCode) || error.equals(UNKNOWN_ERROR)) {
+            return properties.getProperty(Messages.INTERNAL_SERVER_ERROR);
+        }
+
+        if (statusCode == 404 && isDefaultErrorMessage(error)) {
+            return properties.getProperty(Messages.PAGE_NOT_FOUND);
+        }
+
+        return error;
+    }
+
+    private static boolean isServerError(Integer statusCode) {
+        return statusCode >= 500 && statusCode <= 599;
+    }
+
+    private static boolean isDefaultErrorMessage(String error) {
+        final Pattern DEFAULT_ERROR_PATTERN = Pattern.compile("HTTP [1-5][0-9]{2}\\s.*");
+        return DEFAULT_ERROR_PATTERN.matcher(error).matches();
+    }
 }

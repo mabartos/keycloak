@@ -28,6 +28,7 @@ import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.ErrorRepresentation;
 import org.keycloak.representations.idm.IdentityProviderMapperRepresentation;
 import org.keycloak.representations.idm.IdentityProviderRepresentation;
+import org.keycloak.representations.idm.OAuth2ErrorRepresentation;
 import org.keycloak.representations.idm.ProtocolMapperRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -46,6 +47,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -472,6 +474,10 @@ public final class KcOidcBrokerTest extends AbstractAdvancedBrokerTest {
             SimpleHttp.Response simple = SimpleHttp.doGet(LINK, client).asResponse();
             assertThat(simple, notNullValue());
             assertThat(simple.getStatus(), Matchers.is(Response.Status.NOT_FOUND.getStatusCode()));
+
+            OAuth2ErrorRepresentation error = simple.asJson(OAuth2ErrorRepresentation.class);
+            assertThat(error, notNullValue());
+            assertThat(error.getError(), is("Identity Provider [" + notExistingIdP + "] not found."));
         } catch (IOException ex) {
             Assert.fail("Cannot create HTTP client. Details: " + ex.getMessage());
         }
