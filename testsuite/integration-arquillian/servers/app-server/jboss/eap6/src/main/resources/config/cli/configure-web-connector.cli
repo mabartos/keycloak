@@ -1,0 +1,5 @@
+/subsystem=web/connector=HTTPS/:add(socket-binding=https,scheme=https,protocol=HTTP/1.1,secure=true)
+/subsystem=web/connector=HTTPS/ssl=configuration:add(name=https)
+/subsystem=web/connector=HTTPS/ssl=configuration/:write-attribute(name=protocol,value="TLSv1,TLSv1.1,TLSv1.2")
+
+:reload
