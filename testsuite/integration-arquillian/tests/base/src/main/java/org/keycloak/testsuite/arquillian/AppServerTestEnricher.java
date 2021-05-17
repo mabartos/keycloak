@@ -27,7 +27,6 @@ import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.test.spi.event.suite.AfterClass;
 import org.jboss.arquillian.test.spi.event.suite.BeforeClass;
 import org.jboss.logging.Logger;
-import org.junit.Assume;
 import org.keycloak.testsuite.arquillian.annotation.AppServerContainer;
 import org.keycloak.testsuite.arquillian.annotation.AppServerContainers;
 import org.keycloak.testsuite.arquillian.containers.SelfManagedAppContainerLifecycle;
@@ -241,6 +240,10 @@ public class AppServerTestEnricher {
                         .certificateKeyFile("${jboss.server.config.dir}/adapter.jks")
                         .build());
 
+                String javaVersion = System.getProperty("java.specification.version", "");
+                if (javaVersion.contains("1.7")) {
+                    client.execute("/subsystem=web/connector=https/configuration=ssl:write-attribute(name=protocol, value=TLSv1.2)");
+                }
 
                 String appServerJavaHome = System.getProperty("app.server.java.home", "");
                 if (appServerJavaHome.contains("ibm")) {
