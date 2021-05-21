@@ -27,7 +27,6 @@ import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.test.spi.event.suite.AfterClass;
 import org.jboss.arquillian.test.spi.event.suite.BeforeClass;
 import org.jboss.logging.Logger;
-import org.junit.Assume;
 import org.keycloak.testsuite.arquillian.annotation.AppServerContainer;
 import org.keycloak.testsuite.arquillian.annotation.AppServerContainers;
 import org.keycloak.testsuite.arquillian.containers.SelfManagedAppContainerLifecycle;
@@ -250,10 +249,13 @@ public class AppServerTestEnricher {
                 }
             }
         } else {
-            client.apply(new RemoveUndertowListener.Builder(UndertowListenerType.HTTPS_LISTENER, "https")
-                    .forDefaultServer());
 
-            administration.reloadIfRequired();
+            try {
+                client.apply(new RemoveUndertowListener.Builder(UndertowListenerType.HTTPS_LISTENER, "https").forDefaultServer());
+                administration.reloadIfRequired();
+            } catch (CommandFailedException e) {
+                // HTTPS listener doesn't already exist
+            }
 
             client.apply(new AddUndertowListener.HttpsBuilder("https", "default-server", "https")
                     .securityRealm("UndertowRealm")

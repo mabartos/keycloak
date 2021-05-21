@@ -61,6 +61,7 @@ import org.wildfly.extras.creaper.commands.undertow.RemoveUndertowListener;
 import org.wildfly.extras.creaper.commands.undertow.SslVerifyClient;
 import org.wildfly.extras.creaper.commands.undertow.UndertowListenerType;
 import org.keycloak.testsuite.util.TextFileChecker;
+import org.wildfly.extras.creaper.core.CommandFailedException;
 import org.wildfly.extras.creaper.core.ManagementClient;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.creaper.core.online.OnlineOptions;
@@ -805,10 +806,12 @@ public class AuthServerTestEnricher {
             client.execute("/core-service=management/security-realm=UndertowRealm/server-identity=ssl:add(keystore-relative-to=jboss.server.config.dir,keystore-password=secret,keystore-path=keycloak.jks");
             client.execute("/core-service=management/security-realm=UndertowRealm/authentication=truststore:add(keystore-relative-to=jboss.server.config.dir,keystore-password=secret,keystore-path=keycloak.truststore");
 
-            client.apply(new RemoveUndertowListener.Builder(UndertowListenerType.HTTPS_LISTENER, "https")
-                  .forDefaultServer());
-
-            administration.reloadIfRequired();
+            try {
+                client.apply(new RemoveUndertowListener.Builder(UndertowListenerType.HTTPS_LISTENER, "https").forDefaultServer());
+                administration.reloadIfRequired();
+            } catch (CommandFailedException e) {
+                // HTTPS listener doesn't already exist
+            }
 
             client.apply(new AddUndertowListener.HttpsBuilder("https", "default-server", "https")
                   .securityRealm("UndertowRealm")
@@ -824,8 +827,7 @@ public class AuthServerTestEnricher {
     protected boolean isAuthServerJBossBased() {
         return containerRegistry.get().getContainers().stream()
               .map(ContainerInfo::new)
-              .filter(ci -> ci.isJBossBased())
-              .findFirst().isPresent();
+              .anyMatch(ContainerInfo::isJBossBased);
     }
 
     public void initializeOAuthClient(@Observes(precedence = 4) BeforeClass event) {
