@@ -74,6 +74,7 @@ public class LifespanAdapterTest extends AbstractPhotozExampleAdapterTest {
 
         authorizationResource.resources().resource(resource.getId()).remove();
 
+        jsDriver.manage().deleteAllCookies();
         loginToClientPage(aliceUser);
 
         // should throw an error because the resource was removed and cache entry did not expire yet
