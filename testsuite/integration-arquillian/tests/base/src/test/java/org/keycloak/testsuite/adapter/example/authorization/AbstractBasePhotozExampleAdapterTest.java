@@ -217,7 +217,7 @@ public abstract class AbstractBasePhotozExampleAdapterTest extends AbstractPhoto
     }
 
     protected void loginToClientPage(UserRepresentation user, String... scopes) throws InterruptedException {
-        log.debugf("--logging in as {0} with password: {1}; scopes: {2}", user.getUsername(), user.getCredentials().get(0).getValue(), Arrays.toString(scopes));
+        log.debugf("--logging in as '%s' with password: '%s'; scopes: %s", user.getUsername(), user.getCredentials().get(0).getValue(), Arrays.toString(scopes));
 
         if (testExecutor.isLoggedIn()) {
             testExecutor.logout(this::assertOnTestAppUrl);

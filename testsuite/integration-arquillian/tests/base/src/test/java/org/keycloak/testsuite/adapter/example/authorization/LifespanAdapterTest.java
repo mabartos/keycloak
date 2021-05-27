@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -38,6 +39,7 @@ import org.keycloak.representations.idm.authorization.PolicyRepresentation;
 import org.keycloak.representations.idm.authorization.ResourceRepresentation;
 import org.keycloak.testsuite.adapter.page.PhotozClientAuthzTestApp;
 import org.keycloak.testsuite.arquillian.annotation.AppServerContainer;
+import org.keycloak.testsuite.util.WaitUtils;
 import org.keycloak.testsuite.util.javascript.ResponseValidator;
 import org.keycloak.testsuite.utils.arquillian.ContainerConstants;
 import org.keycloak.util.JsonSerialization;
@@ -66,6 +68,8 @@ public class LifespanAdapterTest extends AbstractPhotozExampleAdapterTest {
 
     @Test
     public void testPathConfigInvalidation() throws Exception {
+        jsDriver.manage().deleteAllCookies();
+
         loginToClientPage(aliceUser);
         assertSuccess();
 
@@ -73,19 +77,15 @@ public class LifespanAdapterTest extends AbstractPhotozExampleAdapterTest {
         AuthorizationResource authorizationResource = getAuthorizationResource();
 
         authorizationResource.resources().resource(resource.getId()).remove();
+        assertThat(getAuthorizationResource().resources().findByName("Profile Resource").isEmpty(), Matchers.is(true));
+
+        WaitUtils.pause(500);
 
         jsDriver.manage().deleteAllCookies();
         loginToClientPage(aliceUser);
 
         // should throw an error because the resource was removed and cache entry did not expire yet
-        clientPage.viewProfile(new ResponseValidator() {
-            @Override
-            public void validate(Map<String, Object> response) {
-                Object res = response.get("res");
-                assertThat(res, Matchers.notNullValue());
-                assertThat(res.toString(), Matchers.not(Matchers.containsString("userName")));
-            }
-        });
+        assertFailure();
 
         setTimeOffsetOfAdapter(20);
 
@@ -129,14 +129,7 @@ public class LifespanAdapterTest extends AbstractPhotozExampleAdapterTest {
 
         loginToClientPage(aliceUser);
         // should throw an error because the resource was removed and cache entry did not expire yet
-        clientPage.viewProfile(new ResponseValidator() {
-            @Override
-            public void validate(Map<String, Object> response) {
-                Object res = response.get("res");
-                assertThat(res, Matchers.notNullValue());
-                assertThat(res.toString(), Matchers.not(Matchers.containsString("userName")));
-            }
-        });
+        assertFailure();
 
         userRepresentation.setEmail("alice@keycloak.org");
 
@@ -146,10 +139,19 @@ public class LifespanAdapterTest extends AbstractPhotozExampleAdapterTest {
     }
 
     private void assertSuccess() {
+        assertState(true);
+    }
+
+    private void assertFailure() {
+        assertState(false);
+    }
+
+    private void assertState(boolean state) {
         clientPage.viewProfile((ResponseValidator) response -> {
             Object res = response.get("res");
             assertThat(res, Matchers.notNullValue());
-            assertThat(res.toString(), Matchers.containsString("userName"));
+            Matcher<String> matcher = Matchers.containsString("userName");
+            assertThat(res.toString(), state ? matcher : Matchers.not(matcher));
         });
     }
 
@@ -170,6 +172,6 @@ public class LifespanAdapterTest extends AbstractPhotozExampleAdapterTest {
     }
 
     public void setTimeOffsetOfAdapter(int offset) {
-        this.driver.navigate().to(clientPage.getInjectedUrl() + "/timeOffset.jsp?offset=" + String.valueOf(offset));
+        this.driver.navigate().to(clientPage.getInjectedUrl() + "timeOffset.jsp?offset=" + offset);
     }
 }

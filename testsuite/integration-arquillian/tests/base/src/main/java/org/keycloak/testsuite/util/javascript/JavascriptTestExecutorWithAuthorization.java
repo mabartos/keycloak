@@ -3,7 +3,6 @@ package org.keycloak.testsuite.util.javascript;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.auth.page.login.OAuthGrant;
 import org.keycloak.testsuite.auth.page.login.OIDCLogin;
-import org.keycloak.testsuite.pages.ConsentPage;
 import org.keycloak.testsuite.util.URLUtils;
 import org.openqa.selenium.WebDriver;
 
@@ -116,8 +115,6 @@ public class JavascriptTestExecutorWithAuthorization extends JavascriptTestExecu
         // check if rpt is already present
         Object o = jsExecutor.executeScript("if(window.authorization && window.authorization.rpt) return true; else return false;");
 
-
-
         if (o == null || o.equals(false)) {
             // RPT is not present yet, lets try to use bearer token
             request.includeBearerToken();
@@ -135,10 +132,10 @@ public class JavascriptTestExecutorWithAuthorization extends JavascriptTestExecu
             String headersString = (String) result.get("responseHeaders");
 
             List<String> headersList = Arrays.asList(headersString.split("\r\n"));
-            String wwwAuthenticate = headersList.stream().filter(s -> s.toLowerCase().startsWith("www-authenticate:")).findFirst().get();
+            String wwwAuthenticate = headersList.stream().filter(s -> s.toLowerCase().startsWith("www-authenticate:")).findFirst().orElse("");
 
             if (wwwAuthenticate.contains("UMA") && wwwAuthenticate.contains("ticket")) {
-                String ticket = Arrays.asList(wwwAuthenticate.split(",")).stream().filter(s -> s.startsWith("ticket")).findFirst().get();
+                String ticket = Arrays.stream(wwwAuthenticate.split(",")).filter(s -> s.startsWith("ticket")).findFirst().get();
 
                 ticket = ticket.substring(0, ticket.length() - 1).replaceFirst("ticket=\"", "");
 
@@ -155,6 +152,8 @@ public class JavascriptTestExecutorWithAuthorization extends JavascriptTestExecu
                     request.includeRpt();
                     result = request.send(jsExecutor);
                 }
+            } else{
+                throw new RuntimeException("Request denied and UMA is not present");
             }
         }
 
