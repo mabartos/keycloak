@@ -18,13 +18,12 @@
 package org.keycloak.adapters;
 
 import org.apache.http.HttpHost;
-import org.apache.http.conn.scheme.HostNameResolver;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.protocol.HttpContext;
 import org.keycloak.common.util.Environment;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import java.io.IOException;
@@ -33,14 +32,10 @@ import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.security.AccessController;
-import java.security.KeyManagementException;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.security.SecureRandom;
-import java.security.UnrecoverableKeyException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,65 +43,13 @@ import java.util.logging.Logger;
 /**
  * @author <a href="mailto:mstrukel@redhat.com">Marko Strukelj</a>
  */
-public class SniSSLSocketFactory extends SSLSocketFactory {
+public class SniSSLSocketFactory extends SSLConnectionSocketFactory {
 
     private static final Logger LOG = Logger.getLogger(SniSSLSocketFactory.class.getName());
     private static final AtomicBoolean skipSNIApplication = new AtomicBoolean(false);
 
-    public SniSSLSocketFactory(String algorithm, KeyStore keystore, String keyPassword, KeyStore truststore, SecureRandom random, HostNameResolver nameResolver) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
-        super(algorithm, keystore, keyPassword, truststore, random, nameResolver);
-    }
-
-    public SniSSLSocketFactory(String algorithm, KeyStore keystore, String keyPassword, KeyStore truststore, SecureRandom random, TrustStrategy trustStrategy, X509HostnameVerifier hostnameVerifier) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
-        super(algorithm, keystore, keyPassword, truststore, random, trustStrategy, hostnameVerifier);
-    }
-
-    public SniSSLSocketFactory(String algorithm, KeyStore keystore, String keyPassword, KeyStore truststore, SecureRandom random, X509HostnameVerifier hostnameVerifier) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
-        super(algorithm, keystore, keyPassword, truststore, random, hostnameVerifier);
-    }
-
-    public SniSSLSocketFactory(KeyStore keystore, String keystorePassword, KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
-        super(keystore, keystorePassword, truststore);
-    }
-
-    public SniSSLSocketFactory(KeyStore keystore, String keystorePassword) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
-        super(keystore, keystorePassword);
-    }
-
-    public SniSSLSocketFactory(KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
-        super(truststore);
-    }
-
-    public SniSSLSocketFactory(TrustStrategy trustStrategy, X509HostnameVerifier hostnameVerifier) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
-        super(trustStrategy, hostnameVerifier);
-    }
-
-    public SniSSLSocketFactory(TrustStrategy trustStrategy) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
-        super(trustStrategy);
-    }
-
-    public SniSSLSocketFactory(SSLContext sslContext) {
-        super(sslContext);
-    }
-
-    public SniSSLSocketFactory(SSLContext sslContext, HostNameResolver nameResolver) {
-        super(sslContext, nameResolver);
-    }
-
-    public SniSSLSocketFactory(SSLContext sslContext, X509HostnameVerifier hostnameVerifier) {
+    public SniSSLSocketFactory(final SSLContext sslContext, final HostnameVerifier hostnameVerifier) {
         super(sslContext, hostnameVerifier);
-    }
-
-    public SniSSLSocketFactory(SSLContext sslContext, String[] supportedProtocols, String[] supportedCipherSuites, X509HostnameVerifier hostnameVerifier) {
-        super(sslContext, supportedProtocols, supportedCipherSuites, hostnameVerifier);
-    }
-
-    public SniSSLSocketFactory(javax.net.ssl.SSLSocketFactory socketfactory, X509HostnameVerifier hostnameVerifier) {
-        super(socketfactory, hostnameVerifier);
-    }
-
-    public SniSSLSocketFactory(javax.net.ssl.SSLSocketFactory socketfactory, String[] supportedProtocols, String[] supportedCipherSuites, X509HostnameVerifier hostnameVerifier) {
-        super(socketfactory, supportedProtocols, supportedCipherSuites, hostnameVerifier);
     }
 
     @Override
