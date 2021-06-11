@@ -25,7 +25,6 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jetbrains.annotations.Nullable;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.keycloak.common.Profile;
@@ -36,12 +35,12 @@ import org.keycloak.testsuite.adapter.page.CorsDatabaseServiceTestApp;
 import org.keycloak.testsuite.arquillian.annotation.AppServerContainer;
 import org.keycloak.testsuite.arquillian.annotation.DisableFeature;
 import org.keycloak.testsuite.arquillian.annotation.EnableFeature;
-import org.keycloak.testsuite.utils.arquillian.ContainerConstants;
 import org.keycloak.testsuite.auth.page.account.Account;
 import org.keycloak.testsuite.auth.page.login.OIDCLogin;
+import org.keycloak.testsuite.util.DroneUtils;
 import org.keycloak.testsuite.util.JavascriptBrowser;
 import org.keycloak.testsuite.util.WaitUtils;
-import org.openqa.selenium.By;
+import org.keycloak.testsuite.utils.arquillian.ContainerConstants;
 import org.openqa.selenium.WebDriver;
 
 import java.io.File;
@@ -51,14 +50,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static junit.framework.TestCase.assertNotNull;
-import org.junit.Assume;
-import org.keycloak.testsuite.util.DroneUtils;
-
 import static org.keycloak.common.Profile.Feature.UPLOAD_SCRIPTS;
-import static org.keycloak.testsuite.utils.io.IOUtil.loadRealm;
 import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
+import static org.keycloak.testsuite.utils.io.IOUtil.loadRealm;
 
 /**
  * Tests CORS functionality in adapters.
@@ -145,6 +141,8 @@ public class CorsExampleAdapterTest extends AbstractExampleAdapterTest {
 
         assertCurrentUrlStartsWith(jsDriverAngularCorsProductPage);
         jsDriverAngularCorsProductPage.reloadData();
+        WaitUtils.pause(1000);
+
         waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().contains("iphone");
         waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().contains("ipad");
         waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().contains("ipod");
