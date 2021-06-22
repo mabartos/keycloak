@@ -56,14 +56,14 @@
             <xs:element name="RoleIdentifiers" type="role-identifiers-type" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>Defines what SAML attributes within the assertion received from the user should be used as role identifiers within the Java EE Security Context for the user.
-                        By default Role attribute values are converted to Java EE roles. Some IDPs send roles via a member or memberOf attribute assertion. You can define one or more Attribute elements to specify which SAML attributes must be converted into roles.</xs:documentation>
+                    By default Role attribute values are converted to Java EE roles. Some IDPs send roles via a member or memberOf attribute assertion. You can define one or more Attribute elements to specify which SAML attributes must be converted into roles.</xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="RoleMappingsProvider" type="role-mappings-provider-type" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>Specifies the role mappings provider implementation that will be used to map the roles extracted from the SAML assertion into the final set of roles
-                        that will be assigned to the principal. A provider is typically used to map roles retrieved from third party IDPs into roles that exist in the JEE application environment. It can also
-                        assign extra roles to the assertion principal (for example, by connecting to an LDAP server to obtain more roles) or remove some of the roles that were set by the IDP.</xs:documentation>
+                    that will be assigned to the principal. A provider is typically used to map roles retrieved from third party IDPs into roles that exist in the JEE application environment. It can also
+                    assign extra roles to the assertion principal (for example, by connecting to an LDAP server to obtain more roles) or remove some of the roles that were set by the IDP.</xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="IDP" type="idp-type" minOccurs="1" maxOccurs="1">
@@ -73,49 +73,49 @@
             </xs:element>
         </xs:all>
         <xs:attribute name="entityID" type="xs:string" use="required">
-            <xs:annotation>
-                <xs:documentation>This is the identifier for this client. The IDP needs this value to determine who the client is that is communicating with it.</xs:documentation>
-            </xs:annotation>
+                <xs:annotation>
+                    <xs:documentation>This is the identifier for this client. The IDP needs this value to determine who the client is that is communicating with it.</xs:documentation>
+                </xs:annotation>
         </xs:attribute>
         <xs:attribute name="sslPolicy" type="ssl-policy-type" use="optional">
-            <xs:annotation>
-                <xs:documentation>SSL policy the adapter will enforce.</xs:documentation>
-            </xs:annotation>
+                <xs:annotation>
+                    <xs:documentation>SSL policy the adapter will enforce.</xs:documentation>
+                </xs:annotation>
         </xs:attribute>
         <xs:attribute name="nameIDPolicyFormat" type="xs:string" use="optional">
-            <xs:annotation>
-                <xs:documentation>SAML clients can request a specific NameID Subject format. Fill in this value if you want a specific format. It must be a standard SAML format identifier, i.e. urn:oasis:names:tc:SAML:2.0:nameid-format:transient. By default, no special format is requested.</xs:documentation>
-            </xs:annotation>
+                <xs:annotation>
+                    <xs:documentation>SAML clients can request a specific NameID Subject format. Fill in this value if you want a specific format. It must be a standard SAML format identifier, i.e. urn:oasis:names:tc:SAML:2.0:nameid-format:transient. By default, no special format is requested.</xs:documentation>
+                </xs:annotation>
         </xs:attribute>
         <xs:attribute name="logoutPage" type="xs:string" use="optional">
-            <xs:annotation>
-                <xs:documentation>URL of the logout page.</xs:documentation>
-            </xs:annotation>
+                <xs:annotation>
+                    <xs:documentation>URL of the logout page.</xs:documentation>
+                </xs:annotation>
         </xs:attribute>
         <xs:attribute name="forceAuthentication" type="xs:boolean" use="optional">
-            <xs:annotation>
-                <xs:documentation>SAML clients can request that a user is re-authenticated even if they are already logged in at the IDP. Default value is false.</xs:documentation>
-            </xs:annotation>
+                <xs:annotation>
+                    <xs:documentation>SAML clients can request that a user is re-authenticated even if they are already logged in at the IDP. Default value is false.</xs:documentation>
+                </xs:annotation>
         </xs:attribute>
         <xs:attribute name="keepDOMAssertion" type="xs:boolean" use="optional">
-            <xs:annotation>
-                <xs:documentation>Attribute to inject the DOM representation of the assertion into the SamlPrincipal (respecting the original syntax). Default value is false</xs:documentation>
-            </xs:annotation>
+                <xs:annotation>
+                    <xs:documentation>Attribute to inject the DOM representation of the assertion into the SamlPrincipal (respecting the original syntax). Default value is false</xs:documentation>
+                </xs:annotation>
         </xs:attribute>
         <xs:attribute name="isPassive" type="xs:boolean" use="optional">
-            <xs:annotation>
-                <xs:documentation>SAML clients can request that a user is never asked to authenticate even if they are not logged in at the IDP. Set this to true if you want this. Do not use together with forceAuthentication as they are opposite. Default value is false.</xs:documentation>
-            </xs:annotation>
+                <xs:annotation>
+                    <xs:documentation>SAML clients can request that a user is never asked to authenticate even if they are not logged in at the IDP. Set this to true if you want this. Do not use together with forceAuthentication as they are opposite. Default value is false.</xs:documentation>
+                </xs:annotation>
         </xs:attribute>
         <xs:attribute name="turnOffChangeSessionIdOnLogin" type="xs:boolean" use="optional">
-            <xs:annotation>
-                <xs:documentation>The session id is changed by default on a successful login on some platforms to plug a security attack vector. Change this to true to disable this. It is recommended you do not turn it off. Default value is false.</xs:documentation>
-            </xs:annotation>
+                <xs:annotation>
+                    <xs:documentation>The session id is changed by default on a successful login on some platforms to plug a security attack vector. Change this to true to disable this. It is recommended you do not turn it off. Default value is false.</xs:documentation>
+                </xs:annotation>
         </xs:attribute>
         <xs:attribute name="autodetectBearerOnly" type="xs:boolean" use="optional" default="false">
-            <xs:annotation>
-                <xs:documentation>This should be set to true if your application serves both a web application and web services (e.g. SOAP or REST). It allows you to redirect unauthenticated users of the web application to the Keycloak login page, but send an HTTP 401 status code to unauthenticated SOAP or REST clients instead as they would not understand a redirect to the login page. Keycloak auto-detects SOAP or REST clients based on typical headers like X-Requested-With, SOAPAction or Accept. The default value is false.</xs:documentation>
-            </xs:annotation>
+                <xs:annotation>
+                  <xs:documentation>This should be set to true if your application serves both a web application and web services (e.g. SOAP or REST). It allows you to redirect unauthenticated users of the web application to the Keycloak login page, but send an HTTP 401 status code to unauthenticated SOAP or REST clients instead as they would not understand a redirect to the login page. Keycloak auto-detects SOAP or REST clients based on typical headers like X-Requested-With, SOAPAction or Accept. The default value is false.</xs:documentation>
+                </xs:annotation>
         </xs:attribute>
     </xs:complexType>
 

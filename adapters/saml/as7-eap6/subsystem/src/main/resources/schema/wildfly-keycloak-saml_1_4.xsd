@@ -542,14 +542,14 @@
                 <xs:documentation>Password for the truststore keystore.</xs:documentation>
             </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="socketTimeout" type="xs:long" default="5000">
+        <xs:attribute name="socketTimeout" type="xs:int" default="-1">
             <xs:annotation>
-                <xs:documentation>Defines timeout for socket waiting for data.</xs:documentation>
+                <xs:documentation>Defines timeout for socket waiting for data in milliseconds.</xs:documentation>
             </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="connectionTimeout" type="xs:long" default="5000">
+        <xs:attribute name="connectionTimeout" type="xs:int" default="-1">
             <xs:annotation>
-                <xs:documentation>Defines timeout for establishing the connection with the remote host.</xs:documentation>
+                <xs:documentation>Defines timeout for establishing the connection with the remote host in milliseconds.</xs:documentation>
             </xs:annotation>
         </xs:attribute>
     </xs:complexType>

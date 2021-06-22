@@ -79,13 +79,13 @@ abstract class HttpClientDefinition {
                     .build();
 
     private static final SimpleAttributeDefinition SOCKET_TIMEOUT =
-            new SimpleAttributeDefinitionBuilder(Constants.Model.SOCKET_TIMEOUT, ModelType.LONG, true)
+            new SimpleAttributeDefinitionBuilder(Constants.Model.SOCKET_TIMEOUT, ModelType.INT, true)
                     .setXmlName(Constants.XML.SOCKET_TIMEOUT)
                     .setAllowExpression(true)
                     .build();
 
     private static final SimpleAttributeDefinition CONNECTION_TIMEOUT =
-            new SimpleAttributeDefinitionBuilder(Constants.Model.CONNECTION_TIMEOUT, ModelType.LONG, true)
+            new SimpleAttributeDefinitionBuilder(Constants.Model.CONNECTION_TIMEOUT, ModelType.INT, true)
                     .setXmlName(Constants.XML.CONNECTION_TIMEOUT)
                     .setAllowExpression(true)
                     .build();

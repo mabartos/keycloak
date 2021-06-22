@@ -113,9 +113,9 @@ public class HttpClientBuilder {
     protected long connectionTTL = -1;
     protected TimeUnit connectionTTLUnit = TimeUnit.MILLISECONDS;
     protected HostnameVerifier verifier = null;
-    protected long socketTimeout = -1;
+    protected int socketTimeout = -1;
     protected TimeUnit socketTimeoutUnits = TimeUnit.MILLISECONDS;
-    protected long establishConnectionTimeout = -1;
+    protected int establishConnectionTimeout = -1;
     protected TimeUnit establishConnectionTimeoutUnits = TimeUnit.MILLISECONDS;
     protected HttpHost proxyHost;
 
@@ -127,7 +127,7 @@ public class HttpClientBuilder {
      * @param unit
      * @return
      */
-    public HttpClientBuilder socketTimeout(long timeout, TimeUnit unit) {
+    public HttpClientBuilder socketTimeout(int timeout, TimeUnit unit) {
         this.socketTimeout = timeout;
         this.socketTimeoutUnits = unit;
         return this;
@@ -140,7 +140,7 @@ public class HttpClientBuilder {
      * @param unit
      * @return
      */
-    public HttpClientBuilder establishConnectionTimeout(long timeout, TimeUnit unit) {
+    public HttpClientBuilder establishConnectionTimeout(int timeout, TimeUnit unit) {
         this.establishConnectionTimeout = timeout;
         this.establishConnectionTimeoutUnits = unit;
         return this;
@@ -376,11 +376,11 @@ public class HttpClientBuilder {
 
         configureProxyForAuthServerIfProvided(adapterConfig);
 
-        if (socketTimeout == -1 && adapterConfig.getSocketTimeout() != -1) {
+        if (socketTimeout == -1 && adapterConfig.getSocketTimeout() > 0) {
             socketTimeout(adapterConfig.getSocketTimeout(), TimeUnit.MILLISECONDS);
         }
 
-        if (establishConnectionTimeout == -1 && adapterConfig.getConnectionTimeout() != -1) {
+        if (establishConnectionTimeout == -1 && adapterConfig.getConnectionTimeout() > 0) {
             establishConnectionTimeout(adapterConfig.getConnectionTimeout(), TimeUnit.MILLISECONDS);
         }
 

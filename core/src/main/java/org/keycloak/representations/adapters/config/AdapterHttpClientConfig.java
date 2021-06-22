@@ -75,10 +75,10 @@ public interface AdapterHttpClientConfig {
     /**
      * Returns timeout for socket waiting for data in milliseconds.
      */
-    long getSocketTimeout();
+    int getSocketTimeout();
 
     /**
      * Returns timeout for establishing the connection with the remote host in milliseconds.
      */
-    long getConnectionTimeout();
+    int getConnectionTimeout();
 }
