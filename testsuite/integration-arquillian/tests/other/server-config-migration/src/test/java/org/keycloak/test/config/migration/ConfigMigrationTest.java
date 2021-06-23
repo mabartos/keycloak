@@ -17,6 +17,11 @@
 
 package org.keycloak.test.config.migration;
 
+import org.jboss.dmr.ModelNode;
+import org.jboss.logging.Logger;
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,13 +29,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Deque;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
-import org.jboss.dmr.ModelNode;
-import org.jboss.logging.Logger;
-import org.junit.Assert;
-import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -59,26 +63,37 @@ public class ConfigMigrationTest {
     public void testStandaloneHA() throws IOException {
         compareConfigs("master-standalone-ha.txt", "migrated-standalone-ha.txt");
     }
-    
+
     @Test
     public void testDomain() throws IOException {
-        compareConfigs("master-domain-standalone.txt", "migrated-domain-standalone.txt");
-        compareConfigs("master-domain-clustered.txt", "migrated-domain-clustered.txt");
-        
-        compareConfigs("master-domain-core-service.txt", "migrated-domain-core-service.txt");
-        compareConfigs("master-domain-extension.txt", "migrated-domain-extension.txt");
+        Set<Deque<String>> ignore = new HashSet<>();
+        ignore.add(getModelNode("here", "as", "em"));
+        log.info("HERE");
+        for (Deque<String> strings : ignore) {
+            log.info(strings.toString());
+        }
+
+        compareConfigs("master-domain-standalone.txt", "migrated-domain-standalone.txt", ignore);
+        compareConfigs("master-domain-clustered.txt", "migrated-domain-clustered.txt", ignore);
+
+        compareConfigs("master-domain-core-service.txt", "migrated-domain-core-service.txt", ignore);
+        compareConfigs("master-domain-extension.txt", "migrated-domain-extension.txt", ignore);
 //        compareConfigs("master-domain-interface.txt", "migrated-domain-interface.txt");
     }
-    
+
     private void compareConfigs(String masterConfig, String migratedConfig) throws IOException {
+        compareConfigs(masterConfig, migratedConfig, null);
+    }
+
+    private void compareConfigs(String masterConfig, String migratedConfig, Set<Deque<String>> ignoreMigrated) throws IOException {
         File masterFile = new File(TARGET_DIR, masterConfig);
         Assert.assertTrue(masterFile.exists());
         File migratedFile = new File(TARGET_DIR, migratedConfig);
         Assert.assertTrue(migratedFile.exists());
-        
+
         try (
-            FileInputStream masterStream = new FileInputStream(masterFile);
-            FileInputStream migratedStream = new FileInputStream(migratedFile);
+                FileInputStream masterStream = new FileInputStream(masterFile);
+                FileInputStream migratedStream = new FileInputStream(migratedFile);
         ) {
             // Convert to ModelNode to test equality.
             // A textual diff might have things out of order.
@@ -91,19 +106,46 @@ public class ConfigMigrationTest {
                 if (Boolean.parseBoolean(System.getProperty("get.simple.full.comparison"))) {
                     assertThat(migrated, is(equalTo(master)));
                 }
-                compareConfigsDeeply("root", master, migrated);
+                compareConfigsDeeply("root", master, migrated, ignoreMigrated);
             }
-        } 
+        }
     }
-    
-    private void compareConfigsDeeply(String id, ModelNode master, ModelNode migrated) {
+
+    private Deque<String> getModelNode(String... paths) {
+        return new LinkedList<>(Arrays.asList(paths));
+    }
+
+    private boolean shouldIgnoreKey(Deque<String> navigation, Set<Deque<String>> ignoreMigrated) {
+        Iterator<String> it = navigation.descendingIterator();
+        boolean shouldIgnore = false;
+        Set<Deque<String>> available = ignoreMigrated;
+
+        while (it.hasNext()) {
+            String item = it.next();
+
+            for (Deque<String> av : ignoreMigrated) {
+                String last = av.pollLast();
+
+                if (av.isEmpty()) {
+                    return shouldIgnore;
+                }
+                shouldIgnore = item.equals(last);
+            }
+        }
+
+        return shouldIgnore;
+    }
+
+    private void compareConfigsDeeply(String id, ModelNode master, ModelNode migrated, Set<Deque<String>> ignoreMigrated) {
         nav.add(id);
-        
+
         master.protect();
         migrated.protect();
 
+        if (shouldIgnoreKey(nav, ignoreMigrated)) return;
+
         assertEquals(getMessage(), master.getType(), migrated.getType());
-        
+
         switch (master.getType()) {
             case OBJECT:
                 //check nodes are equal
@@ -114,7 +156,7 @@ public class ConfigMigrationTest {
                 assertThat(getMessage(), migrated.keys(), is(equalTo(master.keys())));
 
                 for (String key : master.keys()) {
-                    compareConfigsDeeply(key, master.get(key), migrated.get(key));
+                    compareConfigsDeeply(key, master.get(key), migrated.get(key), ignoreMigrated);
                 }
                 break;
             case LIST:
@@ -141,10 +183,10 @@ public class ConfigMigrationTest {
                     String navigation = diffNodeInMaster.getType().toString();
                     if (diffNodeInMaster.toString().contains("subsystem")) {
                         navigation = getSubsystemNames(Arrays.asList(diffNodeInMaster)).toString();
-                    } 
-                    compareConfigsDeeply(navigation, 
-                            diffNodeInMaster, 
-                            migratedAsList.get(masterAsList.indexOf(diffNodeInMaster)));
+                    }
+                    compareConfigsDeeply(navigation,
+                            diffNodeInMaster,
+                            migratedAsList.get(masterAsList.indexOf(diffNodeInMaster)), ignoreMigrated);
                 }
                 break;
             case BOOLEAN:

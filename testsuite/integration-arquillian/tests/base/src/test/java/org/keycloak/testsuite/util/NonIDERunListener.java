@@ -36,7 +36,7 @@ public class NonIDERunListener extends RunListener {
 
     @Override
     public void testRunStarted(Description description) throws Exception {
-        disableKeycloakLogging();
+        //disableKeycloakLogging();
     }
 
     private void disableKeycloakLogging() {
