@@ -25,8 +25,10 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashSet;
@@ -66,14 +68,17 @@ public class ConfigMigrationTest {
 
     @Test
     public void testDomain() throws IOException {
-        Set<Deque<String>> ignore = new HashSet<>();
-        ignore.add(getModelNode("root"));
-
+        final Set<List<String>> ignore = new HashSet<>();
+        ignore.add(Collections.singletonList("root"));
+//reference
         compareConfigs("master-domain-standalone.txt", "migrated-domain-standalone.txt", ignore);
+        log.info("here");
+        log.info(ignore);
+
         compareConfigs("master-domain-clustered.txt", "migrated-domain-clustered.txt", ignore);
 
-        compareConfigs("master-domain-core-service.txt", "migrated-domain-core-service.txt", ignore);
-        compareConfigs("master-domain-extension.txt", "migrated-domain-extension.txt", ignore);
+        /* compareConfigs("master-domain-core-service.txt", "migrated-domain-core-service.txt", ignore);
+        compareConfigs("master-domain-extension.txt", "migrated-domain-extension.txt", ignore);*/
 //        compareConfigs("master-domain-interface.txt", "migrated-domain-interface.txt");
     }
 
@@ -81,7 +86,7 @@ public class ConfigMigrationTest {
         compareConfigs(masterConfig, migratedConfig, null);
     }
 
-    private void compareConfigs(String masterConfig, String migratedConfig, Set<Deque<String>> ignoreMigrated) throws IOException {
+    private void compareConfigs(String masterConfig, String migratedConfig, final Set<List<String>> ignoreMigrated) throws IOException {
         File masterFile = new File(TARGET_DIR, masterConfig);
         Assert.assertTrue(masterFile.exists());
         File migratedFile = new File(TARGET_DIR, migratedConfig);
@@ -102,83 +107,60 @@ public class ConfigMigrationTest {
                 if (Boolean.parseBoolean(System.getProperty("get.simple.full.comparison"))) {
                     assertThat(migrated, is(equalTo(master)));
                 }
-                Set<Deque<String>> alreadyMigrated = new HashSet<>();
-                compareConfigsDeeply("root", master, migrated, ignoreMigrated, alreadyMigrated);
+                if (ignoreMigrated != null) {
+                    log.info(ignoreMigrated.toString());
+                } else {
+                    log.info("null");
+                }
+                compareConfigsDeeply("root", master, migrated, ignoreMigrated);
             }
         }
     }
 
     private Deque<String> getModelNode(String... paths) {
-        return new LinkedList<>(Arrays.asList(paths));
+        return new ArrayDeque<>(Arrays.asList(paths));
     }
 
-    private boolean checkIgnoreKey(Set<Deque<String>> ignoreMigrated, Set<Deque<String>> alreadyIgnore) {
-        if (ignoreMigrated == null) {
-            return false;
-        }
+    private boolean checkUp(final Set<List<String>> ignoreMigrated) {
+        if (ignoreMigrated == null || ignoreMigrated.isEmpty()) return false;
 
-        Iterator<String> it = nav.descendingIterator();
-        final Set<Deque<String>> available = new HashSet<>(ignoreMigrated);
-
-        while (it.hasNext()) {
-            final String item = it.next();
-
-            for (Deque<String> av : available) {
-                final String first = av.pollLast();
-
-                if (item.equals(first)) {
-                    if (av.isEmpty()) {
-                        alreadyIgnore.add(nav);
-                        log.infof("Ignoring navigation path '%s'", nav.toString());
-                        return true;
-                    }
-                } else {
-                    available.remove(av);
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean checkUp(Set<Deque<String>> ignoreMigrated) {
-        boolean strictMode = false;
+        final Set<List<String>> available = new HashSet<>(ignoreMigrated);
+        log.info(nav.toString());
         for (String s : nav) {
-            for (Deque<String> item : ignoreMigrated) {
-                String sd = item.getFirst();
-                if (s.equals(sd)) {
-                    strictMode = true;
-                    item.pollFirst();
+            Iterator<List<String>> it = available.iterator();
+            while (it.hasNext()) {
+                List<String> d = it.next();
 
-                    if (item.isEmpty()) {
+                String df = d.stream().findFirst().orElse(null);
+                if (s.equals(df)) {
+
+                    String first = d.stream().findFirst().orElse(null);
+                    d.remove(first);
+                    if (d.isEmpty()) {
+                        log.infof("ss Ignoring navigation path '%s'", nav.toString());
                         return true;
                     }
                 } else {
-                    if (strictMode) {
-                        ignoreMigrated.remove(item);
-                        strictMode = false;
-                    }
+                    it.remove();
                 }
             }
         }
-    }
-
-    boolean shouldIgnoreKey(Set<Deque<String>> ignoreMigrated, Set<Deque<String>> alreadyMigrated) {
-        if (checkIgnoreKey(ignoreMigrated, alreadyMigrated) || alreadyMigrated.contains(nav)) {
-            return true;
-        }
-
+        ignoreMigrated.forEach(f -> {
+            log.info(f.toString());
+            log.info(f.isEmpty());
+        });
         return false;
     }
 
-    private void compareConfigsDeeply(String id, ModelNode master, ModelNode migrated, Set<Deque<String>> ignoreMigrated, Set<Deque<String>> alreadyMigrated) {
+    private void compareConfigsDeeply(String id, ModelNode master, ModelNode migrated, final Set<List<String>> ignoreMigrated) {
         nav.add(id);
+
+        if (checkUp(ignoreMigrated)) {
+            return;
+        }
 
         master.protect();
         migrated.protect();
-
-        if (shouldIgnoreKey(nav, ignoreMigrated, alreadyMigrated)) {
-            return;
-        }
 
         assertEquals(getMessage(), master.getType(), migrated.getType());
 
@@ -192,7 +174,7 @@ public class ConfigMigrationTest {
                 assertThat(getMessage(), migrated.keys(), is(equalTo(master.keys())));
 
                 for (String key : master.keys()) {
-                    compareConfigsDeeply(key, master.get(key), migrated.get(key), ignoreMigrated, alreadyMigrated);
+                    compareConfigsDeeply(key, master.get(key), migrated.get(key), ignoreMigrated);
                 }
                 break;
             case LIST:
@@ -223,8 +205,7 @@ public class ConfigMigrationTest {
                     compareConfigsDeeply(navigation,
                             diffNodeInMaster,
                             migratedAsList.get(masterAsList.indexOf(diffNodeInMaster)),
-                            ignoreMigrated,
-                            alreadyMigrated);
+                            ignoreMigrated);
                 }
                 break;
             case BOOLEAN:
