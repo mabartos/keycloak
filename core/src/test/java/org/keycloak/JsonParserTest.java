@@ -113,8 +113,8 @@ public class JsonParserTest {
         Assert.assertTrue(config.isAllowAnyHostname());
         Assert.assertEquals(100, config.getCorsMaxAge());
         Assert.assertEquals(200, config.getConnectionPoolSize());
-        Assert.assertEquals(6000, config.getSocketTimeout());
-        Assert.assertEquals(7000, config.getConnectionTimeout());
+        Assert.assertEquals(6000L, config.getSocketTimeout());
+        Assert.assertEquals(7000L, config.getConnectionTimeout());
     }
 
     static Pattern substitution = Pattern.compile("\\$\\{([^}]+)\\}");

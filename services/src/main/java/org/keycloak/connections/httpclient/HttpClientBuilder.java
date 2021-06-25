@@ -101,9 +101,9 @@ public class HttpClientBuilder {
     protected long maxConnectionIdleTime = 900000;
     protected TimeUnit maxConnectionIdleTimeUnit = TimeUnit.MILLISECONDS;
     protected HostnameVerifier verifier = null;
-    protected int socketTimeout = -1;
+    protected long socketTimeout = -1;
     protected TimeUnit socketTimeoutUnits = TimeUnit.MILLISECONDS;
-    protected int establishConnectionTimeout = -1;
+    protected long establishConnectionTimeout = -1;
     protected TimeUnit establishConnectionTimeoutUnits = TimeUnit.MILLISECONDS;
     protected boolean disableCookies = false;
     protected ProxyMappings proxyMappings;
@@ -116,7 +116,8 @@ public class HttpClientBuilder {
      * @param unit
      * @return
      */
-    public HttpClientBuilder socketTimeout(int timeout, TimeUnit unit) {
+    public HttpClientBuilder socketTimeout(long timeout, TimeUnit unit)
+    {
         this.socketTimeout = timeout;
         this.socketTimeoutUnits = unit;
         return this;
@@ -129,7 +130,8 @@ public class HttpClientBuilder {
      * @param unit
      * @return
      */
-    public HttpClientBuilder establishConnectionTimeout(int timeout, TimeUnit unit) {
+    public HttpClientBuilder establishConnectionTimeout(long timeout, TimeUnit unit)
+    {
         this.establishConnectionTimeout = timeout;
         this.establishConnectionTimeoutUnits = unit;
         return this;
