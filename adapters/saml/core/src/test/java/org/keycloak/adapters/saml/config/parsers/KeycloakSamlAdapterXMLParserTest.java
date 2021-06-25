@@ -19,6 +19,7 @@ package org.keycloak.adapters.saml.config.parsers;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 
 import org.junit.Test;
 import org.keycloak.adapters.saml.config.IDP;
@@ -92,7 +93,7 @@ public class KeycloakSamlAdapterXMLParserTest {
         // check keep dom assertion is TRUE
         KeycloakSamlAdapter config = parseKeycloakSamlAdapterConfig("keycloak-saml-keepdomassertion.xml", KeycloakSamlAdapter.class);
         assertThat(config, Matchers.notNullValue());
-        assertThat(config.getSps().size(), is(1));
+        assertThat(config.getSps(), hasSize(1));
         SP sp = config.getSps().get(0);
         assertThat(sp.isKeepDOMAssertion(), is(true));
     }
@@ -118,7 +119,7 @@ public class KeycloakSamlAdapterXMLParserTest {
         KeycloakSamlAdapter config = parseKeycloakSamlAdapterConfig("keycloak-saml.xml", KeycloakSamlAdapter.class);
 
         assertThat(config, notNullValue());
-        assertThat(config.getSps().size(), is(1));
+        assertThat(config.getSps(), hasSize(1));
 
         SP sp = config.getSps().get(0);
         assertThat(sp.getEntityID(), is("sp"));
@@ -128,7 +129,7 @@ public class KeycloakSamlAdapterXMLParserTest {
         assertThat(sp.isIsPassive(), is(true));
         assertThat(sp.isAutodetectBearerOnly(), is(false));
         assertThat(sp.isKeepDOMAssertion(), is(false));
-        assertThat(sp.getKeys().size(), is(2));
+        assertThat(sp.getKeys(), hasSize(2));
 
         Key signing = sp.getKeys().get(0);
         assertThat(signing.isSigning(), is(true));
@@ -146,7 +147,7 @@ public class KeycloakSamlAdapterXMLParserTest {
         assertThat(encryption.getPublicKeyPem(), is("public pem"));
         assertThat(sp.getPrincipalNameMapping().getPolicy(), is("FROM_ATTRIBUTE"));
         assertThat(sp.getPrincipalNameMapping().getAttributeName(), is("attribute"));
-        assertThat(sp.getRoleAttributes().size(), is(1));
+        assertThat(sp.getRoleAttributes(), hasSize(1));
         assertThat(sp.getRoleAttributes(), Matchers.contains("member"));
 
         IDP idp = sp.getIdp();
@@ -167,7 +168,7 @@ public class KeycloakSamlAdapterXMLParserTest {
         assertThat(idp.getSingleLogoutService().getPostBindingUrl(), is("posturl"));
         assertThat(idp.getSingleLogoutService().getRedirectBindingUrl(), is("redirecturl"));
 
-        assertThat(idp.getKeys().size(), is(1));
+        assertThat(idp.getKeys(), hasSize(1));
         assertThat(idp.getKeys().get(0).isSigning(), is(true));
         assertThat(idp.getKeys().get(0).getCertificatePem(), is("cert pem"));
     }
@@ -184,11 +185,11 @@ public class KeycloakSamlAdapterXMLParserTest {
     public void testXmlParserMultipleSigningKeys() throws Exception {
         KeycloakSamlAdapter config = parseKeycloakSamlAdapterConfig("keycloak-saml-multiple-signing-keys.xml", KeycloakSamlAdapter.class);
         assertThat(config, notNullValue());
-        assertThat(config.getSps().size(), is(1));
+        assertThat(config.getSps(), hasSize(1));
         SP sp = config.getSps().get(0);
         IDP idp = sp.getIdp();
 
-        assertThat(idp.getKeys().size(), is(4));
+        assertThat(idp.getKeys(), hasSize(4));
         for (int i = 0; i < 4; i++) {
             Key key = idp.getKeys().get(i);
             assertThat(key.isSigning(), is(true));
@@ -200,7 +201,7 @@ public class KeycloakSamlAdapterXMLParserTest {
     public void testXmlParserHttpClientSettings() throws Exception {
         KeycloakSamlAdapter config = parseKeycloakSamlAdapterConfig("keycloak-saml-wth-http-client-settings.xml", KeycloakSamlAdapter.class);
         assertThat(config, notNullValue());
-        assertThat(config.getSps().size(), is(1));
+        assertThat(config.getSps(), hasSize(1));
         SP sp = config.getSps().get(0);
         IDP idp = sp.getIdp();
 
@@ -213,8 +214,8 @@ public class KeycloakSamlAdapterXMLParserTest {
         assertThat(idp.getHttpClientConfig().getConnectionPoolSize(), is(42));
         assertThat(idp.getHttpClientConfig().isAllowAnyHostname(), is(true));
         assertThat(idp.getHttpClientConfig().isDisableTrustManager(), is(true));
-        assertThat(idp.getHttpClientConfig().getSocketTimeout(), is(6000));
-        assertThat(idp.getHttpClientConfig().getConnectionTimeout(), is(7000));
+        assertThat(idp.getHttpClientConfig().getSocketTimeout(), is(6000L));
+        assertThat(idp.getHttpClientConfig().getConnectionTimeout(), is(7000L));
     }
 
     @Test

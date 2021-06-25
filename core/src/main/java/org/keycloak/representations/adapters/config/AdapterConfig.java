@@ -91,9 +91,9 @@ public class AdapterConfig extends BaseAdapterConfig implements AdapterHttpClien
     protected boolean verifyTokenAudience = false;
 
     @JsonProperty("socket-timeout")
-    protected int socketTimeout = -1;
+    protected long socketTimeout = -1;
     @JsonProperty("connection-timeout")
-    protected int connectionTimeout = -1;
+    protected long connectionTimeout = -1;
 
     /**
      * The Proxy url to use for requests to the auth-server, configurable via the adapter config property {@code proxy-url}.
@@ -294,19 +294,19 @@ public class AdapterConfig extends BaseAdapterConfig implements AdapterHttpClien
         this.verifyTokenAudience = verifyTokenAudience;
     }
 
-    public int getSocketTimeout() {
+    public long getSocketTimeout() {
         return socketTimeout;
     }
 
-    public void setSocketTimeout(int socketTimeout) {
+    public void setSocketTimeout(long socketTimeout) {
         this.socketTimeout = socketTimeout;
     }
 
-    public int getConnectionTimeout() {
+    public long getConnectionTimeout() {
         return connectionTimeout;
     }
 
-    public void setConnectionTimeout(int connectionTimeout) {
+    public void setConnectionTimeout(long connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
     }
 }

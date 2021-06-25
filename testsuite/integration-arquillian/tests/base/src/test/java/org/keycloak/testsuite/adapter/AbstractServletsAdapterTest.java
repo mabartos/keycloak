@@ -47,6 +47,7 @@ import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 public abstract class AbstractServletsAdapterTest extends AbstractAdapterTest {
 
     protected static final String DEFAULT_ADAPTER_CONFIG = "keycloak.json";
+    private static final ObjectMapper mapper = new ObjectMapper(new SystemPropertiesJsonParserFactory());
 
     protected static WebArchive servletDeploymentMultiTenant(String name, Class... servletClasses) {
         WebArchive servletDeployment = servletDeployment(name, servletClasses);
@@ -257,7 +258,7 @@ public abstract class AbstractServletsAdapterTest extends AbstractAdapterTest {
         if (configJSON == null) return null;
 
         try {
-            return getSystemPropertiesObjectMapper().readValue(configJSON, AdapterConfig.class);
+            return mapper.readValue(configJSON, AdapterConfig.class);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -281,21 +282,12 @@ public abstract class AbstractServletsAdapterTest extends AbstractAdapterTest {
             adapterConfig.accept(config);
 
             try {
-                getSystemPropertiesObjectMapper().writeValue(file, config);
+                mapper.writeValue(file, config);
             } catch (IOException e) {
                 throw new RuntimeException("Cannot write adapter configuration", e);
             }
         }
         return file;
-    }
-
-    /**
-     * Custom Object mapper
-     */
-    private static ObjectMapper getSystemPropertiesObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper(new SystemPropertiesJsonParserFactory());
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
-        return mapper;
     }
 
 }
