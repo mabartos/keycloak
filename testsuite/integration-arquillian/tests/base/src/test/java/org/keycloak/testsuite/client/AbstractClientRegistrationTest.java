@@ -55,6 +55,7 @@ public abstract class AbstractClientRegistrationTest extends AbstractKeycloakTes
 
     @Override
     public void addTestRealms(List<RealmRepresentation> testRealms) {
+
         RealmRepresentation rep = new RealmRepresentation();
         rep.setEnabled(true);
         rep.setId(REALM_NAME);

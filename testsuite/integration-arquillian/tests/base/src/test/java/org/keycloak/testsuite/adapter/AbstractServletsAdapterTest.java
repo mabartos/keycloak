@@ -17,19 +17,21 @@
 
 package org.keycloak.testsuite.adapter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.asset.UrlAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
 import org.keycloak.representations.adapters.config.AdapterConfig;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.adapter.filter.AdapterActionsFilter;
 import org.keycloak.testsuite.util.DroneUtils;
+import org.keycloak.testsuite.util.OsUtils;
+import org.keycloak.testsuite.util.serialize.JSONFileUtil;
+import org.keycloak.testsuite.util.serialize.XMLFileUtil;
 import org.keycloak.testsuite.utils.arquillian.DeploymentArchiveProcessorUtils;
 import org.keycloak.testsuite.utils.io.IOUtil;
-import org.keycloak.util.SystemPropertiesJsonParserFactory;
 
 import javax.ws.rs.core.UriBuilder;
 import java.io.File;
@@ -39,14 +41,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.junit.Assert;
 import static org.keycloak.testsuite.auth.page.AuthRealm.DEMO;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 
 public abstract class AbstractServletsAdapterTest extends AbstractAdapterTest {
 
     protected static final String DEFAULT_ADAPTER_CONFIG = "keycloak.json";
-    private static final ObjectMapper mapper = new ObjectMapper(new SystemPropertiesJsonParserFactory());
+    /*private static final ObjectMapper mapper = new ObjectMapper(new SystemPropertiesJsonParserFactory());*/
+
+    private static final Consumer<AdapterConfig> WINDOWS_ADAPTER_CONFIG = config -> {
+        config.setSocketTimeout(10_000);
+        config.setConnectionTimeout(10_000);
+    };
 
     protected static WebArchive servletDeploymentMultiTenant(String name, Class... servletClasses) {
         WebArchive servletDeployment = servletDeployment(name, servletClasses);
@@ -90,7 +96,13 @@ public abstract class AbstractServletsAdapterTest extends AbstractAdapterTest {
         URL keycloakJSON = AbstractServletsAdapterTest.class.getResource(webInfPath + adapterConfigName);
         URL webXML = AbstractServletsAdapterTest.class.getResource(webInfPath + "web.xml");
 
-        File configFile = updateJsonConfigFile(keycloakJSON, adapterConfig);
+        final JSONFileUtil<AdapterConfig> fileUtil = new JSONFileUtil<>(keycloakJSON, AdapterConfig.class);
+
+        if (OsUtils.isWindows()) {
+            fileUtil.updateFile(WINDOWS_ADAPTER_CONFIG);
+        }
+
+        File configFile = fileUtil.updateFile(adapterConfig);
 
         WebArchive deployment = ShrinkWrap.create(WebArchive.class, name + ".war")
                 .addClasses(servletClasses)
@@ -130,6 +142,12 @@ public abstract class AbstractServletsAdapterTest extends AbstractAdapterTest {
 
         URL keycloakSAMLConfig = AbstractServletsAdapterTest.class.getResource(webInfPath + "keycloak-saml.xml");
         Assert.assertNotNull("keycloak-saml.xml should be in " + webInfPath, keycloakSAMLConfig);
+
+        final XMLFileUtil<AdapterConfig> fileUtil = new XMLFileUtil<>(keycloakSAMLConfig, AdapterConfig.class);
+
+        if (OsUtils.isWindows()) {
+            fileUtil.updateFile(WINDOWS_ADAPTER_CONFIG);
+        }
 
         URL webXML = AbstractServletsAdapterTest.class.getResource(baseSAMLPath + webXMLPath);
         Assert.assertNotNull("web.xml should be in " + baseSAMLPath + webXMLPath, keycloakSAMLConfig);
@@ -245,47 +263,5 @@ public abstract class AbstractServletsAdapterTest extends AbstractAdapterTest {
         waitForPageToLoad();
         String pageSource = DroneUtils.getCurrentDriver().getPageSource();
         log.info(pageSource);
-    }
-
-    /**
-     * Get adapter configuration from file
-     *
-     * @param configJSON URL of configuration file
-     * @return adapter configuration
-     */
-    protected static AdapterConfig getConfig(URL configJSON) {
-        if (configJSON == null) return null;
-
-        try {
-            return mapper.readValue(configJSON, AdapterConfig.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Update configuration file for servlet
-     *
-     * @param configFile    URL of configuration file
-     * @param adapterConfig consumer with required changes in configuration file
-     * @return updated configuration file
-     */
-    protected static File updateJsonConfigFile(URL configFile, Consumer<AdapterConfig> adapterConfig) {
-        if (configFile == null) return null;
-
-        File file = new File(configFile.getFile());
-        AdapterConfig config = getConfig(configFile);
-
-        if (config != null && adapterConfig != null) {
-            adapterConfig.accept(config);
-
-            try {
-                mapper.writeValue(file, config);
-            } catch (IOException e) {
-                throw new RuntimeException("Cannot write adapter configuration", e);
-            }
-        }
-        return file;
     }
 }

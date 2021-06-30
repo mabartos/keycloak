@@ -3,14 +3,26 @@
  *
  * Licensed under the Eclipse Public License version 1.0, available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.keycloak.testsuite.cli;
+package org.keycloak.testsuite.util;
 
 /**
  * @author <a href="mailto:marko.strukelj@gmail.com">Marko Strukelj</a>
  */
 public class OsUtils {
 
-    public static OsArch determineOSAndArch() {
+    public static boolean isWindows() {
+        return determineOSAndArch().isWindows();
+    }
+
+    public static boolean isLinux() {
+        return determineOSAndArch().isLinux();
+    }
+
+    public static boolean isMac() {
+        return determineOSAndArch().isMac();
+    }
+
+    private static OsArch determineOSAndArch() {
         String os = System.getProperty("os.name").toLowerCase();
         String arch = System.getProperty("os.arch");
 

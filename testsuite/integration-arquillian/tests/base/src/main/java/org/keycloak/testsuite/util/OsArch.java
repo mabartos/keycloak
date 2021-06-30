@@ -3,7 +3,7 @@
  *
  * Licensed under the Eclipse Public License version 1.0, available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.keycloak.testsuite.cli;
+package org.keycloak.testsuite.util;
 
 /**
  * @author <a href="mailto:marko.strukelj@gmail.com">Marko Strukelj</a>
@@ -38,5 +38,13 @@ public class OsArch {
 
     public boolean isWindows() {
         return "win32".equals(os);
+    }
+
+    public boolean isLinux() {
+        return "linux".equals(os);
+    }
+
+    public boolean isMac() {
+        return "mac".equals(os);
     }
 }

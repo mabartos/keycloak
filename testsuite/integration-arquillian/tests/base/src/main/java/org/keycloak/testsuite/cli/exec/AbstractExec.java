@@ -1,8 +1,7 @@
 package org.keycloak.testsuite.cli.exec;
 
 import org.keycloak.client.admin.cli.util.OsUtil;
-import org.keycloak.testsuite.cli.OsArch;
-import org.keycloak.testsuite.cli.OsUtils;
+import org.keycloak.testsuite.util.OsUtils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -23,8 +22,6 @@ import java.util.stream.Collectors;
 public abstract class AbstractExec {
 
     public static final String WORK_DIR = System.getProperty("user.dir");
-
-    public static final OsArch OS_ARCH = OsUtils.determineOSAndArch();
 
     private long waitTimeout = 30000;
 
@@ -84,7 +81,7 @@ public abstract class AbstractExec {
     public void executeAsync() {
 
         try {
-            if (OS_ARCH.isWindows()) {
+            if (OsUtils.isWindows()) {
                 String cmd = (env != null ? "set " + env + " & " : "") + fixPath(getCmd()) + " " + fixQuotes(argsLine);
                 System.out.println("Executing: cmd.exe /c " + cmd);
                 process = Runtime.getRuntime().exec(new String[]{"cmd.exe", "/c", cmd}, null, new File(workDir));
