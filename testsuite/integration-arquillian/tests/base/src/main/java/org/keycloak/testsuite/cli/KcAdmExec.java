@@ -2,6 +2,7 @@ package org.keycloak.testsuite.cli;
 
 import org.keycloak.testsuite.cli.exec.AbstractExec;
 import org.keycloak.testsuite.cli.exec.AbstractExecBuilder;
+import org.keycloak.testsuite.util.OsUtils;
 
 import java.io.InputStream;
 
@@ -12,7 +13,7 @@ public class KcAdmExec extends AbstractExec {
 
     public static final String WORK_DIR = System.getProperty("user.dir") + "/target/containers/keycloak-client-tools";
 
-    public static final String CMD = OS_ARCH.isWindows() ? "kcadm.bat" : "kcadm.sh";
+    public static final String CMD = OsUtils.isWindows() ? "kcadm.bat" : "kcadm.sh";
 
     private KcAdmExec(String workDir, String argsLine, InputStream stdin) {
         this(workDir, argsLine, null, stdin);

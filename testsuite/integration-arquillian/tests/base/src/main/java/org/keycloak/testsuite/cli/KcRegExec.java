@@ -2,6 +2,7 @@ package org.keycloak.testsuite.cli;
 
 import org.keycloak.testsuite.cli.exec.AbstractExec;
 import org.keycloak.testsuite.cli.exec.AbstractExecBuilder;
+import org.keycloak.testsuite.util.OsUtils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -25,7 +26,7 @@ public class KcRegExec extends AbstractExec {
 
     public static final String WORK_DIR = System.getProperty("user.dir") + "/target/containers/keycloak-client-tools";
 
-    public static final String CMD = OS_ARCH.isWindows() ? "kcreg.bat" : "kcreg.sh";
+    public static final String CMD = OsUtils.isWindows() ? "kcreg.bat" : "kcreg.sh";
 
     private KcRegExec(String workDir, String argsLine, InputStream stdin) {
         this(workDir, argsLine, null, stdin);

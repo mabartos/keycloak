@@ -18,6 +18,7 @@ public class XMLFileUtil<T> extends SerializedFileUtil<T> {
         try {
             JAXBContext context = JAXBContext.newInstance(clazz);
             Unmarshaller unm = context.createUnmarshaller();
+            unm.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,true);
             return (T) unm.unmarshal(file);
         } catch (JAXBException e) {
             e.printStackTrace();

@@ -27,13 +27,17 @@ import org.keycloak.representations.adapters.config.AdapterConfig;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.adapter.filter.AdapterActionsFilter;
 import org.keycloak.testsuite.util.DroneUtils;
-import org.keycloak.testsuite.util.OsUtils;
 import org.keycloak.testsuite.util.serialize.JSONFileUtil;
-import org.keycloak.testsuite.util.serialize.XMLFileUtil;
 import org.keycloak.testsuite.utils.arquillian.DeploymentArchiveProcessorUtils;
 import org.keycloak.testsuite.utils.io.IOUtil;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.ws.rs.core.UriBuilder;
+import javax.xml.parsers.DocumentBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -98,9 +102,9 @@ public abstract class AbstractServletsAdapterTest extends AbstractAdapterTest {
 
         final JSONFileUtil<AdapterConfig> fileUtil = new JSONFileUtil<>(keycloakJSON, AdapterConfig.class);
 
-        if (OsUtils.isWindows()) {
+        //if (OsUtils.isWindows()) {
             fileUtil.updateFile(WINDOWS_ADAPTER_CONFIG);
-        }
+        //}
 
         File configFile = fileUtil.updateFile(adapterConfig);
 
@@ -143,11 +147,11 @@ public abstract class AbstractServletsAdapterTest extends AbstractAdapterTest {
         URL keycloakSAMLConfig = AbstractServletsAdapterTest.class.getResource(webInfPath + "keycloak-saml.xml");
         Assert.assertNotNull("keycloak-saml.xml should be in " + webInfPath, keycloakSAMLConfig);
 
-        final XMLFileUtil<AdapterConfig> fileUtil = new XMLFileUtil<>(keycloakSAMLConfig, AdapterConfig.class);
+        //final XMLFileUtil<AdapterConfig> fileUtil = new XMLFileUtil<>(keycloakSAMLConfig, AdapterConfig.class);
 
-        if (OsUtils.isWindows()) {
-            fileUtil.updateFile(WINDOWS_ADAPTER_CONFIG);
-        }
+        //if (OsUtils.isWindows()) {
+        //fileUtil.updateFile(WINDOWS_ADAPTER_CONFIG);
+        //}
 
         URL webXML = AbstractServletsAdapterTest.class.getResource(baseSAMLPath + webXMLPath);
         Assert.assertNotNull("web.xml should be in " + baseSAMLPath + webXMLPath, keycloakSAMLConfig);
@@ -159,9 +163,66 @@ public abstract class AbstractServletsAdapterTest extends AbstractAdapterTest {
 
         // if a role-mappings.properties file exist in WEB-INF, include it in the deployment.
         URL roleMappingsConfig = AbstractServletsAdapterTest.class.getResource(webInfPath + "role-mappings.properties");
-        if(roleMappingsConfig != null) {
+        if (roleMappingsConfig != null) {
             deployment.addAsWebInfResource(roleMappingsConfig, "role-mappings.properties");
         }
+
+        DocumentBuilder builder = null;
+        try {
+            Document doc = IOUtil.loadXML(keycloakSAMLConfig.openStream());
+            doc.getDocumentElement().normalize();
+
+
+            NodeList list = doc.getElementsByTagName("IDP");
+            System.out.println("LIST");
+            System.out.println(list.getLength());
+            for (int i = 0; i < list.getLength(); i++) {
+                Node node = list.item(i);
+                Element element = (Element) node;
+                NodeList clients = element.getElementsByTagName("HttpClient");
+                if (clients.getLength() == 0) {
+                    System.out.println("LENGTH 0");
+                    //create http and append
+                    Element client = doc.createElement("HttpClient");
+                    System.out.println("APPEND");
+
+                    IOUtil.appendChildInDocument(doc, "keycloak-saml-adapter/SP/IDP", client);
+                } else {
+                    System.out.println("SET SOCKET");
+                    IOUtil.setDocElementAttributeValue(doc, "HttpClient", "socketTimeout", "10000");
+                }
+            }
+/*
+
+            assert list.getLength() > 0;
+            Node IDP = list.item(0);
+
+            NodeList node = doc.getElementsByTagName("HttpClient");
+            Node client = null;
+            if (node == null || node.getLength() == 0) {
+                Element element = doc.createElement("HttpClient");
+                System.err.println("HTTP CLIENT IS NULL");
+                element.setAttribute("socketTimeout", "3000");
+                client = element.getFirstChild();
+            } else {
+                client = node.item(0);
+                assert client != null;
+                NamedNodeMap asd = client.getAttributes();
+                if (asd != null) {
+                    for (int i = 0; i < asd.getLength(); i++) {
+                        System.out.println("SDSDSD");
+                        System.out.println(asd.item(0));
+                    }
+                }
+            }
+            IDP.appendChild(client);
+
+            IOUtil.appendChildInDocument(doc, );*/
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         String webXMLContent;
         try {

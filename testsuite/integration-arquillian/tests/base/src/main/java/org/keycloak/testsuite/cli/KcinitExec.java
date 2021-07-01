@@ -2,6 +2,7 @@ package org.keycloak.testsuite.cli;
 
 import org.keycloak.testsuite.cli.exec.AbstractExec;
 import org.keycloak.testsuite.cli.exec.AbstractExecBuilder;
+import org.keycloak.testsuite.util.OsUtils;
 
 import java.io.InputStream;
 
@@ -12,7 +13,7 @@ public class KcinitExec extends AbstractExec {
 
     public static final String WORK_DIR = System.getProperty("user.dir") + "/target";
 
-    public static final String CMD = OS_ARCH.isWindows() ? "kcinit" : "kcinit";
+    public static final String CMD = OsUtils.isWindows() ? "kcinit" : "kcinit";
 
     private KcinitExec(String workDir, String argsLine, InputStream stdin) {
         this(workDir, argsLine, null, stdin);
