@@ -304,6 +304,11 @@ public class HttpClientBuilder {
             if (establishConnectionTimeout > -1) {
                 HttpConnectionParams.setConnectionTimeout(params, (int) establishConnectionTimeoutUnits.toMillis(establishConnectionTimeout));
             }
+
+            if (connectionTTL > -1) {
+                params.setParameter(KcCoreConnectionPNames.CONNECTION_TTL, connectionTTLUnit.toMillis(connectionTTL));
+            }
+
             DefaultHttpClient client = new DefaultHttpClient(cm, params);
 
             if (disableCookieCache) {

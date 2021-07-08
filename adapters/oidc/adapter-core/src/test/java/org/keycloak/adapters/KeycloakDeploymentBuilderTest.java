@@ -113,10 +113,12 @@ public class KeycloakDeploymentBuilderTest {
         HttpClient client = deployment.getClient();
         assertThat(client, CoreMatchers.notNullValue());
 
-        long socketTimeout = client.getParams().getIntParameter(CoreConnectionPNames.SO_TIMEOUT, -2);
-        long connectionTimeout = client.getParams().getIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, -2);
+        long socketTimeout = client.getParams().getIntParameter(KcCoreConnectionPNames.SO_TIMEOUT, -2);
+        long connectionTimeout = client.getParams().getIntParameter(KcCoreConnectionPNames.CONNECTION_TIMEOUT, -2);
+        long connectionTTL = client.getParams().getLongParameter(KcCoreConnectionPNames.CONNECTION_TTL, -2L);
 
         assertThat(socketTimeout, CoreMatchers.is(2000L));
         assertThat(connectionTimeout, CoreMatchers.is(6000L));
+        assertThat(connectionTTL, CoreMatchers.is(300L));
     }
 }
