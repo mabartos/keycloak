@@ -17,10 +17,16 @@
 
 package org.keycloak.testsuite.util;
 
+import com.gargoylesoftware.htmlunit.WebClient;
+import org.jboss.arquillian.drone.webdriver.htmlunit.DroneHtmlUnitDriver;
 import org.jboss.arquillian.graphene.context.GrapheneContext;
 import org.jboss.arquillian.graphene.page.Page;
+import org.jboss.logging.Logger;
+import org.keycloak.testsuite.drone.KeycloakDronePostSetup;
 import org.keycloak.testsuite.page.AbstractPage;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +39,7 @@ import java.util.Queue;
  */
 public final class DroneUtils {
     private static Queue<WebDriver> driverQueue = new LinkedList<>();
+    private static final Logger log = org.jboss.logging.Logger.getLogger(DroneUtils.class);
 
     public static WebDriver getCurrentDriver() {
         if (driverQueue.isEmpty()) {
@@ -112,4 +119,15 @@ public final class DroneUtils {
         DroneUtils.removeWebDriver();
     }
 
+    /**
+     * HtmlUnit does not work very well with JS and it's recommended to use this settings.
+     */
+    public static void disableJsValidationHtmlUnit(WebDriver driver) {
+        if (driver instanceof HtmlUnitDriver) {
+            log.debug("Disable validation of JS for HtmlUnit driver.");
+            WebClient client = ((DroneHtmlUnitDriver) driver).getWebClient();
+            client.getOptions().setThrowExceptionOnScriptError(false);
+            client.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        }
+    }
 }

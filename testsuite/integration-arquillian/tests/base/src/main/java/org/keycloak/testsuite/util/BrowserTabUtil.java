@@ -17,11 +17,8 @@
 
 package org.keycloak.testsuite.util;
 
-import com.gargoylesoftware.htmlunit.WebClient;
-import org.jboss.arquillian.drone.webdriver.htmlunit.DroneHtmlUnitDriver;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,13 +48,7 @@ public class BrowserTabUtil implements AutoCloseable {
             throw new RuntimeException("WebDriver must be instance of JavascriptExecutor");
         }
 
-        // HtmlUnit doesn't work very well with JS and it's recommended to use this settings.
-        // HtmlUnit validates all scripts and then fails. It turned off the validation.
-        if (driver instanceof HtmlUnitDriver) {
-            WebClient client = ((DroneHtmlUnitDriver) driver).getWebClient();
-            client.getOptions().setThrowExceptionOnScriptError(false);
-            client.getOptions().setThrowExceptionOnFailingStatusCode(false);
-        }
+        DroneUtils.disableJsValidationHtmlUnit(driver);
 
         tabs = new ArrayList<>(driver.getWindowHandles());
     }

@@ -28,6 +28,7 @@ import org.jboss.arquillian.graphene.proxy.GrapheneProxyInstance;
 import org.jboss.arquillian.graphene.proxy.Interceptor;
 import org.jboss.arquillian.graphene.proxy.InvocationContext;
 import org.jboss.logging.Logger;
+import org.keycloak.testsuite.util.DroneUtils;
 import org.keycloak.testsuite.util.WaitUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
@@ -54,6 +55,9 @@ public class KeycloakDronePostSetup {
         if (drone instanceof WebDriver && !(drone instanceof AppiumDriver)) {
             WebDriver webDriver = (WebDriver) drone;
             configureDriverSettings(webDriver);
+
+            // KEYCLOAK-18643
+            DroneUtils.disableJsValidationHtmlUnit(webDriver);
         } else {
             log.warn("Drone is not instanceof WebDriver for a desktop browser! Drone is " + drone);
         }
