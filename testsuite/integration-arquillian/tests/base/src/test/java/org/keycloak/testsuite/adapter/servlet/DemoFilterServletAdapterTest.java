@@ -46,7 +46,7 @@ public class DemoFilterServletAdapterTest extends DemoServletsAdapterTest {
     @Ignore(value = "Can't test because of the way filter works")
     public void testNullBearerTokenCustomErrorPage() {
     }
-    
+
     @Test
     @Override
     @Ignore(value = "Don't need to test this because HttpServletRequest.authenticate "

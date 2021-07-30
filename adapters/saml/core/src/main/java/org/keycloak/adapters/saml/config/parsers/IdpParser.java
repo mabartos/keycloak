@@ -75,10 +75,14 @@ public class IdpParser extends AbstractKeycloakSamlAdapterV1Parser<IDP> {
                 break;
 
             case ALLOWED_CLOCK_SKEW:
-                String timeUnitString = StaxParserUtil.getAttributeValueRP(elementDetail, KeycloakSamlAdapterV1QNames.ATTR_UNIT);
+                final String timeUnitString = StaxParserUtil.getAttributeValueRP(elementDetail, KeycloakSamlAdapterV1QNames.ATTR_UNIT);
                 target.setAllowedClockSkewUnit(timeUnitString == null ? TimeUnit.SECONDS : TimeUnit.valueOf(timeUnitString));
                 StaxParserUtil.advance(xmlEventReader);
-                target.setAllowedClockSkew(Integer.parseInt(StaxParserUtil.getElementTextRP(xmlEventReader)));
+
+                final String allowedClockSkew = StaxParserUtil.getElementTextRP(xmlEventReader);
+                if (!allowedClockSkew.isEmpty()) {
+                    target.setAllowedClockSkew(Integer.parseInt(allowedClockSkew));
+                }
                 break;
         }
     }

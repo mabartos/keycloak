@@ -19,19 +19,32 @@ package org.keycloak.testsuite.adapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
+import org.hamcrest.CoreMatchers;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.asset.UrlAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
+import org.keycloak.adapters.cloned.AdapterHttpClientConfig;
+import org.keycloak.adapters.saml.config.IDP;
+import org.keycloak.adapters.saml.config.KeycloakSamlAdapter;
+import org.keycloak.adapters.saml.config.parsers.KeycloakSamlAdapterParser;
 import org.keycloak.representations.adapters.config.AdapterConfig;
 import org.keycloak.representations.idm.RealmRepresentation;
+import org.keycloak.saml.processing.core.util.JAXBUtil;
 import org.keycloak.testsuite.adapter.filter.AdapterActionsFilter;
 import org.keycloak.testsuite.util.DroneUtils;
 import org.keycloak.testsuite.utils.arquillian.DeploymentArchiveProcessorUtils;
 import org.keycloak.testsuite.utils.io.IOUtil;
 import org.keycloak.util.SystemPropertiesJsonParserFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import javax.ws.rs.core.UriBuilder;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -39,9 +52,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.junit.Assert;
+import static javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.keycloak.testsuite.auth.page.AuthRealm.DEMO;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
+import static org.keycloak.testsuite.utils.io.IOUtil.loadXML;
 
 public abstract class AbstractServletsAdapterTest extends AbstractAdapterTest {
 
@@ -135,6 +150,40 @@ public abstract class AbstractServletsAdapterTest extends AbstractAdapterTest {
 
         URL keycloakSAMLConfig = AbstractServletsAdapterTest.class.getResource(webInfPath + "keycloak-saml.xml");
         Assert.assertNotNull("keycloak-saml.xml should be in " + webInfPath, keycloakSAMLConfig);
+        try {
+           /* KeycloakSamlAdapterParser parser = KeycloakSamlAdapterParser.getInstance();
+            KeycloakSamlAdapter adap = (KeycloakSamlAdapter) parser.parse(keycloakSAMLConfig.openStream());*/
+
+
+/*
+            System.out.println("HERE");
+            File file = new File(keycloakSAMLConfig.toURI());
+
+            SP sp = new SP();
+            sp.setEntityID("entity");
+
+            XmlMapper xmlMapper = new XmlMapper();
+            String xml = xmlMapper.writerWithDefaultPrettyPrinter().writeValueAsString(adap);
+            System.out.println("XML");
+            System.out.println(xml);
+
+            IOUtil.loadXML(new ByteArrayInputStream(xml.getBytes()));*/
+
+
+            //assertThat(true, CoreMatchers.is(false));
+            //xmlMapper.writeValue(file, adap);
+
+            //adap = (KeycloakSamlAdapter) parser.parse(keycloakSAMLConfig.openStream());
+
+           /* System.out.println("ENTITIES");
+            for (SP sp1 : adap.getSps()) {
+                System.out.println(sp1.getEntityID());
+            }*/
+
+
+        } catch (Exception e) {
+            throw new RuntimeException("CANNOT MARSHALL", e);
+        }
 
         URL webXML = AbstractServletsAdapterTest.class.getResource(baseSAMLPath + webXMLPath);
         Assert.assertNotNull("web.xml should be in " + baseSAMLPath + webXMLPath, keycloakSAMLConfig);
@@ -143,10 +192,68 @@ public abstract class AbstractServletsAdapterTest extends AbstractAdapterTest {
                 .addClasses(servletClasses)
                 .addAsWebInfResource(jbossDeploymentStructure, JBOSS_DEPLOYMENT_STRUCTURE_XML);
         addSameSiteUndertowHandlers(deployment);
+        try {
+          /*  Document doc = loadXML(keycloakSAMLConfig.openStream());
+
+            NodeList list = doc.getElementsByTagName("*");
+            System.out.println("XML Elements: ");
+            for (int i = 0; i < list.getLength(); i++) {
+                // Get element
+                Element element = (Element) list.item(i);
+                System.out.println(element.getNodeName());
+            }
+
+            System.out.println("LOAD");
+            String HttpClient = IOUtil.getElementTextContent(doc, "keycloak-saml-adapter/SP/IDP/HttpClient");
+            System.out.println("NULL?");
+            System.out.println(HttpClient == null);*/
+
+
+            //IOUtil.setDocElementAttributeValue(doc, KeycloakSamlAdapterV1QNames.HTTP_CLIENT.getQName().getLocalPart(), KeycloakSamlAdapterV1QNames.ATTR_SOCKET_TIMEOUT.getQName().getLocalPart(), "15000");
+
+
+            KeycloakSamlAdapterParser parser = KeycloakSamlAdapterParser.getInstance();
+            KeycloakSamlAdapter adap = (KeycloakSamlAdapter) parser.parse(keycloakSAMLConfig.openStream());
+            adap.getSps().stream().map(f -> (IDP.HttpClientConfig) f.getIdp().getHttpClientConfig()).forEach(f -> {
+                f.setConnectionTTL(15000L);
+                f.setSocketTimeout(15000L);
+            });
+            String xml;
+
+            JAXBContext context = JAXBUtil.getJAXBContext(KeycloakSamlAdapter.class);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(JAXB_FORMATTED_OUTPUT, true);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            marshaller.marshal(adap, stream);
+            xml = stream.toString();
+            System.out.println(xml);
+            marshaller.marshal(adap, new File(keycloakSAMLConfig.getFile()));
+
+
+           /* XmlMapper xmlMapper = new XmlMapper();
+            xml = xmlMapper.writerWithDefaultPrettyPrinter().writeValueAsString(adap);
+            System.out.println("XML");*/
+
+
+            //assertThat(true, CoreMatchers.is(false));
+          /*  Document doc2 = loadXML(new ByteArrayInputStream(xml.getBytes()));
+            assertThat(doc2, CoreMatchers.notNullValue());*/
+
+           /* list = doc2.getElementsByTagName("*");
+            System.out.println("XML Elements 2: ");
+            for (int i = 0; i < list.getLength(); i++) {
+                // Get element
+                Element element = (Element) list.item(i);
+                System.out.println(element.getNodeName());
+            }*/
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // if a role-mappings.properties file exist in WEB-INF, include it in the deployment.
         URL roleMappingsConfig = AbstractServletsAdapterTest.class.getResource(webInfPath + "role-mappings.properties");
-        if(roleMappingsConfig != null) {
+        if (roleMappingsConfig != null) {
             deployment.addAsWebInfResource(roleMappingsConfig, "role-mappings.properties");
         }
 
@@ -172,6 +279,7 @@ public abstract class AbstractServletsAdapterTest extends AbstractAdapterTest {
         if (keystore != null) {
             deployment.addAsWebInfResource(keystore, "keystore.jks");
         }
+
 
         addContextXml(deployment, name);
 

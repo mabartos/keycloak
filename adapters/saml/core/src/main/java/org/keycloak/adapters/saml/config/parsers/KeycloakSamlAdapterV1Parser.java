@@ -42,7 +42,14 @@ public class KeycloakSamlAdapterV1Parser extends AbstractKeycloakSamlAdapterV1Pa
 
     @Override
     protected KeycloakSamlAdapter instantiateElement(XMLEventReader xmlEventReader, StartElement element) throws ParsingException {
-        return new KeycloakSamlAdapter();
+        KeycloakSamlAdapter adapter = new KeycloakSamlAdapter();
+
+        final String xmlns = StaxParserUtil.getAttributeValue(element, KeycloakSamlAdapterV1QNames.XMLNS);
+        adapter.setXmlns(xmlns == null ? KeycloakSamlAdapterV1QNames.NS_URI : xmlns);
+       /* adapter.setXmlnsXsi(StaxParserUtil.getAttributeValue(element, KeycloakSamlAdapterV1QNames.XMLNS_XSI));
+        adapter.setSchemaLocation(StaxParserUtil.getAttributeValue(element, KeycloakSamlAdapterV1QNames.XSI_SCHEMA_LOCATION));*/
+
+        return adapter;
     }
 
     @Override

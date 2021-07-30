@@ -17,25 +17,87 @@
 
 package org.keycloak.adapters.saml.config;
 
+import org.keycloak.adapters.cloned.AdapterHttpClientConfig;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
 import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.keycloak.adapters.cloned.AdapterHttpClientConfig;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ALLOWED_CLOCK_SKEW;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_ALLOW_ANY_HOSTNAME;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_ASSERTION_CONSUMER_SERVICE_URL;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_BINDING_URL;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_CLIENT_KEYSTORE;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_CLIENT_KEYSTORE_PASSWORD;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_CONNECTION_POOL_SIZE;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_CONNECTION_TIMEOUT;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_CONNECTION_TTL;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_DISABLE_TRUST_MANAGER;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_ENTITY_ID;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_METADATA_URL;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_POST_BINDING_URL;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_PROXY_URL;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_REDIRECT_BINDING_URL;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_REQUEST_BINDING;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_RESPONSE_BINDING;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_SIGNATURES_REQUIRED;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_SIGNATURE_ALGORITHM;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_SIGNATURE_CANONICALIZATION_METHOD;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_SIGN_REQUEST;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_SIGN_RESPONSE;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_SOCKET_TIMEOUT;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_TRUSTSTORE;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_TRUSTSTORE_PASSWORD;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_UNIT;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_VALIDATE_ASSERTION_SIGNATURE;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_VALIDATE_REQUEST_SIGNATURE;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.ATTR_VALIDATE_RESPONSE_SIGNATURE;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.HTTP_CLIENT;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.KEY;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.KEYS;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.SINGLE_LOGOUT_SERVICE;
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.SINGLE_SIGN_ON_SERVICE;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@XmlRootElement(name = KeycloakSamlAdapterNames.IDP)
+@XmlAccessorType(XmlAccessType.FIELD)
 public class IDP implements Serializable {
+
+    @XmlRootElement(name = SINGLE_SIGN_ON_SERVICE)
+    @XmlAccessorType(XmlAccessType.FIELD)
     public static class SingleSignOnService implements Serializable {
+        @XmlAttribute(name = ATTR_SIGN_REQUEST)
         private Boolean signRequest;
+
+        @XmlAttribute(name = ATTR_VALIDATE_RESPONSE_SIGNATURE)
         private Boolean validateResponseSignature;
+
+        @XmlAttribute(name = ATTR_REQUEST_BINDING)
         private String requestBinding;
+
+        @XmlAttribute(name = ATTR_RESPONSE_BINDING)
         private String responseBinding;
+
+        @XmlAttribute(name = ATTR_BINDING_URL)
         private String bindingUrl;
+
+        @XmlAttribute(name = ATTR_ASSERTION_CONSUMER_SERVICE_URL)
         private String assertionConsumerServiceUrl;
+
+        @XmlAttribute(name = ATTR_VALIDATE_ASSERTION_SIGNATURE)
         private Boolean validateAssertionSignature;
+
+        @XmlAttribute(name = ATTR_SIGNATURES_REQUIRED)
         private boolean signaturesRequired = false;
 
         public boolean isSignRequest() {
@@ -99,15 +161,34 @@ public class IDP implements Serializable {
         }
     }
 
+    @XmlRootElement(name = SINGLE_LOGOUT_SERVICE)
+    @XmlAccessorType(XmlAccessType.FIELD)
     public static class SingleLogoutService implements Serializable {
+        @XmlAttribute(name = ATTR_SIGN_REQUEST)
         private Boolean signRequest;
+
+        @XmlAttribute(name = ATTR_SIGN_RESPONSE)
         private Boolean signResponse;
+
+        @XmlAttribute(name = ATTR_VALIDATE_REQUEST_SIGNATURE)
         private Boolean validateRequestSignature;
+
+        @XmlAttribute(name = ATTR_VALIDATE_RESPONSE_SIGNATURE)
         private Boolean validateResponseSignature;
+
+        @XmlAttribute(name = ATTR_REQUEST_BINDING)
         private String requestBinding;
+
+        @XmlAttribute(name = ATTR_RESPONSE_BINDING)
         private String responseBinding;
+
+        @XmlAttribute(name = ATTR_POST_BINDING_URL)
         private String postBindingUrl;
+
+        @XmlAttribute(name = ATTR_REDIRECT_BINDING_URL)
         private String redirectBindingUrl;
+
+        @XmlAttribute(name = ATTR_SIGNATURES_REQUIRED)
         private boolean signaturesRequired = false;
 
         public boolean isSignRequest() {
@@ -179,19 +260,41 @@ public class IDP implements Serializable {
         }
     }
 
+    @XmlRootElement(name = HTTP_CLIENT)
+    @XmlAccessorType(XmlAccessType.FIELD)
     public static class HttpClientConfig implements AdapterHttpClientConfig {
-
+        @XmlAttribute(name = ATTR_TRUSTSTORE)
         private String truststore;
+
+        @XmlAttribute(name = ATTR_TRUSTSTORE_PASSWORD)
         private String truststorePassword;
+
+        @XmlAttribute(name = ATTR_CLIENT_KEYSTORE)
         private String clientKeystore;
+
+        @XmlAttribute(name = ATTR_CLIENT_KEYSTORE_PASSWORD)
         private String clientKeystorePassword;
+
+        @XmlAttribute(name = ATTR_ALLOW_ANY_HOSTNAME)
         private boolean allowAnyHostname;
+
+        @XmlAttribute(name = ATTR_DISABLE_TRUST_MANAGER)
         private boolean disableTrustManager;
+
+        @XmlAttribute(name = ATTR_CONNECTION_POOL_SIZE)
         private int connectionPoolSize;
+
+        @XmlAttribute(name = ATTR_PROXY_URL)
         private String proxyUrl;
+
+        @XmlAttribute(name = ATTR_SOCKET_TIMEOUT)
         private long socketTimeout;
+
+        @XmlAttribute(name = ATTR_CONNECTION_TIMEOUT)
         private long connectionTimeout;
-        private long connectionTTL;
+
+        @XmlAttribute(name = ATTR_CONNECTION_TTL)
+        private long connectionTtl;
 
         @Override
         public String getTruststore() {
@@ -281,11 +384,11 @@ public class IDP implements Serializable {
 
         @Override
         public long getConnectionTTL() {
-            return connectionTTL;
+            return connectionTtl;
         }
 
-        public void setConnectionTTL(long connectionTTL) {
-            this.connectionTTL = connectionTTL;
+        public void setConnectionTTL(long connectionTtl) {
+            this.connectionTtl = connectionTtl;
         }
 
         public void setProxyUrl(String proxyUrl) {
@@ -293,16 +396,64 @@ public class IDP implements Serializable {
         }
     }
 
+    @XmlRootElement(name = ALLOWED_CLOCK_SKEW)
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class AllowedClockSkew {
+        @XmlAttribute(name = ATTR_UNIT)
+        private String unit;
+
+        @XmlValue
+        private Integer value;
+
+        public TimeUnit getUnit() {
+            return TimeUnit.valueOf(unit);
+        }
+
+        public void setUnit(TimeUnit unit) {
+            this.unit = unit.toString();
+        }
+
+        public Integer getValue() {
+            return value;
+        }
+
+        public void setValue(Integer value) {
+            this.value = value;
+        }
+    }
+
+    @XmlAttribute(name = ATTR_ENTITY_ID)
     private String entityID;
+
+    @XmlAttribute(name = ATTR_SIGNATURE_ALGORITHM)
     private String signatureAlgorithm;
+
+    @XmlAttribute(name = ATTR_SIGNATURE_CANONICALIZATION_METHOD)
     private String signatureCanonicalizationMethod;
+
+    @XmlElement(name = SINGLE_SIGN_ON_SERVICE)
     private SingleSignOnService singleSignOnService;
+
+    @XmlElement(name = SINGLE_LOGOUT_SERVICE)
     private SingleLogoutService singleLogoutService;
+
+    @XmlElementWrapper(name = KEYS)
+    @XmlElement(name = KEY)
     private List<Key> keys;
+
+    @XmlElement(name = HTTP_CLIENT, type = HttpClientConfig.class)
     private AdapterHttpClientConfig httpClientConfig = new HttpClientConfig();
+
+    @XmlAttribute(name = ATTR_SIGNATURES_REQUIRED)
     private boolean signaturesRequired = false;
+
+    @XmlAttribute(name = ATTR_METADATA_URL)
     private String metadataUrl;
-    private Integer allowedClockSkew;
+
+    @XmlElement(name = ALLOWED_CLOCK_SKEW)
+    private AllowedClockSkew allowedClockSkew = new AllowedClockSkew();
+
+    @XmlElement(name = ATTR_UNIT)
     private TimeUnit allowedClockSkewUnit;
 
     public String getEntityID() {
@@ -384,18 +535,18 @@ public class IDP implements Serializable {
     }
 
     public Integer getAllowedClockSkew() {
-        return allowedClockSkew;
+        return allowedClockSkew.getValue();
     }
 
     public void setAllowedClockSkew(Integer allowedClockSkew) {
-        this.allowedClockSkew = allowedClockSkew;
+        this.allowedClockSkew.setValue(allowedClockSkew);
     }
 
     public TimeUnit getAllowedClockSkewUnit() {
-        return allowedClockSkewUnit;
+        return allowedClockSkew.getUnit();
     }
 
     public void setAllowedClockSkewUnit(TimeUnit allowedClockSkewUnit) {
-        this.allowedClockSkewUnit = allowedClockSkewUnit;
+        allowedClockSkew.setUnit(allowedClockSkewUnit);
     }
 }

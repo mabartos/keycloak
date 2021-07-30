@@ -193,7 +193,7 @@ public class AppServerTestEnricher {
             throw new RuntimeException(e);
         }
     }
-
+    
     public void checkBeforeDeployment(@Observes(precedence = 1) BeforeClass event) {
         Arrays.stream(event.getTestClass().getMethods(BeforeDeployment.class)).forEach(method -> {
             try {

@@ -45,8 +45,7 @@
                     requestBinding="POST"
                     responseBinding="POST"
                     postBindingUrl="http://localhost:8080/auth/realms/demo/protocol/saml"
-                    redirectBindingUrl="http://localhost:8080/auth/realms/demo/protocol/saml"
-                    />
+                    redirectBindingUrl="http://localhost:8080/auth/realms/demo/protocol/saml"/>
             <Keys>
                 <Key signing="true">
                     <KeyStore resource="/WEB-INF/keystore.jks" password="store123">

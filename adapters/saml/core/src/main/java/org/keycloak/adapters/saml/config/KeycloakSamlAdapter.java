@@ -17,15 +17,38 @@
 
 package org.keycloak.adapters.saml.config;
 
+import com.sun.xml.txw2.annotation.XmlNamespace;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.KEYCLOAK_SAML_ADAPTER;
+import static org.keycloak.adapters.saml.config.parsers.KeycloakSamlAdapterV1QNames.NS_URI;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@XmlRootElement(name = KEYCLOAK_SAML_ADAPTER)
+@XmlAccessorType(XmlAccessType.FIELD)
 public class KeycloakSamlAdapter implements Serializable {
+
+    @XmlAttribute(name = KeycloakSamlAdapterNames.XMLNS)
+    private String xmlns;
+
+    /*@XmlAttribute(name = KeycloakSamlAdapterNames.XMLNS_XSI)
+    private String xmlnsXsi="http://www.w3.org/2001/XMLSchema-instance";
+
+    @XmlAttribute(name = KeycloakSamlAdapterNames.XSI_SCHEMA_LOCATION)
+    private String schemaLocation="urn:keycloak:saml:adapter http://www.keycloak.org/schema/keycloak_saml_adapter_1_12.xsd";*/
+
+    @XmlElement(name = KeycloakSamlAdapterNames.SP)
     private final List<SP> sps = new LinkedList<>();
 
     public List<SP> getSps() {
@@ -36,4 +59,27 @@ public class KeycloakSamlAdapter implements Serializable {
         sps.add(sp);
     }
 
+    public String getXmlns() {
+        return xmlns;
+    }
+
+    public void setXmlns(String xmlns) {
+        this.xmlns = xmlns;
+    }
+
+   /* public String getXmlnsXsi() {
+        return xmlnsXsi;
+    }
+
+    public void setXmlnsXsi(String xmlnsXsi) {
+        this.xmlnsXsi = xmlnsXsi;
+    }
+
+    public String getSchemaLocation() {
+        return schemaLocation;
+    }
+
+    public void setSchemaLocation(String schemaLocation) {
+        this.schemaLocation = schemaLocation;
+    }*/
 }
