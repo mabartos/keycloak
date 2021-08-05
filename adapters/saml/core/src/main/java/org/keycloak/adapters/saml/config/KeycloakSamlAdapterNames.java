@@ -72,8 +72,13 @@ public interface KeycloakSamlAdapterNames {
     String ATTR_CONNECTION_TTL = "connectionTtl";
 
     String XMLNS = "xmlns";
-    String XMLNS_XSI = "xmlns:xsi";
-    String XSI_SCHEMA_LOCATION = "xsi:schemaLocation";
+    String XSI = "xsi";
+    String SCHEMA_LOCATION = "schemaLocation";
+
+    String XMLNS_XSI = XMLNS + ":" + XSI;
+    String XSI_SCHEMA_LOCATION = XSI + ":" + SCHEMA_LOCATION;
+
+    String XML_SCHEMA_DEFAULT = "http://www.w3.org/2001/XMLSchema-instance";
 
     String UNKNOWN_ELEMENT = "";
 }

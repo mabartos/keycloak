@@ -97,12 +97,13 @@ public enum KeycloakSamlAdapterV1QNames implements HasQName {
     ATTR_CONNECTION_TTL(null, KeycloakSamlAdapterNames.ATTR_CONNECTION_TTL),
 
     XMLNS(KeycloakSamlAdapterNames.XMLNS),
-   /* XMLNS_XSI(KeycloakSamlAdapterNames.XMLNS_XSI),
-    XSI_SCHEMA_LOCATION(KeycloakSamlAdapterNames.XSI_SCHEMA_LOCATION),*/
+    XMLNS_XSI(KeycloakSamlAdapterNames.XMLNS_XSI),
+    XSI_SCHEMA_LOCATION(KeycloakSamlAdapterNames.XSI_SCHEMA_LOCATION),
 
     UNKNOWN_ELEMENT(KeycloakSamlAdapterNames.UNKNOWN_ELEMENT);
 
     public static final String NS_URI = "urn:keycloak:saml:adapter";
+    public static final String XMLNS_XSI_DEFAULT = "http://www.w3.org/2001/XMLSchema-instance";
 
     private final QName qName;
 

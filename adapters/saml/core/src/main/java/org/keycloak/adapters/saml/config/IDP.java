@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
 import java.io.Serializable;
 import java.util.List;
@@ -97,7 +98,7 @@ public class IDP implements Serializable {
         @XmlAttribute(name = ATTR_VALIDATE_ASSERTION_SIGNATURE)
         private Boolean validateAssertionSignature;
 
-        @XmlAttribute(name = ATTR_SIGNATURES_REQUIRED)
+        @XmlTransient
         private boolean signaturesRequired = false;
 
         public boolean isSignRequest() {
@@ -117,7 +118,7 @@ public class IDP implements Serializable {
         }
 
         public boolean isValidateAssertionSignature() {
-            return validateAssertionSignature == null ? false : validateAssertionSignature;
+            return validateAssertionSignature != null && validateAssertionSignature;
         }
 
         public void setValidateAssertionSignature(Boolean validateAssertionSignature) {
@@ -188,7 +189,7 @@ public class IDP implements Serializable {
         @XmlAttribute(name = ATTR_REDIRECT_BINDING_URL)
         private String redirectBindingUrl;
 
-        @XmlAttribute(name = ATTR_SIGNATURES_REQUIRED)
+        @XmlTransient
         private boolean signaturesRequired = false;
 
         public boolean isSignRequest() {
@@ -450,7 +451,7 @@ public class IDP implements Serializable {
     @XmlAttribute(name = ATTR_METADATA_URL)
     private String metadataUrl;
 
-    @XmlElement(name = ALLOWED_CLOCK_SKEW)
+    @XmlElement(name = ALLOWED_CLOCK_SKEW, defaultValue = "0")
     private AllowedClockSkew allowedClockSkew = new AllowedClockSkew();
 
     @XmlElement(name = ATTR_UNIT)

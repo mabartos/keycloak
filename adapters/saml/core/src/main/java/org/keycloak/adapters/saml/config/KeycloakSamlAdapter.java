@@ -17,8 +17,6 @@
 
 package org.keycloak.adapters.saml.config;
 
-import com.sun.xml.txw2.annotation.XmlNamespace;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -29,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames.KEYCLOAK_SAML_ADAPTER;
-import static org.keycloak.adapters.saml.config.parsers.KeycloakSamlAdapterV1QNames.NS_URI;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -42,11 +39,11 @@ public class KeycloakSamlAdapter implements Serializable {
     @XmlAttribute(name = KeycloakSamlAdapterNames.XMLNS)
     private String xmlns;
 
-    /*@XmlAttribute(name = KeycloakSamlAdapterNames.XMLNS_XSI)
-    private String xmlnsXsi="http://www.w3.org/2001/XMLSchema-instance";
+    @XmlAttribute(name = KeycloakSamlAdapterNames.XMLNS_XSI)
+    private String xmlnsXsi;
 
     @XmlAttribute(name = KeycloakSamlAdapterNames.XSI_SCHEMA_LOCATION)
-    private String schemaLocation="urn:keycloak:saml:adapter http://www.keycloak.org/schema/keycloak_saml_adapter_1_12.xsd";*/
+    private String schemaLocation;
 
     @XmlElement(name = KeycloakSamlAdapterNames.SP)
     private final List<SP> sps = new LinkedList<>();
@@ -67,7 +64,7 @@ public class KeycloakSamlAdapter implements Serializable {
         this.xmlns = xmlns;
     }
 
-   /* public String getXmlnsXsi() {
+    public String getXmlnsXsi() {
         return xmlnsXsi;
     }
 
@@ -81,5 +78,5 @@ public class KeycloakSamlAdapter implements Serializable {
 
     public void setSchemaLocation(String schemaLocation) {
         this.schemaLocation = schemaLocation;
-    }*/
+    }
 }

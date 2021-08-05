@@ -44,10 +44,17 @@ import java.util.function.Consumer;
 
 import org.hamcrest.Matchers;
 import org.keycloak.saml.processing.core.util.JAXBUtil;
+import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import javax.xml.validation.ValidatorHandler;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -254,6 +261,21 @@ public class KeycloakSamlAdapterXMLParserTest {
 
         JAXBContext context = JAXBUtil.getJAXBContext(KeycloakSamlAdapter.class);
         Marshaller marshaller = context.createMarshaller();
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        String path = adapter.getSchemaLocation().split(" ")[1];
+        int index = path.indexOf("/schema/");
+        String localSchema = path.substring(index);
+        marshaller.setProperty(Marshaller.JAXB_NO_NAMESPACE_SCHEMA_LOCATION, localSchema);
+
+        InputStream schemaIS = getClass().getResourceAsStream(localSchema);
+        Schema schema = null;
+        try {
+            schema = factory.newSchema(new StreamSource(schemaIS));
+        } catch (SAXException e) {
+            e.printStackTrace();
+        }
+
+        marshaller.setSchema(schema);
         marshaller.setProperty(JAXB_FORMATTED_OUTPUT, true);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         marshaller.marshal(adapter, stream);
@@ -293,6 +315,15 @@ public class KeycloakSamlAdapterXMLParserTest {
         assertThat(config.getSps(), hasSize(1));
         SP sp = config.getSps().get(0);
         IDP idp = sp.getIdp();
+        Consumer consumer = new Consumer() {
+            @Override
+            public void accept(Object o) {
+
+            }
+        };
+
+
+        updateFile("keycloak-saml-wth-http-client-settings.xml", config, consumer);
 
         assertThat(idp.getHttpClientConfig(), notNullValue());
         assertThat(idp.getHttpClientConfig().getClientKeystore(), is("ks"));

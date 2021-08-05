@@ -18,11 +18,15 @@
 package org.keycloak.adapters.saml.config.parsers;
 
 import org.keycloak.adapters.saml.config.KeycloakSamlAdapter;
+import org.keycloak.adapters.saml.config.KeycloakSamlAdapterNames;
 import org.keycloak.saml.common.exceptions.ParsingException;
 import org.keycloak.saml.common.util.StaxParserUtil;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartElement;
+import java.util.Iterator;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -44,10 +48,15 @@ public class KeycloakSamlAdapterV1Parser extends AbstractKeycloakSamlAdapterV1Pa
     protected KeycloakSamlAdapter instantiateElement(XMLEventReader xmlEventReader, StartElement element) throws ParsingException {
         KeycloakSamlAdapter adapter = new KeycloakSamlAdapter();
 
-        final String xmlns = StaxParserUtil.getAttributeValue(element, KeycloakSamlAdapterV1QNames.XMLNS);
+        final String xmlns = getNamespaceURI(element, KeycloakSamlAdapterNames.XMLNS);
         adapter.setXmlns(xmlns == null ? KeycloakSamlAdapterV1QNames.NS_URI : xmlns);
-       /* adapter.setXmlnsXsi(StaxParserUtil.getAttributeValue(element, KeycloakSamlAdapterV1QNames.XMLNS_XSI));
-        adapter.setSchemaLocation(StaxParserUtil.getAttributeValue(element, KeycloakSamlAdapterV1QNames.XSI_SCHEMA_LOCATION));*/
+
+        final String xmlnsXsi = element.getNamespaceURI(KeycloakSamlAdapterNames.XSI);
+        adapter.setXmlnsXsi(xmlnsXsi == null ? KeycloakSamlAdapterV1QNames.XMLNS_XSI_DEFAULT : xmlnsXsi);
+
+        final QName schemaLocationQName = new QName(xmlnsXsi, KeycloakSamlAdapterNames.SCHEMA_LOCATION, KeycloakSamlAdapterNames.XSI);
+        final String schemaLocation = StaxParserUtil.getAttributeValue(element, schemaLocationQName);
+        adapter.setSchemaLocation(schemaLocation == null ? KeycloakSamlAdapterV1QNames.NS_URI : schemaLocation);
 
         return adapter;
     }
@@ -63,5 +72,16 @@ public class KeycloakSamlAdapterV1Parser extends AbstractKeycloakSamlAdapterV1Pa
                 // Ignore unknown tags
                 StaxParserUtil.bypassElementBlock(xmlEventReader);
         }
+    }
+
+    private static String getNamespaceURI(StartElement element, String prefix) {
+        Iterator iterator = element.getNamespaces();
+        while (iterator.hasNext()) {
+            Namespace namespace = (Namespace) iterator.next();
+            if (namespace.getName().getPrefix().equals(prefix)) {
+                return namespace.getNamespaceURI();
+            }
+        }
+        return null;
     }
 }
