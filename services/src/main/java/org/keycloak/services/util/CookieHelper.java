@@ -25,6 +25,9 @@ import org.keycloak.common.util.ServerCookie;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -40,6 +43,7 @@ import static org.keycloak.common.util.ServerCookie.SameSiteAttributeValue;
 public class CookieHelper {
 
     public static final String LEGACY_COOKIE = "_LEGACY";
+    public static final String DEFAULT_ENCODING = "UTF-8";
 
     private static final Logger logger = Logger.getLogger(CookieHelper.class);
 
@@ -55,13 +59,15 @@ public class CookieHelper {
      * @param httpOnly
      * @param sameSite
      */
-    public static void addCookie(String name, String value, String path, String domain, String comment, int maxAge, boolean secure, boolean httpOnly, SameSiteAttributeValue sameSite) {
+    public static void addCookie(String name, String value, String path, String domain, String comment, int maxAge, boolean secure, boolean httpOnly, SameSiteAttributeValue sameSite, String encoding) {
         SameSiteAttributeValue sameSiteParam = sameSite;
         // when expiring a cookie we shouldn't set the sameSite attribute; if we set e.g. SameSite=None when expiring a cookie, the new cookie (with maxAge == 0)
         // might be rejected by the browser in some cases resulting in leaving the original cookie untouched; that can even prevent user from accessing their application
         if (maxAge == 0) {
             sameSite = null;
         }
+
+        value = encodeValue(value, encoding);
 
         boolean secure_sameSite = sameSite == SameSiteAttributeValue.NONE || secure; // when SameSite=None, Secure attribute must be set
 
@@ -73,7 +79,7 @@ public class CookieHelper {
 
         // a workaround for browser in older Apple OSs – browsers ignore cookies with SameSite=None
         if (sameSiteParam == SameSiteAttributeValue.NONE) {
-            addCookie(name + LEGACY_COOKIE, value, path, domain, comment, maxAge, secure, httpOnly, null);
+            addCookie(name + LEGACY_COOKIE, value, path, domain, comment, maxAge, secure, httpOnly, encoding);
         }
     }
 
@@ -89,9 +95,16 @@ public class CookieHelper {
      * @param httpOnly
      */
     public static void addCookie(String name, String value, String path, String domain, String comment, int maxAge, boolean secure, boolean httpOnly) {
-        addCookie(name, value, path, domain, comment, maxAge, secure, httpOnly, null);
+        addCookie(name, value, path, domain, comment, maxAge, secure, httpOnly, null, null);
     }
 
+    public static void addCookie(String name, String value, String path, String domain, String comment, int maxAge, boolean secure, boolean httpOnly, SameSiteAttributeValue sameSite) {
+        addCookie(name, value, path, domain, comment, maxAge, secure, httpOnly, sameSite, null);
+    }
+
+    public static void addCookie(String name, String value, String path, String domain, String comment, int maxAge, boolean secure, boolean httpOnly, String encoding) {
+        addCookie(name, value, path, domain, comment, maxAge, secure, httpOnly, null, encoding);
+    }
 
     public static Set<String> getCookieValue(String name) {
         Set<String> ret = getInternalCookieValue(name);
@@ -105,16 +118,15 @@ public class CookieHelper {
 
     private static Set<String> getInternalCookieValue(String name) {
         HttpHeaders headers = Resteasy.getContextData(HttpHeaders.class);
-        Set<String> cookiesVal = new HashSet<>();
 
         // check for cookies in the request headers
-        cookiesVal.addAll(parseCookie(headers.getRequestHeaders().getFirst(HttpHeaders.COOKIE), name));
+        Set<String> cookiesVal = new HashSet<>(parseCookie(headers.getRequestHeaders().getFirst(HttpHeaders.COOKIE), name));
 
         // get cookies from the cookie field
         Cookie cookie = headers.getCookies().get(name);
         if (cookie != null) {
             logger.debugv("{0} cookie found in the cookie field", name);
-            cookiesVal.add(cookie.getValue());
+            cookiesVal.add(decodeValue(cookie.getValue()));
         }
 
 
@@ -132,7 +144,7 @@ public class CookieHelper {
         for (Cookie cookie : CookieParser.parseCookies(header)) {
             if (name.equals(cookie.getName())) {
                 logger.debugv("{0} cookie found in the request header", name);
-                values.add(cookie.getValue());
+                values.add(decodeValue(cookie.getValue()));
             }
         }
 
@@ -143,11 +155,34 @@ public class CookieHelper {
         Cookie cookie = cookies.get(name);
         if (cookie != null) {
             return cookie;
-        }
-        else {
+        } else {
             String legacy = name + LEGACY_COOKIE;
             logger.debugv("Could not find cookie {0}, trying {1}", name, legacy);
             return cookies.get(legacy);
+        }
+    }
+
+    public static String encodeValue(String value) {
+        return encodeValue(value, null);
+    }
+
+    public static String encodeValue(String value, String encoding) {
+        try {
+            return URLEncoder.encode(value, encoding != null ? encoding : DEFAULT_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Failed to encode URL", e);
+        }
+    }
+
+    public static String decodeValue(String value) {
+        return decodeValue(value, null);
+    }
+
+    public static String decodeValue(String value, String encoding) {
+        try {
+            return URLDecoder.decode(value, encoding != null ? encoding : DEFAULT_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Failed to decode URL", e);
         }
     }
 }

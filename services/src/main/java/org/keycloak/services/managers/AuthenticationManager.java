@@ -750,11 +750,7 @@ public class AuthenticationManager {
         boolean secureOnly = realm.getSslRequired().isRequired(connection);
         // remember me cookie should be persistent (hardcoded to 365 days for now)
         //NewCookie cookie = new NewCookie(KEYCLOAK_REMEMBER_ME, "true", path, null, null, realm.getCentralLoginLifespan(), secureOnly);// todo httponly , true);
-        try {
-            CookieHelper.addCookie(KEYCLOAK_REMEMBER_ME, "username:" + URLEncoder.encode(username, "UTF-8"), path, null, null, 31536000, secureOnly, true);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Failed to urlencode", e);
-        }
+        CookieHelper.addCookie(KEYCLOAK_REMEMBER_ME, "username:" + username, path, null, null, 31536000, secureOnly, true);
     }
 
     public static String getRememberMeUsername(RealmModel realm, HttpHeaders headers) {
@@ -764,11 +760,7 @@ public class AuthenticationManager {
                 String value = cookie.getValue();
                 String[] s = value.split(":");
                 if (s[0].equals("username") && s.length == 2) {
-                    try {
-                        return URLDecoder.decode(s[1], "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException("Failed to urldecode", e);
-                    }
+                    return CookieHelper.decodeValue(s[1]);
                 }
             }
         }
