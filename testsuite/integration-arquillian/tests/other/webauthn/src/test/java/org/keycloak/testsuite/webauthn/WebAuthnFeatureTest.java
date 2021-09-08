@@ -18,8 +18,6 @@
 
 package org.keycloak.testsuite.webauthn;
 
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
@@ -32,6 +30,9 @@ import org.keycloak.representations.info.ServerInfoRepresentation;
 import org.keycloak.testsuite.AbstractTestRealmKeycloakTest;
 import org.keycloak.testsuite.arquillian.annotation.DisableFeature;
 import org.keycloak.testsuite.arquillian.annotation.EnableFeature;
+import org.openqa.selenium.virtualauthenticator.VirtualAuthenticator;
+
+import java.util.Set;
 
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
 
@@ -40,11 +41,6 @@ public class WebAuthnFeatureTest extends AbstractTestRealmKeycloakTest {
 
     @Override
     public void configureTestRealm(RealmRepresentation testRealm) {
-    }
-
-    @BeforeClass
-    public static void enabled() {
-        Assume.assumeTrue(AUTH_SERVER_SSL_REQUIRED);
     }
 
     @Test

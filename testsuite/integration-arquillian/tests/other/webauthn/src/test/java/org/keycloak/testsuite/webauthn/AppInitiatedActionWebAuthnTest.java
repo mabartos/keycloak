@@ -26,14 +26,15 @@ import org.keycloak.authentication.requiredactions.WebAuthnRegisterFactory;
 import org.keycloak.events.Details;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.RequiredActionProviderRepresentation;
-import org.keycloak.testsuite.WebAuthnAssume;
 import org.keycloak.testsuite.actions.AbstractAppInitiatedActionTest;
 import org.keycloak.testsuite.arquillian.annotation.AuthServerContainerExclude;
 import org.keycloak.testsuite.arquillian.annotation.EnableFeature;
 import org.keycloak.testsuite.pages.LoginUsernameOnlyPage;
 import org.keycloak.testsuite.pages.PasswordPage;
-import org.keycloak.testsuite.pages.webauthn.WebAuthnRegisterPage;
 import org.keycloak.testsuite.util.FlowUtil;
+import org.keycloak.testsuite.webauthn.authenticators.DefaultVirtualAuthOptions;
+import org.keycloak.testsuite.webauthn.authenticators.VirtualAuthenticatorsManager;
+import org.keycloak.testsuite.webauthn.pages.WebAuthnRegisterPage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,13 @@ public class AppInitiatedActionWebAuthnTest extends AbstractAppInitiatedActionTe
     PasswordPage passwordPage;
 
     @Page
-    WebAuthnRegisterPage registerPage;
+    WebAuthnRegisterPage webAuthnRegisterPage;
+
+    @Before
+    public void setUpVirtualAuthenticator() {
+        VirtualAuthenticatorsManager.getInstance(driver)
+                .useAuthenticator(DefaultVirtualAuthOptions.DEFAULT);
+    }
 
     public AppInitiatedActionWebAuthnTest() {
         super(WebAuthnRegisterFactory.PROVIDER_ID);
@@ -99,21 +106,28 @@ public class AppInitiatedActionWebAuthnTest extends AbstractAppInitiatedActionTe
         });
     }
 
-    @Before
-    public void verifyEnvironment() {
-        WebAuthnAssume.assumeChrome();
-    }
-
     @Test
     public void cancelSetupWebAuthn() {
         loginUser();
 
         doAIA();
 
-        registerPage.assertCurrent();
-        registerPage.cancelAIA();
+        webAuthnRegisterPage.assertCurrent();
+        webAuthnRegisterPage.cancelAIA();
 
         assertKcActionStatus("cancelled");
+    }
+
+    @Test
+    public void proceedSetupWebAuthn() {
+        loginUser();
+
+        doAIA();
+
+        webAuthnRegisterPage.assertCurrent();
+        webAuthnRegisterPage.clickRegister();
+        webAuthnRegisterPage.registerWebAuthnCredential("authenticator1");
+        assertKcActionStatus("success");
     }
 
     private void loginUser() {

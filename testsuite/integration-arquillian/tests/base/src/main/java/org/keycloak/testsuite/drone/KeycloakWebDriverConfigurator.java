@@ -57,7 +57,11 @@ public class KeycloakWebDriverConfigurator {
         acceptAllSSLCerts(webDriverCfg, capabilitiesToAdd);
 
         BrowserCapabilities browserCap = registryInstance.get().getEntryFor(webDriverCfg.getBrowser());
-        webDriverCfg.setBrowserInternal(new KcBrowserCapabilities(capabilitiesToAdd, browserCap));
+        webDriverCfg.setBrowserInternal(getBrowserCapabilities(capabilitiesToAdd, browserCap));
+    }
+
+    public BrowserCapabilities getBrowserCapabilities(Capabilities capabilities, BrowserCapabilities browserCapabilities) {
+        return new KcBrowserCapabilities(capabilities, browserCapabilities);
     }
 
     private void acceptAllSSLCerts(WebDriverConfiguration webDriverCfg, DesiredCapabilities capabilitiesToAdd) {

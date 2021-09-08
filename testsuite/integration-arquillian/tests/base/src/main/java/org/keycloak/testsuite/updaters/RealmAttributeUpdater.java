@@ -2,6 +2,7 @@ package org.keycloak.testsuite.updaters;
 
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.RealmRepresentation;
+
 import java.util.HashMap;
 import java.util.List;
 

@@ -56,7 +56,7 @@ public class WebAuthnPasswordlessAuthenticatorFactory extends WebAuthnAuthentica
 
     @Override
     public boolean isUserSetupAllowed() {
-        return false;
+        return true;
     }
 
 }

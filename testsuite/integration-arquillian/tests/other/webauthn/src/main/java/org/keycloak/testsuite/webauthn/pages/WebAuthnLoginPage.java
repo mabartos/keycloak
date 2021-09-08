@@ -15,17 +15,35 @@
  * limitations under the License.
  */
 
-package org.keycloak.testsuite.pages.webauthn;
+package org.keycloak.testsuite.webauthn.pages;
 
 import org.keycloak.testsuite.pages.LanguageComboboxAwarePage;
+import org.keycloak.testsuite.util.WaitUtils;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+
+import java.util.NoSuchElementException;
 
 /**
  * Page shown during WebAuthn login. Page is useful with Chrome testing API
  */
 public class WebAuthnLoginPage extends LanguageComboboxAwarePage {
 
+    @FindBy(id = "authenticateWebAuthnButton")
+    private WebElement authenticateButton;
+
+    public void clickAuthenticate() {
+        WaitUtils.waitUntilElement(authenticateButton).is().clickable();
+        authenticateButton.click();
+    }
+
     public boolean isCurrent() {
-        return driver.getPageSource().contains("navigator.credentials.get");
+        try {
+            authenticateButton.getText();
+            return driver.getPageSource().contains("navigator.credentials.get");
+        } catch (NoSuchElementException e) {
+            return false;
+        }
     }
 
     @Override

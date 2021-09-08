@@ -355,7 +355,7 @@ public class SigningInTest extends BaseAccountPageTest {
         SigningInPage.CredentialType credentialType = passwordless ? webAuthnPwdlessCredentialType : webAuthnCredentialType;
 
         credentialType.clickSetUpLink();
-        webAuthnRegisterPage.confirmAIA();
+        webAuthnRegisterPage.clickRegister();
         webAuthnRegisterPage.registerWebAuthnCredential(label);
         waitForPageToLoad();
         signingInPage.assertCurrent();

@@ -27,11 +27,11 @@ import org.jboss.arquillian.graphene.location.CustomizableURLResourceProvider;
 import org.jboss.arquillian.test.spi.TestEnricher;
 import org.jboss.arquillian.test.spi.enricher.resource.ResourceProvider;
 import org.jboss.arquillian.test.spi.execution.TestExecutionDecider;
+import org.keycloak.testsuite.arquillian.decider.AdapterTestExecutionDecider;
+import org.keycloak.testsuite.arquillian.decider.AuthServerExcludeExecutionDecider;
+import org.keycloak.testsuite.arquillian.decider.MigrationTestExecutionDecider;
 import org.keycloak.testsuite.arquillian.h2.H2TestEnricher;
 import org.keycloak.testsuite.arquillian.jmx.JmxConnectorRegistryCreator;
-import org.keycloak.testsuite.arquillian.decider.AdapterTestExecutionDecider;
-import org.keycloak.testsuite.arquillian.decider.MigrationTestExecutionDecider;
-import org.keycloak.testsuite.arquillian.decider.AuthServerExcludeExecutionDecider;
 import org.keycloak.testsuite.arquillian.provider.AdminClientProvider;
 import org.keycloak.testsuite.arquillian.provider.LoadBalancerControllerProvider;
 import org.keycloak.testsuite.arquillian.provider.OAuthClientProvider;
@@ -80,12 +80,9 @@ public class KeycloakArquillianExtension implements LoadableExtension {
                 .override(ApplicationArchiveProcessor.class, OSGiApplicationArchiveProcessor.class, KeycloakOSGiApplicationArchiveProcessor.class)
                 .override(ResourceProvider.class, ContainerCustomizableURLResourceProvider.class, URLProvider.class);
 
-        builder
-                .observer(KeycloakWebDriverConfigurator.class)
+        builder.observer(KeycloakWebDriverConfigurator.class)
                 .observer(HtmlUnitScreenshots.class)
                 .observer(KeycloakDronePostSetup.class);
-
-
     }
 
 }
