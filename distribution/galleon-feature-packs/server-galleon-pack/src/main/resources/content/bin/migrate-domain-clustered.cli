@@ -621,9 +621,15 @@ if (outcome == success) of /profile=$clusteredProfile/subsystem=ejb3/service=rem
     echo
 end-if
 
-if (outcome == failed) of /profile=$clusteredProfile/subsystem=infinispan/cache-container=web/distributed-cache=routing:read-resource
-    echo Adding distributed cache routing to web cache container to infinispan subsystem
-    /profile=$clusteredProfile/subsystem=infinispan/cache-container=web/distributed-cache=routing/:add
+if (outcome == success) of /profile=$clusteredProfile/subsystem=infinispan/cache-container=web/distributed-cache=routing:read-resource
+    echo Removing distributed cache 'routing' from web cache container from infinispan subsystem
+    /profile=$clusteredProfile/subsystem=infinispan/cache-container=web/distributed-cache=routing/:remove
+    echo
+end-if
+
+if (outcome == failed) of /profile=$clusteredProfile/subsystem=infinispan/cache-container=web/replicated-cache=routing:read-resource
+    echo Adding replicated cache 'routing' to web cache container to infinispan subsystem
+    /profile=$clusteredProfile/subsystem=infinispan/cache-container=web/replicated-cache=routing/:add
     echo
 end-if
 
@@ -798,6 +804,44 @@ end-if
 if (result == undefined) of /profile=$clusteredProfile/subsystem=infinispan/cache-container=keycloak/distributed-cache=actionTokens/component=expiration/:read-attribute(name=lifespan)
     echo Setting expiration lifespan for 'actionTokens' distributed-cache
     /profile=$clusteredProfile/subsystem=infinispan/cache-container=keycloak/distributed-cache=actionTokens/component=expiration/:write-attribute(name=lifespan,value=900000000000000000)
+    echo
+end-if
+
+# Migrate from 15.0.0 to 16.0.0
+
+if (result == undefined) of /profile=$clusteredProfile/subsystem=infinispan/cache-container=hibernate/replicated-cache=timestamps/component=expiration/:read-attribute(name=lifespan)
+    echo Setting expiration lifespan for 'timestamps' replicated-cache in Hibernate
+    /profile=$clusteredProfile/subsystem=infinispan/cache-container=hibernate/replicated-cache=timestamps/component=expiration/:write-attribute(name=lifespan,value=900000000000000000)
+    echo
+end-if
+
+if (result == undefined) of /profile=$clusteredProfile/subsystem=infinispan/cache-container=ejb/distributed-cache=dist/component=expiration/:read-attribute(name=lifespan)
+    echo Setting expiration lifespan for 'dist' distributed-cache in EJB
+    /profile=$clusteredProfile/subsystem=infinispan/cache-container=ejb/distributed-cache=dist/component=expiration/:write-attribute(name=lifespan,value=900000000000000000)
+    echo
+end-if
+
+if (result == undefined) of /profile=$clusteredProfile/subsystem=infinispan/cache-container=server/replicated-cache=default/component=expiration/:read-attribute(name=lifespan)
+    echo Setting expiration lifespan for 'default' replicated-cache in server
+    /profile=$clusteredProfile/subsystem=infinispan/cache-container=server/replicated-cache=default/component=expiration/:write-attribute(name=lifespan,value=900000000000000000)
+    echo
+end-if
+
+if (result == undefined) of /profile=$clusteredProfile/subsystem=infinispan/cache-container=web/distributed-cache=dist/component=expiration/:read-attribute(name=lifespan)
+    echo Setting expiration lifespan for 'dist' distributed-cache in web
+    /profile=$clusteredProfile/subsystem=infinispan/cache-container=web/distributed-cache=dist/component=expiration/:write-attribute(name=lifespan,value=900000000000000000)
+    echo
+end-if
+
+if (result == undefined) of /profile=$clusteredProfile/subsystem=infinispan/cache-container=web/replicated-cache=sso/component=expiration/:read-attribute(name=lifespan)
+    echo Setting expiration lifespan for 'sso' replicated-cache in web
+    /profile=$clusteredProfile/subsystem=infinispan/cache-container=web/replicated-cache=sso/component=expiration/:write-attribute(name=lifespan,value=900000000000000000)
+    echo
+end-if
+
+if (result == undefined) of /profile=$clusteredProfile/subsystem=infinispan/cache-container=web/replicated-cache=routing/component=expiration/:read-attribute(name=lifespan)
+    echo Setting expiration lifespan for 'routing' replicated-cache in web
+    /profile=$clusteredProfile/subsystem=infinispan/cache-container=web/replicated-cache=routing/component=expiration/:write-attribute(name=lifespan,value=900000000000000000)
     echo
 end-if
 

@@ -133,6 +133,7 @@
                 <transport lock-timeout="60000"/>
                 <replicated-cache name="default">
                     <transaction mode="BATCH"/>
+                    <expiration lifespan="900000000000000000"/>
                 </replicated-cache>
             </cache-container>
             <cache-container name="web" default-cache="dist" modules="org.wildfly.clustering.web.infinispan">
@@ -140,19 +141,24 @@
                 <replicated-cache name="sso">
                     <locking isolation="REPEATABLE_READ"/>
                     <transaction mode="BATCH"/>
+                    <expiration lifespan="900000000000000000"/>
                 </replicated-cache>
                 <distributed-cache name="dist">
                     <locking isolation="REPEATABLE_READ"/>
                     <transaction mode="BATCH"/>
+                    <expiration lifespan="900000000000000000"/>
                     <file-store/>
                 </distributed-cache>
-                <distributed-cache name="routing"/>
+                <replicated-cache name="routing">
+                    <expiration lifespan="900000000000000000"/>
+                </replicated-cache>
             </cache-container>
             <cache-container name="ejb" aliases="sfsb" default-cache="dist" modules="org.wildfly.clustering.ejb.infinispan">
                 <transport lock-timeout="60000"/>
                 <distributed-cache name="dist">
                     <locking isolation="REPEATABLE_READ"/>
                     <transaction mode="BATCH"/>
+                    <expiration lifespan="900000000000000000"/>
                     <file-store/>
                 </distributed-cache>
             </cache-container>
@@ -167,7 +173,9 @@
                     <heap-memory size="10000"/>
                     <expiration max-idle="100000"/>
                 </invalidation-cache>
-                <replicated-cache name="timestamps"/>
+                <replicated-cache name="timestamps">
+                    <expiration lifespan="900000000000000000"/>
+                </replicated-cache>
             </cache-container>
         </replacement>
     </supplement>

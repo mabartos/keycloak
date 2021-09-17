@@ -18,6 +18,9 @@
                 <feature spec="subsystem.infinispan.cache-container.distributed-cache.component.transaction">
                     <param name="mode" value="BATCH"/>
                 </feature>
+                <feature spec="subsystem.infinispan.cache-container.distributed-cache.component.expiration">
+                    <param name="lifespan" value="900000000000000000"/>
+                </feature>
                 <feature spec="subsystem.infinispan.cache-container.distributed-cache.store.file">
                     <unset param="relative-to"/>
                 </feature>
@@ -30,9 +33,15 @@
                 <feature spec="subsystem.infinispan.cache-container.replicated-cache.component.transaction">
                     <param name="mode" value="BATCH"/>
                 </feature>
+                <feature spec="subsystem.infinispan.cache-container.replicated-cache.component.expiration">
+                    <param name="lifespan" value="900000000000000000"/>
+                </feature>
             </feature>
-            <feature spec="subsystem.infinispan.cache-container.distributed-cache">
-                <param name="distributed-cache" value="routing"/>
+            <feature spec="subsystem.infinispan.cache-container.replicated-cache">
+                <param name="replicated-cache" value="routing"/>
+                <feature spec="subsystem.infinispan.cache-container.replicated-cache.component.expiration">
+                    <param name="lifespan" value="900000000000000000"/>
+                </feature>
             </feature>
         </feature>
 

@@ -35,7 +35,7 @@
         <feature-group name="datasources">
             <feature-group name="keycloak-datasource"/>
         </feature-group>
-        <feature-group name="infinispan-dist-keycloak"/>
+        <feature-group name="infinispan-dist"/>
     </feature>
 
     <feature spec="domain.system-property">
