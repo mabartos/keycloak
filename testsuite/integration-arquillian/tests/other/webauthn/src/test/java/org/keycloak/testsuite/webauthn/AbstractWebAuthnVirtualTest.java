@@ -68,6 +68,7 @@ public abstract class AbstractWebAuthnVirtualTest extends AbstractTestRealmKeycl
     }
 
     public static VirtualAuthenticatorManager createDefaultVirtualManager(WebDriver webDriver, VirtualAuthenticatorOptions options) {
+        assumeThat("Driver must support Virtual Authenticators", webDriver, instanceOf(HasVirtualAuthenticator.class));
         VirtualAuthenticatorManager manager = new VirtualAuthenticatorManager(webDriver);
         manager.useAuthenticator(options);
         return manager;
