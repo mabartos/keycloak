@@ -23,13 +23,10 @@ import org.keycloak.common.Profile;
 import org.keycloak.testsuite.AbstractTestRealmKeycloakTest;
 import org.keycloak.testsuite.arquillian.annotation.EnableFeature;
 import org.keycloak.testsuite.webauthn.authenticators.DefaultVirtualAuthOptions;
+import org.keycloak.testsuite.webauthn.authenticators.UseVirtualAuthenticators;
 import org.keycloak.testsuite.webauthn.authenticators.VirtualAuthenticatorManager;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.virtualauthenticator.HasVirtualAuthenticator;
 import org.openqa.selenium.virtualauthenticator.VirtualAuthenticatorOptions;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assume.assumeThat;
 
 /**
  * Abstract class for WebAuthn tests which use Virtual Authenticators
@@ -44,7 +41,6 @@ public abstract class AbstractWebAuthnVirtualTest extends AbstractTestRealmKeycl
     @Before
     @Override
     public void setUpVirtualAuthenticator() {
-        assumeThat("Driver must support Virtual Authenticators", driver, instanceOf(HasVirtualAuthenticator.class));
         this.virtualAuthenticatorsManager = createDefaultVirtualManager(driver, getDefaultAuthenticatorOptions());
         clearEventQueue();
     }

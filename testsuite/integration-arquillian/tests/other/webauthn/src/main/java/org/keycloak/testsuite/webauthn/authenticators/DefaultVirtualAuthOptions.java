@@ -29,7 +29,7 @@ public class DefaultVirtualAuthOptions {
     public static VirtualAuthenticatorOptions DEFAULT = getDefault();
 
     // Default authenticators with different Transport type
-    public static VirtualAuthenticatorOptions DEFAULT_BTE = getDefault().setTransport(VirtualAuthenticatorOptions.Transport.BLE);
+    public static VirtualAuthenticatorOptions DEFAULT_BLE = getDefault().setTransport(VirtualAuthenticatorOptions.Transport.BLE);
     public static VirtualAuthenticatorOptions DEFAULT_NFC = getDefault().setTransport(VirtualAuthenticatorOptions.Transport.NFC);
     public static VirtualAuthenticatorOptions DEFAULT_USB = getDefault().setTransport(VirtualAuthenticatorOptions.Transport.USB);
     public static VirtualAuthenticatorOptions DEFAULT_INTERNAL = getDefault().setTransport(VirtualAuthenticatorOptions.Transport.INTERNAL);

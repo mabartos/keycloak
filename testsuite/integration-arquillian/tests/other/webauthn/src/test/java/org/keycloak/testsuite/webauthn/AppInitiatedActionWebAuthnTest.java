@@ -34,6 +34,7 @@ import org.keycloak.testsuite.pages.LoginUsernameOnlyPage;
 import org.keycloak.testsuite.pages.PasswordPage;
 import org.keycloak.testsuite.util.FlowUtil;
 import org.keycloak.testsuite.webauthn.authenticators.DefaultVirtualAuthOptions;
+import org.keycloak.testsuite.webauthn.authenticators.UseVirtualAuthenticators;
 import org.keycloak.testsuite.webauthn.authenticators.VirtualAuthenticatorManager;
 import org.keycloak.testsuite.webauthn.pages.WebAuthnRegisterPage;
 
