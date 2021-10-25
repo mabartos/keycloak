@@ -16,6 +16,8 @@
  */
 package org.keycloak.testsuite.forms;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import static org.keycloak.testsuite.forms.VerifyProfileTest.PERMISSIONS_ALL;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -545,7 +548,7 @@ public class RegisterWithUserProfileTest extends RegisterTest {
         UserRepresentation user = getUser(userId);
         assertEquals("FirstAA", user.getFirstName());
         assertEquals("LastAA", user.getLastName());
-        assertEquals("", user.firstAttribute(ATTRIBUTE_DEPARTMENT));
+        assertThat(user.firstAttribute(ATTRIBUTE_DEPARTMENT), is(true));
     }
 
     @Test
@@ -613,7 +616,12 @@ public class RegisterWithUserProfileTest extends RegisterTest {
         assertEquals(username.toLowerCase(), user.getUsername());
         assertEquals(email.toLowerCase(), user.getEmail());
         assertEquals(firstName, user.getFirstName());
-        assertEquals(lastName, user.getLastName());
+
+        if (StringUtils.isEmpty(lastName)) {
+            assertThat(StringUtils.isEmpty(user.getLastName()), is(true));
+        } else {
+            assertThat(user.getLastName(), is(lastName));
+        }
     }
     
     protected void setUserProfileConfiguration(String configuration) {

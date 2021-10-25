@@ -16,6 +16,8 @@
  */
 package org.keycloak.testsuite.actions;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -31,6 +33,7 @@ import static org.keycloak.testsuite.forms.VerifyProfileTest.CONFIGURATION_FOR_U
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +51,6 @@ import org.keycloak.testsuite.forms.VerifyProfileTest;
 import org.keycloak.testsuite.pages.AppPage.RequestType;
 import org.keycloak.testsuite.util.ClientScopeBuilder;
 import org.keycloak.testsuite.util.KeycloakModelUtils;
-import org.keycloak.userprofile.EventAuditingAttributeChangeListener;
 import org.openqa.selenium.By;
 
 /**
@@ -295,7 +297,7 @@ public class RequiredActionUpdateProfileWithUserProfileTest extends RequiredActi
         // assert user is really updated in persistent store
         UserRepresentation user = ActionUtil.findUserWithAdminClient(adminClient, USERNAME1);
         Assert.assertEquals("New first", user.getFirstName());
-        Assert.assertEquals("", user.getLastName());
+        assertThat(StringUtils.isEmpty(user.getLastName()), is(true));
         Assert.assertEquals("new@email.com", user.getEmail());
         Assert.assertEquals(USERNAME1, user.getUsername());
     }

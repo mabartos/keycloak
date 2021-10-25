@@ -16,6 +16,8 @@
  */
 package org.keycloak.testsuite.forms;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -29,6 +31,7 @@ import java.util.UUID;
 
 import javax.ws.rs.core.Response;
 
+import liquibase.util.StringUtils;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Assert;
@@ -420,7 +423,7 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
 
         UserRepresentation user = getUser(user2Id);
         assertEquals("First", user.getFirstName());
-        assertEquals("", user.getLastName());
+        assertThat(StringUtils.isEmpty(user.getLastName()), is(true));
     }
     
     @Test

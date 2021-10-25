@@ -16,6 +16,8 @@
  */
 package org.keycloak.testsuite.broker;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
 import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
@@ -23,6 +25,7 @@ import static org.keycloak.testsuite.forms.VerifyProfileTest.ATTRIBUTE_DEPARTMEN
 import static org.keycloak.testsuite.forms.VerifyProfileTest.PERMISSIONS_ADMIN_EDITABLE;
 import static org.keycloak.testsuite.forms.VerifyProfileTest.PERMISSIONS_ALL;
 
+import liquibase.util.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -355,7 +358,7 @@ public class KcOidcFirstBrokerLoginWithUserProfileTest extends KcOidcFirstBroker
         UserRepresentation user = VerifyProfileTest.getUserByUsername(testRealm(),"attributeNotRequiredAndSelectedByScopeCanBeIgnored");
         assertEquals("FirstAA", user.getFirstName());
         assertEquals("LastAA", user.getLastName());
-        assertEquals("", user.firstAttribute(ATTRIBUTE_DEPARTMENT));
+        assertThat(StringUtils.isEmpty(user.firstAttribute(ATTRIBUTE_DEPARTMENT)), is(true));
     }
     
     @Test
