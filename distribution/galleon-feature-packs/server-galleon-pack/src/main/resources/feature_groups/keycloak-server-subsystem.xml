@@ -119,6 +119,10 @@
                 <param name="properties" value="{[frontendUrl=&quot;${keycloak.frontendUrl:}&quot;,forceBackendUrlToFrontendUrl=&quot;false&quot;]}"/>
             </feature>
         </feature>
+        <feature spec="subsystem.keycloak-server.spi">
+            <param name="spi" value="userProfile"/>
+            <param name="default-provider" value="${keycloak.userProfile.provider:declarative-user-profile}"/>
+        </feature>
     </feature>
 
 </feature-group-spec>
