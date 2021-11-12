@@ -30,6 +30,19 @@
 
     <profiles>
         <profile>
+            <id>app-server-jetty10</id>
+            <activation>
+                <property>
+                    <name>app.server</name>
+                    <value>jetty10</value>
+                </property>
+            </activation>
+            <modules>
+                <module>common</module>
+                <module>10</module>
+            </modules>
+        </profile>
+        <profile>
             <id>app-server-jetty94</id>
             <activation>
                 <property>

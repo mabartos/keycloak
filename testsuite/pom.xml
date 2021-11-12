@@ -47,6 +47,7 @@
         <module>integration-arquillian</module>
         <module>model</module>
         <module>utils</module>
+        <module>10</module>
     </modules>
 
     <profiles>

@@ -605,6 +605,37 @@
                 </dependency>
             </dependencies>
         </profile>
+
+        <profile>
+            <id>spring-boot-adapter-jetty10</id>
+
+            <properties>
+                <jetty.version>${jetty10.version}</jetty.version>
+            </properties>
+
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-starter-tomcat</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.keycloak</groupId>
+                    <artifactId>keycloak-jetty10-adapter</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-jetty</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 
     <build>

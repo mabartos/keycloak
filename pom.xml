@@ -107,6 +107,7 @@
         <jetty92.version>9.2.4.v20141103</jetty92.version>
         <jetty93.version>9.3.29.v20201019</jetty93.version>
         <jetty94.version>9.4.40.v20210413</jetty94.version>
+        <jetty10.version>10.0.7</jetty10.version>
         <woodstox.version>6.0.3</woodstox.version>
         <xmlsec.version>2.1.6</xmlsec.version>
         <glassfish.json.version>1.1.6</glassfish.json.version>
@@ -275,6 +276,7 @@
         <module>adapters</module>
         <module>authz</module>
         <module>misc</module>
+        <module>keycloak-saml-jetty10-adapter</module>
     </modules>
 
     <dependencyManagement>
@@ -1097,6 +1099,11 @@
             </dependency>
             <dependency>
                 <groupId>org.keycloak</groupId>
+                <artifactId>keycloak-jetty10-adapter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak</groupId>
                 <artifactId>keycloak-as7-subsystem</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -1308,6 +1315,11 @@
             <dependency>
                 <groupId>org.keycloak</groupId>
                 <artifactId>keycloak-saml-jetty94-adapter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak</groupId>
+                <artifactId>keycloak-saml-jetty10-adapter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
