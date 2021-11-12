@@ -39,6 +39,7 @@
     <modules>
         <module>adapters</module>
         <module>sssd</module>
+        <module>webauthn</module>
     </modules>
 
     <build>
