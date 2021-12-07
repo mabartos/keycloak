@@ -51,7 +51,7 @@ public class WebAuthnErrorTest extends AbstractWebAuthnAccountTest {
         final int timeoutSec = 3;
 
         addWebAuthnCredential("authenticator#1");
-        addWebAuthnCredential("authenticator#2");
+        //addWebAuthnCredential("authenticator#2");
 
         try (RealmAttributeUpdater u = new WebAuthnRealmAttributeUpdater(testRealmResource())
                 .setWebAuthnPolicyCreateTimeout(timeoutSec)
@@ -62,7 +62,8 @@ public class WebAuthnErrorTest extends AbstractWebAuthnAccountTest {
             assertThat(realm.getWebAuthnPolicyCreateTimeout(), is(timeoutSec));
 
             final int webAuthnCount = webAuthnCredentialType.getUserCredentialsCount();
-            assertThat(webAuthnCount, is(2));
+            //assertThat(webAuthnCount, is(2));
+            assertThat(webAuthnCount, is(1));
 
             getWebAuthnManager().getActualAuthenticator().getAuthenticator().removeAllCredentials();
 
@@ -79,8 +80,10 @@ public class WebAuthnErrorTest extends AbstractWebAuthnAccountTest {
             WaitUtils.pause((timeoutSec + 1) * 1000);
 
             webAuthnErrorPage.assertCurrent();
+
+            WaitUtils.pause(9999999);
             assertThat(webAuthnErrorPage.getError(), containsString("Failed to authenticate by the Security key."));
-            assertThat(webAuthnErrorPage.getAuthenticatorsCount(), is(2));
+            assertThat(webAuthnErrorPage.getAuthenticatorsCount(), is(1));
             assertThat(webAuthnErrorPage.getAuthenticators(), Matchers.contains("authenticator#1", "authenticator#2"));
         }
     }

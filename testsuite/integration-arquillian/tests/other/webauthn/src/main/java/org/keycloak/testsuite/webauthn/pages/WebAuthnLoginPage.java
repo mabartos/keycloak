@@ -39,7 +39,7 @@ public class WebAuthnLoginPage extends LanguageComboboxAwarePage {
 
     public boolean isCurrent() {
         try {
-            authenticateButton.getText();
+            //authenticateButton.getText();
             return driver.getPageSource().contains("navigator.credentials.get");
         } catch (NoSuchElementException e) {
             return false;
