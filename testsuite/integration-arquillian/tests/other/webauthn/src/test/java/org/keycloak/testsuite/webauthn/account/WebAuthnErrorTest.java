@@ -74,12 +74,12 @@ public class WebAuthnErrorTest extends AbstractWebAuthnAccountTest {
             loginToAccount();
 
             webAuthnLoginPage.assertCurrent();
-            webAuthnLoginPage.clickAuthenticate();
+            /*webAuthnLoginPage.clickAuthenticate();
 
             //Should fail after this time
             WaitUtils.pause((timeoutSec + 1) * 1000);
 
-            webAuthnErrorPage.assertCurrent();
+            webAuthnErrorPage.assertCurrent();*/
 
             WaitUtils.pause(9999999);
             assertThat(webAuthnErrorPage.getError(), containsString("Failed to authenticate by the Security key."));

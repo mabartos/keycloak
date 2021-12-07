@@ -18,6 +18,8 @@
             <input type="hidden" id="isSetRetry" name="isSetRetry"/>
         </form>
 
+        <hr/>
+
         <input tabindex="4" onclick="refreshPage()" type="button"
                class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}"
                name="try-again" id="kc-try-again" value="${kcSanitize(msg("doTryAgain"))?no_esc}"

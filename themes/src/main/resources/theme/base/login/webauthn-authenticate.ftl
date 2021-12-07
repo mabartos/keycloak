@@ -17,7 +17,7 @@
         </form>
 
         <#if authenticators??>
-            <form id="kc-select-credential-form" class="${properties.kcFormClass!}" action="${url.loginAction}"
+            <form id="kc-webauthn-credential-form" class="${properties.kcFormClass!}" action="${url.loginAction}"
                   method="post">
                 <div class="${properties.kcSelectAuthListClass!}">
                     <#list authenticators.authenticators as authenticator>
@@ -43,6 +43,18 @@
                     </#list>
                 </div>
             </form>
+            <#if authenticators.authenticators?size == 1>
+                <form class="${properties.kcFormClass!}">
+                    <div class="${properties.kcFormGroupClass!}">
+                        <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
+                            <input id="authenticateWebAuthnButton" type="button" onclick="webAuthnAuthenticate()"
+                                   value="${kcSanitize(msg("webauthn-doAuthenticate"))}"
+                                   class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}">
+                        </div>
+                    </div>
+                </form>
+            </#if>
+
         <#else>
             <script>
                 window.onload = function () {

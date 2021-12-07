@@ -256,11 +256,16 @@ div.kc-logo-text span {
 
 #kc-username {
     text-align: center;
-    margin-bottom:-10px;
+    margin-bottom: -10px;
 }
 
 #kc-webauthn-settings-form {
     padding-top: 8px;
+}
+
+#kc-webauthn-credential-form {
+    /* Negate the #kc-content-wrapper */
+    margin-top: -20px;
 }
 
 #kc-content-wrapper {
@@ -625,8 +630,13 @@ ul#kc-totp-supported-apps {
     font-weight: bold;
 }
 
+.select-auth-box-headline:first-letter {
+    text-transform: capitalize;
+}
+
 .select-auth-box-desc {
     font-size: var(--pf-global--FontSize--sm);
+    color: var(--pf-global--palette--black-600);
 }
 
 .card-pf {
