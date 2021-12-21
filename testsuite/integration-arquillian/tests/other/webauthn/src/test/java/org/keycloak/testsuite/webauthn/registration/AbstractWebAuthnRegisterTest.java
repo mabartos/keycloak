@@ -31,6 +31,7 @@ import org.keycloak.testsuite.arquillian.annotation.AuthServerContainerExclude;
 import org.keycloak.testsuite.pages.AppPage;
 import org.keycloak.testsuite.pages.LoginPage;
 import org.keycloak.testsuite.pages.RegisterPage;
+import org.keycloak.testsuite.util.WaitUtils;
 import org.keycloak.testsuite.webauthn.AbstractWebAuthnVirtualTest;
 import org.keycloak.testsuite.webauthn.pages.WebAuthnErrorPage;
 import org.keycloak.testsuite.webauthn.pages.WebAuthnRegisterPage;
@@ -131,7 +132,7 @@ public abstract class AbstractWebAuthnRegisterTest extends AbstractWebAuthnVirtu
         waitForPageToLoad();
         registerPage.assertCurrent();
         registerPage.register("firstName", "lastName", email, username, password, password);
-
+        WaitUtils.pause(9999999);
         // User was registered. Now he needs to register WebAuthn credential
         waitForPageToLoad();
         webAuthnRegisterPage.assertCurrent();

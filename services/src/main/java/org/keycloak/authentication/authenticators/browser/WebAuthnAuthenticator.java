@@ -16,8 +16,10 @@
 
 package org.keycloak.authentication.authenticators.browser;
 
+import com.webauthn4j.authenticator.AuthenticatorImpl;
 import com.webauthn4j.data.AuthenticationParameters;
 import com.webauthn4j.data.AuthenticationRequest;
+import com.webauthn4j.data.RegistrationData;
 import com.webauthn4j.data.client.Origin;
 import com.webauthn4j.data.client.challenge.Challenge;
 import com.webauthn4j.data.client.challenge.DefaultChallenge;
@@ -189,12 +191,16 @@ public class WebAuthnAuthenticator implements Authenticator, CredentialValidator
                 clientDataJSON,
                 signature
                 );
-
         AuthenticationParameters authenticationParameters = new AuthenticationParameters(
                 server,
                 null, // here authenticator cannot be fetched, set it afterwards in WebAuthnCredentialProvider.isValid()
+                isUVFlagChecked);
+       /* AuthenticationParameters authenticationParameters = new AuthenticationParameters(
+                server,
+                getEmptyAuthenticator(), // here authenticator cannot be fetched, set it afterwards in WebAuthnCredentialProvider.isValid()
+                Collections.emptyList(),
                 isUVFlagChecked
-                );
+                );*/
 
         WebAuthnCredentialModelInput cred = new WebAuthnCredentialModelInput(getCredentialType());
 
@@ -224,6 +230,11 @@ public class WebAuthnAuthenticator implements Authenticator, CredentialValidator
             setErrorResponse(context, WEBAUTHN_ERROR_USER_NOT_FOUND, null);
             context.cancelLogin();
         }
+    }
+
+    private static com.webauthn4j.authenticator.Authenticator getEmptyAuthenticator() {
+        RegistrationData data = new RegistrationData(null, null, null, null, null, null);
+        return AuthenticatorImpl.createFromRegistrationData(data);
     }
 
     public boolean requiresUser() {

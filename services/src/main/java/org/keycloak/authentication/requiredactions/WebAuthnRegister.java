@@ -205,6 +205,11 @@ public class WebAuthnRegister implements RequiredActionProvider, CredentialRegis
         // check User Verification by considering a malicious user might modify the result of calling WebAuthn API
         boolean isUserVerificationRequired = policy.getUserVerificationRequirement().equals(WebAuthnConstants.OPTION_REQUIRED);
 
+        /*policy.getSignatureAlgorithm();
+        PublicKeyCredentialParameters param=new PublicKeyCredentialParameters()
+        COSEAlgorithmIdentifier.create()
+
+ */
         RegistrationRequest registrationRequest = new RegistrationRequest(attestationObject, clientDataJSON);
         RegistrationParameters registrationParameters = new RegistrationParameters(serverProperty, isUserVerificationRequired);
 
