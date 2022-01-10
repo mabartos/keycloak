@@ -1,68 +1,55 @@
 package org.keycloak.testsuite.webauthn.authentication;
 
-import org.keycloak.authentication.requiredactions.WebAuthnPasswordlessRegisterFactory;
-import org.keycloak.authentication.requiredactions.WebAuthnRegisterFactory;
-import org.keycloak.representations.idm.RealmRepresentation;
-import org.keycloak.representations.idm.RequiredActionProviderRepresentation;
-import org.keycloak.representations.idm.UserRepresentation;
-import org.keycloak.testsuite.admin.AbstractAdminTest;
+import org.junit.Test;
 import org.keycloak.testsuite.webauthn.AbstractWebAuthnVirtualTest;
+import org.keycloak.testsuite.webauthn.utils.WebAuthnRealmData;
 
-import javax.ws.rs.core.Response;
-import java.util.List;
+import java.io.Closeable;
+import java.io.IOException;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.keycloak.testsuite.util.WaitUtils.pause;
 
 public class AbstractWebAuthnAuthSettingsTest extends AbstractWebAuthnVirtualTest {
 
-    @Override
-    public void configureTestRealm(RealmRepresentation testRealm) {
+    @Test
+    public void checkAllowCredentials() {
+        getVirtualAuthManager().useAuthenticator(getDefaultAuthenticatorOptions().setHasResidentKey(true));
 
+        getVirtualAuthManager().getCurrent().getAuthenticator().removeAllCredentials();
+        getVirtualAuthManager().getCurrent().getAuthenticator().addCredential(getDefaultResidentKeyCredential());
+
+        registerDefaultUser();
+        logout();
+        authenticateDefaultUser();
     }
 
-    @Override
-    public void addTestRealms(List<RealmRepresentation> testRealms) {
-        RealmRepresentation realmRepresentation = AbstractAdminTest.loadJson(getClass().getResourceAsStream("/webauthn/testrealm-webauthn.json"), RealmRepresentation.class);
+    @Test
+    public void timeout() throws IOException {
+        final Integer TIMEOUT = 3; //seconds
 
-        if (isPasswordless()) {
-            makePasswordlessRequiredActionDefault(realmRepresentation);
+        registerDefaultUser();
+        logout();
+
+        getVirtualAuthManager().removeAuthenticator();
+
+        try (Closeable u = getWebAuthnRealmUpdater().setWebAuthnPolicyCreateTimeout(TIMEOUT).update()) {
+            WebAuthnRealmData realmData = new WebAuthnRealmData(testRealm().toRepresentation(), isPasswordless());
+            assertThat(realmData.getCreateTimeout(), is(TIMEOUT));
+
+            authenticateDefaultUser(false);
+            pause((TIMEOUT + 2) * 1000);
+            webAuthnErrorPage.assertCurrent();
+            assertThat(webAuthnErrorPage.getError(), containsString("Failed to authenticate by the Security key."));
         }
-
-        testRealms.add(realmRepresentation);
     }
 
-    @Override
-    protected void postAfterAbstractKeycloak() {
-        List<UserRepresentation> defaultUser = testRealm().users().search("username", true);
-        if (defaultUser != null && !defaultUser.isEmpty()) {
-            Response response = testRealm().users().delete(defaultUser.get(0).getId());
-            assertThat(response, notNullValue());
-            assertThat(response.getStatus(), is(204));
-        }
-    }
 
-    protected static void makePasswordlessRequiredActionDefault(RealmRepresentation realm) {
-        RequiredActionProviderRepresentation webAuthnProvider = realm.getRequiredActions()
-                .stream()
-                .filter(f -> f.getProviderId().equals(WebAuthnRegisterFactory.PROVIDER_ID))
-                .findFirst()
-                .orElse(null);
-        assertThat(webAuthnProvider, notNullValue());
 
-        webAuthnProvider.setEnabled(false);
 
-        RequiredActionProviderRepresentation webAuthnPasswordlessProvider = realm.getRequiredActions()
-                .stream()
-                .filter(f -> f.getProviderId().equals(WebAuthnPasswordlessRegisterFactory.PROVIDER_ID))
-                .findFirst()
-                .orElse(null);
-        assertThat(webAuthnPasswordlessProvider, notNullValue());
-
-        webAuthnPasswordlessProvider.setEnabled(true);
-        webAuthnPasswordlessProvider.setDefaultAction(true);
-    }
 
     /*
     checkAvailableAuths

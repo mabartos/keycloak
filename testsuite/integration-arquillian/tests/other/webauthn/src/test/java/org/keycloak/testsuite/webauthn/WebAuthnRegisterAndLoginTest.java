@@ -70,26 +70,8 @@ import static org.keycloak.models.AuthenticationExecutionModel.Requirement.REQUI
 
 public class WebAuthnRegisterAndLoginTest extends AbstractWebAuthnVirtualTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
-
-    @Page
-    protected AppPage appPage;
-
-    @Page
-    protected LoginPage loginPage;
-
-    @Page
-    protected WebAuthnLoginPage webAuthnLoginPage;
-
-    @Page
-    protected RegisterPage registerPage;
-
     @Page
     protected ErrorPage errorPage;
-
-    @Page
-    protected WebAuthnRegisterPage webAuthnRegisterPage;
 
     @Page
     protected LoginUsernameOnlyPage loginUsernamePage;

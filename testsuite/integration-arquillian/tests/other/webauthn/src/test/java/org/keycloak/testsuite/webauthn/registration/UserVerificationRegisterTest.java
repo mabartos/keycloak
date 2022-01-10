@@ -21,6 +21,7 @@ import com.webauthn4j.data.UserVerificationRequirement;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.keycloak.testsuite.util.WaitUtils;
+import org.keycloak.testsuite.webauthn.AbstractWebAuthnVirtualTest;
 import org.keycloak.testsuite.webauthn.utils.WebAuthnRealmData;
 import org.openqa.selenium.virtualauthenticator.VirtualAuthenticatorOptions;
 
@@ -35,7 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * @author <a href="mailto:mabartos@redhat.com">Martin Bartos</a>
  */
-public class UserVerificationRegisterTest extends AbstractWebAuthnRegisterTest {
+public class UserVerificationRegisterTest extends AbstractWebAuthnVirtualTest {
 
     @Test
     public void discouragedAny() {
@@ -107,7 +108,7 @@ public class UserVerificationRegisterTest extends AbstractWebAuthnRegisterTest {
             WebAuthnRealmData realmData = new WebAuthnRealmData(testRealm().toRepresentation(), isPasswordless());
             assertThat(realmData.getUserVerificationRequirement(), containsString(requirement.getValue()));
 
-            registerDefaultWebAuthnUser(shouldSuccess);
+            registerDefaultUser(shouldSuccess);
 
             displayErrorMessageIfPresent();
 
