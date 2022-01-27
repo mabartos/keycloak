@@ -22,6 +22,7 @@ import com.webauthn4j.data.attestation.authenticator.COSEKey;
 import com.webauthn4j.data.attestation.statement.COSEAlgorithmIdentifier;
 import com.webauthn4j.data.attestation.statement.COSEKeyType;
 import org.hamcrest.Matchers;
+import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.keycloak.WebAuthnConstants;
@@ -30,7 +31,9 @@ import org.keycloak.authentication.requiredactions.WebAuthnRegisterFactory;
 import org.keycloak.events.Details;
 import org.keycloak.events.EventType;
 import org.keycloak.models.credential.dto.WebAuthnCredentialData;
+import org.keycloak.testsuite.pages.AppPage;
 import org.keycloak.testsuite.util.WaitUtils;
+import org.keycloak.testsuite.webauthn.AbstractWebAuthnVirtualTest;
 import org.keycloak.testsuite.webauthn.utils.WebAuthnDataWrapper;
 import org.keycloak.testsuite.webauthn.utils.WebAuthnRealmData;
 
@@ -52,11 +55,14 @@ import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 /**
  * @author <a href="mailto:mabartos@redhat.com">Martin Bartos</a>
  */
-public class WebAuthnOtherSettingsTest extends AbstractWebAuthnRegisterTest {
+public class WebAuthnOtherSettingsTest extends AbstractWebAuthnVirtualTest {
+
+    @Page
+    protected AppPage appPage;
 
     @Test
     public void defaultValues() {
-        registerDefaultWebAuthnUser("webauthn");
+        registerDefaultUser("webauthn");
 
         WaitUtils.waitForPageToLoad();
         appPage.assertCurrent();
@@ -68,8 +74,8 @@ public class WebAuthnOtherSettingsTest extends AbstractWebAuthnRegisterTest {
                 .detail(Details.CUSTOM_REQUIRED_ACTION, isPasswordless()
                         ? WebAuthnPasswordlessRegisterFactory.PROVIDER_ID
                         : WebAuthnRegisterFactory.PROVIDER_ID)
-                .detail(WebAuthnConstants.PUBKEY_CRED_LABEL_ATTR, "webauthn")
-                .detail(WebAuthnConstants.PUBKEY_CRED_AAGUID_ATTR, ALL_ZERO_AAGUID)
+                .detail(WebAuthnConstants.Events.PUBKEY_CRED_LABEL_ATTR, "webauthn")
+                .detail(WebAuthnConstants.Events.PUBKEY_CRED_AAGUID_ATTR, ALL_ZERO_AAGUID)
                 .assertEvent();
 
         final String credentialType = getCredentialType();
@@ -150,7 +156,7 @@ public class WebAuthnOtherSettingsTest extends AbstractWebAuthnRegisterTest {
             WebAuthnRealmData realmData = new WebAuthnRealmData(testRealm().toRepresentation(), isPasswordless());
             assertThat(realmData.getAcceptableAaguids(), Matchers.contains(ALL_ONE_AAGUID));
 
-            registerDefaultWebAuthnUser();
+            registerDefaultUser();
 
             webAuthnErrorPage.assertCurrent();
             assertThat(webAuthnErrorPage.getError(), allOf(containsString("not acceptable aaguid"), containsString(ALL_ZERO_AAGUID)));

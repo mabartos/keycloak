@@ -237,9 +237,9 @@ public class WebAuthnRegister implements RequiredActionProvider, CredentialRegis
             webAuthnCredProvider.dumpCredentialModel(newCredentialModel, credential);
 
             context.getEvent()
-                .detail(WebAuthnConstants.PUBKEY_CRED_ID_ATTR, publicKeyCredentialId)
-                .detail(WebAuthnConstants.PUBKEY_CRED_LABEL_ATTR, label)
-                .detail(WebAuthnConstants.PUBKEY_CRED_AAGUID_ATTR, aaguid);
+                .detail(WebAuthnConstants.Events.PUBKEY_CRED_ID_ATTR, publicKeyCredentialId)
+                .detail(WebAuthnConstants.Events.PUBKEY_CRED_LABEL_ATTR, label)
+                .detail(WebAuthnConstants.Events.PUBKEY_CRED_AAGUID_ATTR, aaguid);
             context.success();
         } catch (WebAuthnException wae) {
             if (logger.isDebugEnabled()) logger.debug(wae.getMessage(), wae);
