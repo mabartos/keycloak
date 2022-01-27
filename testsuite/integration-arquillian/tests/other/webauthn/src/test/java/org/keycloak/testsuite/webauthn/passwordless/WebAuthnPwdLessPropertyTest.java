@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-package org.keycloak.testsuite.webauthn;
+package org.keycloak.testsuite.webauthn.passwordless;
+
+import org.keycloak.testsuite.webauthn.WebAuthnPropertyTest;
 
 /**
  * @author <a href="mailto:mabartos@redhat.com">Martin Bartos</a>
  */
-public class AppInitiatedActionPwdLessTest extends AppInitiatedActionWebAuthnTest {
+public class WebAuthnPwdLessPropertyTest extends WebAuthnPropertyTest {
 
-    protected boolean isPasswordless() {
+    @Override
+    public boolean isPasswordless(){
         return true;
     }
 }
