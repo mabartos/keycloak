@@ -23,6 +23,7 @@ import com.webauthn4j.data.UserVerificationRequirement;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.Test;
 import org.keycloak.models.Constants;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AssertEvents;
@@ -32,6 +33,7 @@ import org.keycloak.testsuite.util.UIUtils;
 import org.keycloak.testsuite.webauthn.pages.WebAuthnPolicyPage;
 import org.keycloak.testsuite.webauthn.updaters.AbstractWebAuthnRealmUpdater;
 import org.keycloak.testsuite.webauthn.utils.PropertyRequirement;
+import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
@@ -411,6 +413,19 @@ public abstract class AbstractWebAuthnPolicySettingsTest extends AbstractConsole
         assertThat(getPolicyPage().isSaveButtonEnabled(), is(true));
         getPolicyPage().clickSaveButton();
         pause(100);
+    }
+
+    @Test
+    public void checkJsInjectionProperties() {
+
+        WebElement userVerificationInput = driver.findElement(By.id("usrverify"));
+        assertThat(userVerificationInput, notNullValue());
+
+        UIUtils.setTextInputValue(userVerificationInput, "required");
+
+        getPolicyPage().setUserVerification(UserVerificationRequirement.REQUIRED);
+        getPolicyPage().clickSaveButton();
+
     }
 
     protected List<String> getAcceptableAaguid(WebAuthnPolicyPage.MultivaluedAcceptableAaguid acceptableAaguid) {
