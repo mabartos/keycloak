@@ -17,6 +17,8 @@
 
 package org.keycloak.testsuite.webauthn.passwordless;
 
+import org.junit.Ignore;
+import org.junit.Test;
 import org.keycloak.testsuite.webauthn.WebAuthnPropertyTest;
 
 /**
@@ -25,7 +27,13 @@ import org.keycloak.testsuite.webauthn.WebAuthnPropertyTest;
 public class WebAuthnPwdLessPropertyTest extends WebAuthnPropertyTest {
 
     @Override
-    public boolean isPasswordless(){
+    public boolean isPasswordless() {
         return true;
+    }
+
+    // Not usable for Passwordless
+    @Override
+    @Test
+    public void requiredActionRegistration() {
     }
 }

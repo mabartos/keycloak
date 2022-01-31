@@ -154,7 +154,9 @@ public class WebAuthnPropertyTest extends AbstractWebAuthnVirtualTest {
         userResource().removeCredential(credentialId);
 
         driver.navigate().refresh();
+        WaitUtils.pause(99999999);
 
+displayErrorMessageIfPresent();
         // required action
         webAuthnRegisterPage.assertCurrent();
         webAuthnRegisterPage.clickRegister();

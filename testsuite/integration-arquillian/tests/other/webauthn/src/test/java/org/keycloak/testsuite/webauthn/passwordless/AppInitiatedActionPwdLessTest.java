@@ -24,6 +24,7 @@ import org.keycloak.testsuite.webauthn.AppInitiatedActionWebAuthnTest;
  */
 public class AppInitiatedActionPwdLessTest extends AppInitiatedActionWebAuthnTest {
 
+    @Override
     protected boolean isPasswordless() {
         return true;
     }
