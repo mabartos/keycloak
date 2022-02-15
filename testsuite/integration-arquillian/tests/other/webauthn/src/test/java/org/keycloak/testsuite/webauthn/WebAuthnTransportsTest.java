@@ -18,7 +18,9 @@
 package org.keycloak.testsuite.webauthn;
 
 import org.junit.Test;
+import org.keycloak.testsuite.arquillian.annotation.IgnoreBrowserDriver;
 import org.keycloak.testsuite.webauthn.pages.WebAuthnAuthenticatorsList;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.virtualauthenticator.VirtualAuthenticatorOptions;
 
 import java.util.List;
@@ -37,6 +39,7 @@ import static org.keycloak.testsuite.webauthn.authenticators.DefaultVirtualAuthO
 public class WebAuthnTransportsTest extends AbstractWebAuthnVirtualTest {
 
     @Test
+    @IgnoreBrowserDriver(FirefoxDriver.class)
     public void usbTransport() {
         assertTransport(DEFAULT_USB.getOptions(), "USB");
     }

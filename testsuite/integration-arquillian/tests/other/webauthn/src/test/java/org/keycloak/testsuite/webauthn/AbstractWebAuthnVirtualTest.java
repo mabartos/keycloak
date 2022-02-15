@@ -40,6 +40,7 @@ import org.keycloak.testsuite.admin.AbstractAdminTest;
 import org.keycloak.testsuite.admin.ApiUtil;
 import org.keycloak.testsuite.arquillian.annotation.AuthServerContainerExclude;
 import org.keycloak.testsuite.arquillian.annotation.EnableFeature;
+import org.keycloak.testsuite.arquillian.annotation.IgnoreBrowserDriver;
 import org.keycloak.testsuite.pages.AppPage;
 import org.keycloak.testsuite.pages.LoginPage;
 import org.keycloak.testsuite.pages.RegisterPage;
@@ -55,6 +56,8 @@ import org.keycloak.testsuite.webauthn.updaters.AbstractWebAuthnRealmUpdater;
 import org.keycloak.testsuite.webauthn.updaters.PasswordLessRealmAttributeUpdater;
 import org.keycloak.testsuite.webauthn.updaters.WebAuthnRealmAttributeUpdater;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chromium.ChromiumDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.virtualauthenticator.Credential;
 import org.openqa.selenium.virtualauthenticator.VirtualAuthenticatorOptions;
 
@@ -68,6 +71,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.keycloak.testsuite.arquillian.annotation.AuthServerContainerExclude.AuthServer.REMOTE;
+import static org.keycloak.testsuite.util.BrowserDriverUtil.isDriverFirefox;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 
 /**
@@ -118,14 +122,18 @@ public abstract class AbstractWebAuthnVirtualTest extends AbstractTestRealmKeycl
     @Before
     @Override
     public void setUpVirtualAuthenticator() {
-        this.virtualAuthenticatorManager = createDefaultVirtualManager(driver, getDefaultAuthenticatorOptions());
+        if (!isDriverFirefox(driver)) {
+            this.virtualAuthenticatorManager = createDefaultVirtualManager(driver, getDefaultAuthenticatorOptions());
+        }
         clearEventQueue();
     }
 
     @After
     @Override
     public void removeVirtualAuthenticator() {
-        virtualAuthenticatorManager.removeAuthenticator();
+        if (!isDriverFirefox(driver)) {
+            virtualAuthenticatorManager.removeAuthenticator();
+        }
         clearEventQueue();
     }
 
