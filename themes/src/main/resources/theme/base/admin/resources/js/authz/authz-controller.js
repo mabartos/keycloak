@@ -1423,12 +1423,15 @@ module.controller('ResourceServerPolicyUserDetailCtrl', function($scope, $route,
                 allowClear: true,
                 query: function (query) {
                     var data = {results: []};
-                    if ('' == query.term.trim()) {
+                    if ('' === query.term.trim()) {
                         query.callback(data);
                         return;
                     }
+                    console.log("--")
+                    console.log(query.term.trim())
                     User.query({realm: $route.current.params.realm, search: query.term.trim(), max: 20}, function(response) {
                         data.results = response;
+                        console.log(response)
                         query.callback(data);
                     });
                 },
