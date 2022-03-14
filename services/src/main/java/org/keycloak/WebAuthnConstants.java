@@ -79,4 +79,6 @@ public interface WebAuthnConstants {
     String REG_ERR_LABEL = "web_authn_registration_error";
     String REG_ERR_DETAIL_LABEL = "web_authn_registration_error_detail";
 
+    String WEBAUTHN_TYPE = "webauthn_provider";
+
 }

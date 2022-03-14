@@ -57,16 +57,46 @@ public enum EventType {
     UPDATE_EMAIL_ERROR(true),
     UPDATE_PROFILE(true),
     UPDATE_PROFILE_ERROR(true),
+
+    /**
+     * @deprecated Please use UPDATE_CREDENTIAL event
+     */
+    @Deprecated
     UPDATE_PASSWORD(true),
+
+    /**
+     * @deprecated Please use UPDATE_CREDENTIAL_ERROR event
+     */
+    @Deprecated
     UPDATE_PASSWORD_ERROR(true),
+
+    /**
+     * @deprecated Please use UPDATE_CREDENTIAL event
+     */
+    @Deprecated
     UPDATE_TOTP(true),
+
+    /**
+     * @deprecated Please use UPDATE_CREDENTIAL_ERROR event
+     */
+    @Deprecated
     UPDATE_TOTP_ERROR(true),
+
     VERIFY_EMAIL(true),
     VERIFY_EMAIL_ERROR(true),
     VERIFY_PROFILE(true),
     VERIFY_PROFILE_ERROR(true),
 
+    /**
+     * @deprecated Please use REMOVE_CREDENTIAL event
+     */
+    @Deprecated
     REMOVE_TOTP(true),
+
+    /**
+     * @deprecated Please use REMOVE_CREDENTIAL_ERROR event
+     */
+    @Deprecated
     REMOVE_TOTP_ERROR(true),
 
     GRANT_CONSENT(true),
@@ -151,10 +181,19 @@ public enum EventType {
 
     // PAR request.
     PUSHED_AUTHORIZATION_REQUEST(false),
-    PUSHED_AUTHORIZATION_REQUEST_ERROR(false);
+    PUSHED_AUTHORIZATION_REQUEST_ERROR(false),
 
+    // Credential
+    REGISTER_CREDENTIAL(true),
+    REGISTER_CREDENTIAL_ERROR(true),
 
-    private boolean saveByDefault;
+    UPDATE_CREDENTIAL(true),
+    UPDATE_CREDENTIAL_ERROR(true),
+
+    REMOVE_CREDENTIAL(true),
+    REMOVE_CREDENTIAL_ERROR(true);
+
+    private final boolean saveByDefault;
 
     EventType(boolean saveByDefault) {
         this.saveByDefault = saveByDefault;
@@ -162,6 +201,7 @@ public enum EventType {
 
     /**
      * Determines whether this event is stored when the admin has not set a specific set of event types to save.
+     *
      * @return
      */
     public boolean isSaveByDefault() {

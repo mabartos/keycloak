@@ -61,6 +61,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.keycloak.events.EventType.CUSTOM_REQUIRED_ACTION;
+import static org.keycloak.events.EventType.WEB_AUTHN_REGISTER;
 import static org.keycloak.models.AuthenticationExecutionModel.Requirement.ALTERNATIVE;
 import static org.keycloak.models.AuthenticationExecutionModel.Requirement.REQUIRED;
 
@@ -124,9 +125,9 @@ public class WebAuthnRegisterAndLoginTest extends AbstractWebAuthnVirtualTest {
             // confirm that registration is successfully completed
             userId = events.expectRegister(username, email).assertEvent().getUserId();
             // confirm registration event
-            EventRepresentation eventRep = events.expectRequiredAction(CUSTOM_REQUIRED_ACTION)
+            EventRepresentation eventRep = events.expectRequiredAction(WEB_AUTHN_REGISTER)
                     .user(userId)
-                    .detail(Details.CUSTOM_REQUIRED_ACTION, WebAuthnRegisterFactory.PROVIDER_ID)
+                    .detail(Details.CREDENTIAL_TYPE, WebAuthnRegisterFactory.PROVIDER_ID)
                     .detail(WebAuthnConstants.PUBKEY_CRED_LABEL_ATTR, authenticatorLabel)
                     .detail(WebAuthnConstants.PUBKEY_CRED_AAGUID_ATTR, ALL_ZERO_AAGUID)
                     .assertEvent();
@@ -135,7 +136,7 @@ public class WebAuthnRegisterAndLoginTest extends AbstractWebAuthnVirtualTest {
             // confirm login event
             String sessionId = events.expectLogin()
                     .user(userId)
-                    .detail(Details.CUSTOM_REQUIRED_ACTION, WebAuthnRegisterFactory.PROVIDER_ID)
+                    .detail(Details.CREDENTIAL_TYPE, WebAuthnRegisterFactory.PROVIDER_ID)
                     .detail(WebAuthnConstants.PUBKEY_CRED_LABEL_ATTR, authenticatorLabel)
                     .assertEvent().getSessionId();
             // confirm user registered
@@ -229,15 +230,15 @@ public class WebAuthnRegisterAndLoginTest extends AbstractWebAuthnVirtualTest {
 
             appPage.assertCurrent();
 
-            events.expectRequiredAction(CUSTOM_REQUIRED_ACTION)
+            events.expectRequiredAction(WEB_AUTHN_REGISTER)
                     .user(userId)
-                    .detail(Details.CUSTOM_REQUIRED_ACTION, WebAuthnPasswordlessRegisterFactory.PROVIDER_ID)
+                    .detail(Details.CREDENTIAL_TYPE, WebAuthnPasswordlessRegisterFactory.PROVIDER_ID)
                     .detail(WebAuthnConstants.PUBKEY_CRED_LABEL_ATTR, PASSWORDLESS_LABEL)
                     .assertEvent();
 
-            events.expectRequiredAction(CUSTOM_REQUIRED_ACTION)
+            events.expectRequiredAction(WEB_AUTHN_REGISTER)
                     .user(userId)
-                    .detail(Details.CUSTOM_REQUIRED_ACTION, WebAuthnRegisterFactory.PROVIDER_ID)
+                    .detail(Details.CREDENTIAL_TYPE, WebAuthnRegisterFactory.PROVIDER_ID)
                     .detail(WebAuthnConstants.PUBKEY_CRED_LABEL_ATTR, WEBAUTHN_LABEL)
                     .assertEvent();
 

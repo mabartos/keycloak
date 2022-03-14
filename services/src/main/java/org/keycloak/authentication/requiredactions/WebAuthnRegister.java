@@ -48,6 +48,8 @@ import org.keycloak.credential.WebAuthnCredentialProviderFactory;
 import org.keycloak.crypto.Algorithm;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
+import org.keycloak.events.EventBuilder;
+import org.keycloak.events.EventType;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.WebAuthnPolicy;
@@ -177,6 +179,7 @@ public class WebAuthnRegister implements RequiredActionProvider, CredentialRegis
 
     @Override
     public void processAction(RequiredActionContext context) {
+        context.getEvent().event(EventType.WEB_AUTHN_REGISTER).removeDetail(Details.CUSTOM_REQUIRED_ACTION);
 
         MultivaluedMap<String, String> params = context.getHttpRequest().getDecodedFormParameters();
 
@@ -366,6 +369,7 @@ public class WebAuthnRegister implements RequiredActionProvider, CredentialRegis
 
     private void setErrorResponse(RequiredActionContext context, final String errorCase, final String errorMessage) {
         Response errorResponse = null;
+        context.getEvent().event(EventType.WEB_AUTHN_REGISTER_ERROR);
         switch (errorCase) {
         case WEBAUTHN_ERROR_REGISTER_VERIFICATION:
             logger.warnv("WebAuthn API .create() response validation failure. {0}", errorMessage);

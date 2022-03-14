@@ -22,6 +22,7 @@ import org.keycloak.OAuth2Constants;
 import org.keycloak.TokenVerifier;
 import org.keycloak.authentication.AuthenticationFlowException;
 import org.keycloak.authentication.AuthenticationProcessor;
+import org.keycloak.authentication.CredentialRegistrator;
 import org.keycloak.authentication.ExplainedVerificationException;
 import org.keycloak.authentication.RequiredActionContext;
 import org.keycloak.authentication.RequiredActionContextResult;
@@ -1037,6 +1038,8 @@ public class LoginActionsService {
             AuthenticationManager.setKcActionStatus(factory.getId(), RequiredActionContext.KcActionStatus.CANCELLED, authSession);
             context.success();
         } else {
+            if (provider.getClass().isAssignableFrom(CredentialRegistrator.class)) {
+            }
             provider.processAction(context);
         }
 
