@@ -38,11 +38,13 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserCredentialModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.UserSessionModel;
+import org.keycloak.models.credential.PasswordCredentialModel;
 import org.keycloak.models.utils.FormMessage;
 import org.keycloak.services.managers.AuthenticationManager;
 import org.keycloak.services.messages.Messages;
 import org.keycloak.services.validation.Validation;
 import org.keycloak.sessions.AuthenticationSessionModel;
+import org.keycloak.utils.CredentialEventHelper;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -102,11 +104,13 @@ public class UpdatePassword implements RequiredActionProvider, RequiredActionFac
         UserModel user = context.getUser();
         KeycloakSession session = context.getSession();
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
-        event.event(EventType.UPDATE_PASSWORD);
+
+        CredentialEventHelper.update(event, PasswordCredentialModel.TYPE);
+
         String passwordNew = formData.getFirst("password-new");
         String passwordConfirm = formData.getFirst("password-confirm");
 
-        EventBuilder errorEvent = event.clone().event(EventType.UPDATE_PASSWORD_ERROR)
+        EventBuilder errorEvent = CredentialEventHelper.updateError(event.clone(), PasswordCredentialModel.TYPE)
                 .client(authSession.getClient())
                 .user(authSession.getAuthenticatedUser());
 

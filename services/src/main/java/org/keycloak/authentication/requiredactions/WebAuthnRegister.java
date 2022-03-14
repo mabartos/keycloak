@@ -16,21 +16,28 @@
 
 package org.keycloak.authentication.requiredactions;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-
 import com.webauthn4j.WebAuthnRegistrationManager;
+import com.webauthn4j.converter.util.ObjectConverter;
 import com.webauthn4j.data.AuthenticatorTransport;
+import com.webauthn4j.data.RegistrationData;
+import com.webauthn4j.data.RegistrationParameters;
+import com.webauthn4j.data.RegistrationRequest;
+import com.webauthn4j.data.attestation.authenticator.AttestedCredentialData;
+import com.webauthn4j.data.attestation.statement.AttestationStatement;
+import com.webauthn4j.data.attestation.statement.COSEAlgorithmIdentifier;
+import com.webauthn4j.data.client.Origin;
+import com.webauthn4j.data.client.challenge.Challenge;
+import com.webauthn4j.data.client.challenge.DefaultChallenge;
+import com.webauthn4j.server.ServerProperty;
+import com.webauthn4j.util.exception.WebAuthnException;
+import com.webauthn4j.validator.attestation.statement.androidkey.AndroidKeyAttestationStatementValidator;
+import com.webauthn4j.validator.attestation.statement.androidsafetynet.AndroidSafetyNetAttestationStatementValidator;
+import com.webauthn4j.validator.attestation.statement.none.NoneAttestationStatementValidator;
+import com.webauthn4j.validator.attestation.statement.packed.PackedAttestationStatementValidator;
+import com.webauthn4j.validator.attestation.statement.tpm.TPMAttestationStatementValidator;
+import com.webauthn4j.validator.attestation.statement.u2f.FIDOU2FAttestationStatementValidator;
+import com.webauthn4j.validator.attestation.trustworthiness.certpath.CertPathTrustworthinessValidator;
+import com.webauthn4j.validator.attestation.trustworthiness.self.DefaultSelfAttestationTrustworthinessValidator;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.keycloak.WebAuthnConstants;
@@ -48,36 +55,30 @@ import org.keycloak.credential.WebAuthnCredentialProviderFactory;
 import org.keycloak.crypto.Algorithm;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
+import org.keycloak.events.EventType;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.WebAuthnPolicy;
-
-import com.webauthn4j.converter.util.ObjectConverter;
-import com.webauthn4j.data.attestation.authenticator.AttestedCredentialData;
-import com.webauthn4j.data.attestation.statement.AttestationStatement;
-import com.webauthn4j.data.attestation.statement.COSEAlgorithmIdentifier;
-import com.webauthn4j.data.client.Origin;
-import com.webauthn4j.data.client.challenge.Challenge;
-import com.webauthn4j.data.client.challenge.DefaultChallenge;
-import com.webauthn4j.data.RegistrationRequest;
-import com.webauthn4j.data.RegistrationData;
-import com.webauthn4j.data.RegistrationParameters;
-import com.webauthn4j.server.ServerProperty;
-import com.webauthn4j.util.exception.WebAuthnException;
-import com.webauthn4j.validator.attestation.statement.androidkey.AndroidKeyAttestationStatementValidator;
-import com.webauthn4j.validator.attestation.statement.androidsafetynet.AndroidSafetyNetAttestationStatementValidator;
-import com.webauthn4j.validator.attestation.statement.none.NoneAttestationStatementValidator;
-import com.webauthn4j.validator.attestation.statement.packed.PackedAttestationStatementValidator;
-import com.webauthn4j.validator.attestation.statement.tpm.TPMAttestationStatementValidator;
-import com.webauthn4j.validator.attestation.statement.u2f.FIDOU2FAttestationStatementValidator;
-import com.webauthn4j.validator.attestation.trustworthiness.certpath.CertPathTrustworthinessValidator;
-import com.webauthn4j.validator.attestation.trustworthiness.self.DefaultSelfAttestationTrustworthinessValidator;
 import org.keycloak.models.credential.WebAuthnCredentialModel;
 import org.keycloak.utils.StringUtil;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import static org.keycloak.WebAuthnConstants.REG_ERR_DETAIL_LABEL;
 import static org.keycloak.WebAuthnConstants.REG_ERR_LABEL;
-import static org.keycloak.services.messages.Messages.*;
+import static org.keycloak.services.messages.Messages.WEBAUTHN_ERROR_REGISTER_VERIFICATION;
+import static org.keycloak.services.messages.Messages.WEBAUTHN_ERROR_REGISTRATION;
+import static org.keycloak.services.messages.Messages.WEBAUTHN_REGISTER_TITLE;
 
 /**
  * Required action for register WebAuthn 2-factor credential for the user
@@ -177,6 +178,10 @@ public class WebAuthnRegister implements RequiredActionProvider, CredentialRegis
 
     @Override
     public void processAction(RequiredActionContext context) {
+        context.getEvent()
+                .event(EventType.REGISTER_CREDENTIAL)
+                .detail(Details.CREDENTIAL_TYPE, getCredentialType())
+                .removeDetail(Details.CUSTOM_REQUIRED_ACTION);
 
         MultivaluedMap<String, String> params = context.getHttpRequest().getDecodedFormParameters();
 
@@ -185,8 +190,6 @@ public class WebAuthnRegister implements RequiredActionProvider, CredentialRegis
             requiredActionChallenge(context);
             return;
         }
-
-        context.getEvent().detail(Details.CREDENTIAL_TYPE, getCredentialType());
 
         // receive error from navigator.credentials.create()
         String errorMsgFromWebAuthnApi = params.getFirst(WebAuthnConstants.ERROR);
@@ -366,6 +369,7 @@ public class WebAuthnRegister implements RequiredActionProvider, CredentialRegis
 
     private void setErrorResponse(RequiredActionContext context, final String errorCase, final String errorMessage) {
         Response errorResponse = null;
+        context.getEvent().event(EventType.WEB_AUTHN_REGISTER_ERROR);
         switch (errorCase) {
         case WEBAUTHN_ERROR_REGISTER_VERIFICATION:
             logger.warnv("WebAuthn API .create() response validation failure. {0}", errorMessage);

@@ -21,6 +21,7 @@ import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.CredentialValidator;
 import org.keycloak.credential.CredentialProvider;
 import org.keycloak.credential.OTPCredentialProvider;
+import org.keycloak.credential.OTPCredentialProviderFactory;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
@@ -41,7 +42,7 @@ public class ResetOTP extends AbstractSetRequiredActionAuthenticator implements 
 
     @Override
     public OTPCredentialProvider getCredentialProvider(KeycloakSession session) {
-        return (OTPCredentialProvider)session.getProvider(CredentialProvider.class, "keycloak-otp");
+        return (OTPCredentialProvider)session.getProvider(CredentialProvider.class, OTPCredentialProviderFactory.PROVIDER_ID);
     }
 
     @Override

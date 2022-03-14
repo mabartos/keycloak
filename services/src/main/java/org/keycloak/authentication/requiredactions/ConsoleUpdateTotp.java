@@ -17,21 +17,18 @@
 
 package org.keycloak.authentication.requiredactions;
 
+import org.keycloak.authentication.ConsoleDisplayMode;
 import org.keycloak.authentication.RequiredActionContext;
 import org.keycloak.authentication.RequiredActionProvider;
-import org.keycloak.authentication.ConsoleDisplayMode;
-import org.keycloak.credential.CredentialModel;
-import org.keycloak.credential.CredentialProvider;
-import org.keycloak.credential.OTPCredentialProvider;
-import org.keycloak.events.EventBuilder;
+import org.keycloak.events.Details;
 import org.keycloak.events.EventType;
 import org.keycloak.forms.login.freemarker.model.TotpBean;
 import org.keycloak.models.OTPPolicy;
-import org.keycloak.models.UserCredentialModel;
 import org.keycloak.models.credential.OTPCredentialModel;
 import org.keycloak.models.utils.CredentialValidation;
 import org.keycloak.services.messages.Messages;
 import org.keycloak.services.validation.Validation;
+import org.keycloak.utils.CredentialEventHelper;
 import org.keycloak.utils.CredentialHelper;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -69,8 +66,9 @@ public class ConsoleUpdateTotp implements RequiredActionProvider {
 
     @Override
     public void processAction(RequiredActionContext context) {
-        EventBuilder event = context.getEvent();
-        event.event(EventType.UPDATE_TOTP);
+        CredentialEventHelper.update(context.getEvent(), OTPCredentialModel.TYPE)
+                .removeDetail(Details.CUSTOM_REQUIRED_ACTION);
+
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
         String challengeResponse = formData.getFirst("totp");
         String totpSecret = context.getAuthenticationSession().getAuthNote("totpSecret");

@@ -78,6 +78,7 @@ import org.keycloak.userprofile.UserProfile;
 import org.keycloak.userprofile.UserProfileProvider;
 import org.keycloak.userprofile.EventAuditingAttributeChangeListener;
 import org.keycloak.util.JsonSerialization;
+import org.keycloak.utils.CredentialEventHelper;
 import org.keycloak.utils.CredentialHelper;
 
 import javax.ws.rs.Consumes;
@@ -515,7 +516,11 @@ public class AccountFormService extends AbstractSecuredLocalService {
                 return account.setError(Status.OK, Messages.UNEXPECTED_ERROR_HANDLING_REQUEST).createResponse(AccountPages.TOTP);
             }
             CredentialHelper.deleteOTPCredential(session, realm, user, credentialId);
-            event.event(EventType.REMOVE_TOTP).client(auth.getClient()).user(auth.getUser()).success();
+            CredentialEventHelper.remove(event, OTPCredentialModel.TYPE)
+                    .client(auth.getClient())
+                    .user(auth.getUser())
+                    .success();
+
             setReferrerOnPage();
             return account.setSuccess(Messages.SUCCESS_TOTP_REMOVED).createResponse(AccountPages.TOTP);
         } else {
@@ -537,7 +542,10 @@ public class AccountFormService extends AbstractSecuredLocalService {
                 setReferrerOnPage();
                 return account.setError(Status.OK, Messages.INVALID_TOTP).createResponse(AccountPages.TOTP);
             }
-            event.event(EventType.UPDATE_TOTP).client(auth.getClient()).user(auth.getUser()).success();
+
+            CredentialEventHelper.update(event, credentialModel.getType())
+                    .client(auth.getClient())
+                    .user(auth.getUser()).success();
 
             setReferrerOnPage();
             return account.setSuccess(Messages.SUCCESS_TOTP).createResponse(AccountPages.TOTP);
@@ -577,7 +585,7 @@ public class AccountFormService extends AbstractSecuredLocalService {
         String passwordNew = formData.getFirst("password-new");
         String passwordConfirm = formData.getFirst("password-confirm");
 
-        EventBuilder errorEvent = event.clone().event(EventType.UPDATE_PASSWORD_ERROR)
+        EventBuilder errorEvent = CredentialEventHelper.updateError(event.clone(), PasswordCredentialModel.TYPE)
                 .client(auth.getClient())
                 .user(auth.getSession().getUser());
 

@@ -17,6 +17,7 @@
 
 package org.keycloak.authentication.requiredactions;
 
+import jdk.internal.event.EventHelper;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.*;
 import org.keycloak.events.Details;
@@ -24,8 +25,10 @@ import org.keycloak.events.Errors;
 import org.keycloak.events.EventBuilder;
 import org.keycloak.events.EventType;
 import org.keycloak.models.*;
+import org.keycloak.models.credential.PasswordCredentialModel;
 import org.keycloak.services.messages.Messages;
 import org.keycloak.services.validation.Validation;
+import org.keycloak.utils.CredentialEventHelper;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -64,11 +67,13 @@ public class ConsoleUpdatePassword extends UpdatePassword implements RequiredAct
     public void processAction(RequiredActionContext context) {
         EventBuilder event = context.getEvent();
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
-        event.event(EventType.UPDATE_PASSWORD);
+
+        CredentialEventHelper.update(event, PasswordCredentialModel.TYPE);
+
         String passwordNew = formData.getFirst(PASSWORD_NEW);
         String passwordConfirm = formData.getFirst(PASSWORD_CONFIRM);
 
-        EventBuilder errorEvent = event.clone().event(EventType.UPDATE_PASSWORD_ERROR)
+        EventBuilder errorEvent = CredentialEventHelper.updateError(event.clone(), PasswordCredentialModel.TYPE)
                 .client(context.getAuthenticationSession().getClient())
                 .user(context.getAuthenticationSession().getAuthenticatedUser());
 

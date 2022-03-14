@@ -28,6 +28,8 @@ import org.keycloak.authentication.RequiredActionProvider;
 import org.keycloak.credential.CredentialModel;
 import org.keycloak.credential.CredentialProvider;
 import org.keycloak.credential.OTPCredentialProvider;
+import org.keycloak.credential.OTPCredentialProviderFactory;
+import org.keycloak.events.Details;
 import org.keycloak.events.EventBuilder;
 import org.keycloak.events.EventType;
 import org.keycloak.models.KeycloakSession;
@@ -39,6 +41,7 @@ import org.keycloak.models.utils.CredentialValidation;
 import org.keycloak.models.utils.FormMessage;
 import org.keycloak.services.messages.Messages;
 import org.keycloak.services.validation.Validation;
+import org.keycloak.utils.CredentialEventHelper;
 import org.keycloak.utils.CredentialHelper;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -69,8 +72,9 @@ public class UpdateTotp implements RequiredActionProvider, RequiredActionFactory
 
     @Override
     public void processAction(RequiredActionContext context) {
-        EventBuilder event = context.getEvent();
-        event.event(EventType.UPDATE_TOTP);
+        CredentialEventHelper.update(context.getEvent(), OTPCredentialModel.TYPE)
+                .removeDetail(Details.CUSTOM_REQUIRED_ACTION);
+
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
         String challengeResponse = formData.getFirst("totp");
         String totpSecret = formData.getFirst("totpSecret");
@@ -94,7 +98,7 @@ public class UpdateTotp implements RequiredActionProvider, RequiredActionFactory
             context.challenge(challenge);
             return;
         }
-        OTPCredentialProvider otpCredentialProvider = (OTPCredentialProvider) context.getSession().getProvider(CredentialProvider.class, "keycloak-otp");
+        OTPCredentialProvider otpCredentialProvider = (OTPCredentialProvider) context.getSession().getProvider(CredentialProvider.class, OTPCredentialProviderFactory.PROVIDER_ID);
         final Stream<CredentialModel> otpCredentials  = (otpCredentialProvider.isConfiguredFor(context.getRealm(), context.getUser()))
             ? context.getSession().userCredentialManager().getStoredCredentialsByTypeStream(context.getRealm(), context.getUser(), OTPCredentialModel.TYPE)
             : Stream.empty();
