@@ -60,6 +60,17 @@ public class MigrationTest extends AbstractMigrationTest {
     }
 
     @Test
+    @Migration(versionFrom = "15.")
+    public void migration15_xTest() throws Exception {
+        testMigratedData(false);
+        testMigrationTo18_x();
+
+        // Always test offline-token login during migration test
+        testOfflineTokenLogin();
+        testExtremelyLongClientAttribute(migrationRealm);
+    }
+
+    @Test
     @Migration(versionFrom = "9.")
     public void migration9_xTest() throws Exception {
         testMigratedData(false);
