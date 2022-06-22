@@ -58,6 +58,9 @@
         <auth.server.home>${containers.home}/${auth.server.container}</auth.server.home>
         <auth.server.config.dir>${auth.server.home}</auth.server.config.dir>
 
+        <auth.migration.server.container>auth-server-migration</auth.migration.server.container>
+        <auth.migration.server.home>${containers.home}/${auth.migration.server.container}</auth.migration.server.home>
+
         <auth.server.host>localhost</auth.server.host>
         <auth.server.management.host>${auth.server.host}</auth.server.management.host>
         <auth.server.browserHost/> <!-- if set, this host will be used by the browser instead of auth.server.host -->
@@ -1787,6 +1790,7 @@
         <profile>
             <id>auth-server-migration-legacy</id>
             <properties>
+                <auth.migration.server.container>auth-server-jboss-migration</auth.migration.server.container>
                 <migration.import.file>target/test-classes/migration-test/migration-realm-${migrated.auth.server.version}.json</migration.import.file>
                 <migration.import.props.previous>
                     -Dkeycloak.migration.action=import
@@ -1870,6 +1874,7 @@
         <profile>
             <id>auth-server-migration</id>
             <properties>
+                <auth.migration.server.container>auth-server-migration</auth.migration.server.container>
                 <migration.import.file>target/test-classes/migration-test/migration-realm-${migrated.auth.server.version}.json</migration.import.file>
                 <migration.import.props.previous>
                     -Dkeycloak.migration.action=import

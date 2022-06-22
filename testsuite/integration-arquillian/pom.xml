@@ -40,6 +40,9 @@
         <app.server>undertow</app.server>
         <cache.server.java.home>${java.home}</cache.server.java.home>
 
+        <auth.migration.server.container>auth-server-migration</auth.migration.server.container>
+        <auth.migration.server.home>${containers.home}/${auth.migration.server.container}</auth.migration.server.home>
+
         <!--component versions-->
         <arquillian-core.version>1.6.0.Final</arquillian-core.version>
         <!--the version of shrinkwrap_resolver should align with the version in arquillian-bom-->

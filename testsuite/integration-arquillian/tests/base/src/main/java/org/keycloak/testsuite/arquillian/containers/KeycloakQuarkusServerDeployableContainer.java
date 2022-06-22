@@ -1,31 +1,5 @@
 package org.keycloak.testsuite.arquillian.containers;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
@@ -40,6 +14,34 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.descriptor.api.Descriptor;
 import org.keycloak.testsuite.arquillian.SuiteContext;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author mhajas
@@ -70,6 +72,7 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
     @Override
     public void start() throws LifecycleException {
         try {
+            importRealm();
             container = startContainer();
             waitForReadiness();
         } catch (Exception e) {
@@ -127,10 +130,35 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
 
     }
 
+    private void importRealm() throws IOException, InterruptedException, URISyntaxException {
+        if (configuration.getImportFile() != null) {
+            final List<String> commands = new ArrayList<>();
+            commands.add(getCommand());
+            commands.add("import");
+            System.out.println("PROPS");
+            Path url = Paths.get(getClass().getResource("/migration-test/" + System.getProperty("migration.import.file.name")).toURI());
+            System.out.println(url);
+            System.out.println(System.getProperty("auth.migration.server.home"));
+            System.out.println(System.getProperty("migration.import.file.name"));
+            System.out.println(System.getProperty("migration.import.file"));
+            System.out.println(System.getProperty("keycloak.migration.file"));
+            System.out.println(configuration.getImportFile());
+            File wrkDir = configuration.getProvidersPath().resolve("bin").toFile();
+            Path newUrl = wrkDir.toPath().relativize(url);
+            System.out.println(newUrl);
+            //System.out.println(path);
+
+            //commands.add("--file=" + "../../../test-classes/migration-test/migration-realm-17.0.0.json");
+            commands.add("--file=" + newUrl);
+            final ProcessBuilder builder = getBaseProcessBuilder(commands.toArray(new String[0]));
+            builder.start();
+        } else {
+            System.out.println("NOT HERE");
+        }
+    }
+
     private Process startContainer() throws IOException {
-        ProcessBuilder pb = new ProcessBuilder(getProcessCommands());
-        File wrkDir = configuration.getProvidersPath().resolve("bin").toFile();
-        ProcessBuilder builder = pb.directory(wrkDir).inheritIO().redirectErrorStream(true);
+        final ProcessBuilder builder = getBaseProcessBuilder(getProcessCommands());
 
         String javaOpts = configuration.getJavaOpts();
 
@@ -146,6 +174,12 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
         }
 
         return builder.start();
+    }
+
+    private ProcessBuilder getBaseProcessBuilder(String... commands) {
+        final ProcessBuilder pb = new ProcessBuilder(commands);
+        File wrkDir = configuration.getProvidersPath().resolve("bin").toFile();
+        return pb.directory(wrkDir).inheritIO();
     }
 
     private String[] getProcessCommands() {

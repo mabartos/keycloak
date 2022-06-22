@@ -25,6 +25,7 @@ public class KeycloakQuarkusConfiguration implements ContainerConfiguration {
     private int bindHttpsPort = Integer.valueOf(System.getProperty("auth.server.https.port", "8543"));
     private int debugPort = -1;
     private Path providersPath = Paths.get(System.getProperty("auth.server.home"));
+    private String importFile;
     private int startupTimeoutInSeconds = 300;
     private String route;
     private String keycloakConfigPropertyOverrides;
@@ -155,4 +156,11 @@ public class KeycloakQuarkusConfiguration implements ContainerConfiguration {
         this.debugPort = debugPort;
     }
 
+    public String getImportFile() {
+        return importFile;
+    }
+
+    public void setImportFile(String importFile) {
+        this.importFile = importFile;
+    }
 }
