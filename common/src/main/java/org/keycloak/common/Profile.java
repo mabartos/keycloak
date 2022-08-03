@@ -17,15 +17,19 @@
 
 package org.keycloak.common;
 
-import static org.keycloak.common.Profile.Type.DEPRECATED;
+import org.jboss.logging.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
-import org.jboss.logging.Logger;
+import java.util.stream.Collectors;
+
+import static org.keycloak.common.Profile.Type.DEPRECATED;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -114,6 +118,13 @@ public class Profile {
 
     public static String getName() {
         return getInstance().profile.name().toLowerCase();
+    }
+
+    public static Set<Feature> getDefaultFeatures() {
+        final Set<Feature> disabledFeatures = getDisabledFeatures();
+        return Arrays.stream(Feature.values())
+                .filter(f -> !disabledFeatures.contains(f))
+                .collect(Collectors.toSet());
     }
 
     public static Set<Feature> getDisabledFeatures() {

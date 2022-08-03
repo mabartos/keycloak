@@ -19,8 +19,10 @@ package org.keycloak.representations.info;
 
 import org.keycloak.common.Profile;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -30,22 +32,42 @@ public class ProfileInfoRepresentation {
 
     private String name;
     private List<String> disabledFeatures;
+    @Deprecated
     private List<String> previewFeatures;
+    @Deprecated
     private List<String> experimentalFeatures;
+
+    private Map<String, String> allFeatures;
 
     public static ProfileInfoRepresentation create() {
         ProfileInfoRepresentation info = new ProfileInfoRepresentation();
 
         info.name = Profile.getName();
+
         info.disabledFeatures = names(Profile.getDisabledFeatures());
         info.previewFeatures = names(Profile.getPreviewFeatures());
         info.experimentalFeatures = names(Profile.getExperimentalFeatures());
 
+        info.allFeatures = gatherAllFeatures(info);
+
         return info;
+    }
+
+    private static Map<String, String> gatherAllFeatures(ProfileInfoRepresentation info) {
+        Map<String, String> features = new HashMap<>();
+
+        info.previewFeatures.forEach(f -> features.put(f, Profile.Type.PREVIEW.name()));
+        info.experimentalFeatures.forEach(f -> features.put(f, Profile.Type.EXPERIMENTAL.name()));
+
+        return features;
     }
 
     public String getName() {
         return name;
+    }
+
+    public List<String> getDefaultFeatures() {
+        return defaultFeatures;
     }
 
     public List<String> getDisabledFeatures() {
@@ -60,8 +82,16 @@ public class ProfileInfoRepresentation {
         return experimentalFeatures;
     }
 
+    public List<String> getDeprecatedFeatures() {
+        return deprecatedFeatures;
+    }
+
+    public Map<String, String> getAllFeatures() {
+        return allFeatures;
+    }
+
     private static List<String> names(Set<Profile.Feature> featureSet) {
-        List<String> l = new LinkedList();
+        List<String> l = new LinkedList<>();
         for (Profile.Feature f : featureSet) {
             l.add(f.name());
         }

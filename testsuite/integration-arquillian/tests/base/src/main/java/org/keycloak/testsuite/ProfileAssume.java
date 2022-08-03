@@ -45,15 +45,17 @@ public class ProfileAssume {
         try (Keycloak adminClient = AdminClientUtil.createAdminClient(adapterCompatTesting, authServerContextRoot)) {
             ProfileInfoRepresentation profileInfo = adminClient.serverInfo().getInfo().getProfileInfo();
             profile = profileInfo.getName();
+            System.err.println("PROFILE: "+profile);
             List<String> disabled = profileInfo.getDisabledFeatures();
             disabledFeatures = Collections.unmodifiableSet(new HashSet<>(disabled));
+            System.err.println("features: "+disabledFeatures);
+
         } catch (Exception e) {
             throw new RuntimeException("Failed to obtain profile / features info from serverinfo endpoint of " + authServerContextRoot, e);
         }
     }
 
     public static void assumeFeatureEnabled(Profile.Feature feature) {
-        updateProfile();
         Assume.assumeTrue("Ignoring test as feature " + feature.name() + " is not enabled", isFeatureEnabled(feature));
     }
 
