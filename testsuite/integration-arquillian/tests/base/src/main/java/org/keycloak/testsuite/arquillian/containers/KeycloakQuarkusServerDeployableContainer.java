@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.exec.StreamPumper;
@@ -54,13 +55,12 @@ import org.keycloak.testsuite.arquillian.SuiteContext;
 public class KeycloakQuarkusServerDeployableContainer implements DeployableContainer<KeycloakQuarkusConfiguration> {
 
     private static final int DEFAULT_SHUTDOWN_TIMEOUT_SECONDS = 10;
-    private static final String AUTH_SERVER_QUARKUS_MAP_STORAGE_PROFILE = "auth.server.quarkus.mapStorage.profile.config";
 
     private static final Logger log = Logger.getLogger(KeycloakQuarkusServerDeployableContainer.class);
 
     private KeycloakQuarkusConfiguration configuration;
     private Process container;
-    private static AtomicBoolean restart = new AtomicBoolean();
+    private static AtomicBoolean firstExecution = new AtomicBoolean(true);
     private Thread stdoutForwarderThread;
 
     @Inject
@@ -182,10 +182,7 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
             builder.environment().put("JAVA_OPTS", javaOpts);
         }
 
-        builder.environment().put("KEYCLOAK_ADMIN", "admin");
-        builder.environment().put("KEYCLOAK_ADMIN_PASSWORD", "admin");
-
-        if (restart.compareAndSet(false, true)) {
+        if (firstExecution.compareAndSet(true, false)) {
             deleteDirectory(configuration.getProvidersPath().resolve("data"));
         }
 
@@ -216,14 +213,15 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
             commands.add("-Djboss.node.name=" + configuration.getRoute());
         }
 
-        String mapStorageProfile = System.getProperty(AUTH_SERVER_QUARKUS_MAP_STORAGE_PROFILE);
-        // only run build during restarts or when running cluster tests
+        final Supplier<Boolean> isDefaultDb = () -> !configuration.isMapStore() && configuration.getDbVendor().isEmpty();
+        final Supplier<Boolean> shouldSetUpDb = () -> firstExecution.get() && !isDefaultDb.get();
 
-        if (restart.get() || "ha".equals(System.getProperty("auth.server.quarkus.cluster.config"))) {
+        // only run build during first execution of the server (if the DB is specified), restarts or when running cluster tests
+        if (!firstExecution.get() || shouldSetUpDb.get() || "ha".equals(System.getProperty("auth.server.quarkus.cluster.config", ""))) {
             commands.removeIf("--optimized"::equals);
             commands.add("--http-relative-path=/auth");
 
-            if (mapStorageProfile == null) {
+            if (!configuration.isMapStore()) {
                 String cacheMode = System.getProperty("auth.server.quarkus.cluster.config", "local");
 
                 if ("local".equals(cacheMode)) {
@@ -244,33 +242,38 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
     }
 
     private void addStorageOptions(List<String> commands) {
-        String mapStorageProfile = System.getProperty(AUTH_SERVER_QUARKUS_MAP_STORAGE_PROFILE);
-
-        if (mapStorageProfile != null) {
-            // We need to drop optimized flag because --storage is build option therefore startup requires re-augmentation
-            commands.removeIf("--optimized"::equals);
-
-            // As config is re-augmented on startup we need to also add --http-relative-path as ant build from
-            // integration-arquillian/servers/auth-server/quarkus/ant/configure.xml is replaced by build invoked on
-            // startup when we add new build option below
-            commands.add("--http-relative-path=/auth");
-
-            switch (mapStorageProfile) {
-                case "chm":
-                    commands.add("--storage=" + mapStorageProfile);
-                    break;
-                case "jpa":
-                    commands.add("--storage=" + mapStorageProfile);
-                    commands.add("--db-username=" + System.getProperty("keycloak.map.storage.connectionsJpa.url"));
-                    commands.add("--db-password=" + System.getProperty("keycloak.map.storage.connectionsJpa.user"));
-                    commands.add("--db-url=" + System.getProperty("keycloak.map.storage.connectionsJpa.password"));
-                    break;
-                case "hotrod":
-                    commands.add("--storage=" + mapStorageProfile);
-                    // TODO: URL / username / password
-                    break;
-            }
+        if (configuration.isMapStore()) {
+            configuration.getMapStoreProvider().ifPresent(provider -> {
+                final String alias = provider.getAlias();
+                commands.add("--storage=" + alias);
+                log.debugf("Map store provider '%s' is used.", alias);
+            });
+        } else if (configuration.getDbVendor().isEmpty()) {
+            log.debug("Default legacy DB is used.");
+            return;
+        } else {
+            log.debug("Legacy DB is used.");
         }
+
+        configuration.getDbVendor().ifPresentOrElse(vendor -> {
+            commands.add("--db=" + vendor);
+            log.debugf("DB Vendor: %s", vendor);
+        }, () -> log.warn("DB Vendor is not specified."));
+
+        configuration.getDbUrl().ifPresentOrElse(url -> {
+            commands.add("--db-url='" + url + "'");
+            log.debugf("DB URL: %s", url);
+        }, () -> log.warn("DB URL is not specified."));
+
+        configuration.getDbUsername().ifPresentOrElse(username -> {
+            commands.add("--db-username=" + username);
+            log.debugf("DB Username: %s", username);
+        }, () -> log.warn("DB Username is not specified."));
+
+        configuration.getDbPassword().ifPresentOrElse(password -> {
+            commands.add("--db-password=" + password);
+            log.debugf("DB Password: %s", password);
+        }, () -> log.warn("DB Password is not specified"));
     }
 
     private void waitForReadiness() throws MalformedURLException, LifecycleException {

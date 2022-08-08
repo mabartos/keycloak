@@ -4,13 +4,16 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.jboss.arquillian.container.spi.ConfigurationException;
 import org.jboss.arquillian.container.spi.client.container.ContainerConfiguration;
 import org.jboss.logging.Logger;
+import org.keycloak.testsuite.model.MapStoreProvider;
 import org.keycloak.util.JsonSerialization;
+import org.keycloak.utils.StringUtil;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author mhajas
@@ -22,7 +25,7 @@ public class KeycloakQuarkusConfiguration implements ContainerConfiguration {
     private int bindHttpPortOffset = 100;
     private int bindHttpPort = 8080;
     private int bindHttpsPortOffset = 0;
-    private int bindHttpsPort = Integer.valueOf(System.getProperty("auth.server.https.port", "8543"));
+    private int bindHttpsPort = Integer.parseInt(System.getProperty("auth.server.https.port", "8543"));
     private int debugPort = -1;
     private Path providersPath = Paths.get(System.getProperty("auth.server.home"));
     private int startupTimeoutInSeconds = 300;
@@ -33,6 +36,15 @@ public class KeycloakQuarkusConfiguration implements ContainerConfiguration {
     private String javaOpts;
     private boolean reaugmentBeforeStart;
     private String importFile = System.getProperty("migration.import.file.name");
+
+    // Map store
+    private String mapStoreProfile;
+
+    // DB connection
+    private String dbVendor;
+    private String dbUrl;
+    private String dbUsername;
+    private String dbPassword;
 
     @Override
     public void validate() throws ConfigurationException {
@@ -164,5 +176,59 @@ public class KeycloakQuarkusConfiguration implements ContainerConfiguration {
         this.importFile = importFile;
     }
 
+    public Optional<String> getDbVendor() {
+        return Optional.ofNullable(dbVendor)
+                .or(() -> Optional.ofNullable(System.getProperty("keycloak.storage.connections.vendor")))
+                .filter(StringUtil::isNotBlank);
+    }
 
+    public void setDbVendor(String dbVendor) {
+        this.dbVendor = dbVendor;
+    }
+
+    public Optional<String> getDbUrl() {
+        return Optional.ofNullable(dbUrl)
+                .or(() -> getMapStoreProvider().flatMap(MapStoreProvider::getDbUrl))
+                .or(() -> Optional.ofNullable(System.getProperty("keycloak.connectionsJpa.url")))
+                .filter(StringUtil::isNotBlank);
+    }
+
+    public void setDbUrl(String dbUrl) {
+        this.dbUrl = dbUrl;
+    }
+
+    public Optional<String> getDbUsername() {
+        return Optional.ofNullable(dbUsername)
+                .or(() -> getMapStoreProvider().flatMap(MapStoreProvider::getDbUsername))
+                .or(() -> Optional.ofNullable(System.getProperty("keycloak.connectionsJpa.user")))
+                .filter(StringUtil::isNotBlank);
+    }
+
+    public void setDbUsername(String dbUsername) {
+        this.dbUsername = dbUsername;
+    }
+
+    public Optional<String> getDbPassword() {
+        return Optional.ofNullable(dbPassword)
+                .or(() -> getMapStoreProvider().flatMap(MapStoreProvider::getDbPassword))
+                .or(() -> Optional.ofNullable(System.getProperty("keycloak.connectionsJpa.password")))
+                .filter(StringUtil::isNotBlank);
+    }
+
+    public void setDbPassword(String dbPassword) {
+        this.dbPassword = dbPassword;
+    }
+
+    public boolean isMapStore() {
+        return getMapStoreProvider().isPresent();
+    }
+
+    public Optional<MapStoreProvider> getMapStoreProvider() {
+        return MapStoreProvider.getProviderByAlias(mapStoreProfile)
+                .or(MapStoreProvider::getCurrentProvider);
+    }
+
+    public void setMapStoreProfile(String mapStoreProfile) {
+        this.mapStoreProfile = mapStoreProfile;
+    }
 }
