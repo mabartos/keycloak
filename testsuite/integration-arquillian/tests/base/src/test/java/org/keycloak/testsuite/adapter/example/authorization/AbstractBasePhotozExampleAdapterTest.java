@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -240,7 +241,7 @@ public abstract class AbstractBasePhotozExampleAdapterTest extends AbstractPhoto
                 .loginFormWithScopesWithPossibleConsentPage(user, this::assertOnTestAppUrl, oAuthGrantPage, scopes)
                 .init(defaultArguments(), this::assertSuccessfullyLoggedIn);
 
-        new WebDriverWait(jsDriver, 10).until(this::isLoaded);
+        new WebDriverWait(jsDriver, Duration.ofSeconds(10)).until(this::isLoaded);
     }
 
     public boolean isLoaded(WebDriver w) {

@@ -79,7 +79,7 @@ public final class WaitUtils {
     }
 
     public static void waitUntilElementClassContains(WebElement element, String value) {
-        new WebDriverWait(getCurrentDriver(), 1).until(
+        new WebDriverWait(getCurrentDriver(), Duration.ofSeconds(1)).until(
                 ExpectedConditions.attributeContains(element, "class", value)
         );
     }
@@ -106,7 +106,7 @@ public final class WaitUtils {
             return; // not needed
         }
 
-        WebDriverWait wait = new WebDriverWait(driver, PAGELOAD_TIMEOUT_MILLIS / 1000);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(PAGELOAD_TIMEOUT_MILLIS / 1000));
 
         try {
             wait
@@ -147,7 +147,7 @@ public final class WaitUtils {
             }
         }
 
-        WebDriverWait wait = new WebDriverWait(getCurrentDriver(), PAGELOAD_TIMEOUT_MILLIS / 1000);
+        WebDriverWait wait = new WebDriverWait(getCurrentDriver(), Duration.ofSeconds(PAGELOAD_TIMEOUT_MILLIS / 1000));
         ExpectedCondition waitCondition = null;
 
         // Different wait strategies for Admin and Account Consoles
