@@ -1,5 +1,21 @@
 package org.keycloak.testsuite.arquillian.containers;
 
+import org.apache.commons.exec.StreamPumper;
+import org.apache.commons.lang3.SystemUtils;
+import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
+import org.jboss.arquillian.container.spi.client.container.DeploymentException;
+import org.jboss.arquillian.container.spi.client.container.LifecycleException;
+import org.jboss.arquillian.container.spi.client.protocol.ProtocolDescription;
+import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
+import org.jboss.arquillian.core.api.Instance;
+import org.jboss.arquillian.core.api.annotation.Inject;
+import org.jboss.logging.Logger;
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
+import org.jboss.shrinkwrap.descriptor.api.Descriptor;
+import org.keycloak.testsuite.arquillian.SuiteContext;
+import org.keycloak.testsuite.model.StoreProvider;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -33,21 +49,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import org.apache.commons.exec.StreamPumper;
-import org.apache.commons.lang3.SystemUtils;
-import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
-import org.jboss.arquillian.container.spi.client.container.DeploymentException;
-import org.jboss.arquillian.container.spi.client.container.LifecycleException;
-import org.jboss.arquillian.container.spi.client.protocol.ProtocolDescription;
-import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
-import org.jboss.arquillian.core.api.Instance;
-import org.jboss.arquillian.core.api.annotation.Inject;
-import org.jboss.logging.Logger;
-import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.exporter.ZipExporter;
-import org.jboss.shrinkwrap.descriptor.api.Descriptor;
-import org.keycloak.testsuite.arquillian.SuiteContext;
 
 /**
  * @author mhajas
@@ -242,7 +243,9 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
     }
 
     private void addStorageOptions(List<String> commands) {
-        if (configuration.isMapStore()) {
+        final boolean isMapStore = configuration.isMapStore();
+
+        if (isMapStore) {
             configuration.getMapStoreProvider().ifPresent(provider -> {
                 final String alias = provider.getAlias();
                 commands.add("--storage=" + alias);
@@ -255,23 +258,25 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
             log.debug("Legacy DB is used.");
         }
 
+        final StoreProvider storeProvider = configuration.getMapStoreProvider().get();
+
         configuration.getDbVendor().ifPresentOrElse(vendor -> {
             commands.add("--db=" + vendor);
             log.debugf("DB Vendor: %s", vendor);
         }, () -> log.warn("DB Vendor is not specified."));
 
         configuration.getDbUrl().ifPresentOrElse(url -> {
-            commands.add("--db-url='" + url + "'");
+            commands.add(String.format("%s='%s'", storeProvider.getDbUrlProperty(), url));
             log.debugf("DB URL: %s", url);
         }, () -> log.warn("DB URL is not specified."));
 
         configuration.getDbUsername().ifPresentOrElse(username -> {
-            commands.add("--db-username=" + username);
+            commands.add(String.format("%s='%s'", storeProvider.getDbUsernameProperty(), username));
             log.debugf("DB Username: %s", username);
         }, () -> log.warn("DB Username is not specified."));
 
         configuration.getDbPassword().ifPresentOrElse(password -> {
-            commands.add("--db-password=" + password);
+            commands.add(String.format("%s='%s'", storeProvider.getDbPasswordProperty(), password));
             log.debugf("DB Password: %s", password);
         }, () -> log.warn("DB Password is not specified"));
     }

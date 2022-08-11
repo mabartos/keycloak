@@ -25,7 +25,7 @@ import java.util.Optional;
 /**
  * @author <a href="mailto:mabartos@redhat.com">Martin Bartos</a>
  */
-public enum MapStoreProvider {
+public enum StoreProvider {
     CHM("chm") {
         @Override
         public Optional<String> getDbUrl() {
@@ -73,6 +73,37 @@ public enum MapStoreProvider {
         public Optional<String> getDbPassword() {
             return Optional.ofNullable(System.getProperty("keycloak.map.storage.connectionsHotRod.password"));
         }
+
+        @Override
+        public String getDbUrlProperty() {
+            return "--storage-hotrod-host";
+        }
+
+        @Override
+        public String getDbUsernameProperty() {
+            return "--storage-hotrod-username";
+        }
+
+        @Override
+        public String getDbPasswordProperty() {
+            return "--storage-hotrod-password";
+        }
+    },
+    LEGACY("legacy") {
+        @Override
+        public Optional<String> getDbUrl() {
+            return Optional.ofNullable(System.getProperty("keycloak.connectionsJpa.url"));
+        }
+
+        @Override
+        public Optional<String> getDbUsername() {
+            return Optional.ofNullable(System.getProperty("keycloak.connectionsJpa.user"));
+        }
+
+        @Override
+        public Optional<String> getDbPassword() {
+            return Optional.ofNullable(System.getProperty("keycloak.connectionsJpa.password"));
+        }
     };
 
     private static final String AUTH_SERVER_QUARKUS_MAP_STORAGE_PROFILE = "auth.server.quarkus.mapStorage.profile.config";
@@ -85,8 +116,19 @@ public enum MapStoreProvider {
 
     public abstract Optional<String> getDbPassword();
 
+    public String getDbUrlProperty() {
+        return "--db";
+    }
 
-    MapStoreProvider(String alias) {
+    public String getDbUsernameProperty() {
+        return "--db-username";
+    }
+
+    public String getDbPasswordProperty() {
+        return "--db-password";
+    }
+
+    StoreProvider(String alias) {
         this.alias = alias;
     }
 
@@ -94,14 +136,14 @@ public enum MapStoreProvider {
         return alias;
     }
 
-    public static Optional<MapStoreProvider> getCurrentProvider() {
+    public static Optional<StoreProvider> getCurrentProvider() {
         return getProviderByAlias(System.getProperty(AUTH_SERVER_QUARKUS_MAP_STORAGE_PROFILE, ""));
     }
 
-    public static Optional<MapStoreProvider> getProviderByAlias(String alias) {
+    public static Optional<StoreProvider> getProviderByAlias(String alias) {
         if (StringUtil.isBlank(alias)) return Optional.empty();
 
-        return Arrays.stream(MapStoreProvider.values())
+        return Arrays.stream(StoreProvider.values())
                 .filter(f -> alias.equals(f.getAlias()))
                 .findFirst();
     }

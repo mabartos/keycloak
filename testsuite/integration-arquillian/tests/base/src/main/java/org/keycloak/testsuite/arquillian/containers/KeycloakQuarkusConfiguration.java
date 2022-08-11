@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.jboss.arquillian.container.spi.ConfigurationException;
 import org.jboss.arquillian.container.spi.client.container.ContainerConfiguration;
 import org.jboss.logging.Logger;
-import org.keycloak.testsuite.model.MapStoreProvider;
+import org.keycloak.testsuite.model.StoreProvider;
 import org.keycloak.util.JsonSerialization;
 import org.keycloak.utils.StringUtil;
 
@@ -188,7 +188,7 @@ public class KeycloakQuarkusConfiguration implements ContainerConfiguration {
 
     public Optional<String> getDbUrl() {
         return Optional.ofNullable(dbUrl)
-                .or(() -> getMapStoreProvider().flatMap(MapStoreProvider::getDbUrl))
+                .or(() -> getMapStoreProvider().flatMap(StoreProvider::getDbUrl))
                 .or(() -> Optional.ofNullable(System.getProperty("keycloak.connectionsJpa.url")))
                 .filter(StringUtil::isNotBlank);
     }
@@ -199,7 +199,7 @@ public class KeycloakQuarkusConfiguration implements ContainerConfiguration {
 
     public Optional<String> getDbUsername() {
         return Optional.ofNullable(dbUsername)
-                .or(() -> getMapStoreProvider().flatMap(MapStoreProvider::getDbUsername))
+                .or(() -> getMapStoreProvider().flatMap(StoreProvider::getDbUsername))
                 .or(() -> Optional.ofNullable(System.getProperty("keycloak.connectionsJpa.user")))
                 .filter(StringUtil::isNotBlank);
     }
@@ -210,7 +210,7 @@ public class KeycloakQuarkusConfiguration implements ContainerConfiguration {
 
     public Optional<String> getDbPassword() {
         return Optional.ofNullable(dbPassword)
-                .or(() -> getMapStoreProvider().flatMap(MapStoreProvider::getDbPassword))
+                .or(() -> getMapStoreProvider().flatMap(StoreProvider::getDbPassword))
                 .or(() -> Optional.ofNullable(System.getProperty("keycloak.connectionsJpa.password")))
                 .filter(StringUtil::isNotBlank);
     }
@@ -223,9 +223,9 @@ public class KeycloakQuarkusConfiguration implements ContainerConfiguration {
         return getMapStoreProvider().isPresent();
     }
 
-    public Optional<MapStoreProvider> getMapStoreProvider() {
-        return MapStoreProvider.getProviderByAlias(mapStoreProfile)
-                .or(MapStoreProvider::getCurrentProvider);
+    public Optional<StoreProvider> getMapStoreProvider() {
+        return StoreProvider.getProviderByAlias(mapStoreProfile)
+                .or(StoreProvider::getCurrentProvider);
     }
 
     public void setMapStoreProfile(String mapStoreProfile) {
