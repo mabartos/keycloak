@@ -133,7 +133,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        server: ['quarkus', 'quarkus-map', 'undertow-map-hot-rod']
+        server: [ 'quarkus', 'quarkus-map', 'quarkus-map-jpa', 'undertow-map-hot-rod' ]
         tests: ['group1','group2','group3']
       fail-fast: false
     steps:
@@ -182,6 +182,7 @@ jobs:
           declare -A PARAMS TESTGROUP
           PARAMS["quarkus"]="-Pauth-server-quarkus"
           PARAMS["quarkus-map"]="-Pauth-server-quarkus -Pmap-storage -Dpageload.timeout=90000"
+          PARAMS["quarkus-map-jpa"]="-Pauth-server-quarkus -Pmap-storage,map-storage-jpa,db-postgres -Dpageload.timeout=90000"
           PARAMS["undertow-map-hot-rod"]="-Pauth-server-undertow -Pmap-storage,map-storage-hot-rod -Dpageload.timeout=90000"
           TESTGROUP["group1"]="-Dtest=!**.crossdc.**,!**.cluster.**,%regex[org.keycloak.testsuite.(a[abc]|ad[a-l]|[^a-q]).*]"   # Tests alphabetically before admin tests and those after "r"
           TESTGROUP["group2"]="-Dtest=!**.crossdc.**,!**.cluster.**,%regex[org.keycloak.testsuite.(ad[^a-l]|a[^a-d]|b).*]"      # Admin tests and those starting with "b"
