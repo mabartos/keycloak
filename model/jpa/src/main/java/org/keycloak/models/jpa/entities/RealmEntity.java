@@ -96,7 +96,6 @@ public class RealmEntity {
     @Column(name="OTP_POLICY_PERIOD")
     protected int otpPolicyPeriod;
 
-
     @Column(name="EDIT_USERNAME_ALLOWED")
     protected boolean editUsernameAllowed;
 

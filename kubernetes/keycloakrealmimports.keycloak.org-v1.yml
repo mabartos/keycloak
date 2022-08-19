@@ -1302,6 +1302,8 @@ spec:
                     type: object
                   otpPolicyInitialCounter:
                     type: integer
+                  otpPolicyCodeReusable:
+                    type: boolean
                   defaultSignatureAlgorithm:
                     type: string
                   refreshTokenMaxReuse:

@@ -2,10 +2,10 @@ package org.keycloak.models.credential;
 
 import org.keycloak.common.util.Time;
 import org.keycloak.credential.CredentialModel;
-import org.keycloak.models.credential.dto.OTPCredentialData;
-import org.keycloak.models.credential.dto.OTPSecretData;
 import org.keycloak.models.OTPPolicy;
 import org.keycloak.models.RealmModel;
+import org.keycloak.models.credential.dto.OTPCredentialData;
+import org.keycloak.models.credential.dto.OTPSecretData;
 import org.keycloak.util.JsonSerialization;
 
 import java.io.IOException;
@@ -30,7 +30,7 @@ public class OTPCredentialModel extends CredentialModel {
         this.secretData = secretData;
     }
 
-    public static OTPCredentialModel createTOTP(String secretValue, int digits, int period, String algorithm){
+    public static OTPCredentialModel createTOTP(String secretValue, int digits, int period, String algorithm) {
         OTPCredentialModel credentialModel = new OTPCredentialModel(secretValue, TOTP, digits, 0, period, algorithm);
         credentialModel.fillCredentialModelFields();
         return credentialModel;
@@ -84,6 +84,15 @@ public class OTPCredentialModel extends CredentialModel {
         }
     }
 
+    public void updateLastValue(String otp) {
+        secretData.setLastValue(otp);
+        try {
+            setSecretData(JsonSerialization.writeValueAsString(secretData));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public OTPCredentialData getOTPCredentialData() {
         return credentialData;
     }
@@ -92,7 +101,7 @@ public class OTPCredentialModel extends CredentialModel {
         return secretData;
     }
 
-    private void fillCredentialModelFields(){
+    private void fillCredentialModelFields() {
         try {
             setCredentialData(JsonSerialization.writeValueAsString(credentialData));
             setSecretData(JsonSerialization.writeValueAsString(secretData));

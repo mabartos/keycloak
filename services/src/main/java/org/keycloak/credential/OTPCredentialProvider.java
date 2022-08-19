@@ -99,6 +99,7 @@ public class OTPCredentialProvider implements CredentialProvider<OTPCredentialMo
         OTPSecretData secretData = otpCredentialModel.getOTPSecretData();
         OTPCredentialData credentialData = otpCredentialModel.getOTPCredentialData();
         OTPPolicy policy = realm.getOTPPolicy();
+
         if (OTPCredentialModel.HOTP.equals(credentialData.getSubType())) {
             HmacOTP validator = new HmacOTP(credentialData.getDigits(), credentialData.getAlgorithm(), policy.getLookAheadWindow());
             int counter = validator.validateHOTP(challengeResponse, secretData.getValue(), credentialData.getCounter());
@@ -110,7 +111,20 @@ public class OTPCredentialProvider implements CredentialProvider<OTPCredentialMo
             return true;
         } else if (OTPCredentialModel.TOTP.equals(credentialData.getSubType())) {
             TimeBasedOTP validator = new TimeBasedOTP(credentialData.getAlgorithm(), credentialData.getDigits(), credentialData.getPeriod(), policy.getLookAheadWindow());
-            return validator.validateTOTP(challengeResponse, secretData.getValue().getBytes(StandardCharsets.UTF_8));
+
+            boolean validReusedOtp = policy.isCodeReusable() || !challengeResponse.equals(secretData.getLastValue());
+            if (!validReusedOtp) {
+                logger.debug("It is forbidden to use the same OTP code twice. Please wait for the next one.");
+                return false;
+            }
+
+            if (validator.validateTOTP(challengeResponse, secretData.getValue().getBytes(StandardCharsets.UTF_8))) {
+                otpCredentialModel.updateLastValue(challengeResponse);
+                user.credentialManager().updateStoredCredential(otpCredentialModel);
+                return true;
+            }
+
+            return false;
         }
         return false;
     }
