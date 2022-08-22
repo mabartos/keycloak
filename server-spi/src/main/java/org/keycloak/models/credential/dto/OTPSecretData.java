@@ -5,29 +5,29 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class OTPSecretData {
     private final String value;
-    private String lastValue;
+    private long lastValidInterval;
 
     @JsonCreator
     public OTPSecretData(@JsonProperty("value") String value,
-                         @JsonProperty("lastValue") String lastValue) {
+                         @JsonProperty("validationInterval") long validationInterval) {
         this.value = value;
-        this.lastValue = lastValue;
+        this.lastValidInterval = validationInterval;
     }
 
     public OTPSecretData(String value) {
         this.value = value;
-        this.lastValue = "";
+        this.lastValidInterval = -1L;
     }
 
     public String getValue() {
         return value;
     }
 
-    public String getLastValue() {
-        return lastValue;
+    public long getLastValidInterval() {
+        return lastValidInterval;
     }
 
-    public void setLastValue(String lastValue) {
-        this.lastValue = lastValue;
+    public void setLastValidInterval(long lastValidInterval) {
+        this.lastValidInterval = lastValidInterval;
     }
 }

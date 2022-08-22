@@ -34,6 +34,7 @@ public class TimeBasedOTP extends HmacOTP {
 
     private Clock clock;
     private long validationInterval;
+    private final int lookAroundWindow;
 
     public TimeBasedOTP() {
         this(DEFAULT_ALGORITHM, DEFAULT_NUMBER_DIGITS, DEFAULT_INTERVAL_SECONDS, DEFAULT_DELAY_WINDOW);
@@ -48,6 +49,7 @@ public class TimeBasedOTP extends HmacOTP {
     public TimeBasedOTP(String algorithm, int numberDigits, int timeIntervalInSeconds, int lookAroundWindow) {
         super(numberDigits, algorithm, lookAroundWindow);
         this.clock = new Clock(timeIntervalInSeconds);
+        this.lookAroundWindow = lookAroundWindow;
     }
 
     /**
@@ -80,11 +82,11 @@ public class TimeBasedOTP extends HmacOTP {
      * @return true of the token is valid
      */
     public boolean validateTOTP(String token, byte[] secret, long lastValidationInterval) {
-        long validationInterval = this.clock.getCurrentInterval();
+        long currentInterval = this.clock.getCurrentInterval();
 
-        for (int i = 0; i <= (lookAheadWindow * 2); i++) {
+        for (int i = 0; i <= (lookAroundWindow * 2); i++) {
             long delta = clockSkewIndexToDelta(i);
-            long adjustedInterval = validationInterval + delta;
+            long adjustedInterval = currentInterval + delta;
 
             String steps = Long.toHexString(adjustedInterval).toUpperCase();
 

@@ -56,7 +56,7 @@ public class OTPPolicyForm extends Form {
     @FindBy(id = "counter")
     private WebElement counter;
 
-    @FindBy(id = "reusableCode")
+    @FindBy(xpath = ".//div[@class='onoffswitch' and ./input[@id='reusableCode']]")
     private OnOffSwitch reusableCode;
 
     public void setValues(OTPType otpType, OTPHashAlg otpHashAlg, Digits digits, String lookAheadOrAround, String periodOrCounter) {

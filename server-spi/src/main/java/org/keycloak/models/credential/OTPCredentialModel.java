@@ -84,8 +84,8 @@ public class OTPCredentialModel extends CredentialModel {
         }
     }
 
-    public void updateLastValue(String otp) {
-        secretData.setLastValue(otp);
+    public void updateLastValidInterval(long lastValidInterval) {
+        secretData.setLastValidInterval(lastValidInterval);
         try {
             setSecretData(JsonSerialization.writeValueAsString(secretData));
         } catch (IOException e) {

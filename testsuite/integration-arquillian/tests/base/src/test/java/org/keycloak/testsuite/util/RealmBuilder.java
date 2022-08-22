@@ -213,7 +213,7 @@ public class RealmBuilder {
         rep.setOtpPolicyInitialCounter(i);
         return this;
     }
-    
+
     public RealmBuilder passwordPolicy(String passwordPolicy) {
         rep.setPasswordPolicy(passwordPolicy);
         return this;

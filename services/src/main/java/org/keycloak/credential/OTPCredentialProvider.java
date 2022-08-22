@@ -112,18 +112,16 @@ public class OTPCredentialProvider implements CredentialProvider<OTPCredentialMo
         } else if (OTPCredentialModel.TOTP.equals(credentialData.getSubType())) {
             TimeBasedOTP validator = new TimeBasedOTP(credentialData.getAlgorithm(), credentialData.getDigits(), credentialData.getPeriod(), policy.getLookAheadWindow());
 
-            boolean validReusedOtp = policy.isCodeReusable() || !challengeResponse.equals(secretData.getLastValue());
-            if (!validReusedOtp) {
-                logger.debug("It is forbidden to use the same OTP code twice. Please wait for the next one.");
-                return false;
+            if (policy.isCodeReusable()) {
+                return validator.validateTOTP(challengeResponse, secretData.getValue().getBytes(StandardCharsets.UTF_8));
+            } else {
+                boolean isValid = validator.validateTOTP(challengeResponse, secretData.getValue().getBytes(StandardCharsets.UTF_8), secretData.getLastValidInterval());
+                if (isValid) {
+                    otpCredentialModel.updateLastValidInterval(validator.getValidationInterval());
+                    user.credentialManager().updateStoredCredential(otpCredentialModel);
+                    return true;
+                }
             }
-
-            if (validator.validateTOTP(challengeResponse, secretData.getValue().getBytes(StandardCharsets.UTF_8))) {
-                otpCredentialModel.updateLastValue(challengeResponse);
-                user.credentialManager().updateStoredCredential(otpCredentialModel);
-                return true;
-            }
-
             return false;
         }
         return false;

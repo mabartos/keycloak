@@ -44,6 +44,7 @@ import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLo
  * @author Petr Mensik
  * @author tkyjovsk
  */
+@DisableFeature(value = Profile.Feature.ADMIN2, skipRestart = true)
 public abstract class AbstractConsoleTest extends AbstractAuthTest {
 
     @Page

@@ -74,7 +74,7 @@ public class OTPPolicy implements Serializable {
     }
 
     public static OTPPolicy DEFAULT_POLICY = new OTPPolicy(OTPCredentialModel.TOTP, HmacOTP.HMAC_SHA1, 0, 6, 1, 30);
-    public static final boolean DEFAULT_IS_REUSABLE = true;
+    public static final boolean DEFAULT_IS_REUSABLE = false;
 
     // Realm attributes
     public static final String REALM_REUSABLE_CODE_ATTRIBUTE = "realmReusableOtpCode";
