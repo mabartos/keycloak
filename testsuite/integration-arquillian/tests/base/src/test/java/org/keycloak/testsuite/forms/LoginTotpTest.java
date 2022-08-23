@@ -38,6 +38,7 @@ import org.keycloak.testsuite.util.GreenMailRule;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.keycloak.testsuite.util.RealmRepUtil;
 import org.keycloak.testsuite.util.UserBuilder;
+import org.keycloak.testsuite.util.WaitUtils;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -217,6 +218,9 @@ public class LoginTotpTest extends AbstractTestRealmKeycloakTest {
 
             Assert.assertEquals(200, response.getStatus());
             response.close();
+
+            setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
+            WaitUtils.pause(300);
 
             response = exchangeUrl.request()
                     .post(Entity.form(form.param("totp", totp.generateTOTP("totpSecret"))));

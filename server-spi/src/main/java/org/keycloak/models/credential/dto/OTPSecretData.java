@@ -9,9 +9,9 @@ public class OTPSecretData {
 
     @JsonCreator
     public OTPSecretData(@JsonProperty("value") String value,
-                         @JsonProperty("validationInterval") long validationInterval) {
+                         @JsonProperty("lastValidInterval") long lastValidInterval) {
         this.value = value;
-        this.lastValidInterval = validationInterval;
+        this.lastValidInterval = lastValidInterval;
     }
 
     public OTPSecretData(String value) {

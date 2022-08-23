@@ -53,6 +53,7 @@ import org.keycloak.testsuite.util.UserBuilder;
 
 import javax.mail.internet.MimeMessage;
 import java.net.MalformedURLException;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Map;
 
@@ -192,6 +193,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
             events.clear();
         }
         {
+            setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("invalid", totpSecret);
             Assert.assertNull(response.getAccessToken());
@@ -200,6 +202,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
             events.clear();
         }
         {
+            setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("invalid", totpSecret);
             Assert.assertNull(response.getAccessToken());
@@ -208,6 +211,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
             events.clear();
         }
         {
+            setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("password", totpSecret);
             Assert.assertNull(response.getAccessToken());
@@ -219,6 +223,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         }
         clearUserFailures();
         {
+            setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("password", totpSecret);
             Assert.assertNotNull(response.getAccessToken());
@@ -252,6 +257,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
             events.clear();
         }
         {
+            setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("password", totpSecret);
             assertTokenNull(response);
@@ -263,6 +269,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         }
         clearUserFailures();
         {
+            setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("password", totpSecret);
             Assert.assertNotNull(response.getAccessToken());
@@ -300,6 +307,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
             events.clear();
         }
         {
+            setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("password", totpSecret);
             assertTokenNull(response);
@@ -311,6 +319,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         }
         clearUserFailures();
         {
+            setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("password", totpSecret);
             Assert.assertNotNull(response.getAccessToken());
@@ -395,12 +404,18 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         expectTemporarilyDisabled();
         expectTemporarilyDisabled("test-user@localhost", null, "invalid");
         clearUserFailures();
+        final Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.SECOND, TimeBasedOTP.DEFAULT_INTERVAL_SECONDS);
+        totp.setCalendar(calendar);
         loginSuccess();
+
         loginInvalidPassword();
         loginInvalidPassword();
         expectTemporarilyDisabled();
         expectTemporarilyDisabled("test-user@localhost", null, "invalid");
         clearAllUserFailures();
+        calendar.add(Calendar.SECOND, 10 * TimeBasedOTP.DEFAULT_INTERVAL_SECONDS);
+
         loginSuccess();
     }
 

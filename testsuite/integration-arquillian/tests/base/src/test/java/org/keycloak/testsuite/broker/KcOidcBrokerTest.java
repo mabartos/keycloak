@@ -21,6 +21,7 @@ import org.keycloak.models.IdentityProviderMapperModel;
 import org.keycloak.models.IdentityProviderMapperSyncMode;
 import org.keycloak.models.IdentityProviderModel;
 import org.keycloak.models.IdentityProviderSyncMode;
+import org.keycloak.models.utils.TimeBasedOTP;
 import org.keycloak.protocol.oidc.OIDCConfigAttributes;
 import org.keycloak.protocol.oidc.representations.OIDCConfigurationRepresentation;
 import org.keycloak.provider.ProviderConfigProperty;
@@ -258,6 +259,8 @@ public final class KcOidcBrokerTest extends AbstractAdvancedBrokerTest {
             totpPage.configure(totp.generateTOTP(totpSecret));
             logoutFromRealm(getConsumerRoot(), bc.consumerRealmName());
 
+            setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
+
             logInWithBroker(bc);
 
             waitForPage(driver, "account already exists", false);
@@ -339,6 +342,9 @@ public final class KcOidcBrokerTest extends AbstractAdvancedBrokerTest {
             logoutFromRealm(getConsumerRoot(), bc.consumerRealmName());
 
             testingClient.server(bc.consumerRealmName()).run(configurePostBrokerLoginWithOTP(bc.getIDPAlias()));
+
+            setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
+
             logInWithBroker(bc);
 
             waitForPage(driver, "account already exists", false);
@@ -350,6 +356,8 @@ public final class KcOidcBrokerTest extends AbstractAdvancedBrokerTest {
             loginTotpPage.login(totp.generateTOTP(totpSecret));
             logoutFromRealm(getProviderRoot(), bc.providerRealmName());
             logoutFromRealm(getConsumerRoot(), bc.consumerRealmName());
+
+            setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
 
             logInWithBroker(bc);
 
