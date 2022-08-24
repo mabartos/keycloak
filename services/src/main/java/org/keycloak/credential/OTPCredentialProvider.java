@@ -25,6 +25,7 @@ import org.keycloak.models.credential.dto.OTPSecretData;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.OTPPolicy;
 import org.keycloak.models.RealmModel;
+import org.keycloak.models.SingleUseObjectProvider;
 import org.keycloak.models.UserCredentialModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.utils.HmacOTP;
@@ -99,6 +100,7 @@ public class OTPCredentialProvider implements CredentialProvider<OTPCredentialMo
         OTPSecretData secretData = otpCredentialModel.getOTPSecretData();
         OTPCredentialData credentialData = otpCredentialModel.getOTPCredentialData();
         OTPPolicy policy = realm.getOTPPolicy();
+
         if (OTPCredentialModel.HOTP.equals(credentialData.getSubType())) {
             HmacOTP validator = new HmacOTP(credentialData.getDigits(), credentialData.getAlgorithm(), policy.getLookAheadWindow());
             int counter = validator.validateHOTP(challengeResponse, secretData.getValue(), credentialData.getCounter());
@@ -109,6 +111,15 @@ public class OTPCredentialProvider implements CredentialProvider<OTPCredentialMo
             user.credentialManager().updateStoredCredential(otpCredentialModel);
             return true;
         } else if (OTPCredentialModel.TOTP.equals(credentialData.getSubType())) {
+
+            if (!policy.isCodeReusable()) {
+                SingleUseObjectProvider singleUseStore = session.getProvider(SingleUseObjectProvider.class);
+                final long validLifespan = (long) credentialData.getPeriod() * (2L * policy.getLookAheadWindow() + 1);
+                final String searchKey = credential.getId() + "." + challengeResponse;
+
+                if (!singleUseStore.putIfAbsent(searchKey, validLifespan)) return false;
+            }
+
             TimeBasedOTP validator = new TimeBasedOTP(credentialData.getAlgorithm(), credentialData.getDigits(), credentialData.getPeriod(), policy.getLookAheadWindow());
             return validator.validateTOTP(challengeResponse, secretData.getValue().getBytes(StandardCharsets.UTF_8));
         }

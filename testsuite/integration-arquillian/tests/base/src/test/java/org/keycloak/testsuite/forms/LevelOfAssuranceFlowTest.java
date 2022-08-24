@@ -67,6 +67,7 @@ import org.keycloak.testsuite.util.OAuthClient;
 import org.keycloak.testsuite.util.RealmBuilder;
 import org.keycloak.testsuite.util.RealmRepUtil;
 import org.keycloak.testsuite.util.UserBuilder;
+import org.keycloak.testsuite.util.WaitUtils;
 import org.keycloak.util.JsonSerialization;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -97,6 +98,9 @@ public class LevelOfAssuranceFlowTest extends AbstractTestRealmKeycloakTest {
     @Page
     protected ErrorPage errorPage;
 
+    static int i = 1;
+
+
     @Override
     public void configureTestRealm(RealmRepresentation testRealm) {
         try {
@@ -121,6 +125,7 @@ public class LevelOfAssuranceFlowTest extends AbstractTestRealmKeycloakTest {
     @Before
     public void setupFlow() {
         configureStepUpFlow(testingClient);
+        totp = new TimeBasedOTP();
     }
 
     public static void configureStepUpFlow(KeycloakTestingClient testingClient) {
@@ -228,6 +233,7 @@ public class LevelOfAssuranceFlowTest extends AbstractTestRealmKeycloakTest {
         openLoginFormWithAcrClaim(true, "gold");
         authenticateWithTotp();
         assertLoggedInWithAcr("gold");
+        setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
         // step-up to level 3 needs password authentication because level 2 is not stored in user session
         openLoginFormWithAcrClaim(true, "3");
         authenticateWithTotp();
@@ -362,6 +368,7 @@ public class LevelOfAssuranceFlowTest extends AbstractTestRealmKeycloakTest {
         openLoginFormWithAcrClaim(true, "realm:gold");
         assertErrorPage("Invalid parameter: claims");
 
+        setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
         openLoginFormWithAcrClaim(true, "gold");
         authenticateWithTotp();
         assertLoggedInWithAcr("gold");
@@ -495,7 +502,7 @@ public class LevelOfAssuranceFlowTest extends AbstractTestRealmKeycloakTest {
         assertLoggedInWithAcr("3");
 
         // Time offset to 210
-        setTimeOffset(210);
+        setOtpTimeOffset(210, totp);
 
         // Re-auth 2: Should ask user for re-authentication with level2 and level3. Level1 did not yet expired and should be automatic
         openLoginFormWithAcrClaim(true, "3");
@@ -530,6 +537,8 @@ public class LevelOfAssuranceFlowTest extends AbstractTestRealmKeycloakTest {
         oauth.openLoginForm();
         reauthenticateWithPassword();
         assertLoggedInWithAcr("silver");
+
+        setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
 
         // Request with prompt=login together with "acr=2" . User should be asked to re-authenticate with level 2
         openLoginFormWithAcrClaim(true, "gold");
@@ -687,6 +696,10 @@ public class LevelOfAssuranceFlowTest extends AbstractTestRealmKeycloakTest {
 
     private void authenticateWithTotp() {
         loginTotpPage.assertCurrent();
+        System.out.println("I: " + i);
+        setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS * i, totp);
+        i++;
+        WaitUtils.pause(600);
         loginTotpPage.login(totp.generateTOTP("totpSecret"));
     }
 

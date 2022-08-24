@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientsResource;
@@ -21,20 +22,17 @@ import org.keycloak.models.IdentityProviderMapperModel;
 import org.keycloak.models.IdentityProviderMapperSyncMode;
 import org.keycloak.models.IdentityProviderModel;
 import org.keycloak.models.IdentityProviderSyncMode;
+import org.keycloak.models.utils.TimeBasedOTP;
 import org.keycloak.protocol.oidc.OIDCConfigAttributes;
-import org.keycloak.protocol.oidc.representations.OIDCConfigurationRepresentation;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.idm.ClientRepresentation;
-import org.keycloak.representations.idm.ErrorRepresentation;
 import org.keycloak.representations.idm.IdentityProviderMapperRepresentation;
 import org.keycloak.representations.idm.IdentityProviderRepresentation;
 import org.keycloak.representations.idm.OAuth2ErrorRepresentation;
 import org.keycloak.representations.idm.ProtocolMapperRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.keycloak.services.Urls;
 import org.keycloak.testsuite.Assert;
-import org.keycloak.testsuite.admin.ApiUtil;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.keycloak.testsuite.util.WaitUtils;
 
@@ -51,6 +49,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.keycloak.models.utils.TimeBasedOTP.DEFAULT_INTERVAL_SECONDS;
 import static org.keycloak.testsuite.admin.ApiUtil.removeUserByUsername;
 import static org.keycloak.testsuite.broker.BrokerRunOnServerUtil.configurePostBrokerLoginWithOTP;
 import static org.keycloak.testsuite.broker.BrokerTestConstants.REALM_PROV_NAME;
@@ -69,12 +68,17 @@ public final class KcOidcBrokerTest extends AbstractAdvancedBrokerTest {
         return KcOidcBrokerConfiguration.INSTANCE;
     }
 
+    @Before
+    public void setUpTotp() {
+        totp = new TimeBasedOTP();
+    }
+
     @Override
     protected Iterable<IdentityProviderMapperRepresentation> createIdentityProviderMappers(IdentityProviderMapperSyncMode syncMode) {
         IdentityProviderMapperRepresentation attrMapper1 = new IdentityProviderMapperRepresentation();
         attrMapper1.setName("manager-role-mapper");
         attrMapper1.setIdentityProviderMapper(ExternalKeycloakRoleToRoleMapper.PROVIDER_ID);
-        attrMapper1.setConfig(ImmutableMap.<String,String>builder()
+        attrMapper1.setConfig(ImmutableMap.<String, String>builder()
                 .put(IdentityProviderMapperModel.SYNC_MODE, syncMode.toString())
                 .put("external.role", ROLE_MANAGER)
                 .put("role", ROLE_MANAGER)
@@ -258,6 +262,8 @@ public final class KcOidcBrokerTest extends AbstractAdvancedBrokerTest {
             totpPage.configure(totp.generateTOTP(totpSecret));
             logoutFromRealm(getConsumerRoot(), bc.consumerRealmName());
 
+            setOtpTimeOffset(DEFAULT_INTERVAL_SECONDS, totp);
+
             logInWithBroker(bc);
 
             waitForPage(driver, "account already exists", false);
@@ -339,6 +345,9 @@ public final class KcOidcBrokerTest extends AbstractAdvancedBrokerTest {
             logoutFromRealm(getConsumerRoot(), bc.consumerRealmName());
 
             testingClient.server(bc.consumerRealmName()).run(configurePostBrokerLoginWithOTP(bc.getIDPAlias()));
+
+            setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
+
             logInWithBroker(bc);
 
             waitForPage(driver, "account already exists", false);
@@ -350,6 +359,8 @@ public final class KcOidcBrokerTest extends AbstractAdvancedBrokerTest {
             loginTotpPage.login(totp.generateTOTP(totpSecret));
             logoutFromRealm(getProviderRoot(), bc.providerRealmName());
             logoutFromRealm(getConsumerRoot(), bc.consumerRealmName());
+
+            setOtpTimeOffset(2 * TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
 
             logInWithBroker(bc);
 
