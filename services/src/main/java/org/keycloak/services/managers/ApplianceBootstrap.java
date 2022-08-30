@@ -110,4 +110,15 @@ public class ApplianceBootstrap {
         adminUser.grantRole(adminRole);
     }
 
+    public boolean isAdminCreated(String username) {
+        RealmModel realm = session.realms().getRealmByName(Config.getAdminRealm());
+        session.getContext().setRealm(realm);
+
+        UserModel admin = session.users().getUserByUsername(realm, username);
+        if (admin == null) return false;
+
+        RoleModel adminRole = realm.getRole(AdminRoles.ADMIN);
+        return admin.hasRole(adminRole);
+    }
+
 }
