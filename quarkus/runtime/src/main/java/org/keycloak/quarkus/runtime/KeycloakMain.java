@@ -165,7 +165,12 @@ public class KeycloakMain implements QuarkusApplication {
         try {
             transaction.begin();
 
-            new ApplianceBootstrap(session).createMasterRealmUser(adminUserName, adminPassword);
+            final ApplianceBootstrap bootstrap = new ApplianceBootstrap(session);
+
+            if (bootstrap.isNoMasterUser()) {
+                bootstrap.createMasterRealmUser(adminUserName, adminPassword);
+            }
+
             ServicesLogger.LOGGER.addUserSuccess(adminUserName, Config.getAdminRealm());
 
             transaction.commit();

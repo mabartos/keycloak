@@ -183,13 +183,8 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
             builder.environment().put("JAVA_OPTS", javaOpts);
         }
 
-        final StoreProvider storeProvider = StoreProvider.getCurrentProvider();
-        final boolean isJpaStore = storeProvider.equals(StoreProvider.JPA) || storeProvider.equals(StoreProvider.LEGACY);
-
-        if (!isJpaStore) {
-            builder.environment().put("KEYCLOAK_ADMIN", "admin");
-            builder.environment().put("KEYCLOAK_ADMIN_PASSWORD", "admin");
-        }
+        builder.environment().put("KEYCLOAK_ADMIN", "admin");
+        builder.environment().put("KEYCLOAK_ADMIN_PASSWORD", "admin");
 
         if (restart.compareAndSet(false, true)) {
             deleteDirectory(configuration.getProvidersPath().resolve("data"));
