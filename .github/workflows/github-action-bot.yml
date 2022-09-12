@@ -19,7 +19,6 @@ jobs:
   act:
     runs-on: ubuntu-latest
     steps:
-      # to avoid a tag being changed afterwards, use the commit hash of the action
-      - uses: keycloak/keycloak-gh-actionbot@c76e6c1ce249dac0278652c2f94f743fe5bb9bcd # v0.1.0
+      - uses: mabartos/keycloak-gh-actionbot@failed_tasks # v0.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
