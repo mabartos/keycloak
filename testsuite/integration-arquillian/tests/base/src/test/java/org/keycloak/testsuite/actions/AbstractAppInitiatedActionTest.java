@@ -60,8 +60,7 @@ public abstract class AbstractAppInitiatedActionTest extends AbstractTestRealmKe
     @Page
     protected AppPage appPage;
     
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     protected abstract String getAiaAction();
     

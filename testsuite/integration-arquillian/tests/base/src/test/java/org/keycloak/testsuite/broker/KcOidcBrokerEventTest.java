@@ -19,9 +19,9 @@ package org.keycloak.testsuite.broker;
 
 import java.util.List;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.events.Details;
 import org.keycloak.events.EventType;
@@ -37,8 +37,7 @@ import org.keycloak.testsuite.AssertEvents;
  */
 public final class KcOidcBrokerEventTest extends AbstractBrokerTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Override
     protected BrokerConfiguration getBrokerConfiguration() {
@@ -171,16 +170,16 @@ public final class KcOidcBrokerEventTest extends AbstractBrokerTest {
 
         BrokerTestTools.waitForPage(driver, "update account information", false);
         updateAccountInformationPage.assertCurrent();
-        Assert.assertTrue("We must be on correct realm right now",
+        Assertions.assertTrue("We must be on correct realm right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.consumerRealmName() + "/"));
 
         log.debug("Updating info on updateAccount page");
         updateAccountInformationPage.updateAccountInformation(bc.getUserLogin(), bc.getUserEmail(), "Firstname", "Lastname");
 
         List<UserRepresentation> users = consumerRealm.users().search(bc.getUserLogin());
-        Assert.assertEquals("There must be one user", 1, users.size());
+        Assertions.assertEquals("There must be one user", 1, users.size());
         UserRepresentation consumerUser = users.iterator().next();
-        Assert.assertEquals(bc.getUserEmail(), consumerUser.getEmail());
+        Assertions.assertEquals(bc.getUserEmail(), consumerUser.getEmail());
 
         checkFirstLoginEvents(providerRealm, consumerRealm, providerUser.getId(), consumerUser.getId());
     }
@@ -219,8 +218,8 @@ public final class KcOidcBrokerEventTest extends AbstractBrokerTest {
         driver.navigate().to(getAccountUrl(BrokerTestTools.getConsumerRoot(), bc.consumerRealmName()));
         logInWithBroker(bc);
 
-        Assert.assertEquals(accountPage.buildUri().toASCIIString().replace("master", "consumer") + "/", driver.getCurrentUrl());
-        Assert.assertEquals(userCount, adminClient.realm(bc.consumerRealmName()).users().count());
+        Assertions.assertEquals(accountPage.buildUri().toASCIIString().replace("master", "consumer") + "/", driver.getCurrentUrl());
+        Assertions.assertEquals(userCount, adminClient.realm(bc.consumerRealmName()).users().count());
 
         checkLoginEvents(providerRealm, consumerRealm, providerUser.getId(), consumerUser.getId());
     }
@@ -247,8 +246,8 @@ public final class KcOidcBrokerEventTest extends AbstractBrokerTest {
         // now perform the login via the broker
         logInWithBroker(bc);
 
-        Assert.assertEquals(accountPage.buildUri().toASCIIString().replace("master", "consumer") + "/", driver.getCurrentUrl());
-        Assert.assertEquals(userCount, adminClient.realm(bc.consumerRealmName()).users().count());
+        Assertions.assertEquals(accountPage.buildUri().toASCIIString().replace("master", "consumer") + "/", driver.getCurrentUrl());
+        Assertions.assertEquals(userCount, adminClient.realm(bc.consumerRealmName()).users().count());
 
         checkLoginEvents(providerRealm, consumerRealm, providerUser.getId(), consumerUser.getId());
     }

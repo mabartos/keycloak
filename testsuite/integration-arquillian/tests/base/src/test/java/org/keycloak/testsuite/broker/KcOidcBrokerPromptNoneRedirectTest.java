@@ -19,7 +19,7 @@ package org.keycloak.testsuite.broker;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.models.IdentityProviderSyncMode;
 import org.keycloak.representations.idm.ClientRepresentation;
@@ -73,7 +73,7 @@ public class KcOidcBrokerPromptNoneRedirectTest extends AbstractInitializedBaseB
         /* no need to log in again, the idp should have been able to identify that the user is already logged in and the authenticated user should
            have been established in the consumer realm. Lastly, user must be redirected to the account app as expected. */
         waitForAccountManagementTitle();
-        Assert.assertTrue(driver.getCurrentUrl().contains("/auth/realms/" + bc.consumerRealmName() + "/account"));
+        Assertions.assertTrue(driver.getCurrentUrl().contains("/auth/realms/" + bc.consumerRealmName() + "/account"));
         accountUpdateProfilePage.assertCurrent();
 
         /* let's try logging out from the consumer realm and then send an auth request with only prompt=none. The absence of a default idp
@@ -84,7 +84,7 @@ public class KcOidcBrokerPromptNoneRedirectTest extends AbstractInitializedBaseB
         waitForPage(driver, "sign in to", true);
         url = driver.getCurrentUrl() + "&prompt=none";
         driver.navigate().to(url);
-        Assert.assertTrue(driver.getCurrentUrl().contains(bc.consumerRealmName() + "/account/login-redirect?error=login_required"));
+        Assertions.assertTrue(driver.getCurrentUrl().contains(bc.consumerRealmName() + "/account/login-redirect?error=login_required"));
     }
 
     /**
@@ -102,7 +102,7 @@ public class KcOidcBrokerPromptNoneRedirectTest extends AbstractInitializedBaseB
         waitForPage(driver, "sign in to", true);
         String url = driver.getCurrentUrl() + "&prompt=none&kc_idp_hint=" + bc.getIDPAlias();
         driver.navigate().to(url);
-        Assert.assertTrue(driver.getCurrentUrl().contains(bc.consumerRealmName() + "/account/login-redirect?error=login_required"));
+        Assertions.assertTrue(driver.getCurrentUrl().contains(bc.consumerRealmName() + "/account/login-redirect?error=login_required"));
     }
 
     /**
@@ -182,7 +182,7 @@ public class KcOidcBrokerPromptNoneRedirectTest extends AbstractInitializedBaseB
     public void testRequireConsentReturnsInteractionRequired() throws Exception {
         RealmResource brokeredRealm = adminClient.realm(bc.providerRealmName());
         List<ClientRepresentation> clients = brokeredRealm.clients().findByClientId(CLIENT_ID);
-        org.junit.Assert.assertEquals(1, clients.size());
+        org.junit.jupiter.api.Assertions.assertEquals(1, clients.size());
         ClientRepresentation brokerApp = clients.get(0);
         brokerApp.setConsentRequired(true);
         brokeredRealm.clients().get(brokerApp.getId()).update(brokerApp);
@@ -204,7 +204,7 @@ public class KcOidcBrokerPromptNoneRedirectTest extends AbstractInitializedBaseB
         waitForPage(driver, "sign in to", true);
         String url = driver.getCurrentUrl() + "&kc_idp_hint=" + bc.getIDPAlias() + "&prompt=none";
         driver.navigate().to(url);
-        Assert.assertTrue(driver.getCurrentUrl().contains(bc.consumerRealmName() + "/account/login-redirect?error=interaction_required"));
+        Assertions.assertTrue(driver.getCurrentUrl().contains(bc.consumerRealmName() + "/account/login-redirect?error=interaction_required"));
     }
 
     /**
@@ -213,12 +213,12 @@ public class KcOidcBrokerPromptNoneRedirectTest extends AbstractInitializedBaseB
     protected void authenticateDirectlyInIDP() {
         driver.navigate().to(getAccountUrl(getProviderRoot(), bc.providerRealmName()));
         waitForPage(driver, "sign in to", true);
-        Assert.assertTrue("Driver should be on the provider realm page right now",
+        Assertions.assertTrue("Driver should be on the provider realm page right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName() + "/"));
         loginPage.login(bc.getUserLogin(), bc.getUserPassword());
 
         waitForAccountManagementTitle();
-        Assert.assertTrue(driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName() + "/account"));
+        Assertions.assertTrue(driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName() + "/account"));
         accountUpdateProfilePage.assertCurrent();
     }
 

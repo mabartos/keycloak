@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.webauthn.registration;
 
 import com.webauthn4j.data.AttestationConveyancePreference;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.credential.dto.WebAuthnCredentialData;
 import org.keycloak.testsuite.arquillian.annotation.IgnoreBrowserDriver;
 import org.keycloak.testsuite.webauthn.AbstractWebAuthnVirtualTest;
@@ -62,21 +62,21 @@ public class AttestationConveyanceRegisterTest extends AbstractWebAuthnVirtualTe
         });
     }
 
-    @Ignore("invalid cert path")
+    @Disabled("invalid cert path")
     @Test
     @IgnoreBrowserDriver(FirefoxDriver.class)
     public void attestationConveyancePreferenceNone() {
         assertAttestationConveyance(true, AttestationConveyancePreference.NONE);
     }
 
-    @Ignore("invalid cert path")
+    @Disabled("invalid cert path")
     @Test
     @IgnoreBrowserDriver(FirefoxDriver.class)
     public void attestationConveyancePreferenceIndirect() {
         assertAttestationConveyance(true, AttestationConveyancePreference.INDIRECT);
     }
 
-    @Ignore("invalid cert path")
+    @Disabled("invalid cert path")
     @Test
     @IgnoreBrowserDriver(FirefoxDriver.class)
     public void attestationConveyancePreferenceDirect() {

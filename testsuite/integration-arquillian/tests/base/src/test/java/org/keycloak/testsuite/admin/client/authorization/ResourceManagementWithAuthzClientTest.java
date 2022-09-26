@@ -17,9 +17,9 @@
 
 package org.keycloak.testsuite.admin.client.authorization;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authorization.client.AuthzClient;
 import org.keycloak.representations.idm.authorization.ResourceRepresentation;
 import org.keycloak.representations.idm.authorization.ScopeRepresentation;

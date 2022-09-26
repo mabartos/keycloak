@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.cluster;
 
 import org.apache.commons.lang.RandomStringUtils;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.admin.client.resource.ComponentResource;
 import org.keycloak.admin.client.resource.ComponentsResource;
 import org.keycloak.common.util.MultivaluedHashMap;
@@ -16,13 +16,13 @@ import javax.ws.rs.core.Response;
 import java.util.Arrays;
 
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  *
@@ -30,7 +30,7 @@ import static org.junit.Assert.assertNull;
  */
 public class ComponentInvalidationClusterTest extends AbstractInvalidationClusterTestWithTestRealm<ComponentRepresentation, ComponentResource> {
 
-    @Before
+    @BeforeEach
     public void setExcludedComparisonFields() {
     }
 

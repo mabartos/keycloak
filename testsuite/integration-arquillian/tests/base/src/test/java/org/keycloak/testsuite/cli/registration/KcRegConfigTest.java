@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.cli.registration;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.client.registration.cli.config.FileConfigHandler;
 import org.keycloak.testsuite.cli.KcRegExec;
 import org.keycloak.testsuite.util.TempFileResource;
@@ -27,20 +27,20 @@ public class KcRegConfigTest extends AbstractRegCliTest {
             // without --server
             KcRegExec exe = execute("config registration-token --config '" + configFile.getName() + "' ");
             assertExitCodeAndStreamSizes(exe, 1, 0, 2);
-            Assert.assertEquals("error message", "Required option not specified: --server", exe.stderrLines().get(0));
-            Assert.assertEquals("try help", "Try '" + CMD + " help config registration-token' for more information", exe.stderrLines().get(1));
+            Assertions.assertEquals("error message", "Required option not specified: --server", exe.stderrLines().get(0));
+            Assertions.assertEquals("try help", "Try '" + CMD + " help config registration-token' for more information", exe.stderrLines().get(1));
 
             // without --realm
             exe = execute("config registration-token --config '" + configFile.getName() + "' --server http://localhost:8080/auth");
             assertExitCodeAndStreamSizes(exe, 1, 0, 2);
-            Assert.assertEquals("error message", "Required option not specified: --realm", exe.stderrLines().get(0));
-            Assert.assertEquals("try help", "Try '" + CMD + " help config registration-token' for more information", exe.stderrLines().get(1));
+            Assertions.assertEquals("error message", "Required option not specified: --realm", exe.stderrLines().get(0));
+            Assertions.assertEquals("try help", "Try '" + CMD + " help config registration-token' for more information", exe.stderrLines().get(1));
 
             // without --client
             exe = execute("config registration-token --config '" + configFile.getName() + "' --server http://localhost:8080/auth --realm test");
             assertExitCodeAndStreamSizes(exe, 1, 0, 2);
-            Assert.assertEquals("error message", "Required option not specified: --client", exe.stderrLines().get(0));
-            Assert.assertEquals("try help", "Try '" + CMD + " help config registration-token' for more information", exe.stderrLines().get(1));
+            Assertions.assertEquals("error message", "Required option not specified: --client", exe.stderrLines().get(0));
+            Assertions.assertEquals("try help", "Try '" + CMD + " help config registration-token' for more information", exe.stderrLines().get(1));
 
             // specify token on cmdline
             exe = execute("config registration-token --config '" + configFile.getName() + "' --server http://localhost:8080/auth --realm test --client my_client NEWTOKEN");
@@ -76,13 +76,13 @@ public class KcRegConfigTest extends AbstractRegCliTest {
 
         KcRegExec exe = execute("config registration-token --no-config --server http://localhost:8080/auth --realm test --client my_client --delete");
         assertExitCodeAndStreamSizes(exe, 1, 0, 2);
-        Assert.assertEquals("stderr first line", "Unsupported option: --no-config", exe.stderrLines().get(0));
-        Assert.assertEquals("try help", "Try '" + CMD + " help config registration-token' for more information", exe.stderrLines().get(1));
+        Assertions.assertEquals("stderr first line", "Unsupported option: --no-config", exe.stderrLines().get(0));
+        Assertions.assertEquals("try help", "Try '" + CMD + " help config registration-token' for more information", exe.stderrLines().get(1));
 
         exe = execute("config initial-token --no-config --server http://localhost:8080/auth --realm test --delete");
         assertExitCodeAndStreamSizes(exe, 1, 0, 2);
-        Assert.assertEquals("stderr first line", "Unsupported option: --no-config", exe.stderrLines().get(0));
-        Assert.assertEquals("try help", "Try '" + CMD + " help config initial-token' for more information", exe.stderrLines().get(1));
+        Assertions.assertEquals("stderr first line", "Unsupported option: --no-config", exe.stderrLines().get(0));
+        Assertions.assertEquals("try help", "Try '" + CMD + " help config initial-token' for more information", exe.stderrLines().get(1));
 
     }
 }

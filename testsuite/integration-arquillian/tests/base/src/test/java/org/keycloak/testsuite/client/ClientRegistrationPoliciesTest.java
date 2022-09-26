@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -64,7 +64,7 @@ import org.keycloak.util.JsonSerialization;
 
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
@@ -82,7 +82,7 @@ public class ClientRegistrationPoliciesTest extends AbstractClientRegistrationTe
         testRealms.get(0).setPublicKey(PUBLIC_KEY);
     }
 
-    @After
+    @AfterEach
     @Override
     public void after() throws Exception {
         super.after();
@@ -143,10 +143,10 @@ public class ClientRegistrationPoliciesTest extends AbstractClientRegistrationTe
                     break;
             }
 
-            Assert.fail("Not expected to successfuly run operation " + operation.toString() + " on client");
+            Assertions.fail("Not expected to successfuly run operation " + operation.toString() + " on client");
         } catch (ClientRegistrationException expected) {
             HttpErrorException httpEx = (HttpErrorException) expected.getCause();
-            Assert.assertEquals(expectedStatusCode, httpEx.getStatusLine().getStatusCode());
+            Assertions.assertEquals(expectedStatusCode, httpEx.getStatusLine().getStatusCode());
             if (expectedErrorContains != null) {
                 assertTrue("Error response doesn't contain expected text. The error response text is: " + httpEx.getErrorResponse(), httpEx.getErrorResponse().contains(expectedErrorContains));
             }
@@ -164,10 +164,10 @@ public class ClientRegistrationPoliciesTest extends AbstractClientRegistrationTe
                     break;
             }
 
-            Assert.fail("Not expected to successfuly run operation " + operation.toString() + " on client");
+            Assertions.fail("Not expected to successfuly run operation " + operation.toString() + " on client");
         } catch (ClientRegistrationException expected) {
             HttpErrorException httpEx = (HttpErrorException) expected.getCause();
-            Assert.assertEquals(expectedStatusCode, httpEx.getStatusLine().getStatusCode());
+            Assertions.assertEquals(expectedStatusCode, httpEx.getStatusLine().getStatusCode());
             if (expectedErrorContains != null) {
                 assertTrue("Error response doesn't contain expected text. The error response text is: " + httpEx.getErrorResponse(), httpEx.getErrorResponse().contains(expectedErrorContains));
             }
@@ -248,7 +248,7 @@ public class ClientRegistrationPoliciesTest extends AbstractClientRegistrationTe
         // Assert new client has consent required
         String clientId = client.getClientId();
         ClientRepresentation clientRep = ApiUtil.findClientByClientId(realmResource(), clientId).toRepresentation();
-        Assert.assertTrue(clientRep.isConsentRequired());
+        Assertions.assertTrue(clientRep.isConsentRequired());
 
         // Try update with disabled consent required. Should fail
         clientRep.setConsentRequired(false);
@@ -268,7 +268,7 @@ public class ClientRegistrationPoliciesTest extends AbstractClientRegistrationTe
         // Assert new client has fullScopeAllowed disabled
         String clientId = client.getClientId();
         ClientRepresentation clientRep = ApiUtil.findClientByClientId(realmResource(), clientId).toRepresentation();
-        Assert.assertFalse(clientRep.isFullScopeAllowed());
+        Assertions.assertFalse(clientRep.isFullScopeAllowed());
 
         // Try update with disabled consent required. Should fail
         clientRep.setFullScopeAllowed(true);
@@ -288,7 +288,7 @@ public class ClientRegistrationPoliciesTest extends AbstractClientRegistrationTe
         OIDCClientRepresentation client = create();
         String clientId = client.getClientId();
         ClientRepresentation clientRep = ApiUtil.findClientByClientId(realmResource(), clientId).toRepresentation();
-        Assert.assertTrue(clientRep.isEnabled());
+        Assertions.assertTrue(clientRep.isEnabled());
 
         // Add client-disabled policy
         ComponentRepresentation rep = new ComponentRepresentation();
@@ -305,7 +305,7 @@ public class ClientRegistrationPoliciesTest extends AbstractClientRegistrationTe
         client = create();
         clientId = client.getClientId();
         clientRep = ApiUtil.findClientByClientId(realmResource(), clientId).toRepresentation();
-        Assert.assertFalse(clientRep.isEnabled());
+        Assertions.assertFalse(clientRep.isEnabled());
 
         // Try enable client. Should fail
         clientRep.setEnabled(true);
@@ -366,10 +366,10 @@ public class ClientRegistrationPoliciesTest extends AbstractClientRegistrationTe
         // test that clientScope provider contains just the default client scopes
         ComponentTypeRepresentation clientScopeRep = providersMap.get(ClientScopesClientRegistrationPolicyFactory.PROVIDER_ID);
         List<String> clientScopes = getProviderConfigProperty(clientScopeRep, ClientScopesClientRegistrationPolicyFactory.ALLOWED_CLIENT_SCOPES);
-        Assert.assertFalse(clientScopes.isEmpty());
-        Assert.assertTrue(clientScopes.contains(OAuth2Constants.SCOPE_PROFILE));
-        Assert.assertFalse(clientScopes.contains("foo"));
-        Assert.assertFalse(clientScopes.contains("bar"));
+        Assertions.assertFalse(clientScopes.isEmpty());
+        Assertions.assertTrue(clientScopes.contains(OAuth2Constants.SCOPE_PROFILE));
+        Assertions.assertFalse(clientScopes.contains("foo"));
+        Assertions.assertFalse(clientScopes.contains("bar"));
 
         // Add some clientScopes
         ClientScopeRepresentation clientScope = new ClientScopeRepresentation();
@@ -395,8 +395,8 @@ public class ClientRegistrationPoliciesTest extends AbstractClientRegistrationTe
         }).findFirst().get();
 
         clientScopes = getProviderConfigProperty(clientScopeRep, ClientScopesClientRegistrationPolicyFactory.ALLOWED_CLIENT_SCOPES);
-        Assert.assertTrue(clientScopes.contains("foo"));
-        Assert.assertTrue(clientScopes.contains("bar"));
+        Assertions.assertTrue(clientScopes.contains("foo"));
+        Assertions.assertTrue(clientScopes.contains("bar"));
 
         // Revert client scopes
         realmResource().clientScopes().get(fooScopeId).remove();
@@ -404,7 +404,7 @@ public class ClientRegistrationPoliciesTest extends AbstractClientRegistrationTe
     }
 
     private List<String> getProviderConfigProperty(ComponentTypeRepresentation provider, String expectedConfigPropName) {
-        Assert.assertNotNull(provider);
+        Assertions.assertNotNull(provider);
 
         List<ConfigPropertyRepresentation> list = provider.getProperties();
 
@@ -414,10 +414,10 @@ public class ClientRegistrationPoliciesTest extends AbstractClientRegistrationTe
 
         }).collect(Collectors.toList());
 
-        Assert.assertEquals(list.size(), 1);
+        Assertions.assertEquals(list.size(), 1);
         ConfigPropertyRepresentation allowedProtocolMappers = list.get(0);
 
-        Assert.assertEquals(allowedProtocolMappers.getName(), expectedConfigPropName);
+        Assertions.assertEquals(allowedProtocolMappers.getName(), expectedConfigPropName);
         return allowedProtocolMappers.getOptions();
     }
 
@@ -485,7 +485,7 @@ public class ClientRegistrationPoliciesTest extends AbstractClientRegistrationTe
 
         // Check that I can register client now
         ClientRepresentation registeredClient = reg.create(clientRep);
-        Assert.assertNotNull(registeredClient.getRegistrationAccessToken());
+        Assertions.assertNotNull(registeredClient.getRegistrationAccessToken());
 
         // Revert client scope
         ApiUtil.findClientResourceByClientId(realmResource(), "test-app").remove();
@@ -516,7 +516,7 @@ public class ClientRegistrationPoliciesTest extends AbstractClientRegistrationTe
 
         // Check authenticated registration is permitted
         ClientRepresentation registeredClient = reg.create(clientRep);
-        Assert.assertNotNull(registeredClient.getRegistrationAccessToken());
+        Assertions.assertNotNull(registeredClient.getRegistrationAccessToken());
 
         // Check "anonymous" registration still fails
         clientRep = createRep("test-app-2");
@@ -584,7 +584,7 @@ public class ClientRegistrationPoliciesTest extends AbstractClientRegistrationTe
         ClientRepresentation clientRep = createRep("test-app");
         ClientRepresentation registeredClient = reg.create(clientRep);
 
-        Assert.assertNull(registeredClient.getProtocolMappers());
+        Assertions.assertNull(registeredClient.getProtocolMappers());
 
         // Revert
         ApiUtil.findClientResourceByClientId(realmResource(), "test-app").remove();
@@ -606,7 +606,7 @@ public class ClientRegistrationPoliciesTest extends AbstractClientRegistrationTe
         clientRep.setProtocolMappers(Collections.singletonList(createHardcodedMapperRep()));
         ClientRepresentation registeredClient = reg.create(clientRep);
 
-        Assert.assertEquals(1, registeredClient.getProtocolMappers().size());
+        Assertions.assertEquals(1, registeredClient.getProtocolMappers().size());
         ProtocolMapperRepresentation hardcodedMapper = registeredClient.getProtocolMappers().get(0);
 
         // Revert
@@ -647,7 +647,7 @@ public class ClientRegistrationPoliciesTest extends AbstractClientRegistrationTe
     private void assertRegAccessToken(String registrationAccessToken, RegistrationAuth expectedRegAuth) throws Exception {
         byte[] content = new JWSInput(registrationAccessToken).getContent();
         RegistrationAccessToken regAccessToken = JsonSerialization.readValue(content, RegistrationAccessToken.class);
-        Assert.assertEquals(regAccessToken.getRegistrationAuth(), expectedRegAuth.toString().toLowerCase());
+        Assertions.assertEquals(regAccessToken.getRegistrationAuth(), expectedRegAuth.toString().toLowerCase());
     }
 
     private enum ClientRegOp {

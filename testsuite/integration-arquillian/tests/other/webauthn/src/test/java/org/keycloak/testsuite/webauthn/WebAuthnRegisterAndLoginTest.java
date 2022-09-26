@@ -18,8 +18,8 @@ package org.keycloak.testsuite.webauthn;
 
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.WebAuthnConstants;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
@@ -344,7 +344,7 @@ public class WebAuthnRegisterAndLoginTest extends AbstractWebAuthnVirtualTest {
                     assertThat(data.getAaguid(), is(aaguid));
                     assertThat(data.getAttestationStatementFormat(), is(attestationStatementFormat));
                 } catch (IOException e) {
-                    Assert.fail();
+                    Assertions.fail();
                 }
             }
         });

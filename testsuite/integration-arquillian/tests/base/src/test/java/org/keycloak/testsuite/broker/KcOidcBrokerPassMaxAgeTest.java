@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.broker;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.IdentityProviderResource;
 import org.keycloak.models.IdentityProviderModel;
@@ -47,7 +47,7 @@ public class KcOidcBrokerPassMaxAgeTest extends AbstractBrokerTest {
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void testLogInAsUserInIDP() {
         // super.testLogInAsUserInIDP();
     }
@@ -63,7 +63,7 @@ public class KcOidcBrokerPassMaxAgeTest extends AbstractBrokerTest {
         driver.navigate().to(getAccountUrl(getConsumerRoot(), bc.consumerRealmName()));
         loginPage.clickSocial(bc.getIDPAlias());
         waitForPage(driver, "sign in to", true);
-        Assert.assertTrue("Driver should be on the provider realm page right now",
+        Assertions.assertTrue("Driver should be on the provider realm page right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName() + "/"));
 
         loginPage.login(bc.getUserLogin(), bc.getUserPassword());
@@ -78,13 +78,13 @@ public class KcOidcBrokerPassMaxAgeTest extends AbstractBrokerTest {
         // we should now see the login page of the consumer
         waitForPage(driver, "sign in to", true);
         loginPage.assertCurrent(bc.consumerRealmName());
-        Assert.assertTrue("Driver should be on the consumer realm page right now",
+        Assertions.assertTrue("Driver should be on the consumer realm page right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.consumerRealmName() + "/protocol/openid-connect/auth"));
 
         loginPage.clickSocial(bc.getIDPAlias());
         // we should see the login page of the provider, since the max_age was propagated
         waitForPage(driver, "sign in to", true);
-        Assert.assertTrue("Driver should be on the provider realm page right now",
+        Assertions.assertTrue("Driver should be on the provider realm page right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName() + "/"));
         loginPage.assertCurrent(bc.providerRealmName());
 
@@ -104,7 +104,7 @@ public class KcOidcBrokerPassMaxAgeTest extends AbstractBrokerTest {
         driver.navigate().to(getAccountUrl(getConsumerRoot(), bc.consumerRealmName()));
         loginPage.clickSocial(bc.getIDPAlias());
         waitForPage(driver, "sign in to", true);
-        Assert.assertTrue("Driver should be on the provider realm page right now",
+        Assertions.assertTrue("Driver should be on the provider realm page right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName() + "/"));
 
         loginPage.login(bc.getUserLogin(), bc.getUserPassword());
@@ -127,14 +127,14 @@ public class KcOidcBrokerPassMaxAgeTest extends AbstractBrokerTest {
         // we should now see the login page of the consumer
         waitForPage(driver, "sign in to", true);
         loginPage.assertCurrent(bc.consumerRealmName());
-        Assert.assertTrue("Driver should be on the consumer realm page right now",
+        Assertions.assertTrue("Driver should be on the consumer realm page right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.consumerRealmName() + "/protocol/openid-connect/auth"));
 
         loginPage.clickSocial(bc.getIDPAlias());
         // we should see the login page of the provider, since the max_age was propagated
         waitForPage(driver, "sign in to", true);
         loginPage.getError();
-        Assert.assertEquals("Unexpected error when authenticating with identity provider",
+        Assertions.assertEquals("Unexpected error when authenticating with identity provider",
                 loginPage.getInstruction());
 
         testSingleLogout();

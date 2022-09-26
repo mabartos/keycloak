@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.arquillian.annotation.InitialDcState;
 
 /**
@@ -79,11 +79,11 @@ public class ConcurrentLoginCrossDCTest extends ConcurrentLoginTest {
             ));
             HttpUriRequest request = handleLogin(getPageContent(oauth.getLoginFormUrl(), httpClient, HttpClientContext.create()), "test-user@localhost", "password");
             log.debug("Executing login request");
-            org.junit.Assert.assertTrue(parseAndCloseResponse(httpClient.execute(request)).contains("<title>AUTH_RESPONSE</title>"));
+            org.junit.jupiter.api.Assertions.assertTrue(parseAndCloseResponse(httpClient.execute(request)).contains("<title>AUTH_RESPONSE</title>"));
 
             run(DEFAULT_THREADS, DEFAULT_CLIENTS_COUNT, loginTask, new SwapDcAvailability());
             int clientSessionsCount = testingClient.testing().getClientSessionsCountInUserSession("test", userSessionId.get());
-            org.junit.Assert.assertEquals(1 + DEFAULT_CLIENTS_COUNT, clientSessionsCount);
+            org.junit.jupiter.api.Assertions.assertEquals(1 + DEFAULT_CLIENTS_COUNT, clientSessionsCount);
         } finally {
             long end = System.currentTimeMillis() - start;
             log.infof("Statistics: %s", loginTask == null ? "??" : loginTask.getHistogram());

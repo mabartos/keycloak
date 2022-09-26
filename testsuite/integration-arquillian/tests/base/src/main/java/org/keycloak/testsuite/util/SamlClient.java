@@ -93,8 +93,8 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.saml.common.constants.GeneralConstants.RELAY_STATE;
 import static org.keycloak.testsuite.util.Matchers.statusCodeIsHC;
 import static org.keycloak.testsuite.util.SamlUtils.getSamlDeploymentForClient;

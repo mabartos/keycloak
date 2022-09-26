@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.i18n;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmLocalizationResource;
 
 import java.util.Map;

@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.dballocator.client.retry;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.dballocator.client.exceptions.DBAllocatorUnavailableException;
 import org.keycloak.testsuite.dballocator.client.retry.IncrementalBackoffRetryPolicy;
 
@@ -44,10 +44,10 @@ public class IncrementalBackoffRetryPolicyTest {
         //when
         try {
             backoffRetryPolicy.retryTillHttpOk(counter);
-            Assert.fail();
+            Assertions.fail();
         } catch (DBAllocatorUnavailableException e) {
             //then
-            Assert.assertEquals(expectedNumberOfInvocations, counter.getCounter().longValue());
+            Assertions.assertEquals(expectedNumberOfInvocations, counter.getCounter().longValue());
         }
     }
 
@@ -61,8 +61,8 @@ public class IncrementalBackoffRetryPolicyTest {
         Response response = backoffRetryPolicy.retryTillHttpOk(counter);
 
         //then
-        Assert.assertEquals(1, counter.getCounter().longValue());
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(1, counter.getCounter().longValue());
+        Assertions.assertEquals(200, response.getStatus());
     }
 
 }

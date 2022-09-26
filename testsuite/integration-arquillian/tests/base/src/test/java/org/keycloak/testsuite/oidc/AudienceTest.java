@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.oidc;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientScopeResource;
 import org.keycloak.models.utils.KeycloakModelUtils;
@@ -88,7 +88,7 @@ public class AudienceTest extends AbstractOIDCScopeTest {
         testRealm.getUsers().add(user);
     }
 
-    @Before
+    @BeforeEach
     public void beforeTest() {
         // Check if already exists
         ClientScopeResource clientScopeRes = ApiUtil.findClientScopeByName(testRealm(), "audience-scope");
@@ -171,7 +171,7 @@ public class AudienceTest extends AbstractOIDCScopeTest {
     private void assertAudiences(JsonWebToken token, String... expectedAudience) {
         Collection<String> audiences = token.getAudience() == null ? Collections.emptyList() : Arrays.asList(token.getAudience());
         Collection<String> expectedAudiences = Arrays.asList(expectedAudience);
-        Assert.assertTrue("Not matched. expectedAudiences: " + expectedAudiences + ", audiences: " + audiences,
+        Assertions.assertTrue("Not matched. expectedAudiences: " + expectedAudiences + ", audiences: " + audiences,
                 expectedAudiences.containsAll(audiences) && audiences.containsAll(expectedAudiences));
     }
 }

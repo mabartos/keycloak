@@ -18,10 +18,11 @@ package org.keycloak.testsuite.actions;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.events.EventType;
 import org.keycloak.models.UserModel.RequiredAction;
@@ -35,19 +36,20 @@ import org.keycloak.testsuite.pages.AppPage;
 import org.keycloak.testsuite.pages.AppPage.RequestType;
 import org.keycloak.testsuite.pages.LoginPage;
 import org.keycloak.testsuite.pages.LoginPasswordUpdatePage;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.keycloak.testsuite.util.SecondBrowser;
 import org.openqa.selenium.WebDriver;
 
 import java.util.LinkedList;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
+@ExtendWith(GreenMailExtension.class)
 public class RequiredActionResetPasswordTest extends AbstractTestRealmKeycloakTest {
 
     @Override
@@ -59,11 +61,7 @@ public class RequiredActionResetPasswordTest extends AbstractTestRealmKeycloakTe
     @SecondBrowser
     private WebDriver driver2;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
 
-    @Rule
-    public GreenMailRule greenMail = new GreenMailRule();
 
     @Page
     protected AppPage appPage;
@@ -74,7 +72,7 @@ public class RequiredActionResetPasswordTest extends AbstractTestRealmKeycloakTe
     @Page
     protected LoginPasswordUpdatePage changePasswordPage;
 
-    @After
+    @AfterEach
     public void after() {
         ApiUtil.resetUserPassword(testRealm().users().get(findUser("test-user@localhost").getId()), "password", false);
     }
@@ -92,7 +90,7 @@ public class RequiredActionResetPasswordTest extends AbstractTestRealmKeycloakTe
 
         events.expectRequiredAction(EventType.UPDATE_PASSWORD).assertEvent();
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         EventRepresentation loginEvent = events.expectLogin().assertEvent();
 

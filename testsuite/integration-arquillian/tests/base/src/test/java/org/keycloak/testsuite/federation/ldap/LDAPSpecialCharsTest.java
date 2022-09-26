@@ -17,11 +17,11 @@
 
 package org.keycloak.testsuite.federation.ldap;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.common.Profile;
@@ -96,7 +96,7 @@ public class LDAPSpecialCharsTest extends AbstractLDAPTest {
         });
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         // don't run this test when map storage is enabled, as map storage doesn't support the legacy style federation
         ProfileAssume.assumeFeatureDisabled(Profile.Feature.MAP_STORAGE);
@@ -120,7 +120,7 @@ public class LDAPSpecialCharsTest extends AbstractLDAPTest {
         }).findFirst().isPresent();
 
         if (!found) {
-            Assert.fail("Username " + username + " not found in the list");
+            Assertions.fail("Username " + username + " not found in the list");
         }
     }
 
@@ -130,16 +130,16 @@ public class LDAPSpecialCharsTest extends AbstractLDAPTest {
         // Fail login with wildcard
         loginPage.open();
         loginPage.login("john*", "Password1");
-        Assert.assertEquals("Invalid username or password.", loginPage.getInputError());
+        Assertions.assertEquals("Invalid username or password.", loginPage.getInputError());
 
         // Fail login with wildcard
         loginPage.login("j*", "Password1");
-        Assert.assertEquals("Invalid username or password.", loginPage.getInputError());
+        Assertions.assertEquals("Invalid username or password.", loginPage.getInputError());
 
         // Success login as username exactly match
         loginPage.login("jamees,key*cložak)ppp", "Password1");
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
     }
 
 
@@ -154,46 +154,46 @@ public class LDAPSpecialCharsTest extends AbstractLDAPTest {
             appRealm.updateComponent(mapperModel);
 
             UserModel specialUser = session.users().getUserByUsername(appRealm, "jamees,key*cložak)ppp");
-            Assert.assertNotNull(specialUser);
+            Assertions.assertNotNull(specialUser);
 
             // 1 - Grant some groups in LDAP
 
             // This group should already exists as it was imported from LDAP
             GroupModel specialGroup = KeycloakModelUtils.findGroupByPath(appRealm, "/group-spec,ia*l_characžter)s");
-            Assert.assertNotNull(specialGroup);
+            Assertions.assertNotNull(specialGroup);
 
             specialUser.joinGroup(specialGroup);
 
             GroupModel groupWithSlashes = KeycloakModelUtils.findGroupByPath(appRealm, "/group/with/three/slashes");
-            Assert.assertNotNull(groupWithSlashes);
+            Assertions.assertNotNull(groupWithSlashes);
 
             specialUser.joinGroup(groupWithSlashes);
 
             // 2 - Check that group mappings are in LDAP and hence available through federation
 
             Set<GroupModel> userGroups = specialUser.getGroupsStream().collect(Collectors.toSet());
-            Assert.assertEquals(2, userGroups.size());
-            Assert.assertTrue(userGroups.contains(specialGroup));
+            Assertions.assertEquals(2, userGroups.size());
+            Assertions.assertTrue(userGroups.contains(specialGroup));
 
             // 3 - Check through userProvider
             List<UserModel> groupMembers = session.users().getGroupMembersStream(appRealm, specialGroup, 0, 10)
                     .collect(Collectors.toList());
 
-            Assert.assertEquals(1, groupMembers.size());
-            Assert.assertEquals("jamees,key*cložak)ppp", groupMembers.get(0).getUsername());
+            Assertions.assertEquals(1, groupMembers.size());
+            Assertions.assertEquals("jamees,key*cložak)ppp", groupMembers.get(0).getUsername());
 
             groupMembers = session.users().getGroupMembersStream(appRealm, groupWithSlashes, 0, 10)
                     .collect(Collectors.toList());
 
-            Assert.assertEquals(1, groupMembers.size());
-            Assert.assertEquals("jamees,key*cložak)ppp", groupMembers.get(0).getUsername());
+            Assertions.assertEquals(1, groupMembers.size());
+            Assertions.assertEquals("jamees,key*cložak)ppp", groupMembers.get(0).getUsername());
 
             // 4 - Delete some group mappings and check they are deleted
 
             specialUser.leaveGroup(specialGroup);
             specialUser.leaveGroup(groupWithSlashes);
 
-            Assert.assertEquals(0, specialUser.getGroupsStream().count());
+            Assertions.assertEquals(0, specialUser.getGroupsStream().count());
 
         });
     }

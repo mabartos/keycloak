@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.actions;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.arquillian.annotation.EnableFeature;
@@ -42,7 +42,7 @@ public class AppInitiatedActionUpdateProfileWithUserProfileTest extends AppIniti
         VerifyProfileTest.enableDynamicUserProfile(testRealm);
     }
     
-    @Before
+    @BeforeEach
     public void beforeTest() {
         VerifyProfileTest.setUserProfileConfiguration(testRealm(),null);        
         super.beforeTest();

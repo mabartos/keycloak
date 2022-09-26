@@ -2,7 +2,7 @@ package org.keycloak.testsuite.console.federation;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.LDAPConstants;
 import org.keycloak.representations.idm.ComponentRepresentation;
 import org.keycloak.testsuite.console.AbstractConsoleTest;
@@ -12,8 +12,8 @@ import org.keycloak.util.ldap.LDAPEmbeddedServer;
 import java.util.List;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author fkiss, pdrozd

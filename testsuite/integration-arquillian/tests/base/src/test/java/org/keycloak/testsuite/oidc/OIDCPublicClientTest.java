@@ -18,10 +18,10 @@
 
 package org.keycloak.testsuite.oidc;
 
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.authentication.authenticators.client.JWTClientAuthenticator;
@@ -37,8 +37,8 @@ import org.keycloak.testsuite.util.OAuthClient;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 
 /**
@@ -46,8 +46,7 @@ import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
  */
 public class OIDCPublicClientTest extends AbstractKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
 
     @Override
@@ -55,7 +54,7 @@ public class OIDCPublicClientTest extends AbstractKeycloakTest {
         super.beforeAbstractKeycloakTest();
     }
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         ClientManager.realm(adminClient.realm("test")).clientId("test-app").directAccessGrant(true);
         /*
@@ -85,7 +84,7 @@ public class OIDCPublicClientTest extends AbstractKeycloakTest {
 
         // Switch client to public client now
         clientRep = clientResource.toRepresentation();
-        Assert.assertEquals(JWTClientAuthenticator.PROVIDER_ID, clientRep.getClientAuthenticatorType());
+        Assertions.assertEquals(JWTClientAuthenticator.PROVIDER_ID, clientRep.getClientAuthenticatorType());
         clientRep.setPublicClient(true);
         clientResource.update(clientRep);
 

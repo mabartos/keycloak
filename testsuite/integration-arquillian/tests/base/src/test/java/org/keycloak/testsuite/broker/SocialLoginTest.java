@@ -2,11 +2,11 @@ package org.keycloak.testsuite.broker;
 
 import org.jboss.arquillian.graphene.Graphene;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.IdentityProviderResource;
 import org.keycloak.authorization.model.Policy;
@@ -66,10 +66,10 @@ import java.io.FileInputStream;
 import java.util.List;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.Assumptions.assumeTrue;
 
 import org.keycloak.testsuite.util.AdminClientUtil;
 import static org.keycloak.testsuite.broker.SocialLoginTest.Provider.BITBUCKET;
@@ -163,18 +163,18 @@ public class SocialLoginTest extends AbstractKeycloakTest {
     private Provider currentTestProvider = null;
     private AbstractSocialLoginPage currentSocialLoginPage = null;
 
-    @BeforeClass
+    @BeforeAll
     public static void loadConfig() throws Exception {
         assumeTrue(System.getProperties().containsKey(SOCIAL_CONFIG));
         config.load(new FileInputStream(System.getProperty(SOCIAL_CONFIG)));
     }
     
-    @Before
+    @BeforeEach
     public void beforeSocialLoginTest() {
         accountPage.setAuthRealm(REALM);
     }
 
-    @After
+    @AfterEach
     public void afterSocialLoginTest() {
         currentTestProvider = null;
     }
@@ -572,7 +572,7 @@ public class SocialLoginTest extends AbstractKeycloakTest {
                                     .param(OAuth2Constants.REQUESTED_TOKEN_TYPE, OAuth2Constants.ACCESS_TOKEN_TYPE)
                                     .param(OAuth2Constants.REQUESTED_ISSUER, currentTestProvider.id())
                     ));
-            Assert.assertEquals(expectedStatusCode, response.getStatus());
+            Assertions.assertEquals(expectedStatusCode, response.getStatus());
             if (expectedStatusCode == Response.Status.OK.getStatusCode())
                 return response.readEntity(AccessTokenResponse.class);
             else
@@ -586,7 +586,7 @@ public class SocialLoginTest extends AbstractKeycloakTest {
 
     protected void testTokenExchange() {
         List<UserRepresentation> users = adminClient.realm(REALM).users().search(null, null, null);
-        Assert.assertEquals(1, users.size());
+        Assertions.assertEquals(1, users.size());
 
         String username = users.get(0).getUsername();
         checkFeature(501, username);
@@ -599,15 +599,15 @@ public class SocialLoginTest extends AbstractKeycloakTest {
 
         try {
             AccessTokenResponse tokenResponse = checkFeature(200, username);
-            Assert.assertNotNull(tokenResponse);
+            Assertions.assertNotNull(tokenResponse);
             String socialToken = tokenResponse.getToken();
-            Assert.assertNotNull(socialToken);
+            Assertions.assertNotNull(socialToken);
 
             // remove all users
             removeUser();
 
             users = adminClient.realm(REALM).users().search(null, null, null);
-            Assert.assertEquals(0, users.size());
+            Assertions.assertEquals(0, users.size());
 
             // now try external exchange where we trust social provider and import the external token.
             Response response = getExchangeUrl(httpClient).request()
@@ -619,19 +619,19 @@ public class SocialLoginTest extends AbstractKeycloakTest {
                                     .param(OAuth2Constants.SUBJECT_TOKEN_TYPE, OAuth2Constants.ACCESS_TOKEN_TYPE)
                                     .param(OAuth2Constants.SUBJECT_ISSUER, currentTestProvider.id())
                     ));
-            Assert.assertEquals(200, response.getStatus());
+            Assertions.assertEquals(200, response.getStatus());
             response.close();
 
             users = adminClient.realm(REALM).users().search(null, null, null);
-            Assert.assertEquals(1, users.size());
+            Assertions.assertEquals(1, users.size());
 
-            Assert.assertEquals(username, users.get(0).getUsername());
+            Assertions.assertEquals(username, users.get(0).getUsername());
 
             // remove all users
             removeUser();
 
             users = adminClient.realm(REALM).users().search(null, null, null);
-            Assert.assertEquals(0, users.size());
+            Assertions.assertEquals(0, users.size());
 
             ///// Test that we can update social token from session with stored tokens turned off.
 
@@ -650,7 +650,7 @@ public class SocialLoginTest extends AbstractKeycloakTest {
                                     .param(OAuth2Constants.SUBJECT_TOKEN_TYPE, OAuth2Constants.ACCESS_TOKEN_TYPE)
                                     .param(OAuth2Constants.SUBJECT_ISSUER, currentTestProvider.id())
                     ));
-            Assert.assertEquals(200, response.getStatus());
+            Assertions.assertEquals(200, response.getStatus());
             tokenResponse = response.readEntity(AccessTokenResponse.class);
             String keycloakToken = tokenResponse.getToken();
             response.close();
@@ -666,11 +666,11 @@ public class SocialLoginTest extends AbstractKeycloakTest {
                                     .param(OAuth2Constants.REQUESTED_TOKEN_TYPE, OAuth2Constants.ACCESS_TOKEN_TYPE)
                                     .param(OAuth2Constants.REQUESTED_ISSUER, currentTestProvider.id())
                     ));
-            Assert.assertEquals(200, response.getStatus());
+            Assertions.assertEquals(200, response.getStatus());
             tokenResponse = response.readEntity(AccessTokenResponse.class);
             response.close();
 
-            Assert.assertEquals(socialToken, tokenResponse.getToken());
+            Assertions.assertEquals(socialToken, tokenResponse.getToken());
             // turn on store token
             idp = adminClient.realm(REALM).identityProviders().get(currentTestProvider.id).toRepresentation();
             idp.setStoreToken(true);

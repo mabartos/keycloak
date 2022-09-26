@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.adapter.servlet;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.arquillian.annotation.AppServerContainer;
 import org.keycloak.testsuite.utils.annotation.UseServletFilter;
 import org.keycloak.testsuite.utils.arquillian.ContainerConstants;
@@ -19,14 +19,14 @@ import org.keycloak.testsuite.utils.arquillian.ContainerConstants;
 public class SAMLFilterLoginResponseHandlingTest extends SAMLLoginResponseHandlingTest {
     @Test
     @Override
-    @Ignore
+    @Disabled
     public void testErrorHandlingUnsigned() {
 
     }
 
     @Test
     @Override
-    @Ignore
+    @Disabled
     public void testErrorHandlingSigned() {
 
     }

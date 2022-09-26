@@ -16,8 +16,8 @@
  */
 package org.keycloak.testsuite.authz;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.authorization.AuthorizationProvider;
 import org.keycloak.authorization.AuthorizationProviderFactory;
@@ -130,7 +130,7 @@ public class PolicyEvaluationCompositeRoleTest extends AbstractAuthzTest {
         request.setClientId(resourceServerId);
         request.addResource("myresource", "myscope");
         PolicyEvaluationResponse result = realm.clients().get(resourceServerId).authorization().policies().evaluate(request);
-        Assert.assertEquals(result.getStatus(), DecisionEffect.PERMIT);
+        Assertions.assertEquals(result.getStatus(), DecisionEffect.PERMIT);
     }
 
 

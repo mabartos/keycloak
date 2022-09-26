@@ -17,9 +17,9 @@
 package org.keycloak.testsuite.ssl;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
@@ -39,9 +39,9 @@ import org.keycloak.testsuite.auth.page.login.VerifyEmail;
 import org.keycloak.testsuite.util.MailServerConfiguration;
 import org.keycloak.testsuite.util.SslMailServer;
 
-import static org.junit.Assert.assertEquals;
-import static org.keycloak.testsuite.util.MailAssert.assertEmailAndGetUrl;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.keycloak.testsuite.util.MailAssertions.assertEmailAndGetUrl;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 
 /**
  *
@@ -62,8 +62,7 @@ public class TrustStoreEmailTest extends AbstractTestRealmKeycloakTest {
     @Page
     private VerifyEmail testRealmVerifyEmailPage;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Override
     public void configureTestRealm(RealmRepresentation testRealm) {
@@ -83,7 +82,7 @@ public class TrustStoreEmailTest extends AbstractTestRealmKeycloakTest {
         testRealmLoginPage.setAuthRealm(testRealmPage);
     }
 
-    @After
+    @AfterEach
     public void afterTrustStoreEmailTest() {
         SslMailServer.stop();
     }
@@ -157,7 +156,7 @@ public class TrustStoreEmailTest extends AbstractTestRealmKeycloakTest {
                 .assertEvent();
 
         // Email wasn't send
-        Assert.assertNull(SslMailServer.getLastReceivedMessage());
+        Assertions.assertNull(SslMailServer.getLastReceivedMessage());
 
         // Email wasn't send, but we won't notify end user about that. Admin is aware due to the error in the logs and the SEND_VERIFY_EMAIL_ERROR event.
         assertEquals("You need to verify your email address to activate your account.",
@@ -187,7 +186,7 @@ public class TrustStoreEmailTest extends AbstractTestRealmKeycloakTest {
                     .assertEvent();
 
             // Email wasn't send
-            Assert.assertNull(SslMailServer.getLastReceivedMessage());
+            Assertions.assertNull(SslMailServer.getLastReceivedMessage());
 
             // Email wasn't send, but we won't notify end user about that. Admin is aware due to the error in the logs and the SEND_VERIFY_EMAIL_ERROR event.
             assertEquals("You need to verify your email address to activate your account.",

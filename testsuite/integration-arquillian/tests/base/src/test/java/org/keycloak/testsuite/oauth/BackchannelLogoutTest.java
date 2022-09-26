@@ -2,17 +2,17 @@ package org.keycloak.testsuite.oauth;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.testsuite.admin.ApiUtil.createUserWithAdminClient;
 import static org.keycloak.testsuite.admin.ApiUtil.resetUserPassword;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientsResource;
@@ -67,8 +67,7 @@ public class BackchannelLogoutTest extends AbstractNestedBrokerTest {
 
     private RealmManager providerRealmManager;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Drone
     @SecondBrowser
@@ -79,7 +78,7 @@ public class BackchannelLogoutTest extends AbstractNestedBrokerTest {
         return OidcBackchannelLogoutBrokerConfiguration.INSTANCE;
     }
 
-    @Before
+    @BeforeEach
     public void createProviderRealmUser() {
         log.debug("creating user for realm " + nbc.providerRealmName());
 
@@ -95,7 +94,7 @@ public class BackchannelLogoutTest extends AbstractNestedBrokerTest {
         resetUserPassword(realmResource.users().get(userIdProviderRealm), nbc.getUserPassword(), false);
     }
 
-    @Before
+    @BeforeEach
     public void addIdentityProviders() {
         log.debug("adding identity provider to realm " + nbc.consumerRealmName());
         RealmResource realm = adminClient.realm(nbc.consumerRealmName());
@@ -106,12 +105,12 @@ public class BackchannelLogoutTest extends AbstractNestedBrokerTest {
         realm.identityProviders().create(nbc.setUpConsumerIdentityProvider()).close();
     }
 
-    @Before
+    @BeforeEach
     public void addClients() {
         addClientsToProviderAndConsumer();
     }
 
-    @Before
+    @BeforeEach
     public void fetchConsumerRealmDetails() {
         RealmResource realmResourceConsumerRealm = adminClient.realm(nbc.consumerRealmName());
         realmIdConsumerRealm = realmResourceConsumerRealm.toRepresentation().getId();
@@ -124,7 +123,7 @@ public class BackchannelLogoutTest extends AbstractNestedBrokerTest {
                         .getId();
     }
 
-    @Before
+    @BeforeEach
     public void createNewRsaKeyForProviderRealm() {
         providerRealmManager = RealmManager.realm(adminClient.realm(nbc.providerRealmName()));
         providerId = providerRealmManager.generateNewRsaKey(KEY_PAIR, "rsa-test-2");

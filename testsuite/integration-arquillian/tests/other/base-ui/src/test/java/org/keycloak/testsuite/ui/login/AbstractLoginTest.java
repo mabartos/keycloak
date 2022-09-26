@@ -24,8 +24,8 @@ import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlDoesntStartWith;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlDoesntStartWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 
 /**
  * @author Vaclav Muzikar <vmuzikar@redhat.com>

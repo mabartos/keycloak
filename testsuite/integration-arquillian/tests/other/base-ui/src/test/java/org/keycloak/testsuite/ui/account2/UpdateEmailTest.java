@@ -17,15 +17,15 @@
 
 package org.keycloak.testsuite.ui.account2;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.util.UIUtils.refreshPageAndWaitForLoad;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.events.Details;
 import org.keycloak.events.EventType;
@@ -48,20 +48,19 @@ public class UpdateEmailTest extends BaseAccountPageTest {
     @Page
     private UpdateEmailPage updateEmailPage;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Override
     protected AbstractLoggedInPage getAccountPage() {
         return personalInfoPage;
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         enableUpdateEmailRequiredAction();
     }
 
-    @After
+    @AfterEach
     public void clean() {
         disableUpdateEmailRequiredAction();
         disableRegistration();
@@ -117,9 +116,9 @@ public class UpdateEmailTest extends BaseAccountPageTest {
         refreshPageAndWaitForLoad();
         personalInfoPage.assertUpdateEmailLinkVisible(true);
         personalInfoPage.clickUpdateEmailLink();
-        Assert.assertTrue(updateEmailPage.isCurrent());
+        Assertions.assertTrue(updateEmailPage.isCurrent());
         updateEmailPage.clickCancelAIA();
-        Assert.assertTrue(personalInfoPage.isCurrent());
+        Assertions.assertTrue(personalInfoPage.isCurrent());
     }
 
     @Test
@@ -127,10 +126,10 @@ public class UpdateEmailTest extends BaseAccountPageTest {
         personalInfoPage.navigateTo();
         personalInfoPage.assertUpdateEmailLinkVisible(true);
         personalInfoPage.clickUpdateEmailLink();
-        Assert.assertTrue(updateEmailPage.isCurrent());
+        Assertions.assertTrue(updateEmailPage.isCurrent());
         updateEmailPage.changeEmail("new-email@example.org");
         events.expectAccount(EventType.UPDATE_EMAIL).detail(Details.UPDATED_EMAIL, "new-email@example.org");
-        Assert.assertEquals("new-email@example.org", testRealmResource().users().get(testUser.getId()).toRepresentation().getEmail());
+        Assertions.assertEquals("new-email@example.org", testRealmResource().users().get(testUser.getId()).toRepresentation().getEmail());
     }
 
     private void disableUpdateEmailRequiredAction() {

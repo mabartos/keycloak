@@ -30,10 +30,10 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.adapters.OIDCAuthenticationError;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -126,18 +126,18 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.auth.page.AuthRealm.DEMO;
 import static org.keycloak.testsuite.util.AdminClientUtil.NUMBER_OF_CONNECTIONS;
 import static org.keycloak.testsuite.util.AdminClientUtil.createResteasyClient;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWithLoginUrlOf;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 
 /**
@@ -322,7 +322,7 @@ public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
         oAuthGrantPage.setAuthRealm(DEMO);
     }
     
-    @Before
+    @BeforeEach
     public void beforeDemoServletsAdapterTest() {
         // Delete all cookies from token-min-ttl page to be sure we are logged out
         tokenMinTTLPage.navigateTo();
@@ -432,7 +432,7 @@ public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
         assertLogged();
         
         // Assert no JSESSIONID cookie
-        Assert.assertNull(driver.manage().getCookieNamed("JSESSIONID"));
+        Assertions.assertNull(driver.manage().getCookieNamed("JSESSIONID"));
         
         return driver.manage().getCookieNamed(AdapterConstants.KEYCLOAK_ADAPTER_STATE_COOKIE).getValue();
     }
@@ -770,7 +770,7 @@ public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
         tokenMinTTLPage.navigateTo();
         token = tokenMinTTLPage.getAccessToken();
         int tokenIssued2 = token.getIssuedAt();
-        Assert.assertEquals(tokenIssued1, tokenIssued2);
+        Assertions.assertEquals(tokenIssued1, tokenIssued2);
         assertFalse(token.isExpired());
 
         // Sets 9 minutes offset and assert access token will be refreshed (accessTokenTimeout is 10 minutes, token-min-ttl is 2 minutes. Hence 8 minutes or more should be sufficient)
@@ -778,7 +778,7 @@ public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
         tokenMinTTLPage.navigateTo();
         token = tokenMinTTLPage.getAccessToken();
         int tokenIssued3 = token.getIssuedAt();
-        Assert.assertTrue(tokenIssued3 > tokenIssued1);
+        Assertions.assertTrue(tokenIssued3 > tokenIssued1);
 
         // Revert times
         setAdapterAndServerTimeOffset(0, tokenMinTTLPage.toString());
@@ -942,8 +942,8 @@ public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
         assertCurrentUrlEquals(customerPortal.callCustomerDbAudienceRequiredUrl(false));
 
         String pageSource = driver.getPageSource();
-        Assert.assertTrue(pageSource.contains("Service returned: 401"));
-        Assert.assertFalse(pageSource.contains("Stian Thorgersen"));
+        Assertions.assertTrue(pageSource.contains("Service returned: 401"));
+        Assertions.assertFalse(pageSource.contains("Stian Thorgersen"));
 
         // Logout TODO: will be good to not request logout to force adapter to use additional scope (and other request parameters)
         driver.navigate().to(customerPortal.logout().toURL());
@@ -957,7 +957,7 @@ public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
         assertCurrentUrlEquals(customerPortal.callCustomerDbAudienceRequiredUrl(false));
 
         pageSource = driver.getPageSource();
-        Assert.assertFalse(pageSource.contains("Service returned: 401"));
+        Assertions.assertFalse(pageSource.contains("Service returned: 401"));
         assertLogged();
 
         // logout
@@ -1187,45 +1187,45 @@ public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
         System.out.println(productPortalAutodetectBearerOnly.getInjectedUrl().toString());
         WebTarget target = client.target(productPortalAutodetectBearerOnly.getInjectedUrl().toString() + "/");
         Response response = target.request().header("X-Requested-With", "XMLHttpRequest").get();
-        Assert.assertEquals(401, response.getStatus());
+        Assertions.assertEquals(401, response.getStatus());
         response.close();
         
         // Do not redirect client to login page if it's a partial Faces request
         response = target.request().header("Faces-Request", "partial/ajax").get();
-        Assert.assertEquals(401, response.getStatus());
+        Assertions.assertEquals(401, response.getStatus());
         response.close();
         
         // Do not redirect client to login page if it's a SOAP request
         response = target.request().header("SOAPAction", "").get();
-        Assert.assertEquals(401, response.getStatus());
+        Assertions.assertEquals(401, response.getStatus());
         response.close();
 
         // Do not redirect client to login page if Accept header is missing
         response = target.request().get();
-        Assert.assertEquals(401, response.getStatus());
+        Assertions.assertEquals(401, response.getStatus());
         response.close();
 
         // Do not redirect client to login page if client does not understand HTML reponses
         response = target.request().header(HttpHeaders.ACCEPT, "application/json,text/xml").get();
-        Assert.assertEquals(401, response.getStatus());
+        Assertions.assertEquals(401, response.getStatus());
         response.close();
 
         // Redirect client to login page if it's not an XHR
         response = target.request().header("X-Requested-With", "Dont-Know").header(HttpHeaders.ACCEPT, "*/*").get();
-        Assert.assertEquals(302, response.getStatus());
-        Assert.assertThat(response.getHeaderString(HttpHeaders.LOCATION), containsString("response_type=code"));
+        Assertions.assertEquals(302, response.getStatus());
+        Assertions.assertThat(response.getHeaderString(HttpHeaders.LOCATION), containsString("response_type=code"));
         response.close();
 
         // Redirect client to login page if client explicitely understands HTML responses
         response = target.request().header(HttpHeaders.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9").get();
-        Assert.assertEquals(302, response.getStatus());
-        Assert.assertThat(response.getHeaderString(HttpHeaders.LOCATION), containsString("response_type=code"));
+        Assertions.assertEquals(302, response.getStatus());
+        Assertions.assertThat(response.getHeaderString(HttpHeaders.LOCATION), containsString("response_type=code"));
         response.close();
 
         // Redirect client to login page if client understands all response types
         response = target.request().header(HttpHeaders.ACCEPT, "*/*").get();
-        Assert.assertEquals(302, response.getStatus());
-        Assert.assertThat(response.getHeaderString(HttpHeaders.LOCATION), containsString("response_type=code"));
+        Assertions.assertEquals(302, response.getStatus());
+        Assertions.assertThat(response.getHeaderString(HttpHeaders.LOCATION), containsString("response_type=code"));
         response.close();
         client.close();
     }
@@ -1236,14 +1236,14 @@ public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
         Client client = createResteasyClient(true, true);
         WebTarget target = client.target(customerDb.getInjectedUrl().toString());
         Response response = target.request().get();
-        Assert.assertEquals(401, response.getStatus());
+        Assertions.assertEquals(401, response.getStatus());
         response.close();
 
         final int LIMIT = NUMBER_OF_CONNECTIONS + 1;
         for (int i = 0; i < LIMIT; i++) {
             System.out.println("Testing Basic Auth with bad credentials " + i);
             response = target.request().header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ=").get();
-            Assert.assertEquals(401, response.getStatus());
+            Assertions.assertEquals(401, response.getStatus());
             response.close();
         }
 
@@ -1257,12 +1257,12 @@ public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
         
         WebTarget target = client.target(customerDb.getInjectedUrl().toString());
         Response response = target.request().get();
-        Assert.assertEquals(401, response.getStatus());
+        Assertions.assertEquals(401, response.getStatus());
         response.close();
 
         target = client.target(customerDb.getInjectedUrl().toString() + "?access_token=");
         response = target.request().get();
-        Assert.assertEquals(401, response.getStatus());
+        Assertions.assertEquals(401, response.getStatus());
         response.close();
 
         client.close();
@@ -1283,7 +1283,7 @@ public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
             form.param("password", "password");
             Response response = webTarget.request().post(Entity.form(form));
 
-            Assert.assertEquals(200, response.getStatus());
+            Assertions.assertEquals(200, response.getStatus());
             AccessTokenResponse tokenResponse = response.readEntity(AccessTokenResponse.class);
             response.close();
 
@@ -1291,11 +1291,11 @@ public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
 
             // test without token
             response = client.target(customerDb.getInjectedUrl().toString()).request().get();
-            Assert.assertEquals(401, response.getStatus());
+            Assertions.assertEquals(401, response.getStatus());
             response.close();
             // test with access_token as QueryParamter
             response = client.target(customerDb.getInjectedUrl().toString()).queryParam("access_token", accessToken).request().get();
-            Assert.assertEquals(200, response.getStatus());
+            Assertions.assertEquals(200, response.getStatus());
             response.close();
         } finally {
             client.close();
@@ -1406,7 +1406,7 @@ public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
         assertLogged();
 
         // Assert no JSESSIONID cookie
-        Assert.assertNull(driver.manage().getCookieNamed("JSESSIONID"));
+        Assertions.assertNull(driver.manage().getCookieNamed("JSESSIONID"));
 
         return driver.manage().getCookieNamed(AdapterConstants.KEYCLOAK_ADAPTER_STATE_COOKIE).getValue();
     }

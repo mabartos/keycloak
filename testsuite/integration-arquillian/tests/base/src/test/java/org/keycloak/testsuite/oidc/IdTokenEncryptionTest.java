@@ -17,9 +17,9 @@
 package org.keycloak.testsuite.oidc;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.common.util.Base64Url;
@@ -66,8 +66,7 @@ import java.util.Map;
 
 public class IdTokenEncryptionTest extends AbstractTestRealmKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -88,7 +87,7 @@ public class IdTokenEncryptionTest extends AbstractTestRealmKeycloakTest {
     public void configureTestRealm(RealmRepresentation testRealm) {
     }
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         ClientManager.realm(adminClient.realm("test")).clientId("test-app").directAccessGrant(true).setServiceAccountsEnabled(true);
         /*
@@ -223,7 +222,7 @@ public class IdTokenEncryptionTest extends AbstractTestRealmKeycloakTest {
             // parse JWE and JOSE Header
             String jweStr = tokenResponse.getIdToken();
             String[] parts = jweStr.split("\\.");
-            Assert.assertEquals(parts.length, 5);
+            Assertions.assertEquals(parts.length, 5);
 
             // get decryption key
             // not publickey , use privateKey
@@ -232,7 +231,7 @@ public class IdTokenEncryptionTest extends AbstractTestRealmKeycloakTest {
 
             // a nested JWT (signed and encrypted JWT) needs to set "JWT" to its JOSE Header's "cty" field
             JWEHeader jweHeader = (JWEHeader) getHeader(parts[0]);
-            Assert.assertEquals("JWT", jweHeader.getContentType());
+            Assertions.assertEquals("JWT", jweHeader.getContentType());
 
             // verify and decrypt JWE
             if (encAlgorithm == null) encAlgorithm = JWEConstants.A128CBC_HS256;
@@ -243,10 +242,10 @@ public class IdTokenEncryptionTest extends AbstractTestRealmKeycloakTest {
 
             // verify JWS
             IDToken idToken = oauth.verifyIDToken(idTokenString);
-            Assert.assertEquals("test-user@localhost", idToken.getPreferredUsername());
-            Assert.assertEquals("test-app", idToken.getIssuedFor());
+            Assertions.assertEquals("test-user@localhost", idToken.getPreferredUsername());
+            Assertions.assertEquals("test-app", idToken.getIssuedFor());
         } catch (JWEException | UnsupportedEncodingException e) {
-            Assert.fail();
+            Assertions.fail();
         } finally {
             clientResource = ApiUtil.findClientByClientId(adminClient.realm("test"), "test-app");
             clientRep = clientResource.toRepresentation();
@@ -315,14 +314,14 @@ public class IdTokenEncryptionTest extends AbstractTestRealmKeycloakTest {
             // get id token but failed
             OAuthClient.AuthorizationEndpointResponse response = oauth.doLogin("test-user@localhost", "password");
             AccessTokenResponse atr = oauth.doAccessTokenRequest(response.getCode(), "password");
-            Assert.assertEquals(OAuthErrorException.INVALID_REQUEST, atr.getError());
-            Assert.assertEquals("can not get encryption KEK", atr.getErrorDescription());
+            Assertions.assertEquals(OAuthErrorException.INVALID_REQUEST, atr.getError());
+            Assertions.assertEquals("can not get encryption KEK", atr.getErrorDescription());
 
             // get id token but failed with client_credentials grant type
             oauth.scope("openid");
             OAuthClient.AccessTokenResponse responseClientCredentials = oauth.doClientCredentialsGrantAccessTokenRequest(clientRep.getSecret());
-            Assert.assertEquals(OAuthErrorException.INVALID_REQUEST, responseClientCredentials.getError());
-            Assert.assertEquals("can not get encryption KEK", responseClientCredentials.getErrorDescription());
+            Assertions.assertEquals(OAuthErrorException.INVALID_REQUEST, responseClientCredentials.getError());
+            Assertions.assertEquals("can not get encryption KEK", responseClientCredentials.getErrorDescription());
         } finally {
             // Revert
             clientResource = ApiUtil.findClientByClientId(adminClient.realm("test"), "test-app");

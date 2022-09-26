@@ -3,7 +3,7 @@ package org.keycloak.testsuite.adapter.servlet;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.adapter.AbstractServletsAdapterTest;
 import org.keycloak.testsuite.adapter.page.SerializationServletPage;
 import org.keycloak.testsuite.arquillian.annotation.AppServerContainer;
@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 
 
 @AppServerContainer(ContainerConstants.APP_SERVER_UNDERTOW)

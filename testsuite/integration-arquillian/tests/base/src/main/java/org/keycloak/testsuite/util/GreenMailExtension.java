@@ -19,6 +19,9 @@ package org.keycloak.testsuite.util;
 
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.rules.ExternalResource;
 import org.keycloak.models.RealmModel;
 
@@ -31,35 +34,31 @@ import java.util.Map;
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
-public class GreenMailRule extends ExternalResource {
+public class GreenMailExtension implements BeforeAllCallback, AfterAllCallback {
 
     private GreenMail greenMail;
 
     private int port = 3025;
     private String host = "localhost";
 
-    public GreenMailRule() {
+    public GreenMailExtension() {
     }
 
-    public GreenMailRule(int port, String host) {
+    public GreenMailExtension(int port, String host) {
         this.port = port;
         this.host = host;
     }
 
     @Override
-    protected void before() throws Throwable {
+    public void beforeAll(ExtensionContext extensionContext) throws Exception {
         ServerSetup setup = new ServerSetup(port, host, "smtp");
 
         greenMail = new GreenMail(setup);
         greenMail.start();
     }
 
-    public void credentials(String username, String password) {
-        greenMail.setUser(username, password);
-    }
-
     @Override
-    protected void after() {
+    public void afterAll(ExtensionContext extensionContext) throws Exception {
         if (greenMail != null) {
             // Suppress error from GreenMail on shutdown
             Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
@@ -75,6 +74,10 @@ public class GreenMailRule extends ExternalResource {
 
             greenMail.stop();
         }
+    }
+
+    public void credentials(String username, String password) {
+        greenMail.setUser(username, password);
     }
 
     public void configureRealm(RealmModel realm) {

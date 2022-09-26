@@ -19,10 +19,10 @@
 package org.keycloak.testsuite.federation.ldap;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExternalResource;
 import org.junit.runners.MethodSorters;
 import org.keycloak.common.Profile;
@@ -52,7 +52,7 @@ import java.util.Map;
 import java.util.List;
 
 import java.util.Objects;
-import org.junit.Assume;
+import org.junit.jupiter.api.Assumptions;
 import org.keycloak.testsuite.util.OAuthClient;
 
 /**
@@ -94,8 +94,7 @@ public class LDAPUserLoginTest extends AbstractLDAPTest {
 
     };
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     protected static final Map<String, String> DEFAULT_TEST_USERS = new HashMap<String, String>();
     static {
@@ -112,7 +111,7 @@ public class LDAPUserLoginTest extends AbstractLDAPTest {
         DEFAULT_TEST_USERS.put("VALID_USER_STREET", "1th Avenue");
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         // don't run this test when map storage is enabled, as map storage doesn't support LDAP, yet
         ProfileAssume.assumeFeatureDisabled(Profile.Feature.MAP_STORAGE);
@@ -142,7 +141,7 @@ public class LDAPUserLoginTest extends AbstractLDAPTest {
                 LDAPTestUtils.updateLDAPPassword(ctx.getLdapProvider(), john, DEFAULT_TEST_USERS.get("VALID_USER_PASSWORD"));
             });
         } catch (RunOnServerException ex) {
-            Assume.assumeFalse("Work around JDK-8214440",
+            Assumptions.assumeFalse("Work around JDK-8214440",
                  ex.getCause() instanceof ModelException
               && ex.getCause().getCause() instanceof ModelException
               && ex.getCause().getCause().getCause() instanceof javax.naming.AuthenticationException
@@ -162,8 +161,8 @@ public class LDAPUserLoginTest extends AbstractLDAPTest {
         loginPage.open();
         loginPage.login(username, password);
         appPage.assertCurrent();
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
         EventRepresentation loginEvent = events.expectLogin().user(userId).assertEvent();
         OAuthClient.AccessTokenResponse tokenResponse = sendTokenRequestAndGetResponse(loginEvent);
         appPage.logout(tokenResponse.getIdToken());
@@ -176,7 +175,7 @@ public class LDAPUserLoginTest extends AbstractLDAPTest {
         // Run the test actions
         loginPage.open();
         loginPage.login(username, password);
-        Assert.assertEquals("Invalid username or password.", loginPage.getInputError());
+        Assertions.assertEquals("Invalid username or password.", loginPage.getInputError());
 
         if (username.equals(DEFAULT_TEST_USERS.get("INVALID_USER_EMAIL")) || username.equals(DEFAULT_TEST_USERS.get("INVALID_USER_NAME"))) {
 
@@ -185,7 +184,7 @@ public class LDAPUserLoginTest extends AbstractLDAPTest {
         } else if (username.equals(DEFAULT_TEST_USERS.get("VALID_USER_EMAIL")) || username.equals(DEFAULT_TEST_USERS.get("VALID_USER_NAME"))) {
 
             List<UserRepresentation> knownUsers = getAdminClient().realm(TEST_REALM_NAME).users().search(DEFAULT_TEST_USERS.get("VALID_USER_NAME"));
-            Assert.assertTrue(!knownUsers.isEmpty());
+            Assertions.assertTrue(!knownUsers.isEmpty());
             final String userId = knownUsers.get(0).getId();
             events.expect(EventType.LOGIN_ERROR).user(userId).error(Errors.INVALID_USER_CREDENTIALS).assertEvent();
 
@@ -221,7 +220,7 @@ public class LDAPUserLoginTest extends AbstractLDAPTest {
 
     private void verifyConnectionUrlProtocolPrefix(String ldapProtocolPrefix) {
         final String ldapConnectionUrl = ldapRule.getConfig().get(LDAPConstants.CONNECTION_URL);
-        Assert.assertTrue(!ldapConnectionUrl.isEmpty() && ldapConnectionUrl.startsWith(ldapProtocolPrefix));
+        Assertions.assertTrue(!ldapConnectionUrl.isEmpty() && ldapConnectionUrl.startsWith(ldapProtocolPrefix));
     }
 
     // Tests themselves

@@ -20,8 +20,8 @@ package org.keycloak.testsuite.admin;
 import java.util.List;
 
 import org.hamcrest.Matchers;
-import org.junit.ClassRule;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.LDAPConstants;
 import org.keycloak.representations.idm.LDAPCapabilityRepresentation;
 import org.keycloak.representations.idm.TestLdapConnectionRepresentation;
@@ -110,7 +110,7 @@ public class UserFederationLdapConnectionTest extends AbstractAdminTest {
             "false", null, "false", LDAPConstants.AUTH_TYPE_SIMPLE);
 
         List<LDAPCapabilityRepresentation> ldapCapabilities = realm.ldapServerCapabilities(config);
-        Assert.assertThat(ldapCapabilities, Matchers.hasItem(new LDAPCapabilityRepresentation(PasswordModifyRequest.PASSWORD_MODIFY_OID, LDAPCapabilityRepresentation.CapabilityType.EXTENSION)));
+        Assertions.assertThat(ldapCapabilities, Matchers.hasItem(new LDAPCapabilityRepresentation(PasswordModifyRequest.PASSWORD_MODIFY_OID, LDAPCapabilityRepresentation.CapabilityType.EXTENSION)));
 
         // Query the rootDSE failure
         try {
@@ -119,14 +119,14 @@ public class UserFederationLdapConnectionTest extends AbstractAdminTest {
                     "false", null, "false", LDAPConstants.AUTH_TYPE_SIMPLE);
             realm.ldapServerCapabilities(config);
 
-            Assert.fail("It wasn't expected to successfully sent the request for query capabilities");
+            Assertions.fail("It wasn't expected to successfully sent the request for query capabilities");
         } catch (BadRequestException bre) {
             // Expected
         }
     }
 
     private void assertStatus(Response response, int status) {
-        Assert.assertEquals(status, response.getStatus());
+        Assertions.assertEquals(status, response.getStatus());
         response.close();
     }
 }

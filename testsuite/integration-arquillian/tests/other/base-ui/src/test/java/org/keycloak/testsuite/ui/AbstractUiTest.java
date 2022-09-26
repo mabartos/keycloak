@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.ui;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.representations.idm.IdentityProviderRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractAuthTest;
@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.Assume.assumeFalse;
+import static org.junit.Assumptions.assumeFalse;
 
 /**
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
@@ -43,13 +43,13 @@ public abstract class AbstractUiTest extends AbstractAuthTest {
     public static final String LOCALE_CLIENT_NAME = "${client_localized-client}";
     public static final String LOCALE_CLIENT_NAME_LOCALIZED = "Přespříliš lokalizovaný klient";
 
-    @BeforeClass
+    @BeforeAll
     public static void assumeSupportedBrowser() {
         assumeFalse("Browser must not be htmlunit", System.getProperty("browser").equals("htmlUnit"));
         assumeFalse("Browser must not be PhantomJS", System.getProperty("browser").equals("phantomjs"));
     }
 
-    @Before
+    @BeforeEach
     public void addTestUser() {
         createTestUserWithAdminClient(false);
     }

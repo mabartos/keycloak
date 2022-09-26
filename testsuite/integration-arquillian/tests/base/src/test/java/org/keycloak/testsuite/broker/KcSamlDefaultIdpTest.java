@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.broker;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.authentication.authenticators.browser.IdentityProviderAuthenticatorFactory;
 import org.keycloak.models.AuthenticationExecutionModel;
@@ -12,9 +12,9 @@ import org.keycloak.testsuite.util.UIUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
 import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
 
@@ -35,7 +35,7 @@ public class KcSamlDefaultIdpTest extends AbstractInitializedBaseBrokerTest {
         // Require broker to show consent screen
         RealmResource brokeredRealm = adminClient.realm(bc.providerRealmName());
         List<ClientRepresentation> clients = brokeredRealm.clients().findByClientId(bc.getIDPClientIdInProviderRealm());
-        org.junit.Assert.assertEquals(1, clients.size());
+        org.junit.jupiter.api.Assertions.assertEquals(1, clients.size());
         ClientRepresentation brokerApp = clients.get(0);
         brokerApp.setConsentRequired(true);
         brokeredRealm.clients().get(brokerApp.getId()).update(brokerApp);
@@ -50,7 +50,7 @@ public class KcSamlDefaultIdpTest extends AbstractInitializedBaseBrokerTest {
         driver.navigate().to(getAccountUrl(getConsumerRoot(), bc.consumerRealmName()));
         waitForPage(driver, "sign in to", true);
 
-        Assert.assertTrue("Driver should be on the initial page and nothing should have happened",
+        Assertions.assertTrue("Driver should be on the initial page and nothing should have happened",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.consumerRealmName() + "/"));
     }
 
@@ -67,7 +67,7 @@ public class KcSamlDefaultIdpTest extends AbstractInitializedBaseBrokerTest {
         waitForPage(driver, "sign in to", true);
 
         // Make sure we got redirected to the remote IdP automatically
-        Assert.assertTrue("Driver should be on the provider realm page right now",
+        Assertions.assertTrue("Driver should be on the provider realm page right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName() + "/"));
     }
 
@@ -85,7 +85,7 @@ public class KcSamlDefaultIdpTest extends AbstractInitializedBaseBrokerTest {
         waitForPage(driver, "sign in to", true);
 
         // Make sure we got redirected to the remote IdP automatically
-        Assert.assertTrue("Driver should be on the provider realm page right now",
+        Assertions.assertTrue("Driver should be on the provider realm page right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName() + "/"));
 
         // Attempt login

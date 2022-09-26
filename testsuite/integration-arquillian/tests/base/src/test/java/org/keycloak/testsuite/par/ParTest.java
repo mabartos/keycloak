@@ -17,11 +17,11 @@
 
 package org.keycloak.testsuite.par;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 import static org.keycloak.testsuite.admin.ApiUtil.findUserByUsername;
 
@@ -37,8 +37,8 @@ import java.util.Optional;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -183,7 +183,7 @@ public class ParTest extends AbstractClientPoliciesTest {
             String userId = findUserByUsername(adminClient.realm(REALM_NAME), TEST_USER_NAME).getId();
             assertEquals(userId, token.getSubject());
             assertEquals(sessionId, token.getSessionState());
-            Assert.assertNotEquals(TEST_USER_NAME, token.getSubject());
+            Assertions.assertNotEquals(TEST_USER_NAME, token.getSubject());
             assertEquals(clientId, token.getIssuedFor());
 
             // Token Refresh
@@ -567,7 +567,7 @@ public class ParTest extends AbstractClientPoliciesTest {
         String userId = findUserByUsername(adminClient.realm(REALM_NAME), TEST_USER2_NAME).getId();
         assertEquals(userId, token.getSubject());
         assertEquals(sessionId, token.getSessionState());
-        Assert.assertNotEquals(TEST_USER2_NAME, token.getSubject());
+        Assertions.assertNotEquals(TEST_USER2_NAME, token.getSubject());
         assertEquals(clientId, token.getIssuedFor());
         assertTrue(token.getScope().contains("openid"));
         assertTrue(token.getScope().contains("microprofile-jwt"));
@@ -598,7 +598,7 @@ public class ParTest extends AbstractClientPoliciesTest {
         userId = findUserByUsername(adminClient.realm(REALM_NAME), TEST_USER_NAME).getId();
         assertEquals(userId, token.getSubject());
         assertEquals(sessionId, token.getSessionState());
-        Assert.assertNotEquals(TEST_USER_NAME, token.getSubject());
+        Assertions.assertNotEquals(TEST_USER_NAME, token.getSubject());
         assertEquals(clientId, token.getIssuedFor());
         assertFalse(token.getScope().contains("microprofile-jwt"));
         assertTrue(token.getScope().contains("openid"));
@@ -667,7 +667,7 @@ public class ParTest extends AbstractClientPoliciesTest {
         String userId = findUserByUsername(adminClient.realm(REALM_NAME), TEST_USER2_NAME).getId();
         assertEquals(userId, token.getSubject());
         assertEquals(sessionId, token.getSessionState());
-        Assert.assertNotEquals(TEST_USER2_NAME, token.getSubject());
+        Assertions.assertNotEquals(TEST_USER2_NAME, token.getSubject());
         assertEquals(client2Id, token.getIssuedFor());
         assertTrue(token.getScope().contains("openid"));
         assertTrue(token.getScope().contains("microprofile-jwt"));
@@ -699,7 +699,7 @@ public class ParTest extends AbstractClientPoliciesTest {
         userId = findUserByUsername(adminClient.realm(REALM_NAME), TEST_USER_NAME).getId();
         assertEquals(userId, token.getSubject());
         assertEquals(sessionId, token.getSessionState());
-        Assert.assertNotEquals(TEST_USER_NAME, token.getSubject());
+        Assertions.assertNotEquals(TEST_USER_NAME, token.getSubject());
         assertEquals(clientId, token.getIssuedFor());
         assertFalse(token.getScope().contains("microprofile-jwt"));
         assertTrue(token.getScope().contains("openid"));
@@ -737,7 +737,7 @@ public class ParTest extends AbstractClientPoliciesTest {
         UriBuilder b = UriBuilder.fromUri(oauth.getLoginFormUrl());
         driver.navigate().to(b.build().toURL());
         OAuthClient.AuthorizationEndpointResponse errorResponse = new OAuthClient.AuthorizationEndpointResponse(oauth);
-        Assert.assertFalse(errorResponse.isRedirected());
+        Assertions.assertFalse(errorResponse.isRedirected());
     }
 
     // PAR request_uri used twice
@@ -785,7 +785,7 @@ public class ParTest extends AbstractClientPoliciesTest {
         UriBuilder b = UriBuilder.fromUri(oauth.getLoginFormUrl());
         driver.navigate().to(b.build().toURL());
         OAuthClient.AuthorizationEndpointResponse errorResponse = new OAuthClient.AuthorizationEndpointResponse(oauth);
-        Assert.assertFalse(errorResponse.isRedirected());
+        Assertions.assertFalse(errorResponse.isRedirected());
     }
 
     // PAR request_uri used by other client
@@ -833,7 +833,7 @@ public class ParTest extends AbstractClientPoliciesTest {
         UriBuilder b = UriBuilder.fromUri(oauth.getLoginFormUrl());
         driver.navigate().to(b.build().toURL());
         OAuthClient.AuthorizationEndpointResponse errorResponse = new OAuthClient.AuthorizationEndpointResponse(oauth);
-        Assert.assertFalse(errorResponse.isRedirected());
+        Assertions.assertFalse(errorResponse.isRedirected());
     }
 
     // not PAR by PAR required client
@@ -898,7 +898,7 @@ public class ParTest extends AbstractClientPoliciesTest {
         UriBuilder b = UriBuilder.fromUri(oauth.getLoginFormUrl());
         driver.navigate().to(b.build().toURL());
         OAuthClient.AuthorizationEndpointResponse errorResponse = new OAuthClient.AuthorizationEndpointResponse(oauth);
-        Assert.assertFalse(errorResponse.isRedirected());
+        Assertions.assertFalse(errorResponse.isRedirected());
     }
 
     // client authentication failed
@@ -1201,7 +1201,7 @@ public class ParTest extends AbstractClientPoliciesTest {
         String userId = findUserByUsername(adminClient.realm(REALM_NAME), TEST_USER_NAME).getId();
         assertEquals(userId, token.getSubject());
         assertEquals(sessionId, token.getSessionState());
-        Assert.assertNotEquals(TEST_USER_NAME, token.getSubject());
+        Assertions.assertNotEquals(TEST_USER_NAME, token.getSubject());
         assertEquals(clientId, token.getIssuedFor());
 
         // Token Refresh

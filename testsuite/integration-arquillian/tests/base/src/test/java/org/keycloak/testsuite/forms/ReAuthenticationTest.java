@@ -27,7 +27,7 @@ import org.hamcrest.Matchers;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.authentication.authenticators.browser.PasswordFormFactory;
 import org.keycloak.authentication.authenticators.browser.UsernameFormFactory;
@@ -136,7 +136,7 @@ public class ReAuthenticationTest extends AbstractTestRealmKeycloakTest {
         assertUsernameFieldAndOtherFields(true);
         assertSocialButtonsPresent(true, true);
         loginPage.login("test-user@localhost", "password");
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         // Set time offset
         setTimeOffset(10);
@@ -156,12 +156,12 @@ public class ReAuthenticationTest extends AbstractTestRealmKeycloakTest {
         // Try bad password and assert things still hidden
         loginPage.login("bad-password");
         loginPage.assertCurrent();
-        Assert.assertEquals("Invalid password.", loginPage.getInputError());
+        Assertions.assertEquals("Invalid password.", loginPage.getInputError());
         assertUsernameFieldAndOtherFields(false);
         assertInfoMessageAboutReAuthenticate(false);
 
         loginPage.login("password");
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         // Remove link
         user.removeFederatedIdentity("github");
@@ -176,7 +176,7 @@ public class ReAuthenticationTest extends AbstractTestRealmKeycloakTest {
         assertUsernameFieldAndOtherFields(true);
         assertSocialButtonsPresent(true, true);
         loginPage.login("test-user@localhost", "password");
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         // Set time offset
         setTimeOffset(10);
@@ -194,7 +194,7 @@ public class ReAuthenticationTest extends AbstractTestRealmKeycloakTest {
         assertSocialButtonsPresent(false, false);
 
         // Try click "Reset password" . This will start login page from the beginning due SSO logout
-        Assert.assertEquals("test-user@localhost", loginPage.getAttemptedUsername());
+        Assertions.assertEquals("test-user@localhost", loginPage.getAttemptedUsername());
         loginPage.clickResetLogin();
 
         // Username field should be back. Attempted username should not be shown
@@ -207,7 +207,7 @@ public class ReAuthenticationTest extends AbstractTestRealmKeycloakTest {
 
         // Successfully login as different user. It should be possible due previous SSO session was removed
         loginPage.login("john-doh@localhost", "password");
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
     }
 
     // Re-authentication with user form separate to the password form. The username form would be skipped
@@ -224,7 +224,7 @@ public class ReAuthenticationTest extends AbstractTestRealmKeycloakTest {
         loginUsernameOnlyPage.login("test-user@localhost");
         passwordPage.assertCurrent();
         passwordPage.login("password");
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         // Set time offset
         setTimeOffset(10);
@@ -235,13 +235,13 @@ public class ReAuthenticationTest extends AbstractTestRealmKeycloakTest {
 
         // User directly on the password page. Info message should be shown here
         passwordPage.assertCurrent();
-        Assert.assertEquals("test-user@localhost", passwordPage.getAttemptedUsername());
+        Assertions.assertEquals("test-user@localhost", passwordPage.getAttemptedUsername());
         assertInfoMessageAboutReAuthenticate(true);
 
         passwordPage.login("bad-password");
-        Assert.assertEquals("Invalid password.", passwordPage.getPasswordError());
+        Assertions.assertEquals("Invalid password.", passwordPage.getPasswordError());
         passwordPage.login("password");
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         // Revert flows
         BrowserFlowTest.revertFlows(testRealm(), "browser - identity first");
@@ -268,7 +268,7 @@ public class ReAuthenticationTest extends AbstractTestRealmKeycloakTest {
         loginUsernameOnlyPage.login("test-user@localhost");
         passwordPage.assertCurrent();
         passwordPage.login("password");
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         // See that user can re-authenticate with the github link present on the page as user has link to github social provider
         setTimeOffset(10);
@@ -282,7 +282,7 @@ public class ReAuthenticationTest extends AbstractTestRealmKeycloakTest {
         assertInfoMessageAboutReAuthenticate(true);
 
         // Check there is NO password field
-        Assert.assertThat(true, is(driver.findElements(By.id("password")).isEmpty()));
+        Assertions.assertThat(true, is(driver.findElements(By.id("password")).isEmpty()));
 
         // Github present, Google hidden
         assertSocialButtonsPresent(true, false);
@@ -294,7 +294,7 @@ public class ReAuthenticationTest extends AbstractTestRealmKeycloakTest {
         passwordPage.assertCurrent();
         passwordPage.login("password");
         assertInfoMessageAboutReAuthenticate(false);
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         // Remove link and flow
         user.removeFederatedIdentity("github");
@@ -316,19 +316,19 @@ public class ReAuthenticationTest extends AbstractTestRealmKeycloakTest {
 
 
     private void assertUsernameFieldAndOtherFields(boolean expectPresent) {
-        Assert.assertThat(expectPresent, is(loginPage.isUsernameInputPresent()));
-        Assert.assertThat(expectPresent, is(loginPage.isRegisterLinkPresent()));
-        Assert.assertThat(expectPresent, is(loginPage.isRememberMeCheckboxPresent()));
+        Assertions.assertThat(expectPresent, is(loginPage.isUsernameInputPresent()));
+        Assertions.assertThat(expectPresent, is(loginPage.isRegisterLinkPresent()));
+        Assertions.assertThat(expectPresent, is(loginPage.isRememberMeCheckboxPresent()));
     }
 
     private void assertSocialButtonsPresent(boolean expectGithubPresent, boolean expectGooglePresent) {
-        Assert.assertThat(expectGithubPresent, is(loginPage.isSocialButtonPresent("github")));
-        Assert.assertThat(expectGooglePresent, is(loginPage.isSocialButtonPresent("google")));
+        Assertions.assertThat(expectGithubPresent, is(loginPage.isSocialButtonPresent("github")));
+        Assertions.assertThat(expectGooglePresent, is(loginPage.isSocialButtonPresent("google")));
     }
 
     private void assertInfoMessageAboutReAuthenticate(boolean expectPresent) {
         Matcher<String> expectedInfo = expectPresent ? is("Please re-authenticate to continue") : Matchers.nullValue(String.class);
-        Assert.assertThat(loginPage.getInfoMessage(), expectedInfo);
+        Assertions.assertThat(loginPage.getInfoMessage(), expectedInfo);
     }
 
 }

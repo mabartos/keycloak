@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.oauth;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractKeycloakTest;
 import org.keycloak.testsuite.util.AdminClientUtil;
@@ -14,8 +14,8 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 
 public class UserInfoEndpointCorsTest extends AbstractKeycloakTest {

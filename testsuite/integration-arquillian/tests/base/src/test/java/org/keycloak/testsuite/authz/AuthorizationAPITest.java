@@ -16,11 +16,11 @@
  */
 package org.keycloak.testsuite.authz;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -28,8 +28,8 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientsResource;
@@ -102,7 +102,7 @@ public class AuthorizationAPITest extends AbstractAuthzTest {
         testingClient.testApp().oidcClientEndpoints().setSectorIdentifierRedirectUris(Collections.singletonList("http://localhost/resource-server-test"));
     }
 
-    @Before
+    @BeforeEach
     public void configureAuthorization() throws Exception {
         configureAuthorization(RESOURCE_SERVER_TEST);
         configureAuthorization(PAIRWISE_RESOURCE_SERVER_TEST);
@@ -217,8 +217,8 @@ public class AuthorizationAPITest extends AbstractAuthzTest {
 
         // Ticket is opaque to client or resourceServer. The audience should be just an authorization server itself
         JsonWebToken ticketDecoded = JsonSerialization.readValue(new JWSInput(ticket).getContent(), JsonWebToken.class);
-        Assert.assertFalse(ticketDecoded.hasAudience(clientId));
-        Assert.assertFalse(ticketDecoded.hasAudience(resourceServerClientId));
+        Assertions.assertFalse(ticketDecoded.hasAudience(clientId));
+        Assertions.assertFalse(ticketDecoded.hasAudience(resourceServerClientId));
 
         AuthorizationResponse response = authzClient.authorization(accessToken).authorize(new AuthorizationRequest(ticket));
 

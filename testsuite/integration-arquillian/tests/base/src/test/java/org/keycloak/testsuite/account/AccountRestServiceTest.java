@@ -18,9 +18,9 @@ package org.keycloak.testsuite.account;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.authentication.authenticators.browser.WebAuthnAuthenticatorFactory;
@@ -81,19 +81,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
 public class AccountRestServiceTest extends AbstractRestServiceTest {
     
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
     
     @Test
     public void testGetUserProfileMetadata_EditUsernameAllowed() throws IOException {
@@ -124,11 +123,11 @@ public class AccountRestServiceTest extends AbstractRestServiceTest {
             assertNotNull(user.getUserProfileMetadata());
             UserProfileAttributeMetadata upm = assertUserProfileAttributeMetadata(user, "username", "${username}", true, true);
             //makes sure internal validators are not exposed
-            Assert.assertEquals(0,  upm.getValidators().size());
+            Assertions.assertEquals(0,  upm.getValidators().size());
             
             upm = assertUserProfileAttributeMetadata(user, "email", "${email}", true, false);
-            Assert.assertEquals(1,  upm.getValidators().size());
-            Assert.assertTrue(upm.getValidators().containsKey(EmailValidator.ID));
+            Assertions.assertEquals(1,  upm.getValidators().size());
+            Assertions.assertTrue(upm.getValidators().containsKey(EmailValidator.ID));
             
             assertUserProfileAttributeMetadata(user, "firstName", "${firstName}", true, false);
             assertUserProfileAttributeMetadata(user, "lastName", "${lastName}", true, false);
@@ -561,7 +560,7 @@ public class AccountRestServiceTest extends AbstractRestServiceTest {
 
         List<AccountCredentialResource.CredentialContainer> credentials = getCredentials();
 
-        Assert.assertEquals(4, credentials.size());
+        Assertions.assertEquals(4, credentials.size());
 
         AccountCredentialResource.CredentialContainer password = credentials.get(0);
         assertCredentialContainerExpected(password, PasswordCredentialModel.TYPE, CredentialTypeMetadata.Category.BASIC_AUTHENTICATION.toString(),
@@ -570,7 +569,7 @@ public class AccountRestServiceTest extends AbstractRestServiceTest {
 
         CredentialRepresentation password1 = password.getUserCredentialMetadatas().get(0).getCredential();
         assertNull(password1.getSecretData());
-        Assert.assertNotNull(password1.getCredentialData());
+        Assertions.assertNotNull(password1.getCredentialData());
 
         AccountCredentialResource.CredentialContainer otp = credentials.get(1);
         assertCredentialContainerExpected(otp, OTPCredentialModel.TYPE, CredentialTypeMetadata.Category.TWO_FACTOR.toString(),
@@ -604,18 +603,18 @@ public class AccountRestServiceTest extends AbstractRestServiceTest {
         // Test password-only
         credentials = SimpleHttp.doGet(getAccountUrl("credentials?" + AccountCredentialResource.TYPE + "=password"), httpClient)
                 .auth(tokenUtil.getToken()).asJson(new TypeReference<List<AccountCredentialResource.CredentialContainer>>() {});
-        Assert.assertEquals(1, credentials.size());
+        Assertions.assertEquals(1, credentials.size());
         password = credentials.get(0);
-        Assert.assertEquals(PasswordCredentialModel.TYPE, password.getType());
-        Assert.assertEquals(1, password.getUserCredentialMetadatas().size());
+        Assertions.assertEquals(PasswordCredentialModel.TYPE, password.getType());
+        Assertions.assertEquals(1, password.getUserCredentialMetadatas().size());
 
         // Test password-only and user-credentials
         credentials = SimpleHttp.doGet(getAccountUrl("credentials?" + AccountCredentialResource.TYPE + "=password&" +
                 AccountCredentialResource.USER_CREDENTIALS + "=false"), httpClient)
                 .auth(tokenUtil.getToken()).asJson(new TypeReference<List<AccountCredentialResource.CredentialContainer>>() {});
-        Assert.assertEquals(1, credentials.size());
+        Assertions.assertEquals(1, credentials.size());
         password = credentials.get(0);
-        Assert.assertEquals(PasswordCredentialModel.TYPE, password.getType());
+        Assertions.assertEquals(PasswordCredentialModel.TYPE, password.getType());
         assertNull(password.getUserCredentialMetadatas());
     }
 
@@ -650,7 +649,7 @@ public class AccountRestServiceTest extends AbstractRestServiceTest {
                 .filter(credentialRep -> OTPCredentialModel.TYPE.equals(credentialRep.getType()))
                 .findFirst()
                 .get();
-        Assert.assertTrue(ObjectUtil.isEqualOrBothNull(otpCredential.getUserLabel(), otpCredentialLoaded.getUserLabel()));
+        Assertions.assertTrue(ObjectUtil.isEqualOrBothNull(otpCredential.getUserLabel(), otpCredentialLoaded.getUserLabel()));
     }
 
     // Send REST request to get all credential containers and credentials of current user
@@ -676,15 +675,15 @@ public class AccountRestServiceTest extends AbstractRestServiceTest {
             // Test that OTP credential is not included. Only password
             List<AccountCredentialResource.CredentialContainer> credentials = getCredentials();
 
-            Assert.assertEquals(1, credentials.size());
-            Assert.assertEquals(PasswordCredentialModel.TYPE, credentials.get(0).getType());
+            Assertions.assertEquals(1, credentials.size());
+            Assertions.assertEquals(PasswordCredentialModel.TYPE, credentials.get(0).getType());
 
             // Enable browser subflow. OTP should be available then
             setExecutionRequirement(DefaultAuthenticationFlows.BROWSER_FLOW,
                     "Browser - Conditional OTP", currentBrowserReq);
             credentials = getCredentials();
-            Assert.assertEquals(2, credentials.size());
-            Assert.assertEquals(OTPCredentialModel.TYPE, credentials.get(1).getType());
+            Assertions.assertEquals(2, credentials.size());
+            Assertions.assertEquals(OTPCredentialModel.TYPE, credentials.get(1).getType());
 
             // Disable browser subflow and enable FirstBrokerLogin. OTP should be available then
             setExecutionRequirement(DefaultAuthenticationFlows.BROWSER_FLOW,
@@ -692,8 +691,8 @@ public class AccountRestServiceTest extends AbstractRestServiceTest {
             setExecutionRequirement(DefaultAuthenticationFlows.FIRST_BROKER_LOGIN_FLOW,
                     "OTP Form", currentFBLReq);
             credentials = getCredentials();
-            Assert.assertEquals(2, credentials.size());
-            Assert.assertEquals(OTPCredentialModel.TYPE, credentials.get(1).getType());
+            Assertions.assertEquals(2, credentials.size());
+            Assertions.assertEquals(OTPCredentialModel.TYPE, credentials.get(1).getType());
         } finally {
             // Revert flows
             setExecutionRequirement(DefaultAuthenticationFlows.BROWSER_FLOW,
@@ -748,10 +747,10 @@ public class AccountRestServiceTest extends AbstractRestServiceTest {
     }
 
     private void assertExpectedCredentialTypes(List<AccountCredentialResource.CredentialContainer> credentialTypes, String... expectedCredentialTypes) {
-        Assert.assertEquals(credentialTypes.size(), expectedCredentialTypes.length);
+        Assertions.assertEquals(credentialTypes.size(), expectedCredentialTypes.length);
         int i = 0;
         for (AccountCredentialResource.CredentialContainer credential : credentialTypes) {
-            Assert.assertEquals(credential.getType(), expectedCredentialTypes[i]);
+            Assertions.assertEquals(credential.getType(), expectedCredentialTypes[i]);
             i++;
         }
     }
@@ -827,15 +826,15 @@ public class AccountRestServiceTest extends AbstractRestServiceTest {
 
     private void assertCredentialContainerExpected(AccountCredentialResource.CredentialContainer credential, String type, String category, String displayName, String helpText, String iconCssClass,
                                                    String createAction, String updateAction, boolean removeable, int userCredentialsCount) {
-        Assert.assertEquals(type, credential.getType());
-        Assert.assertEquals(category, credential.getCategory());
-        Assert.assertEquals(displayName, credential.getDisplayName());
-        Assert.assertEquals(helpText, credential.getHelptext());
-        Assert.assertEquals(iconCssClass, credential.getIconCssClass());
-        Assert.assertEquals(createAction, credential.getCreateAction());
-        Assert.assertEquals(updateAction, credential.getUpdateAction());
-        Assert.assertEquals(removeable, credential.isRemoveable());
-        Assert.assertEquals(userCredentialsCount, credential.getUserCredentialMetadatas().size());
+        Assertions.assertEquals(type, credential.getType());
+        Assertions.assertEquals(category, credential.getCategory());
+        Assertions.assertEquals(displayName, credential.getDisplayName());
+        Assertions.assertEquals(helpText, credential.getHelptext());
+        Assertions.assertEquals(iconCssClass, credential.getIconCssClass());
+        Assertions.assertEquals(createAction, credential.getCreateAction());
+        Assertions.assertEquals(updateAction, credential.getUpdateAction());
+        Assertions.assertEquals(removeable, credential.isRemoveable());
+        Assertions.assertEquals(userCredentialsCount, credential.getUserCredentialMetadatas().size());
     }
 
     public void testDeleteSessions() throws IOException {
@@ -865,7 +864,7 @@ public class AccountRestServiceTest extends AbstractRestServiceTest {
         assertFalse(applications.isEmpty());
 
         Map<String, ClientRepresentation> apps = applications.stream().collect(Collectors.toMap(x -> x.getClientId(), x -> x));
-        Assert.assertThat(apps.keySet(), containsInAnyOrder("in-use-client", "always-display-client", "direct-grant"));
+        Assertions.assertThat(apps.keySet(), containsInAnyOrder("in-use-client", "always-display-client", "direct-grant"));
 
         assertClientRep(apps.get("in-use-client"), "In Use Client", null, false, true, false, null, inUseClientAppUri);
         assertClientRep(apps.get("always-display-client"), "Always Display Client", null, false, false, false, null, alwaysDisplayClientAppUri);
@@ -889,7 +888,7 @@ public class AccountRestServiceTest extends AbstractRestServiceTest {
         assertFalse(applications.isEmpty());
 
         Map<String, ClientRepresentation> apps = applications.stream().collect(Collectors.toMap(x -> x.getClientId(), x -> x));
-        Assert.assertThat(apps.keySet(), containsInAnyOrder("in-use-client"));
+        Assertions.assertThat(apps.keySet(), containsInAnyOrder("in-use-client"));
 
         assertClientRep(apps.get("in-use-client"), "In Use Client", null, false, true, false, null, inUseClientAppUri);
     }
@@ -915,7 +914,7 @@ public class AccountRestServiceTest extends AbstractRestServiceTest {
         assertFalse(applications.isEmpty());
 
         Map<String, ClientRepresentation> apps = applications.stream().collect(Collectors.toMap(x -> x.getClientId(), x -> x));
-        Assert.assertThat(apps.keySet(), containsInAnyOrder("offline-client", "offline-client-without-base-url", "always-display-client", "direct-grant"));
+        Assertions.assertThat(apps.keySet(), containsInAnyOrder("offline-client", "offline-client-without-base-url", "always-display-client", "direct-grant"));
 
         assertClientRep(apps.get("offline-client"), "Offline Client", null, false, true, true, null, offlineClientAppUri);
         assertClientRep(apps.get("offline-client-without-base-url"), "Offline Client Without Base URL", null, false, true, true, null, null);
@@ -965,7 +964,7 @@ public class AccountRestServiceTest extends AbstractRestServiceTest {
                 .asResponse();
 
         Map<String, ClientRepresentation> apps = applications.stream().collect(Collectors.toMap(x -> x.getClientId(), x -> x));
-        Assert.assertThat(apps.keySet(), containsInAnyOrder(appId, "always-display-client", "direct-grant"));
+        Assertions.assertThat(apps.keySet(), containsInAnyOrder(appId, "always-display-client", "direct-grant"));
 
         ClientRepresentation app = apps.get(appId);
         assertClientRep(app, null, "A third party application", true, false, false, null, "http://localhost:8180/auth/realms/master/app/auth");
@@ -997,7 +996,7 @@ public class AccountRestServiceTest extends AbstractRestServiceTest {
         assertFalse(applications.isEmpty());
 
         Map<String, ClientRepresentation> apps = applications.stream().collect(Collectors.toMap(x -> x.getClientId(), x -> x));
-        Assert.assertThat(apps.keySet(), containsInAnyOrder("root-url-client", "always-display-client", "direct-grant"));
+        Assertions.assertThat(apps.keySet(), containsInAnyOrder("root-url-client", "always-display-client", "direct-grant"));
 
         assertClientRep(apps.get("root-url-client"), null, null, false, true, false, "http://localhost:8180/foo/bar", "/baz");
     }
@@ -1445,7 +1444,7 @@ public class AccountRestServiceTest extends AbstractRestServiceTest {
         assertFalse(applications.isEmpty());
 
         Map<String, ClientRepresentation> apps = applications.stream().collect(Collectors.toMap(x -> x.getClientId(), x -> x));
-        Assert.assertThat(apps.keySet(), containsInAnyOrder("offline-client", "always-display-client", "direct-grant"));
+        Assertions.assertThat(apps.keySet(), containsInAnyOrder("offline-client", "always-display-client", "direct-grant"));
 
         assertClientRep(apps.get("offline-client"), "Offline Client", null, false, true, false, null, offlineClientAppUri);
     }

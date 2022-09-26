@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.pages;
 
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.keycloak.testsuite.util.DroneUtils;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.openqa.selenium.By;
@@ -185,7 +185,7 @@ public class LoginPage extends LanguageComboboxAwarePage {
 
     public void assertCurrent(String realm) {
         String name = getClass().getSimpleName();
-        Assert.assertTrue("Expected " + name + " but was " + DroneUtils.getCurrentDriver().getTitle() + " (" + DroneUtils.getCurrentDriver().getCurrentUrl() + ")",
+        Assertions.assertTrue("Expected " + name + " but was " + DroneUtils.getCurrentDriver().getTitle() + " (" + DroneUtils.getCurrentDriver().getCurrentUrl() + ")",
                 isCurrent(realm));
     }
 

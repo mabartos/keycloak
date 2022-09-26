@@ -16,9 +16,9 @@
  */
 package org.keycloak.testsuite.authz;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,9 +28,9 @@ import java.util.UUID;
 import javax.ws.rs.core.Response;
 
 import org.jetbrains.annotations.NotNull;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientsResource;
@@ -81,7 +81,7 @@ public class AuthorizationTest extends AbstractAuthzTest {
                 .build());
     }
 
-    @Before
+    @BeforeEach
     public void configureAuthorization() throws Exception {
         ClientResource client = getClient();
         AuthorizationResource authorization = client.authorization();
@@ -99,7 +99,7 @@ public class AuthorizationTest extends AbstractAuthzTest {
         policy.setType("script-scripts/always-deny-policy.js");
     }
 
-    @After
+    @AfterEach
     public void onAfter() {
         ResourcesResource resources = getClient().authorization().resources();
         List<ResourceRepresentation> existingResources = resources.resources();

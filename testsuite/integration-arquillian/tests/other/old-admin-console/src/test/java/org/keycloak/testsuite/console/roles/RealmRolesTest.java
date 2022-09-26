@@ -1,22 +1,22 @@
 package org.keycloak.testsuite.console.roles;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.testsuite.console.page.roles.CreateRole;
 import org.keycloak.testsuite.console.page.roles.RealmRoles;
 import org.keycloak.testsuite.console.page.roles.RoleDetails;
 import org.keycloak.testsuite.util.Timer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.keycloak.models.Constants;
 import org.keycloak.testsuite.console.page.roles.DefaultRoles;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
 import static org.keycloak.testsuite.util.WaitUtils.pause;
 
 /**
@@ -37,7 +37,7 @@ public class RealmRolesTest extends AbstractRolesTest {
 
     private RoleRepresentation testRole;
     
-    @Before
+    @BeforeEach
     public void beforeTestAddNewRole() {
         testRole = new RoleRepresentation("test_role", "role description", false);
         realmRolesPage.navigateTo();
@@ -71,7 +71,7 @@ public class RealmRolesTest extends AbstractRolesTest {
     }
     
     @Test
-    @Ignore
+    @Disabled
     public void crudRole() {
         addRole(testRole);
         
@@ -109,7 +109,7 @@ public class RealmRolesTest extends AbstractRolesTest {
     }
     
     @Test
-    @Ignore
+    @Disabled
     public void testAddRoleWithLongName() {
         String name = "hjewr89y1894yh98(*&*&$jhjkashd)*(&y8934h*&@#hjkahsdj";
         addRole(new RoleRepresentation(name, "", false));
@@ -190,7 +190,7 @@ public class RealmRolesTest extends AbstractRolesTest {
 //        roles.deleteRole(role);
 //    }
 //
-//    @Ignore//KEYCLOAK-1497
+//    @Disabled//KEYCLOAK-1497
 //    @Test
 //    public void testAddCompositeRole() {
 //        UserRepresentation testUserRep = new UserRepresentation();

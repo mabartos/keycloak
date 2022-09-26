@@ -38,10 +38,10 @@ import org.jboss.arquillian.container.test.api.ContainerController;
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.testsuite.arquillian.ContainerInfo;
 import org.keycloak.testsuite.auth.page.login.LoginActions;
 import org.keycloak.testsuite.util.ContainerAssume;
@@ -81,15 +81,15 @@ public abstract class AbstractAdapterClusteredTest extends AbstractServletsAdapt
     @Page
     LoginActions loginActionsPage;
 
-    @BeforeClass
+    @BeforeAll
     public static void checkPropertiesSet() {
-        Assume.assumeThat(PORT_OFFSET_NODE_1, not(is(-1)));
-        Assume.assumeThat(PORT_OFFSET_NODE_2, not(is(-1)));
-        Assume.assumeThat(PORT_OFFSET_NODE_REVPROXY, not(is(-1)));
+        Assumptions.assumeThat(PORT_OFFSET_NODE_1, not(is(-1)));
+        Assumptions.assumeThat(PORT_OFFSET_NODE_2, not(is(-1)));
+        Assumptions.assumeThat(PORT_OFFSET_NODE_REVPROXY, not(is(-1)));
         ContainerAssume.assumeNotAppServerSSL();
     }
 
-    @Before
+    @BeforeEach
     public void prepareReverseProxy() throws Exception {
         loadBalancerToNodes = new LoadBalancingProxyClient().addHost(NODE_1_URI, NODE_1_NAME).setConnectionsPerThread(10);
         int maxTime = 3600000; // 1 hour for proxy request timeout, so we can debug the backend keycloak servers
@@ -100,7 +100,7 @@ public abstract class AbstractAdapterClusteredTest extends AbstractServletsAdapt
         reverseProxyToNodes.start();
     }
 
-    @Before
+    @BeforeEach
     public void startServers() throws Exception {
         prepareServerDirectories();
         
@@ -127,12 +127,12 @@ public abstract class AbstractAdapterClusteredTest extends AbstractServletsAdapt
         FileUtils.copyDirectory(Paths.get(System.getProperty("app.server.home"), baseDir, "configuration").toFile(), new File(targetSubdirFile, "configuration"));
     }
 
-    @After
+    @AfterEach
     public void stopReverseProxy() {
         reverseProxyToNodes.stop();
     }
 
-    @After
+    @AfterEach
     public void stopServers() {
         undeploy();
         for (ContainerInfo containerInfo : testContext.getAppServerBackendsInfo()) {

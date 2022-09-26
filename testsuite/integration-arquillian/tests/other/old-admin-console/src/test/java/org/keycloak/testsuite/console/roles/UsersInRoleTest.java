@@ -4,8 +4,8 @@
 package org.keycloak.testsuite.console.roles;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.console.page.roles.DefaultRoles;
@@ -14,11 +14,11 @@ import org.keycloak.testsuite.console.page.roles.UsersInRole;
 import org.keycloak.testsuite.console.page.users.UserRoleMappings;
 import org.keycloak.testsuite.util.RealmRepUtil;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.admin.ApiUtil.assignRealmRoles;
 import static org.keycloak.testsuite.admin.ApiUtil.createUserWithAdminClient;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
 
 /**
  * See KEYCLOAK-2035
@@ -45,7 +45,7 @@ public class UsersInRoleTest extends AbstractRolesTest {
     private RoleRepresentation emptyTestRoleRep;
     private UserRepresentation newUser;
 
-    @Before
+    @BeforeEach
     public void beforeUsersInRoleTestClass() {
         // create a role via admin client
         testRoleRep = new RoleRepresentation("test-role", "", false);

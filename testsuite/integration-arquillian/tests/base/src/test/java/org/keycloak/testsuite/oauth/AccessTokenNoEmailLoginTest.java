@@ -18,9 +18,9 @@ package org.keycloak.testsuite.oauth;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -40,7 +40,7 @@ public class AccessTokenNoEmailLoginTest extends AbstractKeycloakTest {
         super.beforeAbstractKeycloakTest();
     }
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         oauth.clientId("test-app");
     }

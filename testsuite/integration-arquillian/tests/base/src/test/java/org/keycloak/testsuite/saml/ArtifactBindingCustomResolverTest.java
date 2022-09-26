@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.saml;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.saml.common.constants.JBossSAMLURIConstants;
 import org.keycloak.testsuite.arquillian.annotation.SetDefaultProvider;
 import org.keycloak.testsuite.authentication.CustomTestingSamlArtifactResolver;
@@ -24,12 +24,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ArtifactBindingCustomResolverTest extends ArtifactBindingTest {
 
     @Test
-    @Ignore
+    @Disabled
     @Override
     public void testArtifactBindingLogoutSingleClientCheckArtifact() {}
 
     @Test
-    @Ignore
+    @Disabled
     @Override
     public void testArtifactBindingLoginCheckArtifactWithPost() {}
 

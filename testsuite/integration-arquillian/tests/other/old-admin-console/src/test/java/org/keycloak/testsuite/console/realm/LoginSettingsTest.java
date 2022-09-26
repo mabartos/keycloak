@@ -18,9 +18,9 @@
 package org.keycloak.testsuite.console.realm;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -38,9 +38,9 @@ import org.openqa.selenium.Cookie;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.keycloak.representations.idm.CredentialRepresentation.PASSWORD;
 import static org.keycloak.testsuite.admin.ApiUtil.createUserWithAdminClient;
 import static org.keycloak.testsuite.admin.ApiUtil.createUserAndResetPasswordWithAdminClient;
@@ -48,8 +48,8 @@ import static org.keycloak.testsuite.admin.Users.setPasswordFor;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_PORT;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWithLoginUrlOf;
 
 /**
  *
@@ -80,7 +80,7 @@ public class LoginSettingsTest extends AbstractRealmTest {
         testAccountPage.setAuthRealm(TEST);
     }
     
-    @Before
+    @BeforeEach
     public void beforeLoginSettingsTest() {
 //        tabs().login();
         loginSettingsPage.navigateTo();
@@ -181,7 +181,7 @@ public class LoginSettingsTest extends AbstractRealmTest {
         testRealmAdminConsolePage.navigateTo();
         testRealmLoginPage.form().forgotPassword();
         
-        Assert.assertEquals("Enter your username or email address and we will send you instructions on how to create a new password.", 
+        Assertions.assertEquals("Enter your username or email address and we will send you instructions on how to create a new password.",
                 testRealmForgottenPasswordPage.getInfoMessage());
         log.info("verified reset password is enabled");
         
@@ -295,7 +295,7 @@ public class LoginSettingsTest extends AbstractRealmTest {
         
         testAccountPage.navigateTo();
         testRealmLoginPage.form().login(testUser);
-        Assert.assertEquals("An email with instructions to verify your email address has been sent to your address test@email.test.", 
+        Assertions.assertEquals("An email with instructions to verify your email address has been sent to your address test@email.test.",
                 testRealmVerifyEmailPage.getInstructionMessage());
         
         log.info("verified verify email is enabled");
@@ -340,7 +340,7 @@ public class LoginSettingsTest extends AbstractRealmTest {
                     .replace(AUTH_SERVER_PORT, System.getProperty("auth.server.http.port"));
         }
         URLUtils.navigateToUri(accountPageUri);
-        Assert.assertEquals("HTTPS required", testAccountPage.getErrorMessage());
+        Assertions.assertEquals("HTTPS required", testAccountPage.getErrorMessage());
     }
     
     private Set<String> getCookieNames() {

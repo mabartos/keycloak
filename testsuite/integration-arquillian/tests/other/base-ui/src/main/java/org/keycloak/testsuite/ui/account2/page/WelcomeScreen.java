@@ -24,7 +24,7 @@ import org.openqa.selenium.support.FindBy;
 
 import javax.ws.rs.core.UriBuilder;
 
-import static org.keycloak.testsuite.util.UIAssert.assertElementVisible;
+import static org.keycloak.testsuite.util.UIAssertions.assertElementVisible;
 import static org.keycloak.testsuite.util.UIUtils.clickLink;
 import static org.keycloak.testsuite.util.UIUtils.getTextFromElement;
 import static org.keycloak.testsuite.util.UIUtils.isElementVisible;

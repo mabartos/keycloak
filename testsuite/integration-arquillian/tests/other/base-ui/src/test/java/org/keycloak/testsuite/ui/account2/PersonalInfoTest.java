@@ -17,9 +17,9 @@
 
 package org.keycloak.testsuite.ui.account2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.admin.Users.setPasswordFor;
 import static org.keycloak.testsuite.util.UIUtils.refreshPageAndWaitForLoad;
 
@@ -28,9 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -48,7 +48,7 @@ public class PersonalInfoTest extends BaseAccountPageTest {
 
     private UserRepresentation testUser2;
 
-    @Before
+    @BeforeEach
     public void setTestUser() {
         testUser2 = new UserRepresentation();
         testUser2.setUsername("vmuzikar");
@@ -173,7 +173,7 @@ public class PersonalInfoTest extends BaseAccountPageTest {
         accountWelcomeScreen.assertCurrent();
     }
 
-    @Ignore("Username is not included in the account console anymore, but it should be there.")
+    @Disabled("Username is not included in the account console anymore, but it should be there.")
     @Test
     public void testNameInToolbar() {
         assertEquals("test user", personalInfoPage.header().getToolbarLoggedInUser());

@@ -1,8 +1,8 @@
 package org.keycloak.testsuite.console.users;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.util.Timer;
 
@@ -17,7 +17,7 @@ import static org.keycloak.testsuite.util.WaitUtils.pause;
  */
 public class UsersTest extends AbstractUserTest {
     
-    @Before
+    @BeforeEach
     public void beforeUserAttributesTest() {
         usersPage.navigateTo();
     }
@@ -42,7 +42,7 @@ public class UsersTest extends AbstractUserTest {
     }
     
     @Test
-    @Ignore
+    @Disabled
     public void usersPagination() {
         createTestUsers("test_user_", 100);
         

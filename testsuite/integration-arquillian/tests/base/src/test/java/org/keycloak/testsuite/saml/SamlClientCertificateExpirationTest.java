@@ -23,7 +23,7 @@ import org.keycloak.testsuite.util.Matchers;
 import org.keycloak.testsuite.util.SamlClient.Binding;
 import org.keycloak.testsuite.util.SamlClientBuilder;
 import javax.ws.rs.core.Response.Status;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import static org.keycloak.testsuite.saml.AbstractSamlTest.REALM_NAME;
 
 /**

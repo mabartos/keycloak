@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.broker;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.AuthenticationManagementResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.authentication.authenticators.broker.IdpConfirmLinkAuthenticatorFactory;
@@ -19,7 +19,7 @@ import org.keycloak.testsuite.pages.ConsentPage;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.models.utils.DefaultAuthenticationFlows.IDP_REVIEW_PROFILE_CONFIG_ALIAS;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getProviderRoot;
@@ -54,7 +54,7 @@ public abstract class AbstractBrokerTest extends AbstractInitializedBaseBrokerTe
 
         waitForPage(driver, "update account information", false);
         updateAccountInformationPage.assertCurrent();
-        Assert.assertTrue("We must be on correct realm right now",
+        Assertions.assertTrue("We must be on correct realm right now",
           driver.getCurrentUrl().contains("/auth/realms/" + bc.consumerRealmName() + "/"));
 
         log.debug("Updating info on updateAccount page");
@@ -63,7 +63,7 @@ public abstract class AbstractBrokerTest extends AbstractInitializedBaseBrokerTe
         UsersResource consumerUsers = adminClient.realm(bc.consumerRealmName()).users();
 
         int userCount = consumerUsers.count();
-        Assert.assertTrue("There must be at least one user", userCount > 0);
+        Assertions.assertTrue("There must be at least one user", userCount > 0);
 
         List<UserRepresentation> users = consumerUsers.search("", 0, userCount);
 
@@ -75,7 +75,7 @@ public abstract class AbstractBrokerTest extends AbstractInitializedBaseBrokerTe
             }
         }
 
-        Assert.assertTrue("There must be user " + bc.getUserLogin() + " in realm " + bc.consumerRealmName(),
+        Assertions.assertTrue("There must be user " + bc.getUserLogin() + " in realm " + bc.consumerRealmName(),
           isUserFound);
     }
 
@@ -99,15 +99,15 @@ public abstract class AbstractBrokerTest extends AbstractInitializedBaseBrokerTe
 
         driver.navigate().to(getAccountUrl(getProviderRoot(), bc.providerRealmName()));
 
-        Assert.assertTrue("Should be logged in the account page", driver.getTitle().endsWith("Account Management"));
+        Assertions.assertTrue("Should be logged in the account page", driver.getTitle().endsWith("Account Management"));
 
         logoutFromRealm(getProviderRoot(), bc.providerRealmName());
 
-        Assert.assertTrue("Should be on " + bc.providerRealmName() + " realm", driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName()));
+        Assertions.assertTrue("Should be on " + bc.providerRealmName() + " realm", driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName()));
 
         driver.navigate().to(getAccountUrl(getConsumerRoot(), bc.consumerRealmName()));
 
-        Assert.assertTrue("Should be on " + bc.consumerRealmName() + " realm on login page",
+        Assertions.assertTrue("Should be on " + bc.consumerRealmName() + " realm on login page",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.consumerRealmName() + "/protocol/openid-connect/"));
     }
 

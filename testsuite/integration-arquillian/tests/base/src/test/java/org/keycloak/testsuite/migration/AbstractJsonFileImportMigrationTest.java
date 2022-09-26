@@ -20,12 +20,12 @@ import org.keycloak.common.Profile.Feature;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.representations.idm.RealmRepresentation;
 
 import org.keycloak.testsuite.ProfileAssume;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import static org.keycloak.testsuite.auth.page.AuthRealm.MASTER;
 
 /**
@@ -36,12 +36,12 @@ public abstract class AbstractJsonFileImportMigrationTest extends AbstractMigrat
     protected RealmRepresentation masterRep;
     protected String masterTestClientId;
 
-    @BeforeClass
+    @BeforeAll
     public static void checkNotMapStorage() {
         ProfileAssume.assumeFeatureDisabled(Feature.MAP_STORAGE);
     }
 
-    @Before
+    @BeforeEach
     public void beforeMigrationTest() {
         migrationRealm = adminClient.realms().realm(MIGRATION);
         migrationRealm2 = adminClient.realms().realm(MIGRATION2);

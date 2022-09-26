@@ -10,11 +10,11 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.logging.Logger;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.common.util.MultivaluedHashMap;
 import org.keycloak.representations.idm.ComponentRepresentation;
@@ -59,8 +59,7 @@ public class SSSDTest extends AbstractKeycloakTest {
     @Page
     protected AccountUpdateProfilePage profilePage;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     private String SSSDFederationID;
 
@@ -74,7 +73,7 @@ public class SSSDTest extends AbstractKeycloakTest {
         testRealms.add(realm);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void loadSSSDConfiguration() throws ConfigurationException {
         log.info("Reading SSSD configuration from classpath from: " + sssdConfigPath);
         InputStream is = SSSDTest.class.getClassLoader().getResourceAsStream(sssdConfigPath);
@@ -83,7 +82,7 @@ public class SSSDTest extends AbstractKeycloakTest {
         sssdConfig.setListDelimiter(',');
     }
 
-    @Before
+    @BeforeEach
     public void createUserFederation() {
         ComponentRepresentation userFederation = new ComponentRepresentation();
 
@@ -114,7 +113,7 @@ public class SSSDTest extends AbstractKeycloakTest {
     @Test
     public void testDisabledUser() {
         String username = getUser(DISABLED_USER);
-        Assume.assumeTrue("Ignoring test no disabled user configured", username != null);
+        Assumptions.assumeTrue("Ignoring test no disabled user configured", username != null);
         log.debug("Testing disabled user " + username);
 
         profilePage.open();
@@ -127,7 +126,7 @@ public class SSSDTest extends AbstractKeycloakTest {
     @Test
     public void testAdmin() {
         String username = getUser(ADMIN_USER);
-        Assume.assumeTrue("Ignoring test no admin user configured", username != null);
+        Assumptions.assumeTrue("Ignoring test no admin user configured", username != null);
         log.debug("Testing password for user " + username);
 
         profilePage.open();

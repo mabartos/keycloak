@@ -16,8 +16,8 @@
  */
 package org.keycloak.testsuite.actions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import javax.mail.Address;
@@ -25,22 +25,21 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.events.Details;
 import org.keycloak.events.EventType;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.pages.ErrorPage;
 import org.keycloak.testsuite.pages.InfoPage;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.MailUtils;
 
+@ExtendWith(GreenMailExtension.class)
 public class AppInitiatedActionUpdateEmailWithVerificationTest extends AbstractAppInitiatedActionUpdateEmailTest {
-
-	@Rule
-	public GreenMailRule greenMail = new GreenMailRule();
 
 	@Page
 	protected InfoPage infoPage;
@@ -68,7 +67,7 @@ public class AppInitiatedActionUpdateEmailWithVerificationTest extends AbstractA
 		emailUpdatePage.changeEmail("new@localhost");
 
 		events.expect(EventType.SEND_VERIFY_EMAIL).detail(Details.EMAIL, "new@localhost").assertEvent();
-		Assert.assertEquals("test-user@localhost", ActionUtil.findUserWithAdminClient(adminClient, "test-user@localhost").getEmail());
+		Assertions.assertEquals("test-user@localhost", ActionUtil.findUserWithAdminClient(adminClient, "test-user@localhost").getEmail());
 
 		driver.navigate().to(fetchEmailConfirmationLink("new@localhost"));
 
@@ -79,7 +78,7 @@ public class AppInitiatedActionUpdateEmailWithVerificationTest extends AbstractA
 				.detail(Details.PREVIOUS_EMAIL, "test-user@localhost")
 				.detail(Details.UPDATED_EMAIL, "new@localhost");
 
-		Assert.assertEquals("new@localhost", ActionUtil.findUserWithAdminClient(adminClient, "test-user@localhost").getEmail());
+		Assertions.assertEquals("new@localhost", ActionUtil.findUserWithAdminClient(adminClient, "test-user@localhost").getEmail());
 	}
 
 	@Test
@@ -126,10 +125,10 @@ public class AppInitiatedActionUpdateEmailWithVerificationTest extends AbstractA
 
 	private String fetchEmailConfirmationLink(String emailRecipient) throws MessagingException, IOException {
 		MimeMessage[] receivedMessages = greenMail.getReceivedMessages();
-		Assert.assertEquals(1, receivedMessages.length);
+		Assertions.assertEquals(1, receivedMessages.length);
 		MimeMessage message = receivedMessages[0];
 		Address[] recipients = message.getRecipients(Message.RecipientType.TO);
-		Assert.assertTrue(recipients.length >= 1);
+		Assertions.assertTrue(recipients.length >= 1);
 		assertEquals(emailRecipient, recipients[0].toString());
 
 		return MailUtils.getPasswordResetEmailLink(message).trim();

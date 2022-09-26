@@ -20,8 +20,8 @@ package org.keycloak.testsuite.crossdc;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.common.util.Retry;
 import org.keycloak.connections.infinispan.InfinispanConnectionProvider;
@@ -44,7 +44,7 @@ public class SessionsPreloadCrossDCTest extends AbstractAdminCrossDCTest {
 
     private static final int SESSIONS_COUNT = 10;
 
-    @Before
+    @BeforeEach
     public void beforeSessionsPreloadCrossDCTest() throws Exception {
         disableDcOnLoadBalancer(DC.SECOND);
     }
@@ -77,16 +77,16 @@ public class SessionsPreloadCrossDCTest extends AbstractAdminCrossDCTest {
         Set<String> sessions01keys = getTestingClientForStartedNodeInDc(0).testing().cache(InfinispanConnectionProvider.USER_SESSION_CACHE_NAME).enumerateKeys();
         Set<String> sessions02keys = getTestingClientForStartedNodeInDc(1).testing().cache(InfinispanConnectionProvider.USER_SESSION_CACHE_NAME).enumerateKeys();
         log.infof("sessions01keys: %s, sessions02keys: %s", sessions01keys, sessions02keys);
-        Assert.assertThat(sessions01keys, Matchers.equalTo(sessions02keys));
+        Assertions.assertThat(sessions01keys, Matchers.equalTo(sessions02keys));
 
         // On DC2 sessions were preloaded from remoteCache
-        Assert.assertTrue(getTestingClientForStartedNodeInDc(1).testing().cache(InfinispanConnectionProvider.WORK_CACHE_NAME).contains("distributed::remoteCacheLoad::sessions"));
+        Assertions.assertTrue(getTestingClientForStartedNodeInDc(1).testing().cache(InfinispanConnectionProvider.WORK_CACHE_NAME).contains("distributed::remoteCacheLoad::sessions"));
 
         // Assert refreshing works
         for (OAuthClient.AccessTokenResponse resp : tokenResponses) {
             OAuthClient.AccessTokenResponse newResponse = oauth.doRefreshTokenRequest(resp.getRefreshToken(), "password");
-            Assert.assertNull(newResponse.getError());
-            Assert.assertNotNull(newResponse.getAccessToken());
+            Assertions.assertNull(newResponse.getError());
+            Assertions.assertNotNull(newResponse.getAccessToken());
         }
     }
 
@@ -100,7 +100,7 @@ public class SessionsPreloadCrossDCTest extends AbstractAdminCrossDCTest {
         List<OAuthClient.AccessTokenResponse> tokenResponses = createInitialSessions(true);
 
         int offlineSessions01 = getTestingClientForStartedNodeInDc(0).testing().cache(InfinispanConnectionProvider.OFFLINE_USER_SESSION_CACHE_NAME).size();
-        Assert.assertEquals(offlineSessions01, offlineSessionsBefore + SESSIONS_COUNT);
+        Assertions.assertEquals(offlineSessions01, offlineSessionsBefore + SESSIONS_COUNT);
         log.infof("offlineSessions01: %d", offlineSessions01);
 
         // Stop Everything
@@ -121,20 +121,20 @@ public class SessionsPreloadCrossDCTest extends AbstractAdminCrossDCTest {
         Set<String> offlineSessions11keys = getTestingClientForStartedNodeInDc(0).testing().cache(InfinispanConnectionProvider.OFFLINE_USER_SESSION_CACHE_NAME).enumerateKeys();
         Set<String> offlineSessions12keys = getTestingClientForStartedNodeInDc(1).testing().cache(InfinispanConnectionProvider.OFFLINE_USER_SESSION_CACHE_NAME).enumerateKeys();
         log.infof("offlineSessions11keys: %s, offlineSessions12keys: %s", offlineSessions11keys, offlineSessions12keys);
-        Assert.assertThat(offlineSessions11keys, Matchers.equalTo(offlineSessions12keys));
+        Assertions.assertThat(offlineSessions11keys, Matchers.equalTo(offlineSessions12keys));
 
         // On DC1 sessions were preloaded from DB. On DC2 sessions were preloaded from remoteCache
-        Assert.assertTrue(getTestingClientForStartedNodeInDc(0).testing().cache(InfinispanConnectionProvider.WORK_CACHE_NAME).contains("distributed::offlineUserSessions"));
-        Assert.assertFalse(getTestingClientForStartedNodeInDc(0).testing().cache(InfinispanConnectionProvider.WORK_CACHE_NAME).contains("distributed::remoteCacheLoad::offlineSessions"));
+        Assertions.assertTrue(getTestingClientForStartedNodeInDc(0).testing().cache(InfinispanConnectionProvider.WORK_CACHE_NAME).contains("distributed::offlineUserSessions"));
+        Assertions.assertFalse(getTestingClientForStartedNodeInDc(0).testing().cache(InfinispanConnectionProvider.WORK_CACHE_NAME).contains("distributed::remoteCacheLoad::offlineSessions"));
 
-        Assert.assertFalse(getTestingClientForStartedNodeInDc(1).testing().cache(InfinispanConnectionProvider.WORK_CACHE_NAME).contains("distributed::offlineUserSessions"));
-        Assert.assertTrue(getTestingClientForStartedNodeInDc(1).testing().cache(InfinispanConnectionProvider.WORK_CACHE_NAME).contains("distributed::remoteCacheLoad::offlineSessions"));
+        Assertions.assertFalse(getTestingClientForStartedNodeInDc(1).testing().cache(InfinispanConnectionProvider.WORK_CACHE_NAME).contains("distributed::offlineUserSessions"));
+        Assertions.assertTrue(getTestingClientForStartedNodeInDc(1).testing().cache(InfinispanConnectionProvider.WORK_CACHE_NAME).contains("distributed::remoteCacheLoad::offlineSessions"));
 
         // Assert refreshing with offline tokens work
         for (OAuthClient.AccessTokenResponse resp : tokenResponses) {
             OAuthClient.AccessTokenResponse newResponse = oauth.doRefreshTokenRequest(resp.getRefreshToken(), "password");
-            Assert.assertNull(newResponse.getError());
-            Assert.assertNotNull(newResponse.getAccessToken());
+            Assertions.assertNull(newResponse.getError());
+            Assertions.assertNotNull(newResponse.getAccessToken());
         }
     }
 
@@ -155,8 +155,8 @@ public class SessionsPreloadCrossDCTest extends AbstractAdminCrossDCTest {
             // Create initial brute force records
             for (int i = 0; i < SESSIONS_COUNT; i++) {
                 OAuthClient.AccessTokenResponse response = oauth.doGrantAccessTokenRequest("password", "test-user@localhost", "bad-password");
-                Assert.assertNull(response.getAccessToken());
-                Assert.assertNotNull(response.getError());
+                Assertions.assertNull(response.getAccessToken());
+                Assertions.assertNotNull(response.getError());
             }
 
             // Start 2nd DC.
@@ -170,13 +170,13 @@ public class SessionsPreloadCrossDCTest extends AbstractAdminCrossDCTest {
                 int loginFailures1 = (Integer) getAdminClientForStartedNodeInDc(0).realm("test").attackDetection().bruteForceUserStatus(userId).get("numFailures");
                 int loginFailures2 = (Integer) getAdminClientForStartedNodeInDc(1).realm("test").attackDetection().bruteForceUserStatus(userId).get("numFailures");
                 log.infof("keys1: %d, keys2: %d, loginFailures1: %d, loginFailures2: %d", keys1, keys2, loginFailures1, loginFailures2);
-                Assert.assertThat(keys1, Matchers.equalTo(keys2));
-                Assert.assertEquals(loginFailuresBefore + SESSIONS_COUNT, loginFailures1);
-                Assert.assertEquals(loginFailuresBefore + SESSIONS_COUNT, loginFailures2);
+                Assertions.assertThat(keys1, Matchers.equalTo(keys2));
+                Assertions.assertEquals(loginFailuresBefore + SESSIONS_COUNT, loginFailures1);
+                Assertions.assertEquals(loginFailuresBefore + SESSIONS_COUNT, loginFailures2);
             }, 3, 400);
 
             // On DC2 sessions were preloaded from remoteCache
-            Assert.assertTrue(getTestingClientForStartedNodeInDc(1).testing().cache(InfinispanConnectionProvider.WORK_CACHE_NAME).contains("distributed::remoteCacheLoad::loginFailures"));
+            Assertions.assertTrue(getTestingClientForStartedNodeInDc(1).testing().cache(InfinispanConnectionProvider.WORK_CACHE_NAME).contains("distributed::remoteCacheLoad::loginFailures"));
         }
     }
 
@@ -191,8 +191,8 @@ public class SessionsPreloadCrossDCTest extends AbstractAdminCrossDCTest {
 
         for (int i=0 ; i<SESSIONS_COUNT ; i++) {
             OAuthClient.AccessTokenResponse resp = oauth.doGrantAccessTokenRequest("password", "test-user@localhost", "password");
-            Assert.assertNull(resp.getError());
-            Assert.assertNotNull(resp.getAccessToken());
+            Assertions.assertNull(resp.getError());
+            Assertions.assertNotNull(resp.getAccessToken());
             responses.add(resp);
         }
 

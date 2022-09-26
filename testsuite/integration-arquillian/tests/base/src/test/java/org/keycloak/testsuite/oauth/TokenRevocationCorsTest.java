@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.oauth;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.*;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ import java.util.List;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.oidc.TokenMetadataRepresentation;
 import org.keycloak.testsuite.AbstractKeycloakTest;

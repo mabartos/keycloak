@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.pages;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.testsuite.auth.page.AccountFields;
 import org.keycloak.testsuite.auth.page.PasswordFields;
@@ -135,7 +135,7 @@ public class RegisterPage extends AbstractPage {
 
         try {
             usernameInput.clear();
-            Assert.fail("Form must be without username field");
+            Assertions.fail("Form must be without username field");
         } catch (NoSuchElementException e) {
             // OK
         }

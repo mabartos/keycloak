@@ -23,10 +23,10 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.events.Details;
 import org.keycloak.federation.kerberos.CommonKerberosConfig;
@@ -73,7 +73,7 @@ public class KerberosLdapTest extends AbstractKerberosSingleRealmTest {
         return getUserStorageConfiguration("kerberos-ldap", LDAPStorageProviderFactory.PROVIDER_NAME);
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         // don't run this test when map storage is enabled, as map storage doesn't support the legacy style federation
         ProfileAssume.assumeFeatureDisabled(Profile.Feature.MAP_STORAGE);
@@ -126,11 +126,11 @@ public class KerberosLdapTest extends AbstractKerberosSingleRealmTest {
 
          updateProviderValidatePasswordPolicy(true);
          changePasswordPage.changePassword("theduke", "jduke", "jduke");
-         Assert.assertTrue(driver.getPageSource().contains("Invalid"));
+         Assertions.assertTrue(driver.getPageSource().contains("Invalid"));
 
          updateProviderValidatePasswordPolicy(false);
          changePasswordPage.changePassword("theduke", "jduke", "jduke");
-         Assert.assertTrue(driver.getPageSource().contains("Your password has been updated."));
+         Assertions.assertTrue(driver.getPageSource().contains("Your password has been updated."));
 
          // Change password back
          changePasswordPage.open();
@@ -150,11 +150,11 @@ public class KerberosLdapTest extends AbstractKerberosSingleRealmTest {
         //bypassPage.clickContinue();
         loginPage.assertCurrent();
         loginPage.login("jduke", "theduke");
-        Assert.assertTrue(changePasswordPage.isCurrent());
+        Assertions.assertTrue(changePasswordPage.isCurrent());
 
         // Successfully change password now
         changePasswordPage.changePassword("theduke", "newPass", "newPass");
-        Assert.assertTrue(driver.getPageSource().contains("Your password has been updated."));
+        Assertions.assertTrue(driver.getPageSource().contains("Your password has been updated."));
         changePasswordPage.logout();
 
         // Only needed if you are providing a click thru to bypass kerberos.  Currently there is a javascript
@@ -164,7 +164,7 @@ public class KerberosLdapTest extends AbstractKerberosSingleRealmTest {
 
         // Login with old password doesn't work, but with new password works
         loginPage.login("jduke", "theduke");
-        Assert.assertTrue(loginPage.isCurrent());
+        Assertions.assertTrue(loginPage.isCurrent());
         loginPage.login("jduke", "newPass");
         changePasswordPage.assertCurrent();
         changePasswordPage.logout();

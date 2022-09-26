@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 
 import static org.keycloak.testsuite.admin.ApiUtil.getCreatedId;
 import static org.keycloak.testsuite.auth.page.AuthRealm.SAMLSERVLETDEMO;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 
 public abstract class AbstractSAMLServletAdapterTest extends AbstractServletsAdapterTest {

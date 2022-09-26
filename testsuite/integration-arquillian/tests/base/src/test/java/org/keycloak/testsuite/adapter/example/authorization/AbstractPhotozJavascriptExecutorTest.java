@@ -2,9 +2,9 @@ package org.keycloak.testsuite.adapter.example.authorization;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.Assert;
 import org.keycloak.testsuite.adapter.AbstractExampleAdapterTest;
@@ -22,7 +22,7 @@ import org.openqa.selenium.WebElement;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
 
 /**
@@ -59,12 +59,12 @@ public abstract class AbstractPhotozJavascriptExecutorTest extends AbstractExamp
 
     protected UserRepresentation jdoeUser = UserBuilder.create().username("jdoe").password("jdoe").build();
 
-    @BeforeClass
+    @BeforeAll
     public static void checkIfTLSIsTurnedOn() {
-        Assume.assumeTrue(AUTH_SERVER_SSL_REQUIRED);
+        Assumptions.assumeTrue(AUTH_SERVER_SSL_REQUIRED);
     }
 
-    @Before
+    @BeforeEach
     public void setDefaultValues() {
         jsDriverTestRealmLoginPage.setAuthRealm(REALM_NAME);
     }
@@ -77,7 +77,7 @@ public abstract class AbstractPhotozJavascriptExecutorTest extends AbstractExamp
         if (output instanceof WebElement) {
             waitUntilElement((WebElement) output).text().contains(value);
         } else {
-            Assert.assertThat((String) output, containsString(value));
+            Assertions.assertThat((String) output, containsString(value));
         }
     }
 

@@ -19,7 +19,7 @@ package org.keycloak.testsuite.crossdc;
 
 
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.common.util.Retry;
 import org.keycloak.connections.infinispan.InfinispanConnectionProvider;
@@ -74,7 +74,7 @@ public class LastSessionRefreshCrossDCTest extends AbstractAdminCrossDCTest {
         OAuthClient.AuthorizationEndpointResponse response1 = oauth.doLogin("test-user@localhost", "password");
         String code = response1.getCode();
         OAuthClient.AccessTokenResponse tokenResponse = oauth.doAccessTokenRequest(code, "password");
-        Assert.assertNotNull(tokenResponse.getAccessToken());
+        Assertions.assertNotNull(tokenResponse.getAccessToken());
         String sessionId = oauth.verifyToken(tokenResponse.getAccessToken()).getSessionState();
         String refreshToken1 = tokenResponse.getRefreshToken();
 
@@ -102,13 +102,13 @@ public class LastSessionRefreshCrossDCTest extends AbstractAdminCrossDCTest {
         disableDcOnLoadBalancer(DC.FIRST);
         enableDcOnLoadBalancer(DC.SECOND);
         tokenResponse = oauth.doRefreshTokenRequest(refreshToken1, "password");
-        Assert.assertNull("Expecting no access token present", tokenResponse.getAccessToken());
-        Assert.assertNotNull(tokenResponse.getError());
+        Assertions.assertNull("Expecting no access token present", tokenResponse.getAccessToken());
+        Assertions.assertNotNull(tokenResponse.getError());
 
         // try refresh with new token on DC2. It should fail because client session not valid anymore
         tokenResponse = oauth.doRefreshTokenRequest(refreshToken2, "password");
-        Assert.assertNull("Expecting no access token present", tokenResponse.getAccessToken());
-        Assert.assertNotNull(tokenResponse.getError());
+        Assertions.assertNull("Expecting no access token present", tokenResponse.getAccessToken());
+        Assertions.assertNotNull(tokenResponse.getError());
 
         // Revert
         realmRep = testRealm().toRepresentation();
@@ -154,7 +154,7 @@ public class LastSessionRefreshCrossDCTest extends AbstractAdminCrossDCTest {
             OAuthClient.AuthorizationEndpointResponse response1 = oauth.doLogin("test-user@localhost", "password");
             String code = response1.getCode();
             OAuthClient.AccessTokenResponse tokenResponse = oauth.doAccessTokenRequest(code, "password");
-            Assert.assertNotNull(tokenResponse.getAccessToken());
+            Assertions.assertNotNull(tokenResponse.getAccessToken());
             String sessionId = oauth.verifyToken(tokenResponse.getAccessToken()).getSessionState();
             String refreshToken1 = tokenResponse.getRefreshToken();
 
@@ -170,7 +170,7 @@ public class LastSessionRefreshCrossDCTest extends AbstractAdminCrossDCTest {
             // refresh token on DC1
             tokenResponse = oauth.doRefreshTokenRequest(refreshToken1, "password");
             String refreshToken2 = tokenResponse.getRefreshToken();
-            Assert.assertNotNull(refreshToken2);
+            Assertions.assertNotNull(refreshToken2);
 
             // Assert statistics - sessions updated on both DC1 and DC2. RemoteCaches not updated
             assertStatistics("After refresh at time 100", sessionId, sessionCacheDc1Stats, sessionCacheDc2Stats, clientSessionCacheDc1Stats, clientSessionCacheDc2Stats,
@@ -184,7 +184,7 @@ public class LastSessionRefreshCrossDCTest extends AbstractAdminCrossDCTest {
             // refresh token on DC1
             tokenResponse = oauth.doRefreshTokenRequest(refreshToken1, "password");
             String refreshToken3 = tokenResponse.getRefreshToken();
-            Assert.assertNotNull(refreshToken3);
+            Assertions.assertNotNull(refreshToken3);
 
             // Assert statistics - sessions updated just on DC1.
             // Update of DC2 is postponed (It's just 10 seconds since last message). RemoteCaches not updated
@@ -202,7 +202,7 @@ public class LastSessionRefreshCrossDCTest extends AbstractAdminCrossDCTest {
                 return AuthenticationManager.isSessionValid(realm, userSession);
             }, Boolean.class);
 
-            Assert.assertTrue(sessionValid);
+            Assertions.assertTrue(sessionValid);
 
             getTestingClientForStartedNodeInDc(1).testing("test").removeExpired("test");
 
@@ -221,7 +221,7 @@ public class LastSessionRefreshCrossDCTest extends AbstractAdminCrossDCTest {
                 return AuthenticationManager.isSessionValid(realm, userSession);
             }, Boolean.class);
 
-            Assert.assertFalse(sessionValid);
+            Assertions.assertFalse(sessionValid);
 
             // 2000 seconds after the previous. This should ensure that session would be expired from the cache due the invalid maxIdle.
             // Previous read at time 2200 "refreshed" the maxIdle in the infinispan cache. This shouldn't happen in reality as an attempt to call refreshToken request on invalid session does backchannelLogout
@@ -232,13 +232,13 @@ public class LastSessionRefreshCrossDCTest extends AbstractAdminCrossDCTest {
             // Session should be removed on both DCs
             try {
                 getTestingClientForStartedNodeInDc(0).testing("test").getLastSessionRefresh("test", sessionId, false);
-                Assert.fail("It wasn't expected to find the session " + sessionId);
+                Assertions.fail("It wasn't expected to find the session " + sessionId);
             } catch (NotFoundException nfe) {
                 // Expected
             }
             try {
                 getTestingClientForStartedNodeInDc(1).testing("test").getLastSessionRefresh("test", sessionId, false);
-                Assert.fail("It wasn't expected to find the session " + sessionId);
+                Assertions.fail("It wasn't expected to find the session " + sessionId);
             } catch (NotFoundException nfe) {
                 // Expected
             }
@@ -284,7 +284,7 @@ public class LastSessionRefreshCrossDCTest extends AbstractAdminCrossDCTest {
         OAuthClient.AuthorizationEndpointResponse response1 = oauth.doLogin("test-user@localhost", "password");
         String code = response1.getCode();
         OAuthClient.AccessTokenResponse tokenResponse = oauth.doAccessTokenRequest(code, "password");
-        Assert.assertNotNull(tokenResponse.getAccessToken());
+        Assertions.assertNotNull(tokenResponse.getAccessToken());
         String sessionId = oauth.verifyToken(tokenResponse.getAccessToken()).getSessionState();
         String refreshToken1 = tokenResponse.getRefreshToken();
 
@@ -300,7 +300,7 @@ public class LastSessionRefreshCrossDCTest extends AbstractAdminCrossDCTest {
         // refresh token on DC1
         tokenResponse = oauth.doRefreshTokenRequest(refreshToken1, "password");
         String refreshToken3 = tokenResponse.getRefreshToken();
-        Assert.assertNotNull(refreshToken3);
+        Assertions.assertNotNull(refreshToken3);
 
         // Assert statistics - sessions updated on both DC1 and DC2. RemoteCaches not updated
         assertStatistics("After refresh at time 100", sessionId, sessionCacheDc1Stats, sessionCacheDc2Stats, clientSessionCacheDc1Stats, clientSessionCacheDc2Stats,
@@ -315,7 +315,7 @@ public class LastSessionRefreshCrossDCTest extends AbstractAdminCrossDCTest {
         // refresh token on DC1
         tokenResponse = oauth.doRefreshTokenRequest(refreshToken1, "password");
         String refreshToken2 = tokenResponse.getRefreshToken();
-        Assert.assertNotNull(refreshToken2);
+        Assertions.assertNotNull(refreshToken2);
 
         // Assert statistics - sessions updated just on DC1.
         // Update of DC2 is postponed (It's just 10 seconds since last message). RemoteCaches not updated
@@ -330,7 +330,7 @@ public class LastSessionRefreshCrossDCTest extends AbstractAdminCrossDCTest {
         // refresh token on DC1
         tokenResponse = oauth.doRefreshTokenRequest(refreshToken1, "password");
         String refreshToken4 = tokenResponse.getRefreshToken();
-        Assert.assertNotNull(refreshToken4);
+        Assertions.assertNotNull(refreshToken4);
 
         // Assert statistics - sessions updated on both DC1 and DC2. RemoteCaches updated as well.
         assertStatistics("After refresh at time 1728000", sessionId, sessionCacheDc1Stats, sessionCacheDc2Stats, clientSessionCacheDc1Stats, clientSessionCacheDc2Stats,
@@ -343,7 +343,7 @@ public class LastSessionRefreshCrossDCTest extends AbstractAdminCrossDCTest {
         // refresh token on DC1
         tokenResponse = oauth.doRefreshTokenRequest(refreshToken1, "password");
         String refreshToken5 = tokenResponse.getRefreshToken();
-        Assert.assertNotNull(refreshToken5);
+        Assertions.assertNotNull(refreshToken5);
 
         // Assert statistics - sessions updated on both DC1 and DC2. RemoteCaches won't be updated now due it's just 10 days from the last remoteCache update
         assertStatistics("After refresh at time 2592000", sessionId, sessionCacheDc1Stats, sessionCacheDc2Stats, clientSessionCacheDc1Stats, clientSessionCacheDc2Stats,
@@ -356,7 +356,7 @@ public class LastSessionRefreshCrossDCTest extends AbstractAdminCrossDCTest {
         // refresh token on DC1
         tokenResponse = oauth.doRefreshTokenRequest(refreshToken1, "password");
         String refreshToken6 = tokenResponse.getRefreshToken();
-        Assert.assertNotNull(refreshToken6);
+        Assertions.assertNotNull(refreshToken6);
 
         // Assert statistics - sessions updated on both DC1 and DC2. RemoteCaches will be updated too due it's 20 days from the last remoteCache update
         assertStatistics("After refresh at time 3456000", sessionId, sessionCacheDc1Stats, sessionCacheDc2Stats, clientSessionCacheDc1Stats, clientSessionCacheDc2Stats,
@@ -385,29 +385,29 @@ public class LastSessionRefreshCrossDCTest extends AbstractAdminCrossDCTest {
 
             // Check lastSessionRefresh updated on DC1
             if (expectedUpdatedLsrDc1) {
-                Assert.assertThat(newLsrDc1, Matchers.greaterThan(lsrDc1.get()));
+                Assertions.assertThat(newLsrDc1, Matchers.greaterThan(lsrDc1.get()));
             } else {
-                Assert.assertEquals(newLsrDc1, lsrDc1.get());
+                Assertions.assertEquals(newLsrDc1, lsrDc1.get());
             }
 
             // Check lastSessionRefresh updated on DC2
             if (expectedUpdatedLsrDc2) {
-                Assert.assertThat(newLsrDc2, Matchers.greaterThan(lsrDc2.get()));
+                Assertions.assertThat(newLsrDc2, Matchers.greaterThan(lsrDc2.get()));
             } else {
-                Assert.assertEquals(newLsrDc2, lsrDc2.get());
+                Assertions.assertEquals(newLsrDc2, lsrDc2.get());
             }
 
             // Check store statistics updated on JDG side
             if (expectedUpdatedRemoteCache) {
-                Assert.assertThat(newSessionStoresDc1, Matchers.greaterThan(sessionStoresDc1.get()));
-                Assert.assertThat(newSessionStoresDc2, Matchers.greaterThan(sessionStoresDc2.get()));
-                Assert.assertThat(newClientSessionStoresDc1, Matchers.greaterThan(clientSessionStoresDc1.get()));
-                Assert.assertThat(newClientSessionStoresDc2, Matchers.greaterThan(clientSessionStoresDc2.get()));
+                Assertions.assertThat(newSessionStoresDc1, Matchers.greaterThan(sessionStoresDc1.get()));
+                Assertions.assertThat(newSessionStoresDc2, Matchers.greaterThan(sessionStoresDc2.get()));
+                Assertions.assertThat(newClientSessionStoresDc1, Matchers.greaterThan(clientSessionStoresDc1.get()));
+                Assertions.assertThat(newClientSessionStoresDc2, Matchers.greaterThan(clientSessionStoresDc2.get()));
             } else {
-                Assert.assertEquals(newSessionStoresDc1, sessionStoresDc1.get());
-                Assert.assertEquals(newSessionStoresDc2, sessionStoresDc2.get());
-                Assert.assertEquals(newClientSessionStoresDc1, clientSessionStoresDc1.get());
-                Assert.assertEquals(newClientSessionStoresDc2, clientSessionStoresDc2.get());
+                Assertions.assertEquals(newSessionStoresDc1, sessionStoresDc1.get());
+                Assertions.assertEquals(newSessionStoresDc2, sessionStoresDc2.get());
+                Assertions.assertEquals(newClientSessionStoresDc1, clientSessionStoresDc1.get());
+                Assertions.assertEquals(newClientSessionStoresDc2, clientSessionStoresDc2.get());
             }
 
             // Update counter references

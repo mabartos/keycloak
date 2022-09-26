@@ -19,8 +19,8 @@ package org.keycloak.testsuite.adapter.example.authorization;
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientsResource;
@@ -46,7 +46,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.keycloak.common.Profile.Feature.AUTHORIZATION;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 import static org.keycloak.testsuite.utils.io.IOUtil.loadJson;
@@ -70,7 +70,7 @@ public abstract class AbstractBaseServletAuthzAdapterTest extends AbstractExampl
     @Page
     protected InfoPage infoPage;
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
         ProfileAssume.assumeFeatureEnabled(AUTHORIZATION);
     }

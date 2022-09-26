@@ -18,9 +18,9 @@
 package org.keycloak.testsuite.oauth;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientScopeResource;
 import org.keycloak.admin.client.resource.ProtocolMappersResource;
@@ -77,11 +77,11 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 import static org.keycloak.testsuite.admin.ApiUtil.findClientByClientId;
 import static org.keycloak.testsuite.admin.ApiUtil.findClientResourceByClientId;
@@ -98,10 +98,9 @@ import static org.keycloak.testsuite.util.ProtocolMapperUtil.createScriptMapper;
  */
 public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         ClientManager.realm(adminClient.realm("test")).clientId("test-app").directAccessGrant(true);
         /*
@@ -280,14 +279,14 @@ public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
             assertTrue(departments.contains("finance") && departments.contains("development"));
             assertTrue(accessToken.getRealmAccess().getRoles().contains("hardcoded"));
             assertTrue(accessToken.getRealmAccess().getRoles().contains("realm-user"));
-            Assert.assertNull(accessToken.getResourceAccess("test-app"));
+            Assertions.assertNull(accessToken.getResourceAccess("test-app"));
             assertTrue(accessToken.getResourceAccess("app").getRoles().contains("hardcoded"));
 
             // Assert audiences added through AudienceResolve mapper
-            Assert.assertThat(accessToken.getAudience(), arrayContainingInAnyOrder( "app", "account"));
+            Assertions.assertThat(accessToken.getAudience(), arrayContainingInAnyOrder( "app", "account"));
 
             // Assert allowed origins
-            Assert.assertNames(accessToken.getAllowedOrigins(), "http://localhost:8180", "https://localhost:8543");
+            Assertions.assertNames(accessToken.getAllowedOrigins(), "http://localhost:8180", "https://localhost:8543");
 
             jsonClaim = (Map) accessToken.getOtherClaims().get("claim-from-json-attribute");
             assertThat(jsonClaim.get("a"), instanceOf(int.class));
@@ -479,7 +478,7 @@ public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
 
         // Verify attribute is filled
         Map<String, Object> roleMappings = (Map<String, Object>)idToken.getOtherClaims().get("roles-custom");
-        Assert.assertThat(roleMappings.keySet(), containsInAnyOrder("realm", "test-app"));
+        Assertions.assertThat(roleMappings.keySet(), containsInAnyOrder("realm", "test-app"));
         String realmRoleMappings = (String) roleMappings.get("realm");
         String testAppMappings = (String) roleMappings.get("test-app");
         assertRolesString(realmRoleMappings,
@@ -531,21 +530,21 @@ public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
             AccessToken accessToken = oauth.verifyToken(response.getAccessToken());
 
             // Assert roles are not on their original positions
-            Assert.assertNull(accessToken.getRealmAccess());
-            Assert.assertTrue(accessToken.getResourceAccess().isEmpty());
+            Assertions.assertNull(accessToken.getRealmAccess());
+            Assertions.assertTrue(accessToken.getResourceAccess().isEmpty());
 
             // KEYCLOAK-8481 Assert that accessToken JSON doesn't have "realm_access" or "resource_access" fields in it
             String accessTokenJson = new String(new JWSInput(response.getAccessToken()).getContent(), StandardCharsets.UTF_8);
-            Assert.assertFalse(accessTokenJson.contains("realm_access"));
-            Assert.assertFalse(accessTokenJson.contains("resource_access"));
+            Assertions.assertFalse(accessTokenJson.contains("realm_access"));
+            Assertions.assertFalse(accessTokenJson.contains("resource_access"));
 
             // Assert both realm and client roles on the new position. Hardcoded role should be here as well
             Map<String, Object> cst1 = (Map<String, Object>) accessToken.getOtherClaims().get("custom");
             List<String> roles = (List<String>) cst1.get("roles");
-            Assert.assertNames(roles, "offline_access", "user", "customer-user", "hardcoded", AccountRoles.VIEW_PROFILE, AccountRoles.MANAGE_ACCOUNT, AccountRoles.MANAGE_ACCOUNT_LINKS);
+            Assertions.assertNames(roles, "offline_access", "user", "customer-user", "hardcoded", AccountRoles.VIEW_PROFILE, AccountRoles.MANAGE_ACCOUNT, AccountRoles.MANAGE_ACCOUNT_LINKS);
 
             // Assert audience
-            Assert.assertNames(Arrays.asList(accessToken.getAudience()), "account");
+            Assertions.assertNames(Arrays.asList(accessToken.getAudience()), "account");
         } finally {
             // Revert
             rolesScope.getProtocolMappers().delete(hardcodedMapperId);
@@ -574,20 +573,20 @@ public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
             AccessToken accessToken = oauth.verifyToken(response.getAccessToken());
 
             // Assert web origins are not in the token
-            Assert.assertNull(accessToken.getAllowedOrigins());
+            Assertions.assertNull(accessToken.getAllowedOrigins());
 
             // Assert roles are not in the token
-            Assert.assertNull(accessToken.getRealmAccess());
-            Assert.assertTrue(accessToken.getResourceAccess().isEmpty());
+            Assertions.assertNull(accessToken.getRealmAccess());
+            Assertions.assertTrue(accessToken.getResourceAccess().isEmpty());
 
             // Assert client not in the token audience. Just in "issuedFor"
-            Assert.assertEquals("test-app", accessToken.getIssuedFor());
-            Assert.assertFalse(accessToken.hasAudience("test-app"));
+            Assertions.assertEquals("test-app", accessToken.getIssuedFor());
+            Assertions.assertFalse(accessToken.hasAudience("test-app"));
 
             // Assert IDToken still has "test-app" as an audience
             IDToken idToken = oauth.verifyIDToken(response.getIdToken());
-            Assert.assertEquals("test-app", idToken.getIssuedFor());
-            Assert.assertTrue(idToken.hasAudience("test-app"));
+            Assertions.assertEquals("test-app", idToken.getIssuedFor());
+            Assertions.assertTrue(idToken.hasAudience("test-app"));
         } finally {
             // Revert
             testApp.addDefaultClientScope(allowedOriginsScope.getId());
@@ -615,9 +614,9 @@ public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
 
         // Verify attribute is filled
         Map<String, Object> roleMappings = (Map<String, Object>)idToken.getOtherClaims().get("roles-custom");
-        Assert.assertThat(roleMappings.keySet(), containsInAnyOrder("realm", "test-app"));
-        Assert.assertThat(roleMappings.get("realm"), CoreMatchers.instanceOf(List.class));
-        Assert.assertThat(roleMappings.get("test-app"), CoreMatchers.instanceOf(List.class));
+        Assertions.assertThat(roleMappings.keySet(), containsInAnyOrder("realm", "test-app"));
+        Assertions.assertThat(roleMappings.get("realm"), CoreMatchers.instanceOf(List.class));
+        Assertions.assertThat(roleMappings.get("test-app"), CoreMatchers.instanceOf(List.class));
 
         List<String> realmRoleMappings = (List<String>) roleMappings.get("realm");
         List<String> testAppMappings = (List<String>) roleMappings.get("test-app");
@@ -660,9 +659,9 @@ public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
 
         // Verify attribute is filled
         Map<String, Object> roleMappings = (Map<String, Object>)idToken.getOtherClaims().get("roles-custom");
-        Assert.assertThat(roleMappings.keySet(), containsInAnyOrder("realm", "test-app"));
-        Assert.assertThat(roleMappings.get("realm"), CoreMatchers.instanceOf(List.class));
-        Assert.assertThat(roleMappings.get("test-app"), CoreMatchers.instanceOf(List.class));
+        Assertions.assertThat(roleMappings.keySet(), containsInAnyOrder("realm", "test-app"));
+        Assertions.assertThat(roleMappings.get("realm"), CoreMatchers.instanceOf(List.class));
+        Assertions.assertThat(roleMappings.get("test-app"), CoreMatchers.instanceOf(List.class));
 
         List<String> realmRoleMappings = (List<String>) roleMappings.get("realm");
         List<String> testAppMappings = (List<String>) roleMappings.get("test-app");
@@ -706,7 +705,7 @@ public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
 
         // Verify attribute is filled AND it is filled only once
         Map<String, Object> roleMappings = (Map<String, Object>)idToken.getOtherClaims().get("roles-custom");
-        Assert.assertThat(roleMappings.keySet(), containsInAnyOrder(clientId));
+        Assertions.assertThat(roleMappings.keySet(), containsInAnyOrder(clientId));
         String testAppScopeMappings = (String) roleMappings.get(clientId);
         assertRolesString(testAppScopeMappings,
                 "customer-user"      // from assignment to level2group or level2group2. It is filled just once
@@ -735,7 +734,7 @@ public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
 
         // Verify attribute is filled
         Map<String, Object> roleMappings = (Map<String, Object>)idToken.getOtherClaims().get("roles-custom");
-        Assert.assertThat(roleMappings.keySet(), containsInAnyOrder("realm", clientId));
+        Assertions.assertThat(roleMappings.keySet(), containsInAnyOrder("realm", clientId));
         String realmRoleMappings = (String) roleMappings.get("realm");
         String testAppMappings = (String) roleMappings.get(clientId);
         assertRolesString(realmRoleMappings,
@@ -780,7 +779,7 @@ public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
 
         // Verify attribute is filled
         Map<String, Object> roleMappings = (Map<String, Object>)idToken.getOtherClaims().get("roles-custom");
-        Assert.assertThat(roleMappings.keySet(), containsInAnyOrder("realm"));
+        Assertions.assertThat(roleMappings.keySet(), containsInAnyOrder("realm"));
         String realmRoleMappings = (String) roleMappings.get("realm");
         String testAppAuthzMappings = (String) roleMappings.get(clientId);
         assertRolesString(realmRoleMappings,
@@ -813,7 +812,7 @@ public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
 
         // Verify attribute is filled
         Map<String, Object> roleMappings = (Map<String, Object>)idToken.getOtherClaims().get("roles-custom");
-        Assert.assertThat(roleMappings.keySet(), containsInAnyOrder("realm", clientId));
+        Assertions.assertThat(roleMappings.keySet(), containsInAnyOrder("realm", clientId));
         String realmRoleMappings = (String) roleMappings.get("realm");
         String testAppScopeMappings = (String) roleMappings.get(clientId);
         assertRolesString(realmRoleMappings,
@@ -847,7 +846,7 @@ public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
 
         // Verify attribute is filled
         Map<String, Object> roleMappings = (Map<String, Object>)idToken.getOtherClaims().get("roles-custom");
-        Assert.assertThat(roleMappings.keySet(), containsInAnyOrder("realm", clientId));
+        Assertions.assertThat(roleMappings.keySet(), containsInAnyOrder("realm", clientId));
         String realmRoleMappings = (String) roleMappings.get("realm");
         String testAppScopeMappings = (String) roleMappings.get(clientId);
         assertRolesString(realmRoleMappings,
@@ -1514,18 +1513,18 @@ public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
     }
 
     private void assertRoles(List<String> actualRoleList, String ...expectedRoles){
-        Assert.assertNames(actualRoleList, expectedRoles);
+        Assertions.assertNames(actualRoleList, expectedRoles);
     }
 
     private void assertRolesString(String actualRoleString, String...expectedRoles) {
 
-        Assert.assertThat(actualRoleString.matches("^\\[.*\\]$"), is(true));
+        Assertions.assertThat(actualRoleString.matches("^\\[.*\\]$"), is(true));
         String[] roles = actualRoleString.substring(1, actualRoleString.length() - 1).split(",\\s*");
 
         if (expectedRoles == null || expectedRoles.length == 0) {
-            Assert.assertThat(roles, arrayContainingInAnyOrder(""));
+            Assertions.assertThat(roles, arrayContainingInAnyOrder(""));
         } else {
-            Assert.assertThat(roles, arrayContainingInAnyOrder(expectedRoles));
+            Assertions.assertThat(roles, arrayContainingInAnyOrder(expectedRoles));
         }
     }
 

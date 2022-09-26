@@ -25,10 +25,10 @@ import java.util.List;
 
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assume;
-import org.junit.Before;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.common.util.MultivaluedHashMap;
@@ -77,8 +77,7 @@ public class UserStorageOTPTest extends AbstractTestRealmKeycloakTest {
     @Page
     protected AppPage appPage;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     protected TimeBasedOTP totp = new TimeBasedOTP();
 
@@ -89,9 +88,9 @@ public class UserStorageOTPTest extends AbstractTestRealmKeycloakTest {
 
     }
 
-    @Before
+    @BeforeEach
     public void addProvidersBeforeTest() throws URISyntaxException, IOException {
-        Assume.assumeTrue("RealmProvider is not 'jpa'", isJpaRealmProvider());
+        Assumptions.assumeTrue("RealmProvider is not 'jpa'", isJpaRealmProvider());
 
         ComponentRepresentation dummyProvider = new ComponentRepresentation();
         dummyProvider.setName("dummy");
@@ -118,11 +117,11 @@ public class UserStorageOTPTest extends AbstractTestRealmKeycloakTest {
     public void testCredentialsThroughRESTAPI() {
         // Test that test-user has federation link on him
         UserResource user = ApiUtil.findUserByUsernameId(testRealm(), "test-user");
-        Assert.assertEquals(componentId, user.toRepresentation().getFederationLink());
+        Assertions.assertEquals(componentId, user.toRepresentation().getFederationLink());
 
         // Test that both "password" and "otp" are configured for the test-user
         List<String> userStorageCredentialTypes = user.getConfiguredUserStorageCredentialTypes();
-        Assert.assertNames(userStorageCredentialTypes, PasswordCredentialModel.TYPE, OTPCredentialModel.TYPE);
+        Assertions.assertNames(userStorageCredentialTypes, PasswordCredentialModel.TYPE, OTPCredentialModel.TYPE);
     }
 
 
@@ -136,13 +135,13 @@ public class UserStorageOTPTest extends AbstractTestRealmKeycloakTest {
 
         loginTotpPage.login("654321");
         loginTotpPage.assertCurrent();
-        Assert.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
+        Assertions.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
 
         loginTotpPage.login(DummyUserFederationProvider.HARDCODED_OTP);
 
         appPage.assertCurrent();
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
     }
 
 
@@ -166,7 +165,7 @@ public class UserStorageOTPTest extends AbstractTestRealmKeycloakTest {
 
             // Dummy OTP code won't work when configure new OTP
             loginConfigTotpPage.configure(DummyUserFederationProvider.HARDCODED_OTP);
-            Assert.assertEquals("Invalid authenticator code.", loginConfigTotpPage.getInputCodeError());
+            Assertions.assertEquals("Invalid authenticator code.", loginConfigTotpPage.getInputCodeError());
 
             // This will save the credential to the local DB
             String totpSecret = loginConfigTotpPage.getTotpSecret();
@@ -221,11 +220,11 @@ public class UserStorageOTPTest extends AbstractTestRealmKeycloakTest {
 
         // Assert he has federation link on him
         UserResource userResource = ApiUtil.findUserByUsernameId(testRealm(), "test-user2");
-        Assert.assertEquals(componentId, userResource.toRepresentation().getFederationLink());
+        Assertions.assertEquals(componentId, userResource.toRepresentation().getFederationLink());
 
         // Assert no userStorage supported credentials shown through admin REST API for that user. For this user, the validation of password and OTP is not delegated
         // to the dummy user storage provider
-        Assert.assertTrue(userResource.getConfiguredUserStorageCredentialTypes().isEmpty());
+        Assertions.assertTrue(userResource.getConfiguredUserStorageCredentialTypes().isEmpty());
 
         // Update password
         ApiUtil.resetUserPassword(userResource, "pass", false);
@@ -235,8 +234,8 @@ public class UserStorageOTPTest extends AbstractTestRealmKeycloakTest {
         loginPage.login("test-user2", "pass");
 
         appPage.assertCurrent();
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
     }
 
 

@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.broker;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>

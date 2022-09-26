@@ -13,11 +13,11 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.dom.saml.v2.assertion.AssertionType;
 import org.keycloak.dom.saml.v2.assertion.AttributeType;
@@ -41,8 +41,8 @@ import org.keycloak.testsuite.util.SamlClient;
 import org.keycloak.testsuite.util.SamlClientBuilder;
 import org.keycloak.util.JsonSerialization;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.keycloak.common.Profile.Feature.SCRIPTS;
 import static org.keycloak.testsuite.arquillian.DeploymentTargetModifier.AUTH_SERVER_CURRENT;
 import static org.keycloak.testsuite.saml.RoleMapperTest.createSamlProtocolMapper;
@@ -73,7 +73,7 @@ public class DeployedSAMLScriptMapperTest extends AbstractSamlTest {
                 .addAsResource("scripts/mapper-example.js", "mapper-a.js");
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void verifyEnvironment() {
         ContainerAssume.assumeNotAuthServerUndertow();
     }
@@ -81,13 +81,13 @@ public class DeployedSAMLScriptMapperTest extends AbstractSamlTest {
     @ArquillianResource
     private Deployer deployer;
 
-    @Before
+    @BeforeEach
     public void deployScripts() throws Exception {
         deployer.deploy(SCRIPT_DEPLOYMENT_NAME);
         reconnectAdminClient();
     }
 
-    @Before
+    @BeforeEach
     public void cleanMappersAndScopes() {
         this.cau = ClientAttributeUpdater.forClient(adminClient, REALM_NAME, SAML_CLIENT_ID_EMPLOYEE_2)
                 .setDefaultClientScopes(Collections.EMPTY_LIST)
@@ -101,7 +101,7 @@ public class DeployedSAMLScriptMapperTest extends AbstractSamlTest {
                 .addCleanup(this.pmu);
     }
 
-    @After
+    @AfterEach
     public void onAfter() throws Exception {
         deployer.undeploy(SCRIPT_DEPLOYMENT_NAME);
         reconnectAdminClient();
@@ -121,7 +121,7 @@ public class DeployedSAMLScriptMapperTest extends AbstractSamlTest {
         );
 
         Response response = pmu.getResource().createMapper(mapperRep);
-        Assert.assertEquals(404, response.getStatus());
+        Assertions.assertEquals(404, response.getStatus());
         response.close();
     }
 
@@ -159,7 +159,7 @@ public class DeployedSAMLScriptMapperTest extends AbstractSamlTest {
                 .map(attribute -> attribute.getAttributeValue().get(0).toString())
                 .findFirst().orElseThrow(() -> new AssertionError("Attribute SCRIPT_ATTRIBUTE was not available in SAML assertion"));
 
-        Assert.assertEquals("hello_bburke", scriptAttrValue);
+        Assertions.assertEquals("hello_bburke", scriptAttrValue);
     }
 
 }

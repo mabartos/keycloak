@@ -19,7 +19,7 @@ package org.keycloak.testsuite.webauthn.registration;
 import com.beust.jcommander.internal.Lists;
 import com.webauthn4j.data.attestation.authenticator.COSEKey;
 import com.webauthn4j.data.attestation.statement.COSEAlgorithmIdentifier;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.credential.dto.WebAuthnCredentialData;
 import org.keycloak.testsuite.webauthn.AbstractWebAuthnVirtualTest;
 import org.keycloak.testsuite.webauthn.utils.WebAuthnDataWrapper;

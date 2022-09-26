@@ -2,11 +2,11 @@ package org.keycloak.testsuite.federation.ldap;
 
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.authentication.authenticators.browser.OTPFormAuthenticatorFactory;
@@ -64,7 +64,7 @@ public class LDAPUserMultipleCredentialTest extends AbstractLDAPTest {
         return ldapRule;
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         // don't run this test when map storage is enabled, as map storage doesn't support LDAP, yet
         ProfileAssume.assumeFeatureDisabled(Profile.Feature.MAP_STORAGE);
@@ -129,7 +129,7 @@ public class LDAPUserMultipleCredentialTest extends AbstractLDAPTest {
             loginTotpPage.clickTryAnotherWayLink();
             selectAuthenticatorPage.assertCurrent();
             // make sure password method exists as well
-            Assert.assertEquals(Arrays.asList(SelectAuthenticatorPage.AUTHENTICATOR_APPLICATION, SelectAuthenticatorPage.PASSWORD), selectAuthenticatorPage.getAvailableLoginMethods());
+            Assertions.assertEquals(Arrays.asList(SelectAuthenticatorPage.AUTHENTICATOR_APPLICATION, SelectAuthenticatorPage.PASSWORD), selectAuthenticatorPage.getAvailableLoginMethods());
 
         } finally {
             // Revert flow binding

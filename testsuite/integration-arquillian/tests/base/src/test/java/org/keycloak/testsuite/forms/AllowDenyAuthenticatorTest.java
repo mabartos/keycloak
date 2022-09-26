@@ -2,7 +2,7 @@ package org.keycloak.testsuite.forms;
 
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.authenticators.access.AllowAccessAuthenticatorFactory;
 import org.keycloak.authentication.authenticators.access.DenyAccessAuthenticatorFactory;
 import org.keycloak.authentication.authenticators.browser.PasswordFormFactory;
@@ -41,8 +41,7 @@ public class AllowDenyAuthenticatorTest extends AbstractTestRealmKeycloakTest {
     @Page
     protected ErrorPage errorPage;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Override
     public void configureTestRealm(RealmRepresentation testRealm) {

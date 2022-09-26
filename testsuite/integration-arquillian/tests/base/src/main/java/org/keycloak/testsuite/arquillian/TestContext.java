@@ -51,8 +51,8 @@ public final class TestContext {
     private KeycloakTestingClient testingClient;
     private List<RealmRepresentation> testRealmReps = new ArrayList<>();
 
-    // Track if particular test was initialized. What exactly means "initialized" is test dependent (Eg. some user in @Before method was created, so we can set initialized to true
-    // to avoid creating user when @Before method is executed for 2nd time)
+    // Track if particular test was initialized. What exactly means "initialized" is test dependent (Eg. some user in @BeforeEach method was created, so we can set initialized to true
+    // to avoid creating user when @BeforeEach method is executed for 2nd time)
     private boolean initialized;
 
     // Key is realmName, value are objects to clean after the test method

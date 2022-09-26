@@ -18,10 +18,10 @@
 package org.keycloak.testsuite.x509;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.authentication.authenticators.x509.X509AuthenticatorConfigModel;
 import org.keycloak.events.Details;
@@ -50,7 +50,7 @@ public class X509BrowserCRLTest extends AbstractX509AuthenticationTest {
     private WebDriver phantomJS;
 
 
-    @Before
+    @BeforeEach
     public void replaceTheDefaultDriver() {
         replaceDefaultWebDriver(phantomJS);
     }
@@ -86,7 +86,7 @@ public class X509BrowserCRLTest extends AbstractX509AuthenticationTest {
                         .setUserIdentityMapperType(USERNAME_EMAIL);
         AuthenticatorConfigRepresentation cfg = newConfig("x509-browser-config", config.getConfig());
         String cfgId = createConfig(browserExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         assertLoginFailedDueRevokedCertificate();
     }
@@ -116,7 +116,7 @@ public class X509BrowserCRLTest extends AbstractX509AuthenticationTest {
                         .setUserIdentityMapperType(USERNAME_EMAIL);
         AuthenticatorConfigRepresentation cfg = newConfig("x509-browser-config", config.getConfig());
         String cfgId = createConfig(browserExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         assertLoginFailedDueRevokedCertificate();
     }
@@ -133,7 +133,7 @@ public class X509BrowserCRLTest extends AbstractX509AuthenticationTest {
                         .setUserIdentityMapperType(USERNAME_EMAIL);
         AuthenticatorConfigRepresentation cfg = newConfig("x509-browser-config", config.getConfig());
         String cfgId = createConfig(browserExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         // Verify there is an error message because of invalid CRL signature
         assertLoginFailedWithExpectedX509Error("Certificate validation's failed.\nCertificate revoked or incorrect.");
@@ -151,7 +151,7 @@ public class X509BrowserCRLTest extends AbstractX509AuthenticationTest {
                         .setUserIdentityMapperType(USERNAME_EMAIL);
         AuthenticatorConfigRepresentation cfg = newConfig("x509-browser-config", config.getConfig());
         String cfgId = createConfig(browserExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         // Verify there is an error message because of invalid CRL signature
         x509BrowserLogin(config, userId, "test-user@localhost", "test-user@localhost");
@@ -169,7 +169,7 @@ public class X509BrowserCRLTest extends AbstractX509AuthenticationTest {
                         .setUserIdentityMapperType(USERNAME_EMAIL);
         AuthenticatorConfigRepresentation cfg = newConfig("x509-browser-config", config.getConfig());
         String cfgId = createConfig(browserExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         assertLoginFailedDueRevokedCertificate();
     }
@@ -186,7 +186,7 @@ public class X509BrowserCRLTest extends AbstractX509AuthenticationTest {
                         .setUserIdentityMapperType(USERNAME_EMAIL);
         AuthenticatorConfigRepresentation cfg = newConfig("x509-browser-config", config.getConfig());
         String cfgId = createConfig(browserExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         assertLoginFailedDueRevokedCertificate();
     }
@@ -202,15 +202,15 @@ public class X509BrowserCRLTest extends AbstractX509AuthenticationTest {
         loginPage.assertCurrent();
 
         // Verify there is an error message
-        Assert.assertNotNull(loginPage.getError());
+        Assertions.assertNotNull(loginPage.getError());
 
-        Assert.assertThat(loginPage.getError(), containsString(expectedError));
+        Assertions.assertThat(loginPage.getError(), containsString(expectedError));
 
         // Continue with form based login
         loginPage.login("test-user@localhost", "password");
 
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         events.expectLogin()
                 .user(userId)

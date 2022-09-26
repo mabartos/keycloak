@@ -30,10 +30,10 @@ public class KcOidcBrokerAcrParameterTest extends AbstractBrokerTest {
 
         waitForPage(driver, "sign in to", true);
 
-        Assert.assertTrue("Driver should be on the provider realm page right now",
+        Assertions.assertTrue("Driver should be on the provider realm page right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName() + "/"));
 
-        Assert.assertTrue(ACR_VALUES + "=" + ACR_3 + " should be part of the url",
+        Assertions.assertTrue(ACR_VALUES + "=" + ACR_3 + " should be part of the url",
                 driver.getCurrentUrl().contains(ACR_VALUES + "=" + ACR_3));
 
         log.debug("Logging in");
@@ -42,7 +42,7 @@ public class KcOidcBrokerAcrParameterTest extends AbstractBrokerTest {
         waitForPage(driver, "update account information", false);
 
         updateAccountInformationPage.assertCurrent();
-        Assert.assertTrue("We must be on correct realm right now",
+        Assertions.assertTrue("We must be on correct realm right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.consumerRealmName() + "/"));
 
 
@@ -52,7 +52,7 @@ public class KcOidcBrokerAcrParameterTest extends AbstractBrokerTest {
         UsersResource consumerUsers = adminClient.realm(bc.consumerRealmName()).users();
 
         int userCount = consumerUsers.count();
-        Assert.assertTrue("There must be at least one user", userCount > 0);
+        Assertions.assertTrue("There must be at least one user", userCount > 0);
 
         List<UserRepresentation> users = consumerUsers.search("", 0, userCount);
 
@@ -64,7 +64,7 @@ public class KcOidcBrokerAcrParameterTest extends AbstractBrokerTest {
             }
         }
 
-        Assert.assertTrue("There must be user " + bc.getUserLogin() + " in realm " + bc.consumerRealmName(),
+        Assertions.assertTrue("There must be user " + bc.getUserLogin() + " in realm " + bc.consumerRealmName(),
                 isUserFound);
     }
 }

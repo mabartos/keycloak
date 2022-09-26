@@ -22,8 +22,8 @@
 package org.keycloak.testsuite.console.clients;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.ProtocolMapperRepresentation;
 import org.keycloak.testsuite.console.page.clients.mappers.ClientMapper;
@@ -32,7 +32,7 @@ import org.keycloak.testsuite.console.page.clients.mappers.CreateClientMappers;
 
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.keycloak.testsuite.auth.page.login.Login.SAML;
 import static org.keycloak.testsuite.console.clients.AbstractClientTest.createClientRep;
 import static org.keycloak.testsuite.console.page.clients.mappers.CreateClientMappersForm.*;
@@ -53,7 +53,7 @@ public class ClientMappersSAMLTest extends AbstractClientTest {
     @Page 
     private CreateClientMappers createClientMappersPage;
     
-    @Before
+    @BeforeEach
     public void beforeClientMappersTest() {
         ClientRepresentation newClient = createClientRep(TEST_CLIENT_ID, SAML);
         testRealmResource().clients().create(newClient).close();

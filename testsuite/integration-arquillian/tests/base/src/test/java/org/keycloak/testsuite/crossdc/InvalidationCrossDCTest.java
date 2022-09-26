@@ -22,8 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ResourcesResource;
 import org.keycloak.admin.client.resource.UserResource;
@@ -54,10 +54,10 @@ public class InvalidationCrossDCTest extends AbstractAdminCrossDCTest {
         RealmRepresentation realmDc1 = getAdminClientForStartedNodeInDc(1).realms().realm(REALM_NAME).toRepresentation();
 
         // Test same realm on both DCs
-        Assert.assertNull(realmDc0.getDisplayName());
-        Assert.assertTrue(realmDc0.isRegistrationAllowed());
-        Assert.assertNull(realmDc1.getDisplayName());
-        Assert.assertTrue(realmDc1.isRegistrationAllowed());
+        Assertions.assertNull(realmDc0.getDisplayName());
+        Assertions.assertTrue(realmDc0.isRegistrationAllowed());
+        Assertions.assertNull(realmDc1.getDisplayName());
+        Assertions.assertTrue(realmDc1.isRegistrationAllowed());
 
         // Update realm on DC0
         realmDc0.setRegistrationAllowed(false);
@@ -66,15 +66,15 @@ public class InvalidationCrossDCTest extends AbstractAdminCrossDCTest {
 
         // Assert updated on both DC0 and DC1 (here retry is needed. We need to wait until invalidation message arrives)
         realmDc0 = getAdminClientForStartedNodeInDc(0).realms().realm(REALM_NAME).toRepresentation();
-        Assert.assertEquals("Cool Realm!", realmDc0.getDisplayName());
-        Assert.assertFalse(realmDc0.isRegistrationAllowed());
+        Assertions.assertEquals("Cool Realm!", realmDc0.getDisplayName());
+        Assertions.assertFalse(realmDc0.isRegistrationAllowed());
 
         AtomicInteger i = new AtomicInteger(0);
         Retry.execute(() -> {
             i.incrementAndGet();
             RealmRepresentation realmDcc1 = getAdminClientForStartedNodeInDc(1).realms().realm(REALM_NAME).toRepresentation();
-            Assert.assertEquals("Cool Realm!", realmDcc1.getDisplayName());
-            Assert.assertFalse(realmDcc1.isRegistrationAllowed());
+            Assertions.assertEquals("Cool Realm!", realmDcc1.getDisplayName());
+            Assertions.assertFalse(realmDcc1.isRegistrationAllowed());
         }, 50, 50);
 
         log.infof("realmInvalidationTest: Passed after '%d' iterations", i.get());
@@ -92,8 +92,8 @@ public class InvalidationCrossDCTest extends AbstractAdminCrossDCTest {
         ClientRepresentation clientDc1 = clientResourceDc1.toRepresentation();
 
         // Test same client on both DCs
-        Assert.assertEquals("My Named Test App", clientDc0.getName());
-        Assert.assertEquals("My Named Test App", clientDc1.getName());
+        Assertions.assertEquals("My Named Test App", clientDc0.getName());
+        Assertions.assertEquals("My Named Test App", clientDc1.getName());
 
         // Update client on DC0
         clientDc0.setName("Changed Test App");
@@ -101,13 +101,13 @@ public class InvalidationCrossDCTest extends AbstractAdminCrossDCTest {
 
         // Assert updated on both DC0 and DC1 (here retry is needed. We need to wait until invalidation message arrives)
         clientDc0 = clientResourceDc0.toRepresentation();
-        Assert.assertEquals("Changed Test App", clientDc0.getName());
+        Assertions.assertEquals("Changed Test App", clientDc0.getName());
 
         AtomicInteger i = new AtomicInteger(0);
         Retry.execute(() -> {
             i.incrementAndGet();
             ClientRepresentation clientDcc1 = clientResourceDc1.toRepresentation();
-            Assert.assertEquals("Changed Test App", clientDcc1.getName());
+            Assertions.assertEquals("Changed Test App", clientDcc1.getName());
         }, 50, 50);
 
         log.infof("clientInvalidationTest: Passed after '%d' iterations", i.get());
@@ -124,7 +124,7 @@ public class InvalidationCrossDCTest extends AbstractAdminCrossDCTest {
 
 
         // Test same clients on both DCs
-        Assert.assertEquals(dc0List.size(), dc1List.size());
+        Assertions.assertEquals(dc0List.size(), dc1List.size());
         int initialSize = dc0List.size();
 
         // Create client on DC0
@@ -132,18 +132,18 @@ public class InvalidationCrossDCTest extends AbstractAdminCrossDCTest {
         rep.setClientId("some-new-client");
         rep.setEnabled(true);
         Response response = getAdminClientForStartedNodeInDc(0).realms().realm(REALM_NAME).clients().create(rep);
-        Assert.assertEquals(201, response.getStatus());
+        Assertions.assertEquals(201, response.getStatus());
         response.close();
 
         // Assert updated on both DC0 and DC1 (here retry is needed. We need to wait until invalidation message arrives)
         dc0List = getAdminClientForStartedNodeInDc(0).realms().realm(REALM_NAME).clients().findAll();
-        Assert.assertEquals(initialSize + 1, dc0List.size());
+        Assertions.assertEquals(initialSize + 1, dc0List.size());
 
         AtomicInteger i = new AtomicInteger(0);
         Retry.execute(() -> {
             i.incrementAndGet();
             List<ClientRepresentation> dc1Listt = getAdminClientForStartedNodeInDc(1).realms().realm(REALM_NAME).clients().findAll();
-            Assert.assertEquals(initialSize + 1, dc1Listt.size());
+            Assertions.assertEquals(initialSize + 1, dc1Listt.size());
         }, 50, 50);
 
         log.infof("clientListInvalidationTest: Passed after '%d' iterations", i.get());
@@ -161,8 +161,8 @@ public class InvalidationCrossDCTest extends AbstractAdminCrossDCTest {
         UserRepresentation userDc1 = userResourceDc1.toRepresentation();
 
         // Test same user on both DCs
-        Assert.assertEquals("Tom", userDc0.getFirstName());
-        Assert.assertEquals("Tom", userDc1.getFirstName());
+        Assertions.assertEquals("Tom", userDc0.getFirstName());
+        Assertions.assertEquals("Tom", userDc1.getFirstName());
 
         // Update user on DC0
         userDc0.setFirstName("Brad");
@@ -170,13 +170,13 @@ public class InvalidationCrossDCTest extends AbstractAdminCrossDCTest {
 
         // Assert updated on both DC0 and DC1 (here retry is needed. We need to wait until invalidation message arrives)
         userDc0 = userResourceDc0.toRepresentation();
-        Assert.assertEquals("Brad", userDc0.getFirstName());
+        Assertions.assertEquals("Brad", userDc0.getFirstName());
 
         AtomicInteger i = new AtomicInteger(0);
         Retry.execute(() -> {
             i.incrementAndGet();
             UserRepresentation userDcc1 = userResourceDc1.toRepresentation();
-            Assert.assertEquals("Brad", userDcc1.getFirstName());
+            Assertions.assertEquals("Brad", userDcc1.getFirstName());
         }, 50, 50);
 
         log.infof("userInvalidationTest: Passed after '%d' iterations", i.get());
@@ -197,8 +197,8 @@ public class InvalidationCrossDCTest extends AbstractAdminCrossDCTest {
         ResourceRepresentation resDc1 = resourcesDc1Resource.findByName("Premium Resource").get(0);
 
         // Test same resource on both DCs
-        Assert.assertEquals("/protected/premium/*", resDc0.getUri());
-        Assert.assertEquals("/protected/premium/*", resDc1.getUri());
+        Assertions.assertEquals("/protected/premium/*", resDc0.getUri());
+        Assertions.assertEquals("/protected/premium/*", resDc1.getUri());
 
         // Update resource on DC0
         resDc0.setUri("/protected/ultra/premium/*");
@@ -206,13 +206,13 @@ public class InvalidationCrossDCTest extends AbstractAdminCrossDCTest {
 
         // Assert updated on both DC0 and DC1 (here retry is needed. We need to wait until invalidation message arrives)
         resDc0 = resourcesDc0Resource.findByName("Premium Resource").get(0);
-        Assert.assertEquals("/protected/ultra/premium/*", resDc0.getUri());
+        Assertions.assertEquals("/protected/ultra/premium/*", resDc0.getUri());
 
         AtomicInteger i = new AtomicInteger(0);
         Retry.execute(() -> {
             i.incrementAndGet();
             ResourceRepresentation ressDc1 = resourcesDc1Resource.findByName("Premium Resource").get(0);
-            Assert.assertEquals("/protected/ultra/premium/*", ressDc1.getUri());
+            Assertions.assertEquals("/protected/ultra/premium/*", ressDc1.getUri());
         }, 50, 50);
 
         log.infof("authzResourceInvalidationTest: Passed after '%d' iterations", i.get());

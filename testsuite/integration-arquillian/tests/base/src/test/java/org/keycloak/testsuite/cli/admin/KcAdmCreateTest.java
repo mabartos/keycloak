@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.cli.admin;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.client.admin.cli.config.FileConfigHandler;
 import org.keycloak.models.IdentityProviderModel;
@@ -55,7 +55,7 @@ public class KcAdmCreateTest extends AbstractAdmCliTest {
         }
 
         // If the sync mode is not present on creating the idp, it will never be added automatically. However, the model will always assume "LEGACY", so no errors should occur.
-        Assert.assertNull(realmResource.identityProviders().get("idpAlias").toRepresentation().getConfig().get(IdentityProviderModel.SYNC_MODE));
+        Assertions.assertNull(realmResource.identityProviders().get("idpAlias").toRepresentation().getConfig().get(IdentityProviderModel.SYNC_MODE));
     }
 
     @Test
@@ -96,20 +96,20 @@ public class KcAdmCreateTest extends AbstractAdmCliTest {
                 assertExitCodeAndStdErrSize(exe, 0, 0);
 
                 ClientRepresentation client = JsonSerialization.readValue(exe.stdout(), ClientRepresentation.class);
-                Assert.assertNotNull("id", client.getId());
-                Assert.assertEquals("clientId", "my_client", client.getClientId());
-                Assert.assertEquals("enabled", true, client.isEnabled());
-                Assert.assertEquals("redirectUris", Arrays.asList("http://localhost:8980/myapp/*"), client.getRedirectUris());
-                Assert.assertEquals("serviceAccountsEnabled", true, client.isServiceAccountsEnabled());
-                Assert.assertEquals("name", "My Client App", client.getName());
-                Assert.assertEquals("implicitFlowEnabled", false, client.isImplicitFlowEnabled());
-                Assert.assertEquals("publicClient", true, client.isPublicClient());
+                Assertions.assertNotNull("id", client.getId());
+                Assertions.assertEquals("clientId", "my_client", client.getClientId());
+                Assertions.assertEquals("enabled", true, client.isEnabled());
+                Assertions.assertEquals("redirectUris", Arrays.asList("http://localhost:8980/myapp/*"), client.getRedirectUris());
+                Assertions.assertEquals("serviceAccountsEnabled", true, client.isServiceAccountsEnabled());
+                Assertions.assertEquals("name", "My Client App", client.getName());
+                Assertions.assertEquals("implicitFlowEnabled", false, client.isImplicitFlowEnabled());
+                Assertions.assertEquals("publicClient", true, client.isPublicClient());
                 // note there is no server-side check if protocol is supported
-                Assert.assertEquals("webOrigins", Arrays.asList("http://localhost:8980/myapp"), client.getWebOrigins());
-                Assert.assertEquals("consentRequired", false, client.isConsentRequired());
-                Assert.assertEquals("baseUrl", "http://localhost:8980/myapp", client.getBaseUrl());
-                Assert.assertEquals("bearerOnly", true, client.isStandardFlowEnabled());
-                Assert.assertFalse("mappers not empty", client.getProtocolMappers().isEmpty());
+                Assertions.assertEquals("webOrigins", Arrays.asList("http://localhost:8980/myapp"), client.getWebOrigins());
+                Assertions.assertEquals("consentRequired", false, client.isConsentRequired());
+                Assertions.assertEquals("baseUrl", "http://localhost:8980/myapp", client.getBaseUrl());
+                Assertions.assertEquals("bearerOnly", true, client.isStandardFlowEnabled());
+                Assertions.assertFalse("mappers not empty", client.getProtocolMappers().isEmpty());
 
                 // create configuration from file as a template and override clientId and other attributes ... output an object
                 exe = execute("create clients --config '" + configFile.getName() + "' -o -f '" + tmpFile.getName() +
@@ -120,20 +120,20 @@ public class KcAdmCreateTest extends AbstractAdmCliTest {
                 assertExitCodeAndStdErrSize(exe, 0, 0);
 
                 ClientRepresentation client2 = JsonSerialization.readValue(exe.stdout(), ClientRepresentation.class);
-                Assert.assertNotNull("id", client2.getId());
-                Assert.assertEquals("clientId", "my_client2", client2.getClientId());
-                Assert.assertEquals("enabled", false, client2.isEnabled());
-                Assert.assertEquals("redirectUris", Arrays.asList("http://localhost:8980/myapp2/*"), client2.getRedirectUris());
-                Assert.assertEquals("serviceAccountsEnabled", true, client2.isServiceAccountsEnabled());
-                Assert.assertEquals("name", "My Client App II", client2.getName());
-                Assert.assertEquals("implicitFlowEnabled", false, client2.isImplicitFlowEnabled());
-                Assert.assertEquals("publicClient", true, client2.isPublicClient());
-                Assert.assertEquals("webOrigins", Arrays.asList("http://localhost:8980/myapp2"), client2.getWebOrigins());
-                Assert.assertEquals("consentRequired", false, client2.isConsentRequired());
-                Assert.assertEquals("baseUrl", "http://localhost:8980/myapp2", client2.getBaseUrl());
-                Assert.assertEquals("rootUrl", "http://localhost:8980/myapp2", client2.getRootUrl());
-                Assert.assertEquals("bearerOnly", true, client2.isStandardFlowEnabled());
-                Assert.assertFalse("mappers not empty", client2.getProtocolMappers().isEmpty());
+                Assertions.assertNotNull("id", client2.getId());
+                Assertions.assertEquals("clientId", "my_client2", client2.getClientId());
+                Assertions.assertEquals("enabled", false, client2.isEnabled());
+                Assertions.assertEquals("redirectUris", Arrays.asList("http://localhost:8980/myapp2/*"), client2.getRedirectUris());
+                Assertions.assertEquals("serviceAccountsEnabled", true, client2.isServiceAccountsEnabled());
+                Assertions.assertEquals("name", "My Client App II", client2.getName());
+                Assertions.assertEquals("implicitFlowEnabled", false, client2.isImplicitFlowEnabled());
+                Assertions.assertEquals("publicClient", true, client2.isPublicClient());
+                Assertions.assertEquals("webOrigins", Arrays.asList("http://localhost:8980/myapp2"), client2.getWebOrigins());
+                Assertions.assertEquals("consentRequired", false, client2.isConsentRequired());
+                Assertions.assertEquals("baseUrl", "http://localhost:8980/myapp2", client2.getBaseUrl());
+                Assertions.assertEquals("rootUrl", "http://localhost:8980/myapp2", client2.getRootUrl());
+                Assertions.assertEquals("bearerOnly", true, client2.isStandardFlowEnabled());
+                Assertions.assertFalse("mappers not empty", client2.getProtocolMappers().isEmpty());
             }
 
             // simple create, output an id
@@ -145,7 +145,7 @@ public class KcAdmCreateTest extends AbstractAdmCliTest {
             exe = execute("create clients --config '" + configFile.getName() + "' -s clientId=my_client4");
 
             assertExitCodeAndStreamSizes(exe, 0, 0, 1);
-            Assert.assertTrue("only id returned", exe.stderrLines().get(0).startsWith("Created new client with id '"));
+            Assertions.assertTrue("only id returned", exe.stderrLines().get(0).startsWith("Created new client with id '"));
         }
     }
 }

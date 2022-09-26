@@ -18,18 +18,18 @@
 package org.keycloak.testsuite.console.sessions;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.console.AbstractConsoleTest;
 import org.keycloak.testsuite.console.page.sessions.RealmSessions;
 
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWithLoginUrlOf;
 
 /**
  *
  * @author Petr Mensik
  */
-@Ignore
+@Disabled
 public class SessionsTest extends AbstractConsoleTest {
 
     @Page

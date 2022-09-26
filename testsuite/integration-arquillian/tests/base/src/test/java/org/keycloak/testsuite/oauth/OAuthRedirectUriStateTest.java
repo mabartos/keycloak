@@ -20,8 +20,8 @@ package org.keycloak.testsuite.oauth;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.protocol.oidc.utils.OIDCResponseType;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractTestRealmKeycloakTest;
@@ -34,7 +34,7 @@ public class OAuthRedirectUriStateTest extends AbstractTestRealmKeycloakTest {
     public void configureTestRealm(RealmRepresentation testRealm) {
     }
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         oauth.clientId("test-app");
         oauth.responseType(OIDCResponseType.CODE);
@@ -45,7 +45,7 @@ public class OAuthRedirectUriStateTest extends AbstractTestRealmKeycloakTest {
         oauth.stateParamHardcoded(state);
 
         OAuthClient.AuthorizationEndpointResponse response = oauth.doLogin("test-user@localhost", "password");
-        Assert.assertNotNull(response.getCode());
+        Assertions.assertNotNull(response.getCode());
 
         URL url;
         try {
@@ -53,7 +53,7 @@ public class OAuthRedirectUriStateTest extends AbstractTestRealmKeycloakTest {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        Assert.assertTrue(url.getQuery().contains("state=" + state));
+        Assertions.assertTrue(url.getQuery().contains("state=" + state));
     }
 
     @Test

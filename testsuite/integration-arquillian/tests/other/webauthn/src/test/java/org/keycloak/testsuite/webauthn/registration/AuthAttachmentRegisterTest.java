@@ -18,7 +18,7 @@ package org.keycloak.testsuite.webauthn.registration;
 
 import com.webauthn4j.data.AuthenticatorAttachment;
 import com.webauthn4j.data.UserVerificationRequirement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.arquillian.annotation.IgnoreBrowserDriver;
 import org.keycloak.testsuite.webauthn.AbstractWebAuthnVirtualTest;
 import org.keycloak.testsuite.webauthn.utils.WebAuthnRealmData;

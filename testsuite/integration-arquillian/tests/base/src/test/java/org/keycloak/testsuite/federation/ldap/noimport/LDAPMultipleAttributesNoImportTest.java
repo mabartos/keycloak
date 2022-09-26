@@ -17,10 +17,10 @@
 
 package org.keycloak.testsuite.federation.ldap.noimport;
 
-import org.junit.Assert;
-import org.junit.Assume;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
@@ -45,7 +45,7 @@ public class LDAPMultipleAttributesNoImportTest extends LDAPMultipleAttributesTe
 
     @Test
     public void testUserImport() {
-        Assume.assumeTrue("User cache disabled.", isUserCacheEnabled());
+        Assumptions.assumeTrue("User cache disabled.", isUserCacheEnabled());
         testingClient.server().run(session -> {
             LDAPTestContext ctx = LDAPTestContext.init(session);
             UserStorageUtil.userCache(session).clear();
@@ -53,8 +53,8 @@ public class LDAPMultipleAttributesNoImportTest extends LDAPMultipleAttributesTe
 
             // Test user NOT imported in local storage now. He is available just through "session.users()"
             UserModel user = session.users().getUserByUsername(appRealm, "jbrown");
-            Assert.assertNotNull(user);
-            Assert.assertNull(UserStoragePrivateUtil.userLocalStorage(session).getUserById(appRealm, user.getId()));
+            Assertions.assertNotNull(user);
+            Assertions.assertNull(UserStoragePrivateUtil.userLocalStorage(session).getUserById(appRealm, user.getId()));
             LDAPTestAsserts.assertUserImported(session.users(), appRealm, "jbrown", "James", "Brown", "jbrown@keycloak.org", "88441");
         });
     }

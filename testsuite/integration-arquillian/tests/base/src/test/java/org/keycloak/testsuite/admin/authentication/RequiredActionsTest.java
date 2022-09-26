@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.admin.authentication;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.events.admin.ResourceType;
 import org.keycloak.representations.idm.RequiredActionProviderRepresentation;
@@ -64,7 +64,7 @@ public class RequiredActionsTest extends AbstractAuthenticationTest {
         result = authMgmtResource.getRequiredActions();
         RequiredActionProviderRepresentation updated = findRequiredActionByAlias(forUpdate.getAlias(), result);
 
-        Assert.assertNotNull("Required Action still there", updated);
+        Assertions.assertNotNull("Required Action still there", updated);
         compareRequiredAction(forUpdate, updated);
 
         forUpdate.setConfig(Collections.<String, String>emptyMap());
@@ -74,7 +74,7 @@ public class RequiredActionsTest extends AbstractAuthenticationTest {
         result = authMgmtResource.getRequiredActions();
         updated = findRequiredActionByAlias(forUpdate.getAlias(), result);
 
-        Assert.assertNotNull("Required Action still there", updated);
+        Assertions.assertNotNull("Required Action still there", updated);
         compareRequiredAction(forUpdate, updated);
     }
 
@@ -84,12 +84,12 @@ public class RequiredActionsTest extends AbstractAuthenticationTest {
 
         // Dummy RequiredAction is not registered in the realm and WebAuthn actions
         List<RequiredActionProviderSimpleRepresentation> result = authMgmtResource.getUnregisteredRequiredActions();
-        Assert.assertEquals(2, result.size());
+        Assertions.assertEquals(2, result.size());
         RequiredActionProviderSimpleRepresentation action = result.stream().filter(
                 a -> a.getProviderId().equals(DummyRequiredActionFactory.PROVIDER_ID)
         ).findFirst().get();
-        Assert.assertEquals(DummyRequiredActionFactory.PROVIDER_ID, action.getProviderId());
-        Assert.assertEquals("Dummy Action", action.getName());
+        Assertions.assertEquals(DummyRequiredActionFactory.PROVIDER_ID, action.getProviderId());
+        Assertions.assertEquals("Dummy Action", action.getName());
 
         // Register it
         authMgmtResource.registerRequiredAction(action);
@@ -105,7 +105,7 @@ public class RequiredActionsTest extends AbstractAuthenticationTest {
         // Try to find not-existent action - should fail
         try {
             authMgmtResource.getRequiredAction("not-existent");
-            Assert.fail("Didn't expect to find requiredAction of alias 'not-existent'");
+            Assertions.fail("Didn't expect to find requiredAction of alias 'not-existent'");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -116,12 +116,12 @@ public class RequiredActionsTest extends AbstractAuthenticationTest {
                 true, false, Collections.<String, String>emptyMap()));
 
         // Confirm the registered priority - should be N + 1
-        Assert.assertEquals(lastPriority + 1, rep.getPriority());
+        Assertions.assertEquals(lastPriority + 1, rep.getPriority());
 
         // Update not-existent - should fail
         try {
             authMgmtResource.updateRequiredAction("not-existent", rep);
-            Assert.fail("Not expected to update not-existent requiredAction");
+            Assertions.fail("Not expected to update not-existent requiredAction");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -136,7 +136,7 @@ public class RequiredActionsTest extends AbstractAuthenticationTest {
         // Remove unexistent - should fail
         try {
             authMgmtResource.removeRequiredAction("not-existent");
-            Assert.fail("Not expected to remove not-existent requiredAction");
+            Assertions.fail("Not expected to remove not-existent requiredAction");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -164,8 +164,8 @@ public class RequiredActionsTest extends AbstractAuthenticationTest {
     }
 
     private void compareRequiredActions(List<RequiredActionProviderRepresentation> expected, List<RequiredActionProviderRepresentation> actual) {
-        Assert.assertNotNull("Actual null", actual);
-        Assert.assertEquals("Required actions count", expected.size(), actual.size());
+        Assertions.assertNotNull("Actual null", actual);
+        Assertions.assertEquals("Required actions count", expected.size(), actual.size());
 
         Iterator<RequiredActionProviderRepresentation> ite = expected.iterator();
         Iterator<RequiredActionProviderRepresentation> ita = actual.iterator();
@@ -175,11 +175,11 @@ public class RequiredActionsTest extends AbstractAuthenticationTest {
     }
 
     private void compareRequiredAction(RequiredActionProviderRepresentation expected, RequiredActionProviderRepresentation actual) {
-        Assert.assertEquals("alias - " + expected.getAlias(), expected.getAlias(), actual.getAlias());
-        Assert.assertEquals("name - "  + expected.getAlias(), expected.getName(), actual.getName());
-        Assert.assertEquals("enabled - "  + expected.getAlias(), expected.isEnabled(), actual.isEnabled());
-        Assert.assertEquals("defaultAction - "  + expected.getAlias(), expected.isDefaultAction(), actual.isDefaultAction());
-        Assert.assertEquals("config - " + expected.getAlias(), expected.getConfig() != null ? expected.getConfig() : Collections.<String, String>emptyMap(), actual.getConfig());
+        Assertions.assertEquals("alias - " + expected.getAlias(), expected.getAlias(), actual.getAlias());
+        Assertions.assertEquals("name - "  + expected.getAlias(), expected.getName(), actual.getName());
+        Assertions.assertEquals("enabled - "  + expected.getAlias(), expected.isEnabled(), actual.isEnabled());
+        Assertions.assertEquals("defaultAction - "  + expected.getAlias(), expected.isDefaultAction(), actual.isDefaultAction());
+        Assertions.assertEquals("config - " + expected.getAlias(), expected.getConfig() != null ? expected.getConfig() : Collections.<String, String>emptyMap(), actual.getConfig());
     }
 
     private void addRequiredAction(List<RequiredActionProviderRepresentation> target, String alias, String name, boolean enabled, boolean defaultAction, Map<String, String> conf) {

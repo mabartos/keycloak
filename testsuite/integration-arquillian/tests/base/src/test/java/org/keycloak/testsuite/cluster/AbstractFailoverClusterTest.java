@@ -19,10 +19,10 @@ package org.keycloak.testsuite.cluster;
 
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -39,11 +39,11 @@ import org.keycloak.testsuite.util.UserBuilder;
 import org.openqa.selenium.Cookie;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 import static org.keycloak.testsuite.util.OAuthClient.AUTH_SERVER_ROOT;
 import static org.keycloak.testsuite.util.WaitUtils.pause;
@@ -70,18 +70,18 @@ public abstract class AbstractFailoverClusterTest extends AbstractClusterTest {
     @Page
     protected InfoPage infoPage;
 
-    @BeforeClass
+    @BeforeAll
     public static void modifyAppRoot() {
         // the test app needs to run in the test realm to be able to fetch cookies later
         OAuthClient.updateAppRootRealm("test");
     }
 
-    @AfterClass
+    @AfterAll
     public static void restoreAppRoot() {
         OAuthClient.resetAppRootRealm();
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         try {
             adminClient.realm("test").remove();
@@ -106,7 +106,7 @@ public abstract class AbstractFailoverClusterTest extends AbstractClusterTest {
         oauth.clientId("test-app");
     }
 
-    @After
+    @AfterEach
     public void after() {
         adminClient.realm("test").remove();
     }
@@ -148,7 +148,7 @@ public abstract class AbstractFailoverClusterTest extends AbstractClusterTest {
 
         // Info page present
         infoPage.assertCurrent();
-        Assert.assertEquals("You are logged out", infoPage.getInfo());
+        Assertions.assertEquals("You are logged out", infoPage.getInfo());
     }
 
     protected Cookie verifyLoggedIn(Cookie sessionCookieForVerification) {

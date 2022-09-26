@@ -17,10 +17,10 @@
 
 package org.keycloak.testsuite.login;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
@@ -41,7 +41,7 @@ public class LoginTimeoutValidationTest extends AbstractTestRealmKeycloakTest {
     }
 
     
-    @Before
+    @BeforeEach
     public  void before() {
         testingClient.server().run( session -> {
             RealmModel realm = session.realms().getRealmByName("test");
@@ -50,7 +50,7 @@ public class LoginTimeoutValidationTest extends AbstractTestRealmKeycloakTest {
     }
     
 
-    @After
+    @AfterEach
     public void after() {
         testingClient.server().run( session -> {
             RealmModel realm = session.realms().getRealmByName("test");
@@ -87,7 +87,7 @@ public class LoginTimeoutValidationTest extends AbstractTestRealmKeycloakTest {
          */
         int accessCodeLifespanLoginOrig = realm.getAccessCodeLifespanLogin(); // Login timeout
         realm.setAccessCodeLifespanLogin(Integer.MAX_VALUE);
-        Assert.assertTrue("Login validataion with large Login Timeout failed",
+        Assertions.assertTrue("Login validataion with large Login Timeout failed",
                           clientSessionCode.isActionActive(ClientSessionCode.ActionType.LOGIN));
         realm.setAccessCodeLifespanLogin(accessCodeLifespanLoginOrig);
 
@@ -97,7 +97,7 @@ public class LoginTimeoutValidationTest extends AbstractTestRealmKeycloakTest {
          */
         int accessCodeLifespanUserActionOrig = realm.getAccessCodeLifespanUserAction(); // Login Action timeout
         realm.setAccessCodeLifespanUserAction(Integer.MAX_VALUE);
-        Assert.assertTrue("Login validataion with large Login Action Timeout failed",
+        Assertions.assertTrue("Login validataion with large Login Action Timeout failed",
                           clientSessionCode.isActionActive(ClientSessionCode.ActionType.USER));
         realm.setAccessCodeLifespanUserAction(accessCodeLifespanUserActionOrig);
     }

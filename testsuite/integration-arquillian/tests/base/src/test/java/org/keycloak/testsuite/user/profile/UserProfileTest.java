@@ -21,12 +21,12 @@ package org.keycloak.testsuite.user.profile;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.userprofile.config.UPConfigUtils.ROLE_ADMIN;
 import static org.keycloak.userprofile.config.UPConfigUtils.ROLE_USER;
 
@@ -41,8 +41,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.component.ComponentValidationException;
 import org.keycloak.models.Constants;
@@ -126,7 +126,7 @@ public class UserProfileTest extends AbstractUserProfileTest {
 
         try {
             profile.validate();
-            Assert.fail("Should fail validation");
+            Assertions.fail("Should fail validation");
         } catch (ValidationException ve) {
             // address is mandatory
             assertTrue(ve.isAttributeOnError("address"));
@@ -164,7 +164,7 @@ public class UserProfileTest extends AbstractUserProfileTest {
 
         try {
             profile.validate();
-            Assert.fail("Should fail validation");
+            Assertions.fail("Should fail validation");
         } catch (ValidationException ve) {
             // address is mandatory
             assertTrue(ve.isAttributeOnError("business.address"));
@@ -193,7 +193,7 @@ public class UserProfileTest extends AbstractUserProfileTest {
         try {
             profile = provider.create(UserProfileContext.UPDATE_PROFILE, attributes);
             profile.validate();
-            Assert.fail("Should fail validation");
+            Assertions.fail("Should fail validation");
         } catch (ValidationException ve) {
             // username is mandatory
             assertTrue(ve.isAttributeOnError(UserModel.USERNAME));
@@ -206,7 +206,7 @@ public class UserProfileTest extends AbstractUserProfileTest {
             attributes.put(UserModel.EMAIL, "profile-user@keycloak.org");
             profile = provider.create(UserProfileContext.UPDATE_PROFILE, attributes);
             profile.validate();
-            Assert.fail("Should fail validation");
+            Assertions.fail("Should fail validation");
         } catch (ValidationException ve) {
             // username is mandatory
             assertTrue(ve.isAttributeOnError(UserModel.USERNAME));
@@ -221,7 +221,7 @@ public class UserProfileTest extends AbstractUserProfileTest {
             profile = provider.create(UserProfileContext.UPDATE_PROFILE, attributes);
             profile.validate();
         } catch (ValidationException ve) {
-            Assert.fail("Should be OK email as username");
+            Assertions.fail("Should be OK email as username");
         } finally {
             // we should probably avoid this kind of logic and make the test reset the realm to original state
             realm.setRegistrationEmailAsUsername(false);
@@ -293,7 +293,7 @@ public class UserProfileTest extends AbstractUserProfileTest {
 
         try {
             profile.validate();
-            Assert.fail("Should fail validation");
+            Assertions.fail("Should fail validation");
         } catch (ValidationException ve) {
             // username is mandatory
             assertTrue(ve.isAttributeOnError("address"));
@@ -326,7 +326,7 @@ public class UserProfileTest extends AbstractUserProfileTest {
 
         try {
             profile.validate();
-            Assert.fail("Should fail validation");
+            Assertions.fail("Should fail validation");
         } catch (ValidationException ve) {
             // username is mandatory
             assertTrue(ve.isAttributeOnError("address"));
@@ -733,9 +733,9 @@ public class UserProfileTest extends AbstractUserProfileTest {
         component = provider.getComponentModel();
 
         // assert config is persisted in 2 pieces
-        Assert.assertEquals("2", component.get(DeclarativeUserProfileProvider.UP_PIECES_COUNT_COMPONENT_CONFIG_KEY));
+        Assertions.assertEquals("2", component.get(DeclarativeUserProfileProvider.UP_PIECES_COUNT_COMPONENT_CONFIG_KEY));
         // assert config is returned correctly
-        Assert.assertEquals(newConfig, provider.getConfiguration());
+        Assertions.assertEquals(newConfig, provider.getConfiguration());
     }
 
     @Test
@@ -748,13 +748,13 @@ public class UserProfileTest extends AbstractUserProfileTest {
 
         provider.setConfiguration(null);
 
-        Assert.assertNull(provider.getComponentModel().get(DeclarativeUserProfileProvider.UP_PIECES_COUNT_COMPONENT_CONFIG_KEY));
+        Assertions.assertNull(provider.getComponentModel().get(DeclarativeUserProfileProvider.UP_PIECES_COUNT_COMPONENT_CONFIG_KEY));
 
         ComponentModel component = provider.getComponentModel();
 
         assertNotNull(component);
 
-        Assert.assertTrue(component.getConfig().isEmpty());
+        Assertions.assertTrue(component.getConfig().isEmpty());
     }
 
     @Test
@@ -1380,7 +1380,7 @@ public class UserProfileTest extends AbstractUserProfileTest {
 
         try {
             provider.setConfiguration(JsonSerialization.writeValueAsString(config));
-            Assert.fail("Expected to fail due to invalid client scope");
+            Assertions.fail("Expected to fail due to invalid client scope");
         } catch (ComponentValidationException cve) {
             //ignore
         }

@@ -22,8 +22,8 @@ import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractAuthTest;
@@ -68,7 +68,7 @@ public abstract class AbstractAdapterTest extends AbstractAuthTest {
 
     protected static boolean sslConfigured = false;
 
-    @Before
+    @BeforeEach
     public void setUpAppServer() throws Exception {
         if (!sslConfigured && shouldConfigureSSL()) { // Other containers need some external configuraiton to run SSL tests
             enableHTTPSForAppServer();
@@ -77,7 +77,7 @@ public abstract class AbstractAdapterTest extends AbstractAuthTest {
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void resetSSLConfig() {
         sslConfigured = false;
     }

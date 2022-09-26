@@ -17,11 +17,11 @@
 
 package org.keycloak.testsuite.oauth;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 
 import java.io.IOException;
@@ -45,10 +45,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.admin.client.Keycloak;
@@ -83,8 +83,7 @@ public class TokenRevocationTest extends AbstractKeycloakTest {
     private Client userInfoClient;
     private CloseableHttpClient restHttpClient;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Override
     public void beforeAbstractKeycloakTest() throws Exception {
@@ -100,7 +99,7 @@ public class TokenRevocationTest extends AbstractKeycloakTest {
         testRealms.add(realm.build());
     }
 
-    @Before
+    @BeforeEach
     public void beforeTest() {
         // Create client configuration
         realm = adminClient.realm("test");
@@ -112,7 +111,7 @@ public class TokenRevocationTest extends AbstractKeycloakTest {
         restHttpClient = HttpClientBuilder.create().build();
     }
 
-    @After
+    @AfterEach
     public void afterTest() throws IOException {
         userInfoClient.close();
         restHttpClient.close();
@@ -316,7 +315,7 @@ public class TokenRevocationTest extends AbstractKeycloakTest {
         try (Keycloak adminClient = Keycloak.getInstance(OAuthClient.AUTH_SERVER_ROOT, "test", "test-app", accessTokenString)) {
             try {
                 adminClient.realms().realm("test").toRepresentation();
-                Assert.fail("Not expected to obtain realm");
+                Assertions.fail("Not expected to obtain realm");
             } catch (NotAuthorizedException nae) {
                 // Expected
             }

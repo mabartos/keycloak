@@ -16,11 +16,11 @@
  */
 package org.keycloak.testsuite.authz;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.testsuite.AssertEvents.isUUID;
 
 import java.util.Arrays;
@@ -28,9 +28,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.authorization.client.AuthorizationDeniedException;
@@ -56,10 +56,9 @@ public class UserManagedAccessTest extends AbstractResourceServerTest {
 
     private ResourceRepresentation resource;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
-    @Before
+    @BeforeEach
     public void configureAuthorization() throws Exception {
         ClientResource client = getClient(getRealm());
         AuthorizationResource authorization = client.authorization();

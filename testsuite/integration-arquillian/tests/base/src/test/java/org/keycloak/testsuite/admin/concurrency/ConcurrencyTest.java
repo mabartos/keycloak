@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.admin.concurrency;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientsResource;
@@ -41,13 +41,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
@@ -64,7 +64,7 @@ public class ConcurrencyTest extends AbstractConcurrencyTest {
 
     // KEYCLOAK-8141 Verify that no attribute values are duplicated, and there are no locking exceptions when adding attributes in parallell
     @Test
-    @Ignore
+    @Disabled
     public void createUserAttributes() throws Throwable {
         AtomicInteger c = new AtomicInteger();
 

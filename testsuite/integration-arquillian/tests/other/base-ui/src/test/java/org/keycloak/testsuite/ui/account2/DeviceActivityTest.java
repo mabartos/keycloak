@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.ui.account2;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.util.Time;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.RealmModel;
@@ -51,10 +51,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.representations.idm.CredentialRepresentation.PASSWORD;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
 import static org.keycloak.testsuite.util.UIUtils.refreshPageAndWaitForLoad;
@@ -110,7 +110,7 @@ public class DeviceActivityTest extends BaseAccountPageTest {
         configureInternationalizationForRealm(testRealms.get(0));
     }
 
-    @Before
+    @BeforeEach
     public void beforeDeviceActivityTest() {
         oauth.clientId(TEST_CLIENT3_ID);
     }

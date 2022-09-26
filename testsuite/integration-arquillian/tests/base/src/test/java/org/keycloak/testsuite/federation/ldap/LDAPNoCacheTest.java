@@ -26,10 +26,11 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.ClassRule;
+
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runners.MethodSorters;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.LDAPConstants;
@@ -43,13 +44,12 @@ import org.keycloak.storage.ldap.LDAPStorageProvider;
 import org.keycloak.storage.ldap.idm.model.LDAPObject;
 import org.keycloak.storage.ldap.mappers.UserAttributeLDAPStorageMapper;
 import org.keycloak.storage.ldap.mappers.UserAttributeLDAPStorageMapperFactory;
-import org.keycloak.testsuite.Assert;
 import org.keycloak.testsuite.client.KeycloakTestingClient;
 import org.keycloak.testsuite.pages.AppPage;
 import org.keycloak.testsuite.pages.LoginPage;
 import org.keycloak.testsuite.pages.LoginPasswordResetPage;
 import org.keycloak.testsuite.pages.LoginPasswordUpdatePage;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.LDAPRule;
 import org.keycloak.testsuite.util.LDAPTestUtils;
 import org.keycloak.testsuite.util.MailUtils;
@@ -58,9 +58,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.Assumptions.assumeThat;
 
 /**
  * Test for the scenarios with disabled cache for LDAP provider. This involves scenarios when something is changed directly in LDAP server
@@ -69,6 +69,7 @@ import static org.junit.Assume.assumeThat;
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@ExtendWith(GreenMailExtension.class)
 public class LDAPNoCacheTest extends AbstractLDAPTest {
 
     @ClassRule
@@ -107,9 +108,6 @@ public class LDAPNoCacheTest extends AbstractLDAPTest {
         });
     }
 
-    @Rule
-    public GreenMailRule greenMail = new GreenMailRule();
-
     @Page
     protected AppPage appPage;
 
@@ -137,7 +135,7 @@ public class LDAPNoCacheTest extends AbstractLDAPTest {
         try {
             // Search for the user and check email is new address
             UserRepresentation john = testRealm().users().search("johnkeycloak").get(0);
-            Assert.assertEquals("john_new@email.org", john.getEmail());
+            Assertions.assertEquals("john_new@email.org", john.getEmail());
 
             // Test 1 - Use username on the ResetPassword form. Mail should be sent to new address
             triggerForgetPasswordForUser("johnkeycloak", 2, "john_new@email.org");
@@ -196,11 +194,11 @@ public class LDAPNoCacheTest extends AbstractLDAPTest {
         assertEquals("You should receive an email shortly with further instructions.", loginPage.getSuccessMessage());
 
         MimeMessage[] messages = greenMail.getReceivedMessages();
-        Assert.assertEquals(expectedCountOfMessages, messages.length);
+        Assertions.assertEquals(expectedCountOfMessages, messages.length);
         MimeMessage message = greenMail.getReceivedMessages()[expectedCountOfMessages - 1];
 
         String emailAddress = MailUtils.getRecipient(message);
-        Assert.assertEquals(expectedEmail, emailAddress);
+        Assertions.assertEquals(expectedEmail, emailAddress);
     }
 
     private static void changeEmailAddressInLDAP(KeycloakTestingClient testingClient, String newEmail) {

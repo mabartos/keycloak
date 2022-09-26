@@ -17,10 +17,10 @@
 package org.keycloak.testsuite.account;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.IdentityProviderResource;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.ClientRepresentation;
@@ -54,7 +54,7 @@ public class AccountBrokerTest extends AbstractBaseBrokerTest {
         return KcOidcBrokerConfiguration.INSTANCE;
     }
 
-    @Before
+    @BeforeEach
     public void createUser() {
         log.debug("creating user for realm " + bc.providerRealmName());
 
@@ -70,7 +70,7 @@ public class AccountBrokerTest extends AbstractBaseBrokerTest {
         resetUserPassword(realmResource.users().get(userId), bc.getUserPassword(), false);
     }
 
-    @Before
+    @BeforeEach
     public void addIdentityProviderToProviderRealm() {
         log.debug("adding identity provider to realm " + bc.consumerRealmName());
 
@@ -79,7 +79,7 @@ public class AccountBrokerTest extends AbstractBaseBrokerTest {
         realm.identityProviders().get(bc.getIDPAlias());
     }
 
-    @Before
+    @BeforeEach
     public void addClients() {
         List<ClientRepresentation> clients = bc.createProviderClients();
         if (clients != null) {
@@ -109,14 +109,14 @@ public class AccountBrokerTest extends AbstractBaseBrokerTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         Response response = adminClient.realm(KcOidcBrokerConfiguration.INSTANCE.consumerRealmName()).users().create(UserBuilder.create().username("accountbrokertest").build());
         String userId = ApiUtil.getCreatedId(response);
         ApiUtil.resetUserPassword(adminClient.realm(KcOidcBrokerConfiguration.INSTANCE.consumerRealmName()).users().get(userId), "password", false);
     }
 
-    @After
+    @AfterEach
     public void after() {
         RealmResource consumerRealm = adminClient.realm(KcOidcBrokerConfiguration.INSTANCE.consumerRealmName());
         UserRepresentation userRep = ApiUtil.findUserByUsername(consumerRealm, "accountbrokertest");
@@ -130,37 +130,37 @@ public class AccountBrokerTest extends AbstractBaseBrokerTest {
         identityPage.realm(KcOidcBrokerConfiguration.INSTANCE.consumerRealmName());
         identityPage.open();
         loginPage.login("accountbrokertest", "password");
-        Assert.assertTrue(identityPage.isCurrent());
+        Assertions.assertTrue(identityPage.isCurrent());
 
         List<AccountFederatedIdentityPage.FederatedIdentity> identities = identityPage.getIdentities();
-        Assert.assertEquals(1, identities.size());
+        Assertions.assertEquals(1, identities.size());
 
-        Assert.assertEquals("kc-oidc-idp", identities.get(0).getProvider());
-        Assert.assertEquals("", identities.get(0).getSubject());
-        Assert.assertEquals("add-link-kc-oidc-idp", identities.get(0).getAction().getAttribute("id"));
+        Assertions.assertEquals("kc-oidc-idp", identities.get(0).getProvider());
+        Assertions.assertEquals("", identities.get(0).getSubject());
+        Assertions.assertEquals("add-link-kc-oidc-idp", identities.get(0).getAction().getAttribute("id"));
 
         identities.get(0).getAction().click();
 
         loginPage.login(bc.getUserLogin(), bc.getUserPassword());
 
-        Assert.assertTrue(identityPage.isCurrent());
+        Assertions.assertTrue(identityPage.isCurrent());
 
         identities = identityPage.getIdentities();
-        Assert.assertEquals(1, identities.size());
+        Assertions.assertEquals(1, identities.size());
 
-        Assert.assertEquals("kc-oidc-idp", identities.get(0).getProvider());
-        Assert.assertEquals("testuser", identities.get(0).getSubject());
-        Assert.assertEquals("remove-link-kc-oidc-idp", identities.get(0).getAction().getAttribute("id"));
+        Assertions.assertEquals("kc-oidc-idp", identities.get(0).getProvider());
+        Assertions.assertEquals("testuser", identities.get(0).getSubject());
+        Assertions.assertEquals("remove-link-kc-oidc-idp", identities.get(0).getAction().getAttribute("id"));
 
         identities.get(0).getAction().click();
 
-        Assert.assertTrue(identityPage.isCurrent());
+        Assertions.assertTrue(identityPage.isCurrent());
 
         identities = identityPage.getIdentities();
 
-        Assert.assertEquals("kc-oidc-idp", identities.get(0).getProvider());
-        Assert.assertEquals("", identities.get(0).getSubject());
-        Assert.assertEquals("add-link-kc-oidc-idp", identities.get(0).getAction().getAttribute("id"));
+        Assertions.assertEquals("kc-oidc-idp", identities.get(0).getProvider());
+        Assertions.assertEquals("", identities.get(0).getSubject());
+        Assertions.assertEquals("add-link-kc-oidc-idp", identities.get(0).getAction().getAttribute("id"));
     }
 
     @Test
@@ -168,10 +168,10 @@ public class AccountBrokerTest extends AbstractBaseBrokerTest {
         identityPage.realm(KcOidcBrokerConfiguration.INSTANCE.consumerRealmName());
         identityPage.open();
         loginPage.login("accountbrokertest", "password");
-        Assert.assertTrue(identityPage.isCurrent());
+        Assertions.assertTrue(identityPage.isCurrent());
 
         List<AccountFederatedIdentityPage.FederatedIdentity> identities = identityPage.getIdentities();
-        Assert.assertEquals(1, identities.size());
+        Assertions.assertEquals(1, identities.size());
 
         // Disable the identity provider
         RealmResource realm = adminClient.realm(bc.consumerRealmName());
@@ -182,10 +182,10 @@ public class AccountBrokerTest extends AbstractBaseBrokerTest {
 
         // Reload federated identities page
         identityPage.open();
-        Assert.assertTrue(identityPage.isCurrent());
+        Assertions.assertTrue(identityPage.isCurrent());
 
         identities = identityPage.getIdentities();
-        Assert.assertEquals(0, identities.size());
+        Assertions.assertEquals(0, identities.size());
     }
 
 }

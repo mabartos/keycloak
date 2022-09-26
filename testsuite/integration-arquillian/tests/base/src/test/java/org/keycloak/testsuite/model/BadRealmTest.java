@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.model;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -12,7 +12,7 @@ import org.keycloak.utils.ReservedCharValidator;
 
 import java.util.List;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class BadRealmTest extends AbstractKeycloakTest {
     private String name = "MyRealm";

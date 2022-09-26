@@ -22,8 +22,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.protocol.oidc.OIDCLoginProtocol.LOGIN_HINT_PARAM;
 import static org.keycloak.protocol.oidc.grants.ciba.CibaGrantType.AUTH_REQ_ID;
 import static org.keycloak.protocol.oidc.grants.ciba.CibaGrantType.BINDING_MESSAGE;
@@ -53,9 +53,9 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.junit.Assume;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -115,10 +115,10 @@ public class FAPICIBATest extends AbstractClientPoliciesTest {
     private final String bindingMessage = "bbbbmmmm";
     private final String username = "john";
 
-    @BeforeClass
+    @BeforeAll
     public static void verifySSL() {
         // FAPI requires SSL and does not makes sense to test it with disabled SSL
-        Assume.assumeTrue("The FAPI test requires SSL to be enabled.", ServerURLs.AUTH_SERVER_SSL_REQUIRED);
+        Assumptions.assumeTrue("The FAPI test requires SSL to be enabled.", ServerURLs.AUTH_SERVER_SSL_REQUIRED);
     }
 
     @Override
@@ -187,28 +187,28 @@ public class FAPICIBATest extends AbstractClientPoliciesTest {
             clientRep.setClientAuthenticatorType(JWTClientAuthenticator.PROVIDER_ID);
         });
         ClientRepresentation client = getClientByAdmin(clientUUID);
-        Assert.assertEquals(JWTClientAuthenticator.PROVIDER_ID, client.getClientAuthenticatorType());
+        Assertions.assertEquals(JWTClientAuthenticator.PROVIDER_ID, client.getClientAuthenticatorType());
 
         // Try to register client with "client-x509" - should pass
         clientUUID = createClientByAdmin("client-x509", (ClientRepresentation clientRep) -> {
             clientRep.setClientAuthenticatorType(X509ClientAuthenticator.PROVIDER_ID);
         });
         client = getClientByAdmin(clientUUID);
-        Assert.assertEquals(X509ClientAuthenticator.PROVIDER_ID, client.getClientAuthenticatorType());
+        Assertions.assertEquals(X509ClientAuthenticator.PROVIDER_ID, client.getClientAuthenticatorType());
 
         // Try to register client with default authenticator - should pass. Client authenticator should be "client-jwt"
         clientUUID = createClientByAdmin("client-jwt-2", (ClientRepresentation clientRep) -> {
         });
         client = getClientByAdmin(clientUUID);
-        Assert.assertEquals(JWTClientAuthenticator.PROVIDER_ID, client.getClientAuthenticatorType());
+        Assertions.assertEquals(JWTClientAuthenticator.PROVIDER_ID, client.getClientAuthenticatorType());
 
         // Check the Consent is enabled, Holder-of-key is enabled, fullScopeAllowed disabled and default signature algorithm.
-        Assert.assertTrue(client.isConsentRequired());
+        Assertions.assertTrue(client.isConsentRequired());
         OIDCAdvancedConfigWrapper clientConfig = OIDCAdvancedConfigWrapper.fromClientRepresentation(client);
-        Assert.assertTrue(clientConfig.isUseMtlsHokToken());
-        Assert.assertEquals(Algorithm.PS256, clientConfig.getIdTokenSignedResponseAlg());
-        Assert.assertEquals(Algorithm.PS256, clientConfig.getRequestObjectSignatureAlg());
-        Assert.assertFalse(client.isFullScopeAllowed());
+        Assertions.assertTrue(clientConfig.isUseMtlsHokToken());
+        Assertions.assertEquals(Algorithm.PS256, clientConfig.getIdTokenSignedResponseAlg());
+        Assertions.assertEquals(Algorithm.PS256, clientConfig.getRequestObjectSignatureAlg());
+        Assertions.assertFalse(client.isFullScopeAllowed());
     }
 
     @Test
@@ -238,9 +238,9 @@ public class FAPICIBATest extends AbstractClientPoliciesTest {
         });
         ClientRepresentation client = getClientByAdmin(clientUUID);
         OIDCAdvancedConfigWrapper clientConfig = OIDCAdvancedConfigWrapper.fromClientRepresentation(client);
-        Assert.assertEquals(Algorithm.ES256, clientConfig.getIdTokenSignedResponseAlg());
-        Assert.assertEquals(Algorithm.PS256, clientConfig.getRequestObjectSignatureAlg());
-        Assert.assertEquals(Algorithm.ES256, client.getAttributes().get(CibaConfig.CIBA_BACKCHANNEL_AUTH_REQUEST_SIGNING_ALG));
+        Assertions.assertEquals(Algorithm.ES256, clientConfig.getIdTokenSignedResponseAlg());
+        Assertions.assertEquals(Algorithm.PS256, clientConfig.getRequestObjectSignatureAlg());
+        Assertions.assertEquals(Algorithm.ES256, client.getAttributes().get(CibaConfig.CIBA_BACKCHANNEL_AUTH_REQUEST_SIGNING_ALG));
 
         // Test default algorithms set everywhere
         clientUUID = createClientByAdmin("client-jwt-default-alg", (ClientRepresentation clientRep) -> {
@@ -248,12 +248,12 @@ public class FAPICIBATest extends AbstractClientPoliciesTest {
         });
         client = getClientByAdmin(clientUUID);
         clientConfig = OIDCAdvancedConfigWrapper.fromClientRepresentation(client);
-        Assert.assertEquals(Algorithm.PS256, clientConfig.getIdTokenSignedResponseAlg());
-        Assert.assertEquals(Algorithm.PS256, clientConfig.getRequestObjectSignatureAlg().toString());
-        Assert.assertEquals(Algorithm.PS256, clientConfig.getUserInfoSignedResponseAlg());
-        Assert.assertEquals(Algorithm.PS256, clientConfig.getTokenEndpointAuthSigningAlg());
-        Assert.assertEquals(Algorithm.PS256, client.getAttributes().get(OIDCConfigAttributes.ACCESS_TOKEN_SIGNED_RESPONSE_ALG));
-        Assert.assertEquals(Algorithm.PS256, client.getAttributes().get(CibaConfig.CIBA_BACKCHANNEL_AUTH_REQUEST_SIGNING_ALG));
+        Assertions.assertEquals(Algorithm.PS256, clientConfig.getIdTokenSignedResponseAlg());
+        Assertions.assertEquals(Algorithm.PS256, clientConfig.getRequestObjectSignatureAlg().toString());
+        Assertions.assertEquals(Algorithm.PS256, clientConfig.getUserInfoSignedResponseAlg());
+        Assertions.assertEquals(Algorithm.PS256, clientConfig.getTokenEndpointAuthSigningAlg());
+        Assertions.assertEquals(Algorithm.PS256, client.getAttributes().get(OIDCConfigAttributes.ACCESS_TOKEN_SIGNED_RESPONSE_ALG));
+        Assertions.assertEquals(Algorithm.PS256, client.getAttributes().get(CibaConfig.CIBA_BACKCHANNEL_AUTH_REQUEST_SIGNING_ALG));
 
     }
 
@@ -622,7 +622,7 @@ public class FAPICIBATest extends AbstractClientPoliciesTest {
 
         AccessToken accessToken = oauth.verifyToken(tokenRes.getAccessToken());
         assertThat(accessToken.getIssuedFor(), is(equalTo(clientId)));
-        Assert.assertNotNull(accessToken.getCertConf().getCertThumbprint());
+        Assertions.assertNotNull(accessToken.getCertConf().getCertThumbprint());
 
 
         RefreshToken refreshToken = oauth.parseRefreshToken(tokenRes.getRefreshToken());
@@ -639,7 +639,7 @@ public class FAPICIBATest extends AbstractClientPoliciesTest {
         UserResource user = ApiUtil.findUserByUsernameId(adminClient.realm(REALM_NAME), username);
         user.logout();
         List<Map<String, Object>> consents = user.getConsents();
-        org.junit.Assert.assertEquals(1, consents.size());
+        org.junit.jupiter.api.Assertions.assertEquals(1, consents.size());
         user.revokeConsent(clientId);
     }
 

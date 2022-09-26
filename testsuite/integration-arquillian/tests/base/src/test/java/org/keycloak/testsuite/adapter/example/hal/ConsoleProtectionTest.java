@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.adapter.example.hal;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.utils.io.IOUtil.loadRealm;
 import static org.keycloak.testsuite.util.ServerURLs.getAuthServerContextRoot;
 
@@ -26,9 +26,9 @@ import java.util.concurrent.TimeoutException;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.adapter.AbstractAdapterTest;
 import org.keycloak.testsuite.arquillian.AppServerTestEnricher;
@@ -72,15 +72,15 @@ public class ConsoleProtectionTest extends AbstractAdapterTest {
         testRealms.add(loadRealm("/wildfly-integration/wildfly-management-realm.json"));
     }
 
-    @Before
+    @BeforeEach
     public void beforeConsoleProtectionTest() throws IOException, OperationException {
-        Assume.assumeTrue("This testClass doesn't work with phantomjs", !"phantomjs".equals(System.getProperty("js.browser")));
+        Assumptions.assumeTrue("This testClass doesn't work with phantomjs", !"phantomjs".equals(System.getProperty("js.browser")));
 
         try (OnlineManagementClient clientWorkerNodeClient = AppServerTestEnricher.getManagementClient()) {
 
             Operations operations = new Operations(clientWorkerNodeClient);
 
-            Assume.assumeTrue(operations.exists(Address.subsystem("elytron").and("security-domain", "KeycloakDomain")));
+            Assumptions.assumeTrue(operations.exists(Address.subsystem("elytron").and("security-domain", "KeycloakDomain")));
 
             // Create a realm for both wildfly console and mgmt interface
             clientWorkerNodeClient.execute("/subsystem=keycloak/realm=jboss-infra:add(auth-server-url=" + getAuthServerContextRoot() + "/auth,realm-public-key=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCrVrCuTtArbgaZzL1hvh0xtL5mc7o0NqPVnYXkLvgcwiC3BjLGw1tGEGoJaXDuSaRllobm53JBhjx33UNv+5z/UMG4kytBWxheNVKnL6GgqlNabMaFfPLPCF8kAgKnsi79NMo+n6KnSY8YeUmec/p2vjO2NjsSAVcWEQMVhJ31LwIDAQAB)");

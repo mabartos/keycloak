@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.admin.authentication;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.events.admin.ResourceType;
 import org.keycloak.representations.idm.AuthenticationExecutionInfoRepresentation;
@@ -44,7 +44,7 @@ public class ShiftExecutionTest extends AbstractAuthenticationTest {
         Response response = authMgmtResource.copy("browser", params);
         assertAdminEvents.assertEvent(testRealmId, OperationType.CREATE, AdminEventPaths.authCopyFlowPath("browser"), params, ResourceType.AUTH_FLOW);
         try {
-            Assert.assertEquals("Copy flow", 201, response.getStatus());
+            Assertions.assertEquals("Copy flow", 201, response.getStatus());
         } finally {
             response.close();
         }
@@ -58,7 +58,7 @@ public class ShiftExecutionTest extends AbstractAuthenticationTest {
         // Not possible to raisePriority of not-existent flow
         try {
             authMgmtResource.raisePriority("not-existent");
-            Assert.fail("Not expected to raise priority of not existent flow");
+            Assertions.fail("Not expected to raise priority of not existent flow");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -72,13 +72,13 @@ public class ShiftExecutionTest extends AbstractAuthenticationTest {
         AuthenticationExecutionInfoRepresentation last2 = executions2.get(executions.size() - 1);
         AuthenticationExecutionInfoRepresentation oneButLast2 = executions2.get(executions.size() - 2);
 
-        Assert.assertEquals("Execution shifted up - N", last.getId(), oneButLast2.getId());
-        Assert.assertEquals("Execution shifted up - N-1", oneButLast.getId(), last2.getId());
+        Assertions.assertEquals("Execution shifted up - N", last.getId(), oneButLast2.getId());
+        Assertions.assertEquals("Execution shifted up - N-1", oneButLast.getId(), last2.getId());
 
         // Not possible to lowerPriority of not-existent flow
         try {
             authMgmtResource.lowerPriority("not-existent");
-            Assert.fail("Not expected to raise priority of not existent flow");
+            Assertions.fail("Not expected to raise priority of not existent flow");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -92,8 +92,8 @@ public class ShiftExecutionTest extends AbstractAuthenticationTest {
         last2 = executions2.get(executions.size() - 1);
         oneButLast2 = executions2.get(executions.size() - 2);
 
-        Assert.assertEquals("Execution shifted down - N", last.getId(), last2.getId());
-        Assert.assertEquals("Execution shifted down - N-1", oneButLast.getId(), oneButLast2.getId());
+        Assertions.assertEquals("Execution shifted down - N", last.getId(), last2.getId());
+        Assertions.assertEquals("Execution shifted down - N-1", oneButLast.getId(), oneButLast2.getId());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class ShiftExecutionTest extends AbstractAuthenticationTest {
         // Not possible to raise - It's builtin flow
         try {
             authMgmtResource.raisePriority(last.getId());
-            Assert.fail("Not expected to raise priority of builtin flow");
+            Assertions.fail("Not expected to raise priority of builtin flow");
         } catch (BadRequestException nfe) {
             // Expected
         }
@@ -114,7 +114,7 @@ public class ShiftExecutionTest extends AbstractAuthenticationTest {
         // Not possible to lower - It's builtin flow
         try {
             authMgmtResource.lowerPriority(oneButLast.getId());
-            Assert.fail("Not expected to lower priority of builtin flow");
+            Assertions.fail("Not expected to lower priority of builtin flow");
         } catch (BadRequestException nfe) {
             // Expected
         }

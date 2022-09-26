@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.admin.event;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.RealmEventsConfigRepresentation;
@@ -34,7 +34,7 @@ public abstract class AbstractEventTest extends AbstractAuthTest {
 
     protected RealmEventsConfigRepresentation configRep;
 
-    @Before
+    @BeforeEach
     public void setConfigRep() {
         RealmResource testRsc = testRealmResource();
         configRep = testRsc.getRealmEventsConfig();

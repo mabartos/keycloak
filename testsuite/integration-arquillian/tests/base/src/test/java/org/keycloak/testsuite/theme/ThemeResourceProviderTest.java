@@ -5,8 +5,8 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Version;
 import org.keycloak.platform.Platform;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -21,10 +21,10 @@ import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.zip.GZIPInputStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ThemeResourceProviderTest extends AbstractTestRealmKeycloakTest {
 
@@ -38,9 +38,9 @@ public class ThemeResourceProviderTest extends AbstractTestRealmKeycloakTest {
         testingClient.server().run(session -> {
             try {
                 Theme theme = session.theme().getTheme("base", Theme.Type.LOGIN);
-                Assert.assertNotNull(theme.getTemplate("test.ftl"));
+                Assertions.assertNotNull(theme.getTemplate("test.ftl"));
             } catch (IOException e) {
-                Assert.fail(e.getMessage());
+                Assertions.fail(e.getMessage());
             }
         });
     }
@@ -50,9 +50,9 @@ public class ThemeResourceProviderTest extends AbstractTestRealmKeycloakTest {
         testingClient.server().run(session -> {
             try {
                 Theme theme = session.theme().getTheme("base", Theme.Type.LOGIN);
-                Assert.assertNotNull(theme.getResourceAsStream("test.js"));
+                Assertions.assertNotNull(theme.getResourceAsStream("test.js"));
             } catch (IOException e) {
-                Assert.fail(e.getMessage());
+                Assertions.fail(e.getMessage());
             }
         });
     }
@@ -62,10 +62,10 @@ public class ThemeResourceProviderTest extends AbstractTestRealmKeycloakTest {
         testingClient.server().run(session -> {
             try {
                 Theme theme = session.theme().getTheme("base", Theme.Type.LOGIN);
-                Assert.assertNotNull(theme.getMessages("messages", Locale.ENGLISH).get("test.keycloak-8818"));
-                Assert.assertNotEquals("Full name (Theme-resources)", theme.getMessages("messages", Locale.ENGLISH).get("fullName"));
+                Assertions.assertNotNull(theme.getMessages("messages", Locale.ENGLISH).get("test.keycloak-8818"));
+                Assertions.assertNotEquals("Full name (Theme-resources)", theme.getMessages("messages", Locale.ENGLISH).get("fullName"));
             } catch (IOException e) {
-                Assert.fail(e.getMessage());
+                Assertions.fail(e.getMessage());
             }
         });
     }
@@ -75,9 +75,9 @@ public class ThemeResourceProviderTest extends AbstractTestRealmKeycloakTest {
         testingClient.server().run(session -> {
             try {
                 Theme theme = session.theme().getTheme("base", Theme.Type.LOGIN);
-                Assert.assertNull(theme.getResourceAsStream("../templates/test.ftl"));
+                Assertions.assertNull(theme.getResourceAsStream("../templates/test.ftl"));
             } catch (IOException e) {
-                Assert.fail(e.getMessage());
+                Assertions.fail(e.getMessage());
             }
         });
     }
@@ -180,7 +180,7 @@ public class ThemeResourceProviderTest extends AbstractTestRealmKeycloakTest {
                 assertNull(theme.getMessages("messages", Locale.ENGLISH).get("fallback en"));
 
             } catch (IOException e) {
-                Assert.fail(e.getMessage());
+                Assertions.fail(e.getMessage());
             }
         });
     }

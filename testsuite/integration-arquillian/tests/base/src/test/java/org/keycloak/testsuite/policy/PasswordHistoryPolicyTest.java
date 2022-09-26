@@ -19,10 +19,10 @@ package org.keycloak.testsuite.policy;
 import java.util.function.Consumer;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -87,12 +87,12 @@ public class PasswordHistoryPolicyTest extends AbstractAuthTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         user = createUser(createUserRepresentation("test_user"));
     }
 
-    @After
+    @AfterEach
     public void after() {
         user.remove();
     }
@@ -202,7 +202,7 @@ public class PasswordHistoryPolicyTest extends AbstractAuthTest {
     }
     
     @Test
-    @Ignore("KEYCLOAK-12673")
+    @Disabled("KEYCLOAK-12673")
     public void testInvalidPasswordHistoryPolicyValue_zero() {
         expectBadRequestException(f -> {
             setPasswordHistoryValue(0);
@@ -210,7 +210,7 @@ public class PasswordHistoryPolicyTest extends AbstractAuthTest {
     }
 
     @Test
-    @Ignore("KEYCLOAK-12673")
+    @Disabled("KEYCLOAK-12673")
     public void testInvalidPasswordHistoryPolicyValue_negative() {
         expectBadRequestException(f -> {
             setPasswordHistoryValue(-1);

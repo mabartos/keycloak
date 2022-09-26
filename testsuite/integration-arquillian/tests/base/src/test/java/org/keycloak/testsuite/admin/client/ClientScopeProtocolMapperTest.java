@@ -17,11 +17,11 @@
 
 package org.keycloak.testsuite.admin.client;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.admin.client.resource.ClientScopesResource;
 import org.keycloak.admin.client.resource.ProtocolMappersResource;
@@ -37,8 +37,8 @@ import org.keycloak.testsuite.util.AdminEventPaths;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
@@ -51,7 +51,7 @@ public class ClientScopeProtocolMapperTest extends AbstractProtocolMapperTest {
     private String samlClientScopeId;
     private ProtocolMappersResource samlMappersRsc;
 
-    @Before
+    @BeforeEach
     public void init() {
         oidcClientScopeId = createClientScope("oidcMapperClient-scope", OIDCLoginProtocol.LOGIN_PROTOCOL);
         oidcMappersRsc = clientScopes().get(oidcClientScopeId).getProtocolMappers();
@@ -62,7 +62,7 @@ public class ClientScopeProtocolMapperTest extends AbstractProtocolMapperTest {
         super.initBuiltinMappers();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         removeClientScope(oidcClientScopeId);
         removeClientScope(samlClientScopeId);
@@ -185,7 +185,7 @@ public class ClientScopeProtocolMapperTest extends AbstractProtocolMapperTest {
 
         try {
             samlMappersRsc.getMapperById(createdId);
-            Assert.fail("Not expected to find mapper");
+            Assertions.fail("Not expected to find mapper");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -205,7 +205,7 @@ public class ClientScopeProtocolMapperTest extends AbstractProtocolMapperTest {
 
         try {
             oidcMappersRsc.getMapperById(createdId);
-            Assert.fail("Not expected to find mapper");
+            Assertions.fail("Not expected to find mapper");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -221,7 +221,7 @@ public class ClientScopeProtocolMapperTest extends AbstractProtocolMapperTest {
         rep.setName(clientScopeName);
         rep.setProtocol(protocol);
         Response resp = clientScopes().create(rep);
-        Assert.assertEquals(201, resp.getStatus());
+        Assertions.assertEquals(201, resp.getStatus());
         resp.close();
         String scopeId = ApiUtil.getCreatedId(resp);
 

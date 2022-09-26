@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.admin;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ComponentResource;
 import org.keycloak.common.constants.KerberosConstants;
 import org.keycloak.common.util.MultivaluedHashMap;
@@ -53,13 +53,13 @@ public class UserStorageRestTest extends AbstractAdminTest {
         List<AuthenticationExecutionInfoRepresentation> executionReps = realm.flows().getExecutions("browser");
         kerberosExecution = AbstractAuthenticationTest.findExecutionByProvider("auth-spnego", executionReps);
 
-        Assert.assertNotNull(kerberosExecution);
+        Assertions.assertNotNull(kerberosExecution);
         return kerberosExecution;
     }
 
     private String createComponent(ComponentRepresentation rep) {
         Response resp = realm.components().add(rep);
-        Assert.assertEquals(201, resp.getStatus());
+        Assertions.assertEquals(201, resp.getStatus());
         resp.close();
         String id = ApiUtil.getCreatedId(resp);
 
@@ -74,11 +74,11 @@ public class UserStorageRestTest extends AbstractAdminTest {
 
     private void assertFederationProvider(ComponentRepresentation rep, String id, String displayName, String providerId,
                                           String... config) {
-        Assert.assertEquals(id, rep.getId());
-        Assert.assertEquals(displayName, rep.getName());
-        Assert.assertEquals(providerId, rep.getProviderId());
+        Assertions.assertEquals(id, rep.getId());
+        Assertions.assertEquals(displayName, rep.getName());
+        Assertions.assertEquals(providerId, rep.getProviderId());
 
-        Assert.assertMultivaluedMap(rep.getConfig(), config);
+        Assertions.assertMultivaluedMap(rep.getConfig(), config);
     }
 
 
@@ -86,7 +86,7 @@ public class UserStorageRestTest extends AbstractAdminTest {
     public void testKerberosAuthenticatorEnabledAutomatically() {
         // Assert kerberos authenticator DISABLED
         AuthenticationExecutionInfoRepresentation kerberosExecution = findKerberosExecution();
-        Assert.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.DISABLED.toString());
+        Assertions.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.DISABLED.toString());
 
         // create LDAP provider with kerberos
         ComponentRepresentation ldapRep = createBasicLDAPProviderRep();
@@ -96,7 +96,7 @@ public class UserStorageRestTest extends AbstractAdminTest {
 
         // Assert kerberos authenticator ALTERNATIVE
         kerberosExecution = findKerberosExecution();
-        Assert.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.ALTERNATIVE.toString());
+        Assertions.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.ALTERNATIVE.toString());
 
         // Switch kerberos authenticator to DISABLED
         kerberosExecution.setRequirement(AuthenticationExecutionModel.Requirement.DISABLED.toString());
@@ -110,7 +110,7 @@ public class UserStorageRestTest extends AbstractAdminTest {
 
         // Assert kerberos authenticator is still DISABLED
         kerberosExecution = findKerberosExecution();
-        Assert.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.DISABLED.toString());
+        Assertions.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.DISABLED.toString());
 
         // update LDAP provider with kerberos (with changing kerberos switch to disabled)
         ldapRep = realm.components().component(id).toRepresentation();
@@ -120,7 +120,7 @@ public class UserStorageRestTest extends AbstractAdminTest {
 
         // Assert kerberos authenticator is still DISABLED
         kerberosExecution = findKerberosExecution();
-        Assert.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.DISABLED.toString());
+        Assertions.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.DISABLED.toString());
 
         // update LDAP provider with kerberos (with changing kerberos switch to enabled)
         ldapRep = realm.components().component(id).toRepresentation();
@@ -130,7 +130,7 @@ public class UserStorageRestTest extends AbstractAdminTest {
 
         // Assert kerberos authenticator is still ALTERNATIVE
         kerberosExecution = findKerberosExecution();
-        Assert.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.ALTERNATIVE.toString());
+        Assertions.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.ALTERNATIVE.toString());
 
         // Cleanup
         kerberosExecution.setRequirement(AuthenticationExecutionModel.Requirement.DISABLED.toString());
@@ -156,7 +156,7 @@ public class UserStorageRestTest extends AbstractAdminTest {
 
         // Assert kerberos authenticator still REQUIRED
         kerberosExecution = findKerberosExecution();
-        Assert.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.REQUIRED.toString());
+        Assertions.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.REQUIRED.toString());
 
         // update LDAP provider with kerberos
         ldapRep = realm.components().component(id).toRepresentation();
@@ -165,7 +165,7 @@ public class UserStorageRestTest extends AbstractAdminTest {
 
         // Assert kerberos authenticator still REQUIRED
         kerberosExecution = findKerberosExecution();
-        Assert.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.REQUIRED.toString());
+        Assertions.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.REQUIRED.toString());
 
         // Cleanup
         kerberosExecution.setRequirement(AuthenticationExecutionModel.Requirement.DISABLED.toString());
@@ -181,7 +181,7 @@ public class UserStorageRestTest extends AbstractAdminTest {
     public void testKerberosAuthenticatorDisabledWhenProviderRemoved() {
         // Assert kerberos authenticator DISABLED
         AuthenticationExecutionInfoRepresentation kerberosExecution = findKerberosExecution();
-        Assert.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.DISABLED.toString());
+        Assertions.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.DISABLED.toString());
 
         // create LDAP provider with kerberos
         ComponentRepresentation ldapRep = createBasicLDAPProviderRep();
@@ -192,14 +192,14 @@ public class UserStorageRestTest extends AbstractAdminTest {
 
         // Assert kerberos authenticator ALTERNATIVE
         kerberosExecution = findKerberosExecution();
-        Assert.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.ALTERNATIVE.toString());
+        Assertions.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.ALTERNATIVE.toString());
 
         // Remove LDAP provider
         realm.components().component(id).remove();
 
         // Assert kerberos authenticator DISABLED
         kerberosExecution = findKerberosExecution();
-        Assert.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.DISABLED.toString());
+        Assertions.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.DISABLED.toString());
 
         // Add kerberos provider
         ComponentRepresentation kerberosRep = new ComponentRepresentation();
@@ -214,7 +214,7 @@ public class UserStorageRestTest extends AbstractAdminTest {
 
         // Assert kerberos authenticator ALTERNATIVE
         kerberosExecution = findKerberosExecution();
-        Assert.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.ALTERNATIVE.toString());
+        Assertions.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.ALTERNATIVE.toString());
 
         // Switch kerberos authenticator to REQUIRED
         kerberosExecution.setRequirement(AuthenticationExecutionModel.Requirement.REQUIRED.toString());
@@ -225,7 +225,7 @@ public class UserStorageRestTest extends AbstractAdminTest {
 
         // Assert kerberos authenticator DISABLED
         kerberosExecution = findKerberosExecution();
-        Assert.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.DISABLED.toString());
+        Assertions.assertEquals(kerberosExecution.getRequirement(), AuthenticationExecutionModel.Requirement.DISABLED.toString());
     }
 
 
@@ -237,23 +237,23 @@ public class UserStorageRestTest extends AbstractAdminTest {
         ldapRep.getConfig().putSingle(LDAPConstants.CUSTOM_USER_SEARCH_FILTER, "dc=something");
 
         Response resp = realm.components().add(ldapRep);
-        Assert.assertEquals(400, resp.getStatus());
+        Assertions.assertEquals(400, resp.getStatus());
         resp.close();
 
         // Invalid filter
         ldapRep.getConfig().putSingle(LDAPConstants.CUSTOM_USER_SEARCH_FILTER, "(dc=something");
         resp = realm.components().add(ldapRep);
-        Assert.assertEquals(400, resp.getStatus());
+        Assertions.assertEquals(400, resp.getStatus());
         resp.close();
 
         // Invalid filter
         ldapRep.getConfig().putSingle(LDAPConstants.CUSTOM_USER_SEARCH_FILTER, "dc=something)");
         resp = realm.components().add(ldapRep);
-        Assert.assertEquals(400, resp.getStatus());
+        Assertions.assertEquals(400, resp.getStatus());
         resp.close();
 
         // Assert nothing created so far
-        Assert.assertTrue(realm.components().query(realmId, UserStorageProvider.class.getName()).isEmpty());
+        Assertions.assertTrue(realm.components().query(realmId, UserStorageProvider.class.getName()).isEmpty());
         assertAdminEvents.assertEmpty();
 
 
@@ -275,7 +275,7 @@ public class UserStorageRestTest extends AbstractAdminTest {
 
         // Assert both providers created
         List<ComponentRepresentation> providerInstances = realm.components().query(realmId, UserStorageProvider.class.getName());
-        Assert.assertEquals(providerInstances.size(), 2);
+        Assertions.assertEquals(providerInstances.size(), 2);
 
         // Cleanup
         removeComponent(id1);
@@ -289,7 +289,7 @@ public class UserStorageRestTest extends AbstractAdminTest {
         ldapRep.getConfig().remove(LDAPConstants.EDIT_MODE);
 
         Response resp = realm.components().add(ldapRep);
-        Assert.assertEquals(400, resp.getStatus());
+        Assertions.assertEquals(400, resp.getStatus());
         resp.close();
 
         // Test provider with READ_ONLY edit mode and validatePasswordPolicy will fail
@@ -297,14 +297,14 @@ public class UserStorageRestTest extends AbstractAdminTest {
         ldapRep.getConfig().putSingle(LDAPConstants.EDIT_MODE, UserStorageProvider.EditMode.READ_ONLY.name());
         ldapRep.getConfig().putSingle(LDAPConstants.VALIDATE_PASSWORD_POLICY, "true");
         resp = realm.components().add(ldapRep);
-        Assert.assertEquals(400, resp.getStatus());
+        Assertions.assertEquals(400, resp.getStatus());
         resp.close();
 
         // Test provider with UNSYNCED edit mode and validatePasswordPolicy will fail
         ldapRep.getConfig().putSingle(LDAPConstants.EDIT_MODE, UserStorageProvider.EditMode.UNSYNCED.name());
         ldapRep.getConfig().putSingle(LDAPConstants.VALIDATE_PASSWORD_POLICY, "true");
         resp = realm.components().add(ldapRep);
-        Assert.assertEquals(400, resp.getStatus());
+        Assertions.assertEquals(400, resp.getStatus());
         resp.close();
 
         // Test provider with WRITABLE edit mode and validatePasswordPolicy will fail
@@ -329,7 +329,7 @@ public class UserStorageRestTest extends AbstractAdminTest {
         ldapRep.getConfig().putSingle(LDAPConstants.BIND_DN, "cn=manager-updated");
         try {
             realm.components().component(id).update(ldapRep);
-            Assert.fail("Not expected to successfull update");
+            Assertions.fail("Not expected to successfull update");
         } catch (BadRequestException bre) {
             // Expected
         }
@@ -373,16 +373,16 @@ public class UserStorageRestTest extends AbstractAdminTest {
 
         // LOAD_GROUPS_BY_MEMBER_ATTRIBUTE_RECURSIVELY is expected to be present just for the active directory
         List<String> options = groupRetrieverConfigProperty.getOptions();
-        Assert.assertNames(options, GroupMapperConfig.LOAD_GROUPS_BY_MEMBER_ATTRIBUTE, GroupMapperConfig.GET_GROUPS_FROM_USER_MEMBEROF_ATTRIBUTE);
-        Assert.assertFalse(groupRetrieverConfigProperty.getHelpText().contains("LOAD_GROUPS_BY_MEMBER_ATTRIBUTE_RECURSIVELY"));
+        Assertions.assertNames(options, GroupMapperConfig.LOAD_GROUPS_BY_MEMBER_ATTRIBUTE, GroupMapperConfig.GET_GROUPS_FROM_USER_MEMBEROF_ATTRIBUTE);
+        Assertions.assertFalse(groupRetrieverConfigProperty.getHelpText().contains("LOAD_GROUPS_BY_MEMBER_ATTRIBUTE_RECURSIVELY"));
 
         ComponentTypeRepresentation roleLDAPMapperType = findMapperTypeConfiguration(ldapModelId, RoleLDAPStorageMapperFactory.PROVIDER_ID);
         ConfigPropertyRepresentation roleRetrieverConfigProperty = getUserRolesRetrieveStrategyConfigProperty(roleLDAPMapperType, CommonLDAPGroupMapperConfig.USER_ROLES_RETRIEVE_STRATEGY);
 
         // LOAD_ROLES_BY_MEMBER_ATTRIBUTE_RECURSIVELY is expected to be present just for the active directory
         options = roleRetrieverConfigProperty.getOptions();
-        Assert.assertNames(options, RoleMapperConfig.LOAD_ROLES_BY_MEMBER_ATTRIBUTE, RoleMapperConfig.GET_ROLES_FROM_USER_MEMBEROF_ATTRIBUTE);
-        Assert.assertFalse(roleRetrieverConfigProperty.getHelpText().contains("LOAD_ROLES_BY_MEMBER_ATTRIBUTE_RECURSIVELY"));
+        Assertions.assertNames(options, RoleMapperConfig.LOAD_ROLES_BY_MEMBER_ATTRIBUTE, RoleMapperConfig.GET_ROLES_FROM_USER_MEMBEROF_ATTRIBUTE);
+        Assertions.assertFalse(roleRetrieverConfigProperty.getHelpText().contains("LOAD_ROLES_BY_MEMBER_ATTRIBUTE_RECURSIVELY"));
 
         // Cleanup including mappers
         removeComponent(ldapModelId);
@@ -400,18 +400,18 @@ public class UserStorageRestTest extends AbstractAdminTest {
 
         // LOAD_GROUPS_BY_MEMBER_ATTRIBUTE_RECURSIVELY is expected to be present just for the active directory
         List<String> options = groupRetrieverConfigProperty.getOptions();
-        Assert.assertNames(options, GroupMapperConfig.LOAD_GROUPS_BY_MEMBER_ATTRIBUTE, GroupMapperConfig.GET_GROUPS_FROM_USER_MEMBEROF_ATTRIBUTE,
+        Assertions.assertNames(options, GroupMapperConfig.LOAD_GROUPS_BY_MEMBER_ATTRIBUTE, GroupMapperConfig.GET_GROUPS_FROM_USER_MEMBEROF_ATTRIBUTE,
                 GroupMapperConfig.LOAD_GROUPS_BY_MEMBER_ATTRIBUTE_RECURSIVELY);
-        Assert.assertTrue(groupRetrieverConfigProperty.getHelpText().contains("LOAD_GROUPS_BY_MEMBER_ATTRIBUTE_RECURSIVELY"));
+        Assertions.assertTrue(groupRetrieverConfigProperty.getHelpText().contains("LOAD_GROUPS_BY_MEMBER_ATTRIBUTE_RECURSIVELY"));
 
         ComponentTypeRepresentation roleLDAPMapperType = findMapperTypeConfiguration(ldapModelId, RoleLDAPStorageMapperFactory.PROVIDER_ID);
         ConfigPropertyRepresentation roleRetrieverConfigProperty = getUserRolesRetrieveStrategyConfigProperty(roleLDAPMapperType, CommonLDAPGroupMapperConfig.USER_ROLES_RETRIEVE_STRATEGY);
 
         // LOAD_ROLES_BY_MEMBER_ATTRIBUTE_RECURSIVELY is expected to be present just for the active directory
         options = roleRetrieverConfigProperty.getOptions();
-        Assert.assertNames(options, RoleMapperConfig.LOAD_ROLES_BY_MEMBER_ATTRIBUTE, RoleMapperConfig.GET_ROLES_FROM_USER_MEMBEROF_ATTRIBUTE,
+        Assertions.assertNames(options, RoleMapperConfig.LOAD_ROLES_BY_MEMBER_ATTRIBUTE, RoleMapperConfig.GET_ROLES_FROM_USER_MEMBEROF_ATTRIBUTE,
                 RoleMapperConfig.LOAD_ROLES_BY_MEMBER_ATTRIBUTE_RECURSIVELY);
-        Assert.assertTrue(roleRetrieverConfigProperty.getHelpText().contains("LOAD_ROLES_BY_MEMBER_ATTRIBUTE_RECURSIVELY"));
+        Assertions.assertTrue(roleRetrieverConfigProperty.getHelpText().contains("LOAD_ROLES_BY_MEMBER_ATTRIBUTE_RECURSIVELY"));
 
         // Cleanup including mappers
         removeComponent(ldapModelId);
@@ -449,30 +449,30 @@ public class UserStorageRestTest extends AbstractAdminTest {
     @Test
     public void testProviderFactories() {
         List<UserFederationProviderFactoryRepresentation> providerFactories = userFederation().getProviderFactories();
-        Assert.assertNames(providerFactories, "ldap", "kerberos", "dummy", "dummy-configurable");
+        Assertions.assertNames(providerFactories, "ldap", "kerberos", "dummy", "dummy-configurable");
 
         // Builtin provider without properties
         UserFederationProviderFactoryRepresentation ldapProvider = userFederation().getProviderFactory("ldap");
-        Assert.assertEquals(ldapProvider.getId(), "ldap");
-        Assert.assertEquals(0, ldapProvider.getOptions().size());
+        Assertions.assertEquals(ldapProvider.getId(), "ldap");
+        Assertions.assertEquals(0, ldapProvider.getOptions().size());
 
         // Configurable through the "old-way" options
         UserFederationProviderFactoryRepresentation dummyProvider = userFederation().getProviderFactory("dummy");
-        Assert.assertEquals(dummyProvider.getId(), "dummy");
-        Assert.assertNames(new LinkedList<>(dummyProvider.getOptions()), "important.config");
+        Assertions.assertEquals(dummyProvider.getId(), "dummy");
+        Assertions.assertNames(new LinkedList<>(dummyProvider.getOptions()), "important.config");
 
         // Configurable through the "new-way" ConfiguredProvider
         UserFederationProviderFactoryRepresentation dummyConfiguredProvider = userFederation().getProviderFactory("dummy-configurable");
-        Assert.assertEquals(dummyConfiguredProvider.getId(), "dummy-configurable");
-        Assert.assertTrue(dummyConfiguredProvider.getOptions() == null || dummyConfiguredProvider.getOptions().isEmpty());
-        Assert.assertEquals("Dummy User Federation Provider Help Text", dummyConfiguredProvider.getHelpText());
-        Assert.assertEquals(2, dummyConfiguredProvider.getProperties().size());
-        Assert.assertProviderConfigProperty(dummyConfiguredProvider.getProperties().get(0), "prop1", "Prop1", "prop1Default", "Prop1 HelpText", ProviderConfigProperty.STRING_TYPE);
-        Assert.assertProviderConfigProperty(dummyConfiguredProvider.getProperties().get(1), "prop2", "Prop2", "true", "Prop2 HelpText", ProviderConfigProperty.BOOLEAN_TYPE);
+        Assertions.assertEquals(dummyConfiguredProvider.getId(), "dummy-configurable");
+        Assertions.assertTrue(dummyConfiguredProvider.getOptions() == null || dummyConfiguredProvider.getOptions().isEmpty());
+        Assertions.assertEquals("Dummy User Federation Provider Help Text", dummyConfiguredProvider.getHelpText());
+        Assertions.assertEquals(2, dummyConfiguredProvider.getProperties().size());
+        Assertions.assertProviderConfigProperty(dummyConfiguredProvider.getProperties().get(0), "prop1", "Prop1", "prop1Default", "Prop1 HelpText", ProviderConfigProperty.STRING_TYPE);
+        Assertions.assertProviderConfigProperty(dummyConfiguredProvider.getProperties().get(1), "prop2", "Prop2", "true", "Prop2 HelpText", ProviderConfigProperty.BOOLEAN_TYPE);
 
         try {
             userFederation().getProviderFactory("not-existent");
-            Assert.fail("Not expected to find not-existent provider");
+            Assertions.fail("Not expected to find not-existent provider");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -513,7 +513,7 @@ public class UserStorageRestTest extends AbstractAdminTest {
 
         // Assert sorted
         List<UserFederationProviderRepresentation> providerInstances = userFederation().getProviderInstances();
-        Assert.assertEquals(providerInstances.size(), 2);
+        Assertions.assertEquals(providerInstances.size(), 2);
         assertFederationProvider(providerInstances.get(0), id2, "dn1", "dummy", 1, -1, -1, -1, "prop1", "prop1Val", "prop2", "true");
         assertFederationProvider(providerInstances.get(1), id1, id1, "dummy", 2, 1000, 500, 123);
 
@@ -547,24 +547,24 @@ public class UserStorageRestTest extends AbstractAdminTest {
         // Sync with unknown action shouldn't pass
         try {
             userFederation().get(id1).syncUsers("unknown");
-            Assert.fail("Not expected to sync with unknown action");
+            Assertions.fail("Not expected to sync with unknown action");
         } catch (NotFoundException nfe) {
             // Expected
         }
 
         // Assert sync didn't happen
-        Assert.assertEquals(-1, userFederation().get(id1).toBriefRepresentation().getLastSync());
+        Assertions.assertEquals(-1, userFederation().get(id1).toBriefRepresentation().getLastSync());
 
         // Sync and assert it happened
         SynchronizationResultRepresentation syncResult = userFederation().get(id1).syncUsers("triggerFullSync");
-        Assert.assertEquals("0 imported users, 0 updated users", syncResult.getStatus());
+        Assertions.assertEquals("0 imported users, 0 updated users", syncResult.getStatus());
 
         Map<String, Object> eventRep = new HashMap<>();
         eventRep.put("action", "triggerFullSync");
         assertAdminEvents.assertEvent(realmId, OperationType.ACTION, AdminEventPaths.userFederationResourcePath(id1) + "/sync", eventRep, ResourceType.USER_FEDERATION_PROVIDER);
 
         int fullSyncTime = userFederation().get(id1).toBriefRepresentation().getLastSync();
-        Assert.assertTrue(fullSyncTime > 0);
+        Assertions.assertTrue(fullSyncTime > 0);
 
         // Changed sync
         setTimeOffset(50);
@@ -573,9 +573,9 @@ public class UserStorageRestTest extends AbstractAdminTest {
         eventRep.put("action", "triggerChangedUsersSync");
         assertAdminEvents.assertEvent(realmId, OperationType.ACTION, AdminEventPaths.userFederationResourcePath(id1) + "/sync", eventRep, ResourceType.USER_FEDERATION_PROVIDER);
 
-        Assert.assertEquals("0 imported users, 0 updated users", syncResult.getStatus());
+        Assertions.assertEquals("0 imported users, 0 updated users", syncResult.getStatus());
         int changedSyncTime = userFederation().get(id1).toBriefRepresentation().getLastSync();
-        Assert.assertTrue(fullSyncTime + 50 <= changedSyncTime);
+        Assertions.assertTrue(fullSyncTime + 50 <= changedSyncTime);
 
         // Cleanup
         resetTimeOffset();
@@ -587,15 +587,15 @@ public class UserStorageRestTest extends AbstractAdminTest {
     private void assertFederationProvider(UserFederationProviderRepresentation rep, String id, String displayName, String providerName,
                                           int priority, int fullSyncPeriod, int changeSyncPeriod, int lastSync,
                                           String... config) {
-        Assert.assertEquals(id, rep.getId());
-        Assert.assertEquals(displayName, rep.getDisplayName());
-        Assert.assertEquals(providerName, rep.getProviderName());
-        Assert.assertEquals(priority, rep.getPriority());
-        Assert.assertEquals(fullSyncPeriod, rep.getFullSyncPeriod());
-        Assert.assertEquals(changeSyncPeriod, rep.getChangedSyncPeriod());
-        Assert.assertEquals(lastSync, rep.getLastSync());
+        Assertions.assertEquals(id, rep.getId());
+        Assertions.assertEquals(displayName, rep.getDisplayName());
+        Assertions.assertEquals(providerName, rep.getProviderName());
+        Assertions.assertEquals(priority, rep.getPriority());
+        Assertions.assertEquals(fullSyncPeriod, rep.getFullSyncPeriod());
+        Assertions.assertEquals(changeSyncPeriod, rep.getChangedSyncPeriod());
+        Assertions.assertEquals(lastSync, rep.getLastSync());
 
-        Assert.assertMap(rep.getConfig(), config);
+        Assertions.assertMap(rep.getConfig(), config);
     }
 
 

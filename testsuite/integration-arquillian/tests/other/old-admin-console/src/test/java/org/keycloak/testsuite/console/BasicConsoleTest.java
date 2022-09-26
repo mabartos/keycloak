@@ -18,17 +18,17 @@
 package org.keycloak.testsuite.console;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.admin.ApiUtil;
 import org.keycloak.testsuite.console.page.ForbiddenPage;
 
 import org.openqa.selenium.JavascriptExecutor;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.admin.ApiUtil.assignClientRoles;
 import static org.keycloak.testsuite.admin.ApiUtil.createUserAndResetPasswordWithAdminClient;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlDoesntStartWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlDoesntStartWith;
 
 public class BasicConsoleTest extends AbstractConsoleTest {
 

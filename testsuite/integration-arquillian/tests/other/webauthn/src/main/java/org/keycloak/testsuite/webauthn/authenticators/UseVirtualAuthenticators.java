@@ -25,12 +25,12 @@ package org.keycloak.testsuite.webauthn.authenticators;
 public interface UseVirtualAuthenticators {
 
     /**
-     * Set up Virtual Authenticator in @Before method for each test method
+     * Set up Virtual Authenticator in @BeforeEach method for each test method
      */
     void setUpVirtualAuthenticator();
 
     /**
-     * Remove Virtual Authenticator in @After method for each test method
+     * Remove Virtual Authenticator in @AfterEach method for each test method
      */
     void removeVirtualAuthenticator();
 }

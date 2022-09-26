@@ -1,8 +1,8 @@
 package org.keycloak.testsuite.broker;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.AuthenticationManagementResource;
 import org.keycloak.admin.client.resource.IdentityProviderResource;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -17,7 +17,7 @@ import org.keycloak.representations.idm.IdentityProviderRepresentation;
 import org.keycloak.testsuite.pages.LoginUpdateProfilePage;
 import org.keycloak.testsuite.util.ExecutionBuilder;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
 
 public class KcOidcFirstBrokerLoginDetectExistingUserTest extends AbstractInitializedBaseBrokerTest {
@@ -31,7 +31,7 @@ public class KcOidcFirstBrokerLoginDetectExistingUserTest extends AbstractInitia
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void beforeBrokerTest() {
         super.beforeBrokerTest();
         log.debug("creating detect existing user flow for realm " + bc.providerRealmName());

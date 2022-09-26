@@ -24,7 +24,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.awaitility.core.ThrowingRunnable;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.keycloak.testsuite.auth.page.login.PageWithLoginUrl;
 import org.keycloak.testsuite.page.AbstractPage;
 import org.openqa.selenium.WebDriver;
@@ -40,7 +40,7 @@ import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.util.URLUtils.currentUrlDoesntStartWith;
 import static org.keycloak.testsuite.util.URLUtils.currentUrlEquals;
 import static org.keycloak.testsuite.util.URLUtils.currentUrlStartsWith;
@@ -177,7 +177,7 @@ public class URLAssert {
         public void assertResponse(CloseableHttpResponse response) throws IOException {
             HttpEntity entity = response.getEntity();
             Header contentType = entity.getContentType();
-            Assert.assertEquals("application/json", contentType.getValue());
+            Assertions.assertEquals("application/json", contentType.getValue());
 
             char [] buf = new char[8192];
             StringWriter out = new StringWriter();

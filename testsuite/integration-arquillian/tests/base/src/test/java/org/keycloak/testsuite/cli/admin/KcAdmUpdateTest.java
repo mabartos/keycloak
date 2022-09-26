@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.cli.admin;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.client.admin.cli.config.FileConfigHandler;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.testsuite.cli.KcAdmExec;
@@ -61,7 +61,7 @@ public class KcAdmUpdateTest extends AbstractAdmCliTest {
                 assertExitCodeAndStdErrSize(exe, 0, 0);
             }
 
-            Assert.assertThat(realmResource.identityProviders().get("idpAlias").toRepresentation().getDisplayName(), is(equalTo("SAML_UPDATED")));
+            Assertions.assertThat(realmResource.identityProviders().get("idpAlias").toRepresentation().getDisplayName(), is(equalTo("SAML_UPDATED")));
         }
     }
 
@@ -84,10 +84,10 @@ public class KcAdmUpdateTest extends AbstractAdmCliTest {
 
             ClientRepresentation client = JsonSerialization.readValue(exe.stdout(), ClientRepresentation.class);
 
-            Assert.assertTrue("enabled", client.isEnabled());
-            Assert.assertFalse("publicClient", client.isPublicClient());
-            Assert.assertFalse("bearerOnly", client.isBearerOnly());
-            Assert.assertTrue("redirectUris is empty", client.getRedirectUris().isEmpty());
+            Assertions.assertTrue("enabled", client.isEnabled());
+            Assertions.assertFalse("publicClient", client.isPublicClient());
+            Assertions.assertFalse("bearerOnly", client.isBearerOnly());
+            Assertions.assertTrue("redirectUris is empty", client.getRedirectUris().isEmpty());
 
 
             // Merge update
@@ -97,8 +97,8 @@ public class KcAdmUpdateTest extends AbstractAdmCliTest {
             assertExitCodeAndStdErrSize(exe, 0, 0);
 
             client = JsonSerialization.readValue(exe.stdout(), ClientRepresentation.class);
-            Assert.assertFalse("enabled", client.isEnabled());
-            Assert.assertEquals("redirectUris", Arrays.asList("http://localhost:8980/myapp/*"), client.getRedirectUris());
+            Assertions.assertFalse("enabled", client.isEnabled());
+            Assertions.assertEquals("redirectUris", Arrays.asList("http://localhost:8980/myapp/*"), client.getRedirectUris());
 
 
 
@@ -109,8 +109,8 @@ public class KcAdmUpdateTest extends AbstractAdmCliTest {
 
             client = JsonSerialization.readValue(exe.stdout(), ClientRepresentation.class);
 
-            Assert.assertTrue("redirectUris is empty", client.getRedirectUris().isEmpty());
-            Assert.assertEquals("webOrigins", Arrays.asList("http://localhost:8981/myapp"), client.getWebOrigins());
+            Assertions.assertTrue("redirectUris is empty", client.getRedirectUris().isEmpty());
+            Assertions.assertEquals("webOrigins", Arrays.asList("http://localhost:8981/myapp"), client.getWebOrigins());
 
 
 
@@ -123,10 +123,10 @@ public class KcAdmUpdateTest extends AbstractAdmCliTest {
             assertExitCodeAndStdErrSize(exe, 0, 0);
 
             client = JsonSerialization.readValue(exe.stdout(), ClientRepresentation.class);
-            Assert.assertEquals("protocolMapper[0].config.\"id.token.claim\"", "false", client.getProtocolMappers().get(0).getConfig().get("id.token.claim"));
-            Assert.assertEquals("protocolMappers[4].config.single", "true", client.getProtocolMappers().get(4).getConfig().get("single"));
-            Assert.assertEquals("protocolMappers[4].config.\"attribute.nameformat\"", "Basic", client.getProtocolMappers().get(4).getConfig().get("attribute.nameformat"));
-            Assert.assertEquals("protocolMappers[4].config.\"attribute.name\"", "Role", client.getProtocolMappers().get(4).getConfig().get("attribute.name"));
+            Assertions.assertEquals("protocolMapper[0].config.\"id.token.claim\"", "false", client.getProtocolMappers().get(0).getConfig().get("id.token.claim"));
+            Assertions.assertEquals("protocolMappers[4].config.single", "true", client.getProtocolMappers().get(4).getConfig().get("single"));
+            Assertions.assertEquals("protocolMappers[4].config.\"attribute.nameformat\"", "Basic", client.getProtocolMappers().get(4).getConfig().get("attribute.nameformat"));
+            Assertions.assertEquals("protocolMappers[4].config.\"attribute.name\"", "Role", client.getProtocolMappers().get(4).getConfig().get("attribute.name"));
             */
 
             // update using oidc format
@@ -136,8 +136,8 @@ public class KcAdmUpdateTest extends AbstractAdmCliTest {
             exe = execute("update clients/" + client.getId() + " --nonexisting --config '" + configFile.getName() + "'");
 
             assertExitCodeAndStreamSizes(exe, 1, 0, 2);
-            Assert.assertEquals("error message", "Invalid option: --nonexisting", exe.stderrLines().get(0));
-            Assert.assertEquals("try help", "Try '" + CMD + " help update' for more information", exe.stderrLines().get(1));
+            Assertions.assertEquals("error message", "Invalid option: --nonexisting", exe.stderrLines().get(0));
+            Assertions.assertEquals("try help", "Try '" + CMD + " help update' for more information", exe.stderrLines().get(1));
 
 
             // test overwrite from file
@@ -151,9 +151,9 @@ public class KcAdmUpdateTest extends AbstractAdmCliTest {
 
             client = JsonSerialization.readValue(exe.stdout(), ClientRepresentation.class);
             // web origin is not sent to the server, thus it retains the current value
-            Assert.assertEquals("webOrigins", Arrays.asList("http://localhost:8981/myapp"), client.getWebOrigins());
-            Assert.assertFalse("enabled is false", client.isEnabled());
-            Assert.assertEquals("redirectUris", Arrays.asList("http://localhost:8980/myapp/*"), client.getRedirectUris());
+            Assertions.assertEquals("webOrigins", Arrays.asList("http://localhost:8981/myapp"), client.getWebOrigins());
+            Assertions.assertFalse("enabled is false", client.isEnabled());
+            Assertions.assertEquals("redirectUris", Arrays.asList("http://localhost:8980/myapp/*"), client.getRedirectUris());
 
 
             // test using merge with file
@@ -167,9 +167,9 @@ public class KcAdmUpdateTest extends AbstractAdmCliTest {
 
 
             client = JsonSerialization.readValue(exe.stdout(), ClientRepresentation.class);
-            Assert.assertEquals("webOrigins", Arrays.asList("http://localhost:8980/myapp"), client.getWebOrigins());
-            Assert.assertTrue("enabled is true", client.isEnabled());
-            Assert.assertEquals("redirectUris", Arrays.asList("http://localhost:8980/myapp/*"), client.getRedirectUris());
+            Assertions.assertEquals("webOrigins", Arrays.asList("http://localhost:8980/myapp"), client.getWebOrigins());
+            Assertions.assertTrue("enabled is true", client.isEnabled());
+            Assertions.assertEquals("redirectUris", Arrays.asList("http://localhost:8980/myapp/*"), client.getRedirectUris());
         }
     }
 }

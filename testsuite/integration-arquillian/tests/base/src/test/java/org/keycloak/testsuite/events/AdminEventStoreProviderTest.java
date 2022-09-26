@@ -17,10 +17,10 @@
 
 package org.keycloak.testsuite.events;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.events.EventStoreProvider;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.models.jpa.entities.RealmAttributes;
@@ -41,7 +41,7 @@ import java.util.Map;
  */
 public class AdminEventStoreProviderTest extends AbstractEventsTest {
 
-    @After
+    @AfterEach
     public void after() {
         testing().clearAdminEventStore();
     }
@@ -63,24 +63,24 @@ public class AdminEventStoreProviderTest extends AbstractEventsTest {
         testing().onAdminEvent(create(oldest, realmId, OperationType.CREATE, realmId, "clientId2", "userId", "127.0.0.1", "/admin/realms/master", "error"), false);
         testing().onAdminEvent(create(realmId, OperationType.CREATE, realmId, "clientId", "userId2", "127.0.0.1", "/admin/realms/master", "error"), false);
 
-        Assert.assertEquals(5, testing().getAdminEvents(null, null, null, "clientId", null, null, null, null, null, null, null).size());
-        Assert.assertEquals(5, testing().getAdminEvents(null, null, realmId, null, null, null, null, null, null, null, null).size());
-        Assert.assertEquals(4, testing().getAdminEvents(null, toList(OperationType.CREATE), null, null, null, null, null, null, null, null, null).size());
-        Assert.assertEquals(6, testing().getAdminEvents(null, toList(OperationType.CREATE, OperationType.ACTION), null, null, null, null, null, null, null, null, null).size());
-        Assert.assertEquals(4, testing().getAdminEvents(null, null, null, null, "userId", null, null, null, null, null, null).size());
+        Assertions.assertEquals(5, testing().getAdminEvents(null, null, null, "clientId", null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(5, testing().getAdminEvents(null, null, realmId, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(4, testing().getAdminEvents(null, toList(OperationType.CREATE), null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(6, testing().getAdminEvents(null, toList(OperationType.CREATE, OperationType.ACTION), null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(4, testing().getAdminEvents(null, null, null, null, "userId", null, null, null, null, null, null).size());
 
-        Assert.assertEquals(1, testing().getAdminEvents(null, toList(OperationType.ACTION), null, null, "userId", null, null, null, null, null, null).size());
+        Assertions.assertEquals(1, testing().getAdminEvents(null, toList(OperationType.ACTION), null, null, "userId", null, null, null, null, null, null).size());
 
-        Assert.assertEquals(2, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, null, 2).size());
-        Assert.assertEquals(1, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, 5, null).size());
+        Assertions.assertEquals(2, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, null, 2).size());
+        Assertions.assertEquals(1, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, 5, null).size());
 
-        Assert.assertEquals(newest, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, null, 1).get(0).getTime());
-        Assert.assertEquals(oldest, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, 5, 1).get(0).getTime());
+        Assertions.assertEquals(newest, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, null, 1).get(0).getTime());
+        Assertions.assertEquals(oldest, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, 5, 1).get(0).getTime());
 
         testing().clearAdminEventStore(realmId);
         testing().clearAdminEventStore(realmId2);
 
-        Assert.assertEquals(0, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(0, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, null, null).size());
 
         String d1 = "2015-03-04";
         String d2 = "2015-03-05";
@@ -113,37 +113,37 @@ public class AdminEventStoreProviderTest extends AbstractEventsTest {
         testing().onAdminEvent(create(date4, realmId2, OperationType.CREATE, realmId2, "clientId2", "userId2", "127.0.0.1", "/admin/realms/master", "error"), false);
         testing().onAdminEvent(create(date4, realmId2, OperationType.CREATE, realmId2, "clientId2", "userId2", "127.0.0.1", "/admin/realms/master", "error"), false);
 
-        Assert.assertEquals(6, testing().getAdminEvents(null, null, null, "clientId", null, null, null, null, null, null, null).size());
-        Assert.assertEquals(2, testing().getAdminEvents(null, null, null, "clientId2", null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(6, testing().getAdminEvents(null, null, null, "clientId", null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(2, testing().getAdminEvents(null, null, null, "clientId2", null, null, null, null, null, null, null).size());
 
-        Assert.assertEquals(6, testing().getAdminEvents(null, null, realmId, null, null, null, null, null, null, null, null).size());
-        Assert.assertEquals(2, testing().getAdminEvents(null, null, realmId2, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(6, testing().getAdminEvents(null, null, realmId, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(2, testing().getAdminEvents(null, null, realmId2, null, null, null, null, null, null, null, null).size());
 
-        Assert.assertEquals(4, testing().getAdminEvents(null, null, null, null, "userId", null, null, null, null, null, null).size());
-        Assert.assertEquals(4, testing().getAdminEvents(null, null, null, null, "userId2", null, null, null, null, null, null).size());
+        Assertions.assertEquals(4, testing().getAdminEvents(null, null, null, null, "userId", null, null, null, null, null, null).size());
+        Assertions.assertEquals(4, testing().getAdminEvents(null, null, null, null, "userId2", null, null, null, null, null, null).size());
 
-        Assert.assertEquals(2, testing().getAdminEvents(null, toList(OperationType.ACTION), null, null, null, null, null, null, null, null, null).size());
-        Assert.assertEquals(6, testing().getAdminEvents(null, toList(OperationType.CREATE, OperationType.ACTION), null, null, null, null, null, null, null, null, null).size());
-        Assert.assertEquals(1, testing().getAdminEvents(null, toList(OperationType.UPDATE), null, null, null, null, null, null, null, null, null).size());
-        Assert.assertEquals(1, testing().getAdminEvents(null, toList(OperationType.DELETE), null, null, null, null, null, null, null, null, null).size());
-        Assert.assertEquals(4, testing().getAdminEvents(null, toList(OperationType.CREATE), null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(2, testing().getAdminEvents(null, toList(OperationType.ACTION), null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(6, testing().getAdminEvents(null, toList(OperationType.CREATE, OperationType.ACTION), null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(1, testing().getAdminEvents(null, toList(OperationType.UPDATE), null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(1, testing().getAdminEvents(null, toList(OperationType.DELETE), null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(4, testing().getAdminEvents(null, toList(OperationType.CREATE), null, null, null, null, null, null, null, null, null).size());
 
-        Assert.assertEquals(8, testing().getAdminEvents(null, null, null, null, null, null, null, d1, null, null, null).size());
-        Assert.assertEquals(8, testing().getAdminEvents(null, null, null, null, null, null, null, null, d4, null, null).size());
+        Assertions.assertEquals(8, testing().getAdminEvents(null, null, null, null, null, null, null, d1, null, null, null).size());
+        Assertions.assertEquals(8, testing().getAdminEvents(null, null, null, null, null, null, null, null, d4, null, null).size());
 
-        Assert.assertEquals(4, testing().getAdminEvents(null, null, null, null, null, null, null, d3, null, null, null).size());
-        Assert.assertEquals(4, testing().getAdminEvents(null, null, null, null, null, null, null, null, d2, null, null).size());
+        Assertions.assertEquals(4, testing().getAdminEvents(null, null, null, null, null, null, null, d3, null, null, null).size());
+        Assertions.assertEquals(4, testing().getAdminEvents(null, null, null, null, null, null, null, null, d2, null, null).size());
 
-        Assert.assertEquals(0, testing().getAdminEvents(null, null, null, null, null, null, null, d7, null, null, null).size());
-        Assert.assertEquals(0, testing().getAdminEvents(null, null, null, null, null, null, null, null, d6, null, null).size());
+        Assertions.assertEquals(0, testing().getAdminEvents(null, null, null, null, null, null, null, d7, null, null, null).size());
+        Assertions.assertEquals(0, testing().getAdminEvents(null, null, null, null, null, null, null, null, d6, null, null).size());
 
-        Assert.assertEquals(8, testing().getAdminEvents(null, null, null, null, null, null, null, d1, d4, null, null).size());
-        Assert.assertEquals(6, testing().getAdminEvents(null, null, null, null, null, null, null, d2, d4, null, null).size());
-        Assert.assertEquals(4, testing().getAdminEvents(null, null, null, null, null, null, null, d1, d2, null, null).size());
-        Assert.assertEquals(4, testing().getAdminEvents(null, null, null, null, null, null, null, d3, d4, null, null).size());
+        Assertions.assertEquals(8, testing().getAdminEvents(null, null, null, null, null, null, null, d1, d4, null, null).size());
+        Assertions.assertEquals(6, testing().getAdminEvents(null, null, null, null, null, null, null, d2, d4, null, null).size());
+        Assertions.assertEquals(4, testing().getAdminEvents(null, null, null, null, null, null, null, d1, d2, null, null).size());
+        Assertions.assertEquals(4, testing().getAdminEvents(null, null, null, null, null, null, null, d3, d4, null, null).size());
 
-        Assert.assertEquals(0, testing().getAdminEvents(null, null, null, null, null, null, null, d5, d6, null, null).size());
-        Assert.assertEquals(0, testing().getAdminEvents(null, null, null, null, null, null, null, d7, d8, null, null).size());
+        Assertions.assertEquals(0, testing().getAdminEvents(null, null, null, null, null, null, null, d5, d6, null, null).size());
+        Assertions.assertEquals(0, testing().getAdminEvents(null, null, null, null, null, null, null, d7, d8, null, null).size());
 
     }
 
@@ -159,13 +159,13 @@ public class AdminEventStoreProviderTest extends AbstractEventsTest {
         testing().onAdminEvent(create(oldest, realmId, OperationType.CREATE, realmId, "clientId2", "userId", "127.0.0.1", "/admin/realms/master", "error"), false);
         testing().onAdminEvent(create(realmId, OperationType.CREATE, realmId, "clientId", "userId2", "127.0.0.1", "/admin/realms/master", "error"), false);
 
-        Assert.assertEquals(6, testing().getAdminEvents(null, null, null, null, null, null, "/admin/*", null, null, null, null).size());
-        Assert.assertEquals(6, testing().getAdminEvents(null, null, null, null, null, null, "*/realms/*", null, null, null, null).size());
-        Assert.assertEquals(6, testing().getAdminEvents(null, null, null, null, null, null, "*/master", null, null, null, null).size());
-        Assert.assertEquals(6, testing().getAdminEvents(null, null, null, null, null, null, "/admin/realms/*", null, null, null, null).size());
-        Assert.assertEquals(6, testing().getAdminEvents(null, null, null, null, null, null, "*/realms/master", null, null, null, null).size());
-        Assert.assertEquals(6, testing().getAdminEvents(null, null, null, null, null, null, "/admin/*/master", null, null, null, null).size());
-        Assert.assertEquals(6, testing().getAdminEvents(null, null, null, null, null, null, "/ad*/*/master", null, null, null, null).size());
+        Assertions.assertEquals(6, testing().getAdminEvents(null, null, null, null, null, null, "/admin/*", null, null, null, null).size());
+        Assertions.assertEquals(6, testing().getAdminEvents(null, null, null, null, null, null, "*/realms/*", null, null, null, null).size());
+        Assertions.assertEquals(6, testing().getAdminEvents(null, null, null, null, null, null, "*/master", null, null, null, null).size());
+        Assertions.assertEquals(6, testing().getAdminEvents(null, null, null, null, null, null, "/admin/realms/*", null, null, null, null).size());
+        Assertions.assertEquals(6, testing().getAdminEvents(null, null, null, null, null, null, "*/realms/master", null, null, null, null).size());
+        Assertions.assertEquals(6, testing().getAdminEvents(null, null, null, null, null, null, "/admin/*/master", null, null, null, null).size());
+        Assertions.assertEquals(6, testing().getAdminEvents(null, null, null, null, null, null, "/ad*/*/master", null, null, null, null).size());
     }
 
     @Test
@@ -178,7 +178,7 @@ public class AdminEventStoreProviderTest extends AbstractEventsTest {
 
         testing().clearAdminEventStore(realmId);
 
-        Assert.assertEquals(1, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(1, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, null, null).size());
     }
 
     @Test
@@ -191,12 +191,12 @@ public class AdminEventStoreProviderTest extends AbstractEventsTest {
 
         testing().clearAdminEventStore(realmId, System.currentTimeMillis() - 10000);
 
-        Assert.assertEquals(2, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(2, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, null, null).size());
     }
 
     @Test
     public void expireOld() {
-        Assume.assumeTrue("Map storage event store provider does not support changing expiration of existing events", keycloakUsingProviderWithId(EventStoreProvider.class, "jpa"));
+        Assumptions.assumeTrue("Map storage event store provider does not support changing expiration of existing events", keycloakUsingProviderWithId(EventStoreProvider.class, "jpa"));
         testing().onAdminEvent(create(System.currentTimeMillis() - 30000, realmId, OperationType.CREATE, realmId, "clientId", "userId", "127.0.0.1", "/admin/realms/master", "error"), false);
         testing().onAdminEvent(create(System.currentTimeMillis() - 20000, realmId, OperationType.CREATE, realmId, "clientId", "userId", "127.0.0.1", "/admin/realms/master", "error"), false);
         testing().onAdminEvent(create(System.currentTimeMillis(), realmId, OperationType.CREATE, realmId, "clientId", "userId", "127.0.0.1", "/admin/realms/master", "error"), false);
@@ -213,7 +213,7 @@ public class AdminEventStoreProviderTest extends AbstractEventsTest {
 
         // The first 2 events from realmId will be deleted
         testing().clearExpiredEvents();
-        Assert.assertEquals(4, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(4, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, null, null).size());
 
         // Set expiration of events for realmId2 as well
         RealmRepresentation realm2 = realmsResouce().realm(REALM_NAME_2).toRepresentation();
@@ -224,12 +224,12 @@ public class AdminEventStoreProviderTest extends AbstractEventsTest {
 
         // The first event from realmId2 will be deleted now
         testing().clearExpiredEvents();
-        Assert.assertEquals(3, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(3, testing().getAdminEvents(null, null, null, null, null, null, null, null, null, null, null).size());
 
         // set time offset to the future. The remaining 2 events from realmId and 1 event from realmId2 should be expired now
         setTimeOffset(150);
         testing().clearExpiredEvents();
-        Assert.assertEquals(0, testing().getAdminEvents(REALM_NAME_1, null, null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(0, testing().getAdminEvents(REALM_NAME_1, null, null, null, null, null, null, null, null, null, null).size());
 
         // Revert expirations
         attributes.put(RealmAttributes.ADMIN_EVENTS_EXPIRATION,"0");
@@ -245,8 +245,8 @@ public class AdminEventStoreProviderTest extends AbstractEventsTest {
         testing().onAdminEvent(create(realmId, OperationType.CREATE, realmId, "clientId", "userId", "127.0.0.1", "/admin/realms/master", "my-custom-resource", "error"), false);
 
         List<AdminEventRepresentation> adminEvents = testing().getAdminEvents(null, null, null, "clientId", null, null, null, null, null, null, null);
-        Assert.assertEquals(1, adminEvents.size());
-        Assert.assertEquals("my-custom-resource", adminEvents.get(0).getResourceType());
+        Assertions.assertEquals(1, adminEvents.size());
+        Assertions.assertEquals("my-custom-resource", adminEvents.get(0).getResourceType());
     }
 
     private AdminEventRepresentation create(String realmId, OperationType operation, String authRealmId, String authClientId, String authUserId, String authIpAddress, String resourcePath, String error) {

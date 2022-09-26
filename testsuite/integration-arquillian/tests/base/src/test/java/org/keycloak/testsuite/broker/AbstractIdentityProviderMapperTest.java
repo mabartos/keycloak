@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.broker;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.IdentityProviderRepresentation;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.keycloak.testsuite.admin.ApiUtil.createUserAndResetPasswordWithAdminClient;
 
 /**
@@ -28,7 +28,7 @@ public abstract class AbstractIdentityProviderMapperTest extends AbstractBaseBro
 
     protected RealmResource realm;
 
-    @Before
+    @BeforeEach
     public void addClients() {
         addClientsToProviderAndConsumer();
         realm = adminClient.realm(bc.consumerRealmName());

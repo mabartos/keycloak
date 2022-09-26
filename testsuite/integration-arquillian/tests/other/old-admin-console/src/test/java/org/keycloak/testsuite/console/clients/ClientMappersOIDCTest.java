@@ -22,9 +22,9 @@
 package org.keycloak.testsuite.console.clients;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.protocol.oidc.mappers.OIDCAttributeMapperHelper;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.ProtocolMapperRepresentation;
@@ -38,7 +38,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.keycloak.testsuite.auth.page.login.Login.OIDC;
 import static org.keycloak.testsuite.console.clients.AbstractClientTest.createClientRep;
 import static org.keycloak.testsuite.console.page.clients.mappers.CreateClientMappersForm.*;
@@ -59,7 +59,7 @@ public class ClientMappersOIDCTest extends AbstractClientTest {
     @Page 
     private CreateClientMappers createClientMappersPage;
     
-    @Before
+    @BeforeEach
     public void beforeClientMappersTest() {
         ClientRepresentation newClient = createClientRep(TEST_CLIENT_ID, OIDC);
         testRealmResource().clients().create(newClient).close();

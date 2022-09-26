@@ -17,10 +17,12 @@
 
 package org.keycloak.testsuite.admin.event;
 
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.ComparisonFailure;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.events.admin.OperationType;
@@ -42,7 +44,7 @@ import org.keycloak.testsuite.utils.tls.TLSUtils;
 
 import java.util.Collections;
 import java.util.List;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
 import static org.keycloak.testsuite.auth.page.AuthRealm.ADMIN;
 import static org.keycloak.testsuite.auth.page.AuthRealm.MASTER;
@@ -53,9 +55,9 @@ import static org.keycloak.testsuite.util.ServerURLs.getAuthServerContextRoot;
  * 
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
  */
+@ExtendWith(AssertAdminEvents.class)
 public class AdminEventAuthDetailsTest extends AbstractAuthTest {
 
-    @Rule
     public AssertAdminEvents assertAdminEvents = new AssertAdminEvents(this);
 
     private String masterAdminCliUuid;
@@ -88,7 +90,7 @@ public class AdminEventAuthDetailsTest extends AbstractAuthTest {
         testRealms.add(realm.build());
     }
 
-    @Before
+    @BeforeEach
     public void initConfig() {
         RealmResource masterRealm = adminClient.realm(MASTER);
         masterRealmId = masterRealm.toRepresentation().getId();
@@ -102,7 +104,7 @@ public class AdminEventAuthDetailsTest extends AbstractAuthTest {
         adminCliUuid = ApiUtil.findClientByClientId(testRealm, Constants.ADMIN_CLI_CLIENT_ID).toRepresentation().getId();
     }
 
-    @After
+    @AfterEach
     public void cleanUp() {
         adminClient.realm(MASTER).users().get(masterAdminUser2Id).remove();
     }
@@ -120,7 +122,7 @@ public class AdminEventAuthDetailsTest extends AbstractAuthTest {
         // Should fail due to different client UUID
         try {
             testClient("test", "admin1", "password", "client1", testRealmId, adminCliUuid, admin1Id);
-            Assert.fail("Not expected to pass");
+            Assertions.fail("Not expected to pass");
         } catch (ComparisonFailure expected) {
             // expected
         }
@@ -128,7 +130,7 @@ public class AdminEventAuthDetailsTest extends AbstractAuthTest {
         // Should fail due to different user ID
         try {
             testClient("test", "admin1", "password", "client1", testRealmId, client1Uuid, admin2Id);
-            Assert.fail("Not expected to pass");
+            Assertions.fail("Not expected to pass");
         } catch (ComparisonFailure expected) {
             // expected
         }

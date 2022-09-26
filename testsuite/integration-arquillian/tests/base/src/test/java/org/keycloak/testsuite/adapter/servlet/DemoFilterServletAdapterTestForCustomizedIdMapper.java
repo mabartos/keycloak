@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.adapter.servlet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.adapter.AbstractServletsAdapterTest;
 import org.keycloak.testsuite.adapter.page.CustomerPortal;
 import org.keycloak.testsuite.adapter.spi.TestSessionIdMapper;
@@ -31,7 +31,7 @@ import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @AppServerContainer(ContainerConstants.APP_SERVER_UNDERTOW)
 @AppServerContainer(ContainerConstants.APP_SERVER_WILDFLY)

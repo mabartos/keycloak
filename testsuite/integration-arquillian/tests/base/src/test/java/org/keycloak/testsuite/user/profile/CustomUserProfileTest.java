@@ -19,13 +19,13 @@
 
 package org.keycloak.testsuite.user.profile;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.component.ComponentValidationException;
 import org.keycloak.models.KeycloakSession;
@@ -92,9 +92,9 @@ public class CustomUserProfileTest extends AbstractUserProfileTest {
         component = provider.getComponentModel();
 
         // assert config is persisted in 2 pieces
-        Assert.assertEquals("2", component.get(DeclarativeUserProfileProvider.UP_PIECES_COUNT_COMPONENT_CONFIG_KEY));
+        Assertions.assertEquals("2", component.get(DeclarativeUserProfileProvider.UP_PIECES_COUNT_COMPONENT_CONFIG_KEY));
         // assert config is returned correctly
-        Assert.assertEquals(newConfig, provider.getConfiguration());
+        Assertions.assertEquals(newConfig, provider.getConfiguration());
     }
 
 

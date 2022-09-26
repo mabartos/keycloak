@@ -36,7 +36,7 @@ import org.openqa.selenium.support.FindBy;
 
 import java.net.URL;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.util.UIUtils.clickLink;
 import static org.keycloak.testsuite.util.WaitUtils.pause;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;

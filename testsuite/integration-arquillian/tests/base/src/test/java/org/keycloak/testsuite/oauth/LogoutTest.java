@@ -18,9 +18,9 @@
 package org.keycloak.testsuite.oauth;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -61,7 +61,7 @@ import org.keycloak.testsuite.util.WaitUtils;
 import org.openqa.selenium.NoSuchElementException;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 
 /**
@@ -71,8 +71,7 @@ import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
  */
 public class LogoutTest extends AbstractKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected LoginPage loginPage;
@@ -82,7 +81,7 @@ public class LogoutTest extends AbstractKeycloakTest {
         super.beforeAbstractKeycloakTest();
     }
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         ClientManager.realm(adminClient.realm("test")).clientId("test-app").directAccessGrant(true);
         new RealmAttributeUpdater(adminClient.realm("test")).setNotBefore(0).update();
@@ -146,7 +145,7 @@ public class LogoutTest extends AbstractKeycloakTest {
         WaitUtils.waitForPageToLoad();
         loginPage.login("password");
 
-        Assert.assertFalse(loginPage.isCurrent());
+        Assertions.assertFalse(loginPage.isCurrent());
 
         String code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
         OAuthClient.AccessTokenResponse tokenResponse2 = oauth.doAccessTokenRequest(code, "password");
@@ -203,13 +202,13 @@ public class LogoutTest extends AbstractKeycloakTest {
         String sessionId = events.expectLogin().assertEvent().getSessionId();
 
         UserRepresentation user = ApiUtil.findUserByUsername(adminClient.realm("test"), "test-user@localhost");
-        Assert.assertEquals((Object) 0, user.getNotBefore());
+        Assertions.assertEquals((Object) 0, user.getNotBefore());
 
         adminClient.realm("test").users().get(user.getId()).logout();
 
         Retry.execute(() -> {
             UserRepresentation u = adminClient.realm("test").users().get(user.getId()).toRepresentation();
-            Assert.assertTrue(u.getNotBefore() > 0);
+            Assertions.assertTrue(u.getNotBefore() > 0);
 
             loginPage.open();
             loginPage.assertCurrent();

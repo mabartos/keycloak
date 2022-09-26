@@ -3,8 +3,8 @@ package org.keycloak.testsuite.broker;
 import static org.keycloak.models.IdentityProviderMapperSyncMode.FORCE;
 import static org.keycloak.models.IdentityProviderMapperSyncMode.IMPORT;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.IdentityProviderMapperSyncMode;
 import org.keycloak.representations.idm.GroupRepresentation;
 import org.keycloak.representations.idm.IdentityProviderRepresentation;
@@ -41,7 +41,7 @@ public abstract class AbstractAdvancedGroupMapperTest extends AbstractGroupMappe
 
     private String newValueForAttribute2 = "";
 
-    @Before
+    @BeforeEach
     public void addMapperTestGroupToConsumerRealm() {
         GroupRepresentation mapperTestGroup = new GroupRepresentation();
         mapperTestGroup.setName(MAPPER_TEST_GROUP_NAME);

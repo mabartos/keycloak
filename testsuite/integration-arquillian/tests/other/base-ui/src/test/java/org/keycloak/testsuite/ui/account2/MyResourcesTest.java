@@ -4,9 +4,9 @@ import com.google.common.collect.Lists;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -38,11 +38,11 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 import static org.hamcrest.core.StringEndsWith.endsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.representations.idm.CredentialRepresentation.PASSWORD;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
 
@@ -90,7 +90,7 @@ public class MyResourcesTest extends BaseAccountPageTest {
                 .build();
     }
 
-    @After
+    @AfterEach
     public void after() {
         if (httpClient != null) {
             try {

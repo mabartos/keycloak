@@ -19,9 +19,9 @@ package org.keycloak.testsuite.broker;
 import java.io.Closeable;
 import javax.ws.rs.core.Response;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import static org.junit.Assert.assertThat;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import org.junit.jupiter.api.Test;
 import org.keycloak.broker.saml.SAMLIdentityProviderConfig;
 import org.keycloak.dom.saml.v2.protocol.AuthnRequestType;
 import org.keycloak.saml.common.constants.JBossSAMLURIConstants;
@@ -100,8 +100,8 @@ public class KcSamlBrokerAllowedClockSkewTest extends AbstractInitializedBaseBro
 
               .getSamlResponse(SamlClient.Binding.POST);       // Response from consumer IdP
 
-            Assert.assertThat(samlResponse, Matchers.notNullValue());
-            Assert.assertThat(samlResponse.getSamlObject(), isSamlResponse(JBossSAMLURIConstants.STATUS_SUCCESS));
+            Assertions.assertThat(samlResponse, Matchers.notNullValue());
+            Assertions.assertThat(samlResponse.getSamlObject(), isSamlResponse(JBossSAMLURIConstants.STATUS_SUCCESS));
         }
     }
 }

@@ -19,9 +19,9 @@ package org.keycloak.testsuite.adapter.servlet;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.common.Profile.Feature;
 import org.keycloak.common.util.MultivaluedHashMap;
@@ -57,10 +57,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import static org.keycloak.storage.UserStorageProviderModel.IMPORT_ENABLED;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWithLoginUrlOf;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 
 /**
@@ -91,13 +91,13 @@ public class UserStorageConsentTest extends AbstractServletsAdapterTest {
         return servletDeployment(ProductPortal.DEPLOYMENT_NAME, ProductServlet.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void checkNotMapStorage() {
         // This test requires user storage SPI
         ProfileAssume.assumeFeatureDisabled(Feature.MAP_STORAGE);
     }
 
-    @Before
+    @BeforeEach
     public void addProvidersBeforeTest() throws URISyntaxException, IOException {
         ComponentRepresentation memProvider = new ComponentRepresentation();
         memProvider.setName("memory");
@@ -175,7 +175,7 @@ public class UserStorageConsentTest extends AbstractServletsAdapterTest {
         memuser.setUsername("memuser");
         String uid = ApiUtil.createUserAndResetPasswordWithAdminClient(testRealmResource(), memuser, "password");
         System.out.println("uid: " + uid);
-        Assert.assertTrue(uid.startsWith("f:"));  // make sure its federated
+        Assertions.assertTrue(uid.startsWith("f:"));  // make sure its federated
         RoleRepresentation roleRep = adminClient.realm("demo").roles().get("user").toRepresentation();
         List<RoleRepresentation> roleList = new ArrayList<>();
         roleList.add(roleRep);
@@ -184,10 +184,10 @@ public class UserStorageConsentTest extends AbstractServletsAdapterTest {
         productPortal.navigateTo();
         assertCurrentUrlStartsWithLoginUrlOf(testRealmPage);
         testRealmLoginPage.form().login("memuser", "password");
-        Assert.assertTrue(consentPage.isCurrent());
+        Assertions.assertTrue(consentPage.isCurrent());
         consentPage.confirm();
         assertCurrentUrlEquals(productPortal.toString());
-        Assert.assertTrue(driver.getPageSource().contains("iPhone"));
+        Assertions.assertTrue(driver.getPageSource().contains("iPhone"));
 
         String logoutUri = OIDCLoginProtocolService.logoutUrl(authServerPage.createUriBuilder())
                 .build("demo").toString();
@@ -206,7 +206,7 @@ public class UserStorageConsentTest extends AbstractServletsAdapterTest {
         assertCurrentUrlStartsWithLoginUrlOf(testRealmPage);
         testRealmLoginPage.form().login("memuser", "password");
         assertCurrentUrlEquals(productPortal.toString());
-        Assert.assertTrue(driver.getPageSource().contains("iPhone"));
+        Assertions.assertTrue(driver.getPageSource().contains("iPhone"));
 
         driver.navigate().to(logoutUri);
         waitForPageToLoad();

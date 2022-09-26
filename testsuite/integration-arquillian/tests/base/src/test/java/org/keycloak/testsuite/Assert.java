@@ -111,11 +111,11 @@ public class Assert extends org.junit.Assert {
             expected = new String[] {};
         }
 
-        Assert.assertEquals(config.size() * 2, expected.length);
+        Assertions.assertEquals(config.size() * 2, expected.length);
         for (int i=0 ; i<expected.length ; i+=2) {
             String key = expected[i];
             String value = expected[i+1];
-            Assert.assertEquals(value, config.get(key));
+            Assertions.assertEquals(value, config.get(key));
         }
     }
 
@@ -135,16 +135,16 @@ public class Assert extends org.junit.Assert {
         for (int i=0 ; i<expected.length ; i+=2) {
             String key = expected[i];
             String value = expected[i+1];
-            Assert.assertEquals(value, config.getFirst(key));
+            Assertions.assertEquals(value, config.getFirst(key));
         }
     }
 
     public static void assertProviderConfigProperty(ConfigPropertyRepresentation property, String name, String label, String defaultValue, String helpText, String type) {
-        Assert.assertEquals(name, property.getName());
-        Assert.assertEquals(label, property.getLabel());
-        Assert.assertEquals(defaultValue, property.getDefaultValue());
-        Assert.assertEquals(helpText, property.getHelpText());
-        Assert.assertEquals(type, property.getType());
+        Assertions.assertEquals(name, property.getName());
+        Assertions.assertEquals(label, property.getLabel());
+        Assertions.assertEquals(defaultValue, property.getDefaultValue());
+        Assertions.assertEquals(helpText, property.getHelpText());
+        Assertions.assertEquals(type, property.getType());
     }
 
     public static void assertExpiration(int actual, int expected) {

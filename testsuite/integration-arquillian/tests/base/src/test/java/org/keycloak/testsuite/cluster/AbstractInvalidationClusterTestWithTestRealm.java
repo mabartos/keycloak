@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.cluster;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.arquillian.ContainerInfo;
 
@@ -12,7 +12,7 @@ public abstract class AbstractInvalidationClusterTestWithTestRealm<T, TR> extend
 
     protected String testRealmName = null;
     
-    @Before
+    @BeforeEach
     public void createTestRealm() {
         createTestRealm(frontendNode());
     }

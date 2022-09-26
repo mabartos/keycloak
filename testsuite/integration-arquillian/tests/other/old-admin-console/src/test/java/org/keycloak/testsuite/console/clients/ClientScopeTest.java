@@ -22,9 +22,9 @@
 package org.keycloak.testsuite.console.clients;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.ClientMappingsRepresentation;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.MappingsRepresentation;
@@ -34,7 +34,7 @@ import org.keycloak.testsuite.console.page.clients.scope.ClientScope;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.keycloak.testsuite.auth.page.login.Login.OIDC;
 
 /**
@@ -50,7 +50,7 @@ public class ClientScopeTest extends AbstractClientTest {
     @Page
     private ClientScope clientScopePage;
     
-    @Before
+    @BeforeEach
     public void before() {
         newClient = createClientRep(TEST_CLIENT_ID, OIDC);
         testRealmResource().clients().create(newClient).close();
@@ -62,7 +62,7 @@ public class ClientScopeTest extends AbstractClientTest {
     }
     
     @Test
-    @Ignore //phantomjs sometimes doens't enable "Add Selected >>" button when role is selected
+    @Disabled //phantomjs sometimes doens't enable "Add Selected >>" button when role is selected
     public void clientScopeTest() {
         assertTrue(found.isFullScopeAllowed());
         clientScopePage.scopeForm().setFullScopeAllowed(false);

@@ -17,10 +17,10 @@
 
 package org.keycloak.testsuite.admin.client;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ProtocolMappersResource;
@@ -34,8 +34,8 @@ import org.keycloak.testsuite.util.AdminEventPaths;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
@@ -51,7 +51,7 @@ public class ClientProtocolMapperTest extends AbstractProtocolMapperTest {
     private String samlClientId;
     private ProtocolMappersResource samlMappersRsc;
 
-    @Before
+    @BeforeEach
     public void init() {
         oidcClientId = createOidcClient("oidcMapperClient");
         oidcClientRsc = findClientResource("oidcMapperClient");
@@ -64,7 +64,7 @@ public class ClientProtocolMapperTest extends AbstractProtocolMapperTest {
         super.initBuiltinMappers();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         removeClient(oidcClientId);
         removeClient(samlClientId);
@@ -187,7 +187,7 @@ public class ClientProtocolMapperTest extends AbstractProtocolMapperTest {
 
         try {
             samlMappersRsc.getMapperById(createdId);
-            Assert.fail("Not expected to find mapper");
+            Assertions.fail("Not expected to find mapper");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -207,7 +207,7 @@ public class ClientProtocolMapperTest extends AbstractProtocolMapperTest {
 
         try {
             oidcMappersRsc.getMapperById(createdId);
-            Assert.fail("Not expected to find mapper");
+            Assertions.fail("Not expected to find mapper");
         } catch (NotFoundException nfe) {
             // Expected
         }

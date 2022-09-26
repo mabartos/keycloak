@@ -1,8 +1,8 @@
 package org.keycloak.testsuite.console.clients;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.testsuite.console.page.clients.roles.ClientRole;
@@ -14,7 +14,7 @@ import org.keycloak.testsuite.util.URLAssert;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.keycloak.testsuite.auth.page.login.Login.OIDC;
 import static org.keycloak.testsuite.console.clients.AbstractClientTest.createClientRep;
 
@@ -39,7 +39,7 @@ public class ClientRolesTest extends AbstractClientTest {
     @Page
     private UserRoleMappingsForm userRolesPage;
 
-    @Before
+    @BeforeEach
     public void beforeClientRolesTest() {
         ClientRepresentation newClient = createClientRep(TEST_CLIENT_ID, OIDC);
         testRealmResource().clients().create(newClient).close();
@@ -82,7 +82,7 @@ public class ClientRolesTest extends AbstractClientTest {
         clientRolesPage.roles().editRole(TEST_CLIENT_ROLE_NAME);
         
         clientRolePage.setRoleId(role.getId());
-        URLAssert.assertCurrentUrlEquals(clientRolePage);
+        URLAssertions.assertCurrentUrlEquals(clientRolePage);
         
         //delete
         clientRolePage.delete();
@@ -138,7 +138,7 @@ public class ClientRolesTest extends AbstractClientTest {
 //
 //    @Test
 //    @Jira("KEYCLOAK-1496, KEYCLOAK-1497")
-//    @Ignore // TODO use REST to create test data (user/roles)
+//    @Disabled // TODO use REST to create test data (user/roles)
 //    public void testAddCompositeRealmClientRoleToUser() {
 //        ClientRepresentation newClient = createClientRepresentation("test-client3", "http://example.com/*");
 //        RoleRepresentation clientCompositeRole = new RoleRepresentation("client-composite-role", "");

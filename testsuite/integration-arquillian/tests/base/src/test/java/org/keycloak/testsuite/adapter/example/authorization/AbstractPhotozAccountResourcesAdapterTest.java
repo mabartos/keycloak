@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.adapter.example.authorization;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.testsuite.arquillian.annotation.DisableFeature;
 

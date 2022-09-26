@@ -20,8 +20,8 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assume;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.testsuite.adapter.page.EmployeeServletDistributable;
 import org.keycloak.testsuite.adapter.AbstractSAMLAdapterClusteredTest;
 import org.keycloak.testsuite.adapter.servlet.SendUsernameServlet;
@@ -44,10 +44,10 @@ import org.keycloak.testsuite.arquillian.containers.InfinispanServerDeployableCo
 @InitialDcState(authServers = ServerSetup.FIRST_NODE_IN_EVERY_DC, cacheServers = ServerSetup.FIRST_NODE_IN_EVERY_DC)
 public class SAMLAdapterCrossDCTest extends AbstractSAMLAdapterClusteredTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void checkCrossDcTest() {
-        Assume.assumeThat("Seems not to be running cross-DC tests", System.getProperty("cache.server"), not(isEmptyString()));
-        Assume.assumeFalse(String.format("%s not supported with `cache-auth` profile.", SAMLAdapterCrossDCTest.class), 
+        Assumptions.assumeThat("Seems not to be running cross-DC tests", System.getProperty("cache.server"), not(isEmptyString()));
+        Assumptions.assumeFalse(String.format("%s not supported with `cache-auth` profile.", SAMLAdapterCrossDCTest.class), 
                 InfinispanServerDeployableContainer.CACHE_SERVER_AUTH);
     }
 

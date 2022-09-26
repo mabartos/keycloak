@@ -1,8 +1,8 @@
 package org.keycloak.testsuite.federation.storage;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.common.util.MultivaluedHashMap;
 import org.keycloak.exportimport.ExportImportConfig;
@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.storage.UserStorageProviderModel.IMPORT_ENABLED;
 
 /**
@@ -38,7 +38,7 @@ public class ComponentExportImportTest extends AbstractAuthTest {
 
     private File exportFile;
 
-    @Before
+    @BeforeEach
     public void setDirs() {
         exportFile = new File (new File(System.getProperty("auth.server.config.dir", "target")), "singleFile-full.json");
         log.infof("Export file: %s", exportFile);
@@ -131,20 +131,20 @@ public class ComponentExportImportTest extends AbstractAuthTest {
 
         try {
             testRealmResource().toRepresentation();
-            Assert.fail("Realm wasn't expected to be found");
+            Assertions.fail("Realm wasn't expected to be found");
         } catch (NotFoundException nfe) {
             // Expected
         }
 
         // import 
         testingClient.server().run(session -> {
-            Assert.assertNull(session.realms().getRealmByName(REALM_NAME));
+            Assertions.assertNull(session.realms().getRealmByName(REALM_NAME));
             ExportImportConfig.setAction(ExportImportConfig.ACTION_IMPORT);
             new ExportImportManager(session).runImport();
         });
 
         // Assert realm was imported
-        Assert.assertNotNull(testRealmResource().toRepresentation());
+        Assertions.assertNotNull(testRealmResource().toRepresentation());
 
         try {
             parentComponent = testRealmResource().components().component(parentComponentId).toRepresentation();
@@ -153,19 +153,19 @@ public class ComponentExportImportTest extends AbstractAuthTest {
             fail("Components not found after import.");
         }
 
-        Assert.assertEquals(parentComponent.getParentId(), realmId);
-        Assert.assertEquals(parentComponent.getName(), "parent");
-        Assert.assertEquals(parentComponent.getSubType(), "subtype");
-        Assert.assertEquals(parentComponent.getProviderId(), UserMapStorageFactory.PROVIDER_ID);
-        Assert.assertEquals(parentComponent.getProviderType(), UserStorageProvider.class.getName());
-        Assert.assertEquals(parentComponent.getConfig().getFirst("attr"), "value");
+        Assertions.assertEquals(parentComponent.getParentId(), realmId);
+        Assertions.assertEquals(parentComponent.getName(), "parent");
+        Assertions.assertEquals(parentComponent.getSubType(), "subtype");
+        Assertions.assertEquals(parentComponent.getProviderId(), UserMapStorageFactory.PROVIDER_ID);
+        Assertions.assertEquals(parentComponent.getProviderType(), UserStorageProvider.class.getName());
+        Assertions.assertEquals(parentComponent.getConfig().getFirst("attr"), "value");
 
-        Assert.assertEquals(subcomponent.getParentId(), parentComponent.getId());
-        Assert.assertEquals(subcomponent.getName(), "child");
-        Assert.assertEquals(subcomponent.getSubType(), "subtype2");
-        Assert.assertEquals(subcomponent.getProviderId(), UserMapStorageFactory.PROVIDER_ID);
-        Assert.assertEquals(subcomponent.getProviderType(), UserStorageProvider.class.getName());
-        Assert.assertEquals(subcomponent.getConfig().getFirst("attr"), "value2");
+        Assertions.assertEquals(subcomponent.getParentId(), parentComponent.getId());
+        Assertions.assertEquals(subcomponent.getName(), "child");
+        Assertions.assertEquals(subcomponent.getSubType(), "subtype2");
+        Assertions.assertEquals(subcomponent.getProviderId(), UserMapStorageFactory.PROVIDER_ID);
+        Assertions.assertEquals(subcomponent.getProviderType(), UserStorageProvider.class.getName());
+        Assertions.assertEquals(subcomponent.getConfig().getFirst("attr"), "value2");
 
     }
 

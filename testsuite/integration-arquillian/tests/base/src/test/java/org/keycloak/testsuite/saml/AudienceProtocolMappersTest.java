@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.greaterThan;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.dom.saml.v2.assertion.AudienceRestrictionType;
 import org.keycloak.dom.saml.v2.protocol.ResponseType;
 import org.keycloak.protocol.saml.mappers.SAMLAudienceProtocolMapper;
@@ -58,14 +58,14 @@ public class AudienceProtocolMappersTest extends AbstractSamlTest {
 
     private ProtocolMappersUpdater pmu;
 
-    @Before
+    @BeforeEach
     public void cleanMappersAndScopes() {
         this.pmu = ClientAttributeUpdater.forClient(adminClient, REALM_NAME, SAML_CLIENT_ID_EMPLOYEE_2).protocolMappers()
                 .clear()
                 .update();
     }
 
-    @After
+    @AfterEach
     public void revertCleanMappersAndScopes() throws IOException {
         this.pmu.close();
     }
@@ -76,22 +76,22 @@ public class AudienceProtocolMappersTest extends AbstractSamlTest {
           .login().user(bburkeUser).build()
           .getSamlResponse(SamlClient.Binding.POST);
 
-        Assert.assertNotNull(document.getSamlObject());
-        Assert.assertThat(document.getSamlObject(), Matchers.isSamlResponse(JBossSAMLURIConstants.STATUS_SUCCESS));
-        Assert.assertNotNull(((ResponseType) document.getSamlObject()).getAssertions());
-        Assert.assertThat(((ResponseType) document.getSamlObject()).getAssertions().size(), greaterThan(0));
-        Assert.assertNotNull(((ResponseType) document.getSamlObject()).getAssertions().get(0));
-        Assert.assertNotNull(((ResponseType) document.getSamlObject()).getAssertions().get(0).getAssertion());
+        Assertions.assertNotNull(document.getSamlObject());
+        Assertions.assertThat(document.getSamlObject(), Matchers.isSamlResponse(JBossSAMLURIConstants.STATUS_SUCCESS));
+        Assertions.assertNotNull(((ResponseType) document.getSamlObject()).getAssertions());
+        Assertions.assertThat(((ResponseType) document.getSamlObject()).getAssertions().size(), greaterThan(0));
+        Assertions.assertNotNull(((ResponseType) document.getSamlObject()).getAssertions().get(0));
+        Assertions.assertNotNull(((ResponseType) document.getSamlObject()).getAssertions().get(0).getAssertion());
         AudienceRestrictionType audience = ((ResponseType) document.getSamlObject())
                 .getAssertions().get(0).getAssertion().getConditions().getConditions()
                 .stream()
                 .filter(AudienceRestrictionType.class::isInstance)
                 .map(AudienceRestrictionType.class::cast)
                 .findFirst().orElse(null);
-        Assert.assertNotNull(audience);
-        Assert.assertNotNull(audience.getAudience());
+        Assertions.assertNotNull(audience);
+        Assertions.assertNotNull(audience.getAudience());
         List<String> values = audience.getAudience().stream().map(uri -> uri.toString()).collect(Collectors.toList());
-        Assert.assertThat(values, containsInAnyOrder(audiences));
+        Assertions.assertThat(values, containsInAnyOrder(audiences));
     }
 
     @Test
@@ -142,7 +142,7 @@ public class AudienceProtocolMappersTest extends AbstractSamlTest {
         this.testExpectedAudiences(SAML_CLIENT_ID_EMPLOYEE_2, "http://localhost:8280/employee/", "http://localhost:8280/employee-role-mapping/");
         // remove one of the groups (employee) and check the employee audience is removed
         String employeeId = adminClient.realm(REALM_NAME).clients().findByClientId("http://localhost:8280/employee/").get(0).getId();
-        Assert.assertNotNull(employeeId);
+        Assertions.assertNotNull(employeeId);
         try (RoleScopeUpdater rsc = UserAttributeUpdater.forUserByUsername(adminClient, REALM_NAME, bburkeUser.getUsername())
                 .clientRoleScope(employeeId)
                 .removeByName("employee")
@@ -163,11 +163,11 @@ public class AudienceProtocolMappersTest extends AbstractSamlTest {
 
             // add another client in the scope
             String employee2Id = adminClient.realm(REALM_NAME).clients().findByClientId("http://localhost:8280/employee2/").get(0).getId();
-            Assert.assertNotNull(employee2Id);
+            Assertions.assertNotNull(employee2Id);
             String employeeId = adminClient.realm(REALM_NAME).clients().findByClientId("http://localhost:8280/employee/").get(0).getId();
-            Assert.assertNotNull(employeeId);
+            Assertions.assertNotNull(employeeId);
             List<RoleRepresentation> availables = adminClient.realm(REALM_NAME).clients().get(employee2Id).getScopeMappings().clientLevel(employeeId).listAvailable();
-            Assert.assertThat(availables.size(), greaterThan(0));
+            Assertions.assertThat(availables.size(), greaterThan(0));
             // assign scope to only employee2 (employee-role-mapping should not be there)
             try (RoleScopeUpdater ru = cau.clientRoleScope(employeeId)
                     .add(availables.get(0))
@@ -185,17 +185,17 @@ public class AudienceProtocolMappersTest extends AbstractSamlTest {
         clientScope.setProtocol("saml");
         clientScope.setProtocolMappers(Collections.singletonList(createSamlProtocolMapper(SAMLAudienceResolveProtocolMapper.PROVIDER_ID)));
         Response res = adminClient.realm(REALM_NAME).clientScopes().create(clientScope);
-        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), res.getStatus());
+        Assertions.assertEquals(Response.Status.CREATED.getStatusCode(), res.getStatus());
         String clientScopeId = ApiUtil.getCreatedId(res);
 
         try {
             // add a mapping to the client scope to employee2.employee role (this way employee should be in the audience)
             String employee2Id = adminClient.realm(REALM_NAME).clients().findByClientId("http://localhost:8280/employee2/").get(0).getId();
-            Assert.assertNotNull(employee2Id);
+            Assertions.assertNotNull(employee2Id);
             String employeeId = adminClient.realm(REALM_NAME).clients().findByClientId("http://localhost:8280/employee/").get(0).getId();
-            Assert.assertNotNull(employeeId);
+            Assertions.assertNotNull(employeeId);
             List<RoleRepresentation> availables = adminClient.realm(REALM_NAME).clientScopes().get(clientScopeId).getScopeMappings().clientLevel(employeeId).listAvailable();
-            Assert.assertThat(availables.size(), greaterThan(0));
+            Assertions.assertThat(availables.size(), greaterThan(0));
             adminClient.realm(REALM_NAME).clientScopes().get(clientScopeId).getScopeMappings().clientLevel(employeeId).add(availables);
 
             // remove full scope and add the client scope

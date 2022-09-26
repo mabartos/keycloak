@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.client;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.Rule;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
@@ -43,8 +43,8 @@ import javax.ws.rs.core.Response.Status;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.keycloak.testsuite.util.Matchers.statusCodeIs;
 
 /**
@@ -52,8 +52,7 @@ import static org.keycloak.testsuite.util.Matchers.statusCodeIs;
  */
 public class ClientRedirectTest extends AbstractTestRealmKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Override
     public void configureTestRealm(RealmRepresentation testRealm) {

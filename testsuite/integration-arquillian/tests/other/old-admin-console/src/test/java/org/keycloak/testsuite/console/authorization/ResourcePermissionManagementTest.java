@@ -16,16 +16,16 @@
  */
 package org.keycloak.testsuite.console.authorization;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.admin.client.resource.PoliciesResource;
 import org.keycloak.admin.client.resource.ResourcePermissionsResource;
@@ -45,7 +45,7 @@ import org.keycloak.testsuite.console.page.clients.authorization.permission.Reso
  */
 public class ResourcePermissionManagementTest extends AbstractAuthorizationSettingsTest {
 
-    @Before
+    @BeforeEach
     public void configureTest() {
         super.configureTest();
         RolesResource realmRoles = testRealmResource().roles();

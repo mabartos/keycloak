@@ -3,9 +3,9 @@ package org.keycloak.testsuite.admin;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.broker.provider.util.SimpleHttp;
 import org.keycloak.representations.AccessTokenResponse;
@@ -19,8 +19,8 @@ import java.util.HashSet;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.keycloak.models.AdminRoles.REALM_ADMIN;
 import static org.keycloak.models.Constants.ADMIN_CLI_CLIENT_ID;
 import static org.keycloak.models.Constants.REALM_MANAGEMENT_CLIENT_ID;
@@ -40,12 +40,12 @@ public class AdminConsoleWhoAmILocaleTest extends AbstractKeycloakTest {
 
     private CloseableHttpClient client;
 
-    @Before
+    @BeforeEach
     public void createHttpClient() throws Exception {
         client = HttpClientBuilder.create().build();
     }
 
-    @After
+    @AfterEach
     public void closeHttpClient() {
         try {
             client.close();

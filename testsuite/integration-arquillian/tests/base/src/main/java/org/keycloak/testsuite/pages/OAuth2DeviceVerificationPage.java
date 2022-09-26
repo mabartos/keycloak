@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.pages;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -62,22 +62,22 @@ public class OAuth2DeviceVerificationPage extends LanguageComboboxAwarePage {
     }
 
     public void assertApprovedPage() {
-        Assert.assertTrue("Expected device approved page but was " + driver.getTitle() + " (" + driver.getCurrentUrl() + ")",
+        Assertions.assertTrue("Expected device approved page but was " + driver.getTitle() + " (" + driver.getCurrentUrl() + ")",
                 isApprovedPage());
     }
 
     public void assertDeniedPage() {
-        Assert.assertTrue("Expected device denied page but was " + driver.getTitle() + " (" + driver.getCurrentUrl() + ")",
+        Assertions.assertTrue("Expected device denied page but was " + driver.getTitle() + " (" + driver.getCurrentUrl() + ")",
                 isDeniedPage());
     }
 
     public void assertInvalidUserCodePage() {
-        Assert.assertTrue("Expected invalid user code page but was " + driver.getTitle() + " (" + driver.getCurrentUrl() + ")",
+        Assertions.assertTrue("Expected invalid user code page but was " + driver.getTitle() + " (" + driver.getCurrentUrl() + ")",
             isInvalidUserCodePage());
     }
 
     public void assertExpiredUserCodePage() {
-        Assert.assertTrue("Expected expired user code page but was " + driver.getTitle() + " (" + driver.getCurrentUrl() + ")",
+        Assertions.assertTrue("Expected expired user code page but was " + driver.getTitle() + " (" + driver.getCurrentUrl() + ")",
                 isExpiredUserCodePage());
     }
 

@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.saml;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.dom.saml.v2.protocol.AuthnRequestType;
 import org.keycloak.protocol.saml.SamlProtocol;
 import org.keycloak.saml.SignatureAlgorithm;

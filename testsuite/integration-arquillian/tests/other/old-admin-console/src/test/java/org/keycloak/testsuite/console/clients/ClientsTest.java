@@ -22,8 +22,8 @@
 package org.keycloak.testsuite.console.clients;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.testsuite.console.page.clients.settings.ClientSettings;
 
@@ -31,10 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.keycloak.testsuite.auth.page.login.Login.OIDC;
 import static org.keycloak.testsuite.console.clients.AbstractClientTest.createClientRep;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
 
 /**
  *
@@ -45,7 +45,7 @@ public class ClientsTest extends AbstractClientTest {
     @Page
     private ClientSettings clientSettingsPage;
     
-    @Before
+    @BeforeEach
     public void beforeClientsTest() {
         ClientRepresentation newClient = createClientRep(TEST_CLIENT_ID, OIDC);
         testRealmResource().clients().create(newClient).close();

@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.adapter.servlet;
 
-import org.junit.Assume;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.testsuite.arquillian.annotation.AppServerContainer;
 import org.keycloak.testsuite.utils.annotation.UseServletFilter;
 import org.keycloak.testsuite.utils.arquillian.ContainerConstants;
@@ -18,9 +18,9 @@ import org.keycloak.testsuite.utils.arquillian.ContainerConstants;
         filterDependency = "org.keycloak:keycloak-saml-servlet-filter-adapter")
 public class SAMLFilterServletSessionTimeoutTest extends SAMLServletSessionTimeoutTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
         String appServerJavaHome = System.getProperty("app.server.java.home", "");
-        Assume.assumeFalse(appServerJavaHome.contains("1.7") || appServerJavaHome.contains("ibm-java-70"));
+        Assumptions.assumeFalse(appServerJavaHome.contains("1.7") || appServerJavaHome.contains("ibm-java-70"));
     }
 }

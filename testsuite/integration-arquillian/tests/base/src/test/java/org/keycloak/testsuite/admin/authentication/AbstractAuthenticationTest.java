@@ -17,9 +17,8 @@
 
 package org.keycloak.testsuite.admin.authentication;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.admin.client.resource.AuthenticationManagementResource;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.events.admin.OperationType;
@@ -57,10 +56,9 @@ public abstract class AbstractAuthenticationTest extends AbstractKeycloakTest {
     AuthenticationManagementResource authMgmtResource;
     protected String testRealmId;
 
-    @Rule
     public AssertAdminEvents assertAdminEvents = new AssertAdminEvents(this);
 
-    @Before
+    @BeforeEach
     public void before() {
         realmResource = adminClient.realms().realm(REALM_NAME);
         authMgmtResource = realmResource.flows();
@@ -95,29 +93,29 @@ public abstract class AbstractAuthenticationTest extends AbstractKeycloakTest {
     }
 
     void compareExecution(AuthenticationExecutionInfoRepresentation expected, AuthenticationExecutionInfoRepresentation actual) {
-        Assert.assertEquals("Execution requirement - " + actual.getProviderId(), expected.getRequirement(), actual.getRequirement());
-        Assert.assertEquals("Execution display name - " + actual.getProviderId(), expected.getDisplayName(), actual.getDisplayName());
-        Assert.assertEquals("Execution configurable - " + actual.getProviderId(), expected.getConfigurable(), actual.getConfigurable());
-        Assert.assertEquals("Execution provider id - " + actual.getProviderId(), expected.getProviderId(), actual.getProviderId());
-        Assert.assertEquals("Execution level - " + actual.getProviderId(), expected.getLevel(), actual.getLevel());
-        Assert.assertEquals("Execution index - " + actual.getProviderId(), expected.getIndex(), actual.getIndex());
-        Assert.assertEquals("Execution authentication flow - " + actual.getProviderId(), expected.getAuthenticationFlow(), actual.getAuthenticationFlow());
-        Assert.assertEquals("Execution requirement choices - " + actual.getProviderId(), expected.getRequirementChoices(), actual.getRequirementChoices());
+        Assertions.assertEquals("Execution requirement - " + actual.getProviderId(), expected.getRequirement(), actual.getRequirement());
+        Assertions.assertEquals("Execution display name - " + actual.getProviderId(), expected.getDisplayName(), actual.getDisplayName());
+        Assertions.assertEquals("Execution configurable - " + actual.getProviderId(), expected.getConfigurable(), actual.getConfigurable());
+        Assertions.assertEquals("Execution provider id - " + actual.getProviderId(), expected.getProviderId(), actual.getProviderId());
+        Assertions.assertEquals("Execution level - " + actual.getProviderId(), expected.getLevel(), actual.getLevel());
+        Assertions.assertEquals("Execution index - " + actual.getProviderId(), expected.getIndex(), actual.getIndex());
+        Assertions.assertEquals("Execution authentication flow - " + actual.getProviderId(), expected.getAuthenticationFlow(), actual.getAuthenticationFlow());
+        Assertions.assertEquals("Execution requirement choices - " + actual.getProviderId(), expected.getRequirementChoices(), actual.getRequirementChoices());
     }
 
     void compareExecution(AuthenticationExecutionExportRepresentation expected, AuthenticationExecutionExportRepresentation actual) {
-        Assert.assertEquals("Execution flowAlias - " + actual.getFlowAlias(), expected.getFlowAlias(), actual.getFlowAlias());
-        Assert.assertEquals("Execution authenticator - " + actual.getAuthenticator(), expected.getAuthenticator(), actual.getAuthenticator());
-        Assert.assertEquals("Execution userSetupAllowed - " + actual.getAuthenticator(), expected.isUserSetupAllowed(), actual.isUserSetupAllowed());
-        Assert.assertEquals("Execution authenticatorFlow - " + actual.getAuthenticator(), expected.isAuthenticatorFlow(), actual.isAuthenticatorFlow());
-        Assert.assertEquals("Execution authenticatorConfig - " + actual.getAuthenticator(), expected.getAuthenticatorConfig(), actual.getAuthenticatorConfig());
-        Assert.assertEquals("Execution priority - " + actual.getAuthenticator(), expected.getPriority(), actual.getPriority());
-        Assert.assertEquals("Execution requirement - " + actual.getAuthenticator(), expected.getRequirement(), actual.getRequirement());
+        Assertions.assertEquals("Execution flowAlias - " + actual.getFlowAlias(), expected.getFlowAlias(), actual.getFlowAlias());
+        Assertions.assertEquals("Execution authenticator - " + actual.getAuthenticator(), expected.getAuthenticator(), actual.getAuthenticator());
+        Assertions.assertEquals("Execution userSetupAllowed - " + actual.getAuthenticator(), expected.isUserSetupAllowed(), actual.isUserSetupAllowed());
+        Assertions.assertEquals("Execution authenticatorFlow - " + actual.getAuthenticator(), expected.isAuthenticatorFlow(), actual.isAuthenticatorFlow());
+        Assertions.assertEquals("Execution authenticatorConfig - " + actual.getAuthenticator(), expected.getAuthenticatorConfig(), actual.getAuthenticatorConfig());
+        Assertions.assertEquals("Execution priority - " + actual.getAuthenticator(), expected.getPriority(), actual.getPriority());
+        Assertions.assertEquals("Execution requirement - " + actual.getAuthenticator(), expected.getRequirement(), actual.getRequirement());
     }
 
     void compareExecutions(List<AuthenticationExecutionExportRepresentation> expected, List<AuthenticationExecutionExportRepresentation> actual) {
-        Assert.assertNotNull("Executions should not be null", actual);
-        Assert.assertEquals("Size", expected.size(), actual.size());
+        Assertions.assertNotNull("Executions should not be null", actual);
+        Assertions.assertEquals("Size", expected.size(), actual.size());
 
         for (int i = 0; i < expected.size(); i++) {
             compareExecution(expected.get(i), actual.get(i));
@@ -125,17 +123,17 @@ public abstract class AbstractAuthenticationTest extends AbstractKeycloakTest {
     }
 
     void compareFlows(AuthenticationFlowRepresentation expected, AuthenticationFlowRepresentation actual) {
-        Assert.assertEquals("Flow alias", expected.getAlias(), actual.getAlias());
-        Assert.assertEquals("Flow description", expected.getDescription(), actual.getDescription());
-        Assert.assertEquals("Flow providerId", expected.getProviderId(), actual.getProviderId());
-        Assert.assertEquals("Flow top level", expected.isTopLevel(), actual.isTopLevel());
-        Assert.assertEquals("Flow built-in", expected.isBuiltIn(), actual.isBuiltIn());
+        Assertions.assertEquals("Flow alias", expected.getAlias(), actual.getAlias());
+        Assertions.assertEquals("Flow description", expected.getDescription(), actual.getDescription());
+        Assertions.assertEquals("Flow providerId", expected.getProviderId(), actual.getProviderId());
+        Assertions.assertEquals("Flow top level", expected.isTopLevel(), actual.isTopLevel());
+        Assertions.assertEquals("Flow built-in", expected.isBuiltIn(), actual.isBuiltIn());
 
         List<AuthenticationExecutionExportRepresentation> expectedExecs = expected.getAuthenticationExecutions();
         List<AuthenticationExecutionExportRepresentation> actualExecs = actual.getAuthenticationExecutions();
 
         if (expectedExecs == null) {
-            Assert.assertTrue("Executions should be null or empty", actualExecs == null || actualExecs.size() == 0);
+            Assertions.assertTrue("Executions should be null or empty", actualExecs == null || actualExecs.size() == 0);
         } else {
             compareExecutions(expectedExecs, actualExecs);
         }

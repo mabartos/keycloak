@@ -18,9 +18,9 @@
 package org.keycloak.testsuite.ui.account2;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.broker.oidc.OIDCIdentityProviderFactory;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.representations.idm.ClientRepresentation;
@@ -37,9 +37,9 @@ import org.keycloak.testsuite.util.ClientBuilder;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
 
 /**
@@ -110,14 +110,14 @@ public class LinkedAccountsTest extends BaseAccountPageTest {
         testRealms.add(realm2);
     }
 
-    @Before
+    @BeforeEach
     public void beforeLinkedAccountsTest() {
         socialIdp = linkedAccountsPage.getProvider(SOCIAL_IDP_ALIAS);
         systemIdp = linkedAccountsPage.getProvider(SYSTEM_IDP_ALIAS);
         assertProvidersCount();
     }
 
-    @After
+    @AfterEach
     public void afterLinkedAccountsTest() {
         assertProvidersCount();
     }

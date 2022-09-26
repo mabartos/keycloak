@@ -17,10 +17,10 @@
 package org.keycloak.testsuite.oauth;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.events.Details;
@@ -43,8 +43,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 
 /**
@@ -52,8 +52,7 @@ import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
  */
 public class AuthorizationCodeTest extends AbstractKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+
 
     @Page
     private ErrorPage errorPage;
@@ -64,7 +63,7 @@ public class AuthorizationCodeTest extends AbstractKeycloakTest {
         testRealms.add(realmRepresentation);
     }
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         oauth.responseType(OAuth2Constants.CODE);
         oauth.responseMode(null);
@@ -78,9 +77,9 @@ public class AuthorizationCodeTest extends AbstractKeycloakTest {
         OAuthClient.AuthorizationEndpointResponse response = oauth.doLogin("test-user@localhost", "password");
 
         assertTrue(response.isRedirected());
-        Assert.assertNotNull(response.getCode());
+        Assertions.assertNotNull(response.getCode());
         assertEquals("OpenIdConnect.AuthenticationProperties=2302984sdlk", response.getState());
-        Assert.assertNull(response.getError());
+        Assertions.assertNull(response.getError());
 
         String codeId = events.expectLogin().assertEvent().getDetails().get(Details.CODE_ID);
     }
@@ -93,7 +92,7 @@ public class AuthorizationCodeTest extends AbstractKeycloakTest {
         oauth.doLogin("test-user@localhost", "password");
 
         String title = PageUtils.getPageTitle(driver);
-        Assert.assertEquals("Success code", title);
+        Assertions.assertEquals("Success code", title);
 
         driver.findElement(By.id(OAuth2Constants.CODE)).getAttribute("value");
 
@@ -109,7 +108,7 @@ public class AuthorizationCodeTest extends AbstractKeycloakTest {
         OAuthClient.AuthorizationEndpointResponse response = oauth.doLogin("test-user@localhost", "password");
 
         assertTrue(response.isRedirected());
-        Assert.assertNotNull(response.getCode());
+        Assertions.assertNotNull(response.getCode());
 
         String codeId = events.expectLogin().assertEvent().getDetails().get(Details.CODE_ID);
     }
@@ -138,9 +137,9 @@ public class AuthorizationCodeTest extends AbstractKeycloakTest {
         OAuthClient.AuthorizationEndpointResponse response = oauth.doLogin("test-user@localhost", "password");
 
         assertTrue(response.isRedirected());
-        Assert.assertNotNull(response.getCode());
-        Assert.assertNull(response.getState());
-        Assert.assertNull(response.getError());
+        Assertions.assertNotNull(response.getCode());
+        Assertions.assertNull(response.getState());
+        Assertions.assertNull(response.getError());
 
         String codeId = events.expectLogin().assertEvent().getDetails().get(Details.CODE_ID);
     }
@@ -153,7 +152,7 @@ public class AuthorizationCodeTest extends AbstractKeycloakTest {
 
         OAuthClient.AuthorizationEndpointResponse errorResponse = new OAuthClient.AuthorizationEndpointResponse(oauth);
         assertTrue(errorResponse.isRedirected());
-        Assert.assertEquals(errorResponse.getError(), OAuthErrorException.UNSUPPORTED_RESPONSE_TYPE);
+        Assertions.assertEquals(errorResponse.getError(), OAuthErrorException.UNSUPPORTED_RESPONSE_TYPE);
 
         events.expectLogin().error(Errors.INVALID_REQUEST).user((String) null).session((String) null).clearDetails().detail(Details.RESPONSE_TYPE, "tokenn").assertEvent();
     }
@@ -235,24 +234,24 @@ public class AuthorizationCodeTest extends AbstractKeycloakTest {
         oauth.responseMode(OIDCResponseMode.FRAGMENT.value());
         OAuthClient.AuthorizationEndpointResponse response = oauth.doLogin("test-user@localhost", "password");
 
-        Assert.assertNotNull(response.getCode());
-        Assert.assertNotNull(response.getState());
+        Assertions.assertNotNull(response.getCode());
+        Assertions.assertNotNull(response.getState());
 
         URI currentUri = new URI(driver.getCurrentUrl());
-        Assert.assertNull(currentUri.getRawQuery());
-        Assert.assertNotNull(currentUri.getRawFragment());
+        Assertions.assertNull(currentUri.getRawQuery());
+        Assertions.assertNotNull(currentUri.getRawFragment());
 
         // Unset response_mode. The initial OIDC AuthenticationRequest won't contain "response_mode" parameter now and hence it should fallback to "query".
         oauth.responseMode(null);
         oauth.openLoginForm();
         response = new OAuthClient.AuthorizationEndpointResponse(oauth);
 
-        Assert.assertNotNull(response.getCode());
-        Assert.assertNotNull(response.getState());
+        Assertions.assertNotNull(response.getCode());
+        Assertions.assertNotNull(response.getState());
 
         currentUri = new URI(driver.getCurrentUrl());
-        Assert.assertNotNull(currentUri.getRawQuery());
-        Assert.assertNull(currentUri.getRawFragment());
+        Assertions.assertNotNull(currentUri.getRawQuery());
+        Assertions.assertNull(currentUri.getRawFragment());
     }
 
     @Test

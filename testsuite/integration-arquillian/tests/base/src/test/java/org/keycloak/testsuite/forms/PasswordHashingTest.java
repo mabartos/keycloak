@@ -17,7 +17,7 @@
 package org.keycloak.testsuite.forms;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.common.util.Base64;
 import org.keycloak.credential.CredentialModel;
@@ -44,9 +44,9 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.ws.rs.BadRequestException;
 import java.security.spec.KeySpec;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>

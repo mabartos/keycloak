@@ -18,9 +18,9 @@
 package org.keycloak.testsuite.admin;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.events.Details;
 import org.keycloak.events.EventType;
@@ -47,8 +47,7 @@ import java.util.List;
 @DisableFeature(value = Profile.Feature.ACCOUNT2, skipRestart = true) // TODO remove this (KEYCLOAK-16228)
 public class UserTotpTest extends AbstractTestRealmKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AccountTotpPage totpPage;
@@ -73,17 +72,17 @@ public class UserTotpTest extends AbstractTestRealmKeycloakTest {
 
         events.expectLogin().client("account").detail(Details.REDIRECT_URI, getAccountRedirectUrl() + "?path=totp").assertEvent();
 
-        Assert.assertTrue(totpPage.isCurrent());
+        Assertions.assertTrue(totpPage.isCurrent());
 
-        Assert.assertFalse(driver.getPageSource().contains("Remove Google"));
+        Assertions.assertFalse(driver.getPageSource().contains("Remove Google"));
 
         totpPage.configure(totp.generateTOTP(totpPage.getTotpSecret()));
 
-        Assert.assertEquals("Mobile authenticator configured.", profilePage.getSuccess());
+        Assertions.assertEquals("Mobile authenticator configured.", profilePage.getSuccess());
 
         events.expectAccount(EventType.UPDATE_TOTP).assertEvent();
 
-        Assert.assertTrue(driver.getPageSource().contains("pficon-delete"));
+        Assertions.assertTrue(driver.getPageSource().contains("pficon-delete"));
 
         List<UserRepresentation> users = adminClient.realms().realm("test").users().search("test-user@localhost", null, null, null, 0, 1);
         String userId = users.get(0).getId();
@@ -93,11 +92,11 @@ public class UserTotpTest extends AbstractTestRealmKeycloakTest {
         adminClient.realms().realm("test").users().get(userId).removeCredential(totpCredential.getId());
 
         totpPage.open();
-        Assert.assertFalse(driver.getPageSource().contains("pficon-delete"));
+        Assertions.assertFalse(driver.getPageSource().contains("pficon-delete"));
 
         AdminEventRepresentation event = testingClient.testing().pollAdminEvent();
-        Assert.assertNotNull(event);
-        Assert.assertEquals(OperationType.ACTION.name(), event.getOperationType());
-        Assert.assertEquals("users/" + userId + "/credentials/" + totpCredential.getId(), event.getResourcePath());
+        Assertions.assertNotNull(event);
+        Assertions.assertEquals(OperationType.ACTION.name(), event.getOperationType());
+        Assertions.assertEquals("users/" + userId + "/credentials/" + totpCredential.getId(), event.getResourcePath());
     }
 }

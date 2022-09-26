@@ -28,8 +28,8 @@ import java.util.Map;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.arquillian.annotation.AppServerContainer;
 import org.keycloak.testsuite.util.AdminClientUtil;
 import org.keycloak.testsuite.util.OAuthClient;
@@ -91,7 +91,7 @@ public class ServletAuthzCIPAdapterTest extends AbstractServletAuthzAdapterTest 
 
             body = post.readEntity(Map.class);
 
-            Assert.assertEquals("test-value", body.get("test"));
+            Assertions.assertEquals("test-value", body.get("test"));
         });
     }
 }

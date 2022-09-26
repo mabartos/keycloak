@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.account.custom;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.admin.client.resource.AuthenticationManagementResource;
 import org.keycloak.common.Profile;
 import org.keycloak.models.AuthenticationExecutionModel;
@@ -42,7 +42,7 @@ public abstract class AbstractCustomAccountManagementTest extends AbstractAccoun
         super.setDefaultPageUriParameters();
     }
     
-    @Before
+    @BeforeEach
     public void beforeTest() {
         authMgmtResource = testRealmResource().flows();
     }

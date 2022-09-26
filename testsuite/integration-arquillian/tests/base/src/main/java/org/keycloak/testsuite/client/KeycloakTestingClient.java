@@ -31,7 +31,7 @@ import org.keycloak.testsuite.runonserver.*;
 import org.keycloak.testsuite.util.AdminClientUtil;
 import org.keycloak.util.JsonSerialization;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author <a href="mailto:mstrukel@redhat.com">Marko Strukelj</a>

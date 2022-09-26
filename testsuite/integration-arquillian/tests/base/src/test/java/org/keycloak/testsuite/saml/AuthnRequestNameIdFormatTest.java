@@ -28,11 +28,11 @@ import org.keycloak.saml.processing.core.saml.v2.common.SAMLDocumentHolder;
 import org.keycloak.testsuite.util.SamlClientBuilder;
 import java.util.List;
 import org.hamcrest.Matcher;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.*;
 import static org.keycloak.testsuite.util.SamlClient.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 
 /**
  *

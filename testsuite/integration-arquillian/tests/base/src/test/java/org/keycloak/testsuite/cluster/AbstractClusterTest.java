@@ -2,9 +2,9 @@ package org.keycloak.testsuite.cluster;
 
 import org.jboss.arquillian.container.test.api.ContainerController;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.models.Constants;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.auth.page.AuthRealm.ADMIN;
 import static org.keycloak.testsuite.auth.page.AuthRealm.MASTER;
 import static org.keycloak.testsuite.util.WaitUtils.pause;
@@ -168,12 +168,12 @@ public abstract class AbstractClusterTest extends AbstractKeycloakTest {
         return testingClient;
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
         ContainerAssume.assumeClusteredContainer();
     }
 
-    @AfterClass
+    @AfterAll
     public static void closeClients() {
         backendAdminClients.values().forEach(Keycloak::close);
         backendAdminClients.clear();
@@ -183,7 +183,7 @@ public abstract class AbstractClusterTest extends AbstractKeycloakTest {
 
     }
 
-    @Before
+    @BeforeEach
     public void beforeClusterTest() {
         failback();
         logFailoverSetup();

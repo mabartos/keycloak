@@ -27,9 +27,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.ws.rs.NotFoundException;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.connections.infinispan.InfinispanConnectionProvider;
@@ -73,7 +73,7 @@ public class SessionExpirationCrossDCTest extends AbstractAdminCrossDCTest {
     private int authSessions02;
 
 
-    @Before
+    @BeforeEach
     public void beforeTest() {
         try {
             oauth.removeCachedPublicKeys();
@@ -113,7 +113,7 @@ public class SessionExpirationCrossDCTest extends AbstractAdminCrossDCTest {
         setInfinispanTestTimeServiceOnAllStartedAuthServers();
     }
 
-    @After
+    @AfterEach
     public void afterTest() {
         // Expire all sessions
         setTimeOffset(1500);
@@ -189,12 +189,12 @@ public class SessionExpirationCrossDCTest extends AbstractAdminCrossDCTest {
             log.infof("After creating sessions: sessions11: %d, sessions12: %d, remoteSessions11: %d, remoteSessions12: %d, clientSessions11: %d, clientSessions12: %d",
                     sessions11, sessions12, remoteSessions11, remoteSessions12, clientSessions11, clientSessions12);
 
-            Assert.assertEquals(sessions11, sessions01 + SESSIONS_COUNT);
-            Assert.assertEquals(sessions12, sessions02 + SESSIONS_COUNT);
+            Assertions.assertEquals(sessions11, sessions01 + SESSIONS_COUNT);
+            Assertions.assertEquals(sessions12, sessions02 + SESSIONS_COUNT);
 
             if (includeRemoteStats) {
-                Assert.assertEquals(remoteSessions11, remoteSessions01 + SESSIONS_COUNT);
-                Assert.assertEquals(remoteSessions12, remoteSessions02 + SESSIONS_COUNT);
+                Assertions.assertEquals(remoteSessions11, remoteSessions01 + SESSIONS_COUNT);
+                Assertions.assertEquals(remoteSessions12, remoteSessions02 + SESSIONS_COUNT);
             }
         }, 50, 50);
 
@@ -216,16 +216,16 @@ public class SessionExpirationCrossDCTest extends AbstractAdminCrossDCTest {
             long messagesCount = (Long) channelStatisticsCrossDc.getSingleStatistics(InfinispanStatistics.Constants.STAT_CHANNEL_RECEIVED_MESSAGES);
             log.infof(messagePrefix + ": sessions1: %d, sessions2: %d, clientSessions1: %d, clientSessions2: %d, remoteSessions1: %d, remoteSessions2: %d, sentMessages: %d", sessions1, sessions2, clientSessions1, clientSessions2, remoteSessions1, remoteSessions2, messagesCount);
 
-            Assert.assertEquals(sessions1, sessions1Expected);
-            Assert.assertEquals(sessions2, sessions2Expected);
-            Assert.assertEquals(clientSessions1, clientSessions1Expected);
-            Assert.assertEquals(clientSessions2, clientSessions2Expected);
-            Assert.assertEquals(remoteSessions1, remoteSessions1Expected);
-            Assert.assertEquals(remoteSessions2, remoteSessions2Expected);
+            Assertions.assertEquals(sessions1, sessions1Expected);
+            Assertions.assertEquals(sessions2, sessions2Expected);
+            Assertions.assertEquals(clientSessions1, clientSessions1Expected);
+            Assertions.assertEquals(clientSessions2, clientSessions2Expected);
+            Assertions.assertEquals(remoteSessions1, remoteSessions1Expected);
+            Assertions.assertEquals(remoteSessions2, remoteSessions2Expected);
 
             // Workaround...
             if (checkSomeMessagesSentBetweenDCs) {
-                Assert.assertThat(messagesCount, Matchers.greaterThan(0l));
+                Assertions.assertThat(messagesCount, Matchers.greaterThan(0l));
             }
 
         }, 50, 50);
@@ -280,8 +280,8 @@ public class SessionExpirationCrossDCTest extends AbstractAdminCrossDCTest {
 
         // Assert I am able to refresh
         OAuthClient.AccessTokenResponse refreshResponse = oauth.doRefreshTokenRequest(lastAccessTokenResponse.getRefreshToken(), "password");
-        Assert.assertNotNull(refreshResponse.getRefreshToken());
-        Assert.assertNull(refreshResponse.getError());
+        Assertions.assertNotNull(refreshResponse.getRefreshToken());
+        Assertions.assertNull(refreshResponse.getError());
 
         channelStatisticsCrossDc.reset();
 
@@ -299,8 +299,8 @@ public class SessionExpirationCrossDCTest extends AbstractAdminCrossDCTest {
 
         // Assert I am not able to refresh anymore
         refreshResponse = oauth.doRefreshTokenRequest(lastAccessTokenResponse.getRefreshToken(), "password");
-        Assert.assertNull(refreshResponse.getRefreshToken());
-        Assert.assertNotNull(refreshResponse.getError());
+        Assertions.assertNull(refreshResponse.getRefreshToken());
+        Assertions.assertNotNull(refreshResponse.getError());
 
 
         channelStatisticsCrossDc.reset();
@@ -326,8 +326,8 @@ public class SessionExpirationCrossDCTest extends AbstractAdminCrossDCTest {
 
         // Assert I am able to refresh
         OAuthClient.AccessTokenResponse refreshResponse = oauth.doRefreshTokenRequest(lastAccessTokenResponse.getRefreshToken(), "password");
-        Assert.assertNotNull(refreshResponse.getRefreshToken());
-        Assert.assertNull(refreshResponse.getError());
+        Assertions.assertNotNull(refreshResponse.getRefreshToken());
+        Assertions.assertNull(refreshResponse.getError());
 
         channelStatisticsCrossDc.reset();
 
@@ -346,8 +346,8 @@ public class SessionExpirationCrossDCTest extends AbstractAdminCrossDCTest {
 
         // Assert I am not able to refresh anymore
         refreshResponse = oauth.doRefreshTokenRequest(lastAccessTokenResponse.getRefreshToken(), "password");
-        Assert.assertNull(refreshResponse.getRefreshToken());
-        Assert.assertNotNull(refreshResponse.getError());
+        Assertions.assertNull(refreshResponse.getRefreshToken());
+        Assertions.assertNotNull(refreshResponse.getError());
 
 
         channelStatisticsCrossDc.reset();
@@ -460,8 +460,8 @@ public class SessionExpirationCrossDCTest extends AbstractAdminCrossDCTest {
         for (OAuthClient.AccessTokenResponse response : responses) {
             i1++;
             OAuthClient.AccessTokenResponse refreshTokenResponse = oauth.doRefreshTokenRequest(response.getRefreshToken(), "password");
-            Assert.assertNotNull("Failed in iteration " + i1, refreshTokenResponse.getRefreshToken());
-            Assert.assertNull("Failed in iteration " + i1, refreshTokenResponse.getError());
+            Assertions.assertNotNull("Failed in iteration " + i1, refreshTokenResponse.getRefreshToken());
+            Assertions.assertNull("Failed in iteration " + i1, refreshTokenResponse.getError());
         }
 
         channelStatisticsCrossDc.reset();
@@ -483,8 +483,8 @@ public class SessionExpirationCrossDCTest extends AbstractAdminCrossDCTest {
             for (OAuthClient.AccessTokenResponse response : responses) {
                 j++;
                 OAuthClient.AccessTokenResponse refreshTokenResponse = oauth.doRefreshTokenRequest(response.getRefreshToken(), "password");
-                Assert.assertNull("Failed in iteration " + j, refreshTokenResponse.getRefreshToken());
-                Assert.assertNotNull("Failed in iteration " + j, refreshTokenResponse.getError());
+                Assertions.assertNull("Failed in iteration " + j, refreshTokenResponse.getRefreshToken());
+                Assertions.assertNotNull("Failed in iteration " + j, refreshTokenResponse.getError());
             }
 
             log.infof("Passed the testLogoutUserWithFailover in the iteration: %d", i.get());
@@ -547,14 +547,14 @@ public class SessionExpirationCrossDCTest extends AbstractAdminCrossDCTest {
 
         if (expectedSessionsCount == 0) {
             // No sessions present. Statistics for the client not included
-            Assert.assertFalse(optional.isPresent());
+            Assertions.assertFalse(optional.isPresent());
         } else {
             Map<String, String> testAppSessions = optional.get();
-            Assert.assertEquals(expectedSessionsCount, Integer.parseInt(testAppSessions.get("active")));
+            Assertions.assertEquals(expectedSessionsCount, Integer.parseInt(testAppSessions.get("active")));
         }
 
         List<UserSessionRepresentation> userSessions = ApiUtil.findClientByClientId(getAdminClient().realm(REALM_NAME), "test-app").getUserSessions(0, 100);
-        Assert.assertEquals(expectedSessionsCount, userSessions.size());
+        Assertions.assertEquals(expectedSessionsCount, userSessions.size());
     }
 
 
@@ -682,7 +682,7 @@ public class SessionExpirationCrossDCTest extends AbstractAdminCrossDCTest {
             // There are 20 new authentication sessions created totally in both datacenters
             int diff1 = authSessions11 - authSessions01;
             int diff2 = authSessions12 - authSessions02;
-            Assert.assertEquals(SESSIONS_COUNT, diff1 + diff2);
+            Assertions.assertEquals(SESSIONS_COUNT, diff1 + diff2);
         }, 50, 50);
     }
 
@@ -698,7 +698,7 @@ public class SessionExpirationCrossDCTest extends AbstractAdminCrossDCTest {
             int diff1 = authSessions1 - authSessions01;
             int diff2 = authSessions2 - authSessions02;
 
-            Assert.assertEquals(expectedAuthSessionsCountDiff, diff1 + diff2);
+            Assertions.assertEquals(expectedAuthSessionsCountDiff, diff1 + diff2);
         }, 50, 50);
     }
 

@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.pages;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 
 import org.jboss.arquillian.graphene.page.Page;

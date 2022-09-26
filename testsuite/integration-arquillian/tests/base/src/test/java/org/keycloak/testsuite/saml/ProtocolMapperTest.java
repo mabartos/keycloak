@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.saml;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.dom.saml.v2.assertion.AssertionType;
 import org.keycloak.dom.saml.v2.assertion.AttributeType;
 import org.keycloak.protocol.saml.mappers.AttributeStatementHelper;
@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.keycloak.testsuite.saml.RoleMapperTest.createSamlProtocolMapper;
 import static org.keycloak.testsuite.util.SamlStreams.assertionsUnencrypted;
 import static org.keycloak.testsuite.util.SamlStreams.attributeStatements;
@@ -35,7 +35,7 @@ public class ProtocolMapperTest extends AbstractSamlTest {
     private ClientAttributeUpdater cau;
     private ProtocolMappersUpdater pmu;
 
-    @Before
+    @BeforeEach
     public void cleanMappersAndScopes() {
         this.cau = ClientAttributeUpdater.forClient(adminClient, REALM_NAME, SAML_CLIENT_ID_EMPLOYEE_2)
                 .setDefaultClientScopes(Collections.EMPTY_LIST)

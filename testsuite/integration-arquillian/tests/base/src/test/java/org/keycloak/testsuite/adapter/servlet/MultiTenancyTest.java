@@ -22,9 +22,9 @@ import javax.ws.rs.core.UriBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.protocol.oidc.OIDCLoginProtocolService;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.adapter.AbstractServletsAdapterTest;
@@ -67,7 +67,7 @@ public class MultiTenancyTest extends AbstractServletsAdapterTest {
         return servletDeploymentMultiTenant(MultiTenant.DEPLOYMENT_NAME, MultiTenantServlet.class, ErrorServlet.class, MultiTenantResolver.class);
     }
     
-    @After
+    @AfterEach
     public void afterTest() {
         driver.manage().deleteAllCookies();
     }
@@ -109,10 +109,10 @@ public class MultiTenancyTest extends AbstractServletsAdapterTest {
         
         driver.navigate().to(tenantPage.getTenantRealmUrl("tenant1"));
         WaitUtils.waitForPageToLoad();
-        URLAssert.assertCurrentUrlStartsWith(keycloakServerBaseUrl);
+        URLAssertions.assertCurrentUrlStartsWith(keycloakServerBaseUrl);
         
         testRealmLoginPage.form().login("user-tenant2", "user-tenant2");
-        URLAssert.assertCurrentUrlStartsWith(keycloakServerBaseUrl);
+        URLAssertions.assertCurrentUrlStartsWith(keycloakServerBaseUrl);
     }
     
     /**
@@ -125,7 +125,7 @@ public class MultiTenancyTest extends AbstractServletsAdapterTest {
         doTenantRequests("tenant1", false);
         
         driver.navigate().to(tenantPage.getTenantRealmUrl("tenant2"));
-        URLAssert.assertCurrentUrlStartsWith(authServerPage.toString());
+        URLAssertions.assertCurrentUrlStartsWith(authServerPage.toString());
 
         logout("tenant1");
     }
@@ -135,21 +135,21 @@ public class MultiTenancyTest extends AbstractServletsAdapterTest {
         URL tenantUrl = tenantPage.getTenantRealmUrl(tenant);
         
         driver.navigate().to(tenantUrl);
-        URLAssert.assertCurrentUrlStartsWith(tenantLoginUrl);
+        URLAssertions.assertCurrentUrlStartsWith(tenantLoginUrl);
         testRealmLoginPage.form().login("bburke@redhat.com", "password");
         log.debug("Current url: " + driver.getCurrentUrl());
         
-        URLAssert.assertCurrentUrlStartsWith(tenantUrl.toString());
+        URLAssertions.assertCurrentUrlStartsWith(tenantUrl.toString());
         String pageSource = driver.getPageSource();
         log.debug(pageSource);
         
-        Assert.assertTrue(pageSource.contains("Username: bburke@redhat.com"));
-        Assert.assertTrue(pageSource.contains("Realm: " + tenant));
+        Assertions.assertTrue(pageSource.contains("Username: bburke@redhat.com"));
+        Assertions.assertTrue(pageSource.contains("Realm: " + tenant));
 
         if (logout) {
             driver.navigate().to(tenantUrl + "/logout");
-            Assert.assertFalse(driver.getPageSource().contains("Username: bburke@redhat.com"));
-            Assert.assertTrue(driver.getCurrentUrl().startsWith(tenantLoginUrl));
+            Assertions.assertFalse(driver.getPageSource().contains("Username: bburke@redhat.com"));
+            Assertions.assertTrue(driver.getCurrentUrl().startsWith(tenantLoginUrl));
         }
         log.debug("---------------------------------------------------------------------------------------");
     }
@@ -158,7 +158,7 @@ public class MultiTenancyTest extends AbstractServletsAdapterTest {
         String tenantLoginUrl = OIDCLoginProtocolService.authUrl(UriBuilder.fromUri(authServerPage.getAuthRoot())).build(tenant).toString();
         URL tenantUrl = tenantPage.getTenantRealmUrl(tenant);
         driver.navigate().to(tenantUrl + "/logout");
-        Assert.assertFalse(driver.getPageSource().contains("Username: bburke@redhat.com"));
-        Assert.assertTrue(driver.getCurrentUrl().startsWith(tenantLoginUrl));
+        Assertions.assertFalse(driver.getPageSource().contains("Username: bburke@redhat.com"));
+        Assertions.assertTrue(driver.getCurrentUrl().startsWith(tenantLoginUrl));
     }
 }

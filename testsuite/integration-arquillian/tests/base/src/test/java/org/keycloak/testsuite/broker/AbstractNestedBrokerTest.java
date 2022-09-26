@@ -3,8 +3,8 @@ package org.keycloak.testsuite.broker;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
 import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 public abstract class AbstractNestedBrokerTest extends AbstractBaseBrokerTest {
 
@@ -17,12 +17,12 @@ public abstract class AbstractNestedBrokerTest extends AbstractBaseBrokerTest {
         return getNestedBrokerConfiguration();
     }
 
-    @Before
+    @BeforeEach
     public void createSubConsumerRealm() {
         importRealm(nbc.createSubConsumerRealm());
     }
 
-    @After
+    @AfterEach
     public void removeSubConsumerRealm() {
         adminClient.realm(nbc.subConsumerRealmName()).remove();
     }

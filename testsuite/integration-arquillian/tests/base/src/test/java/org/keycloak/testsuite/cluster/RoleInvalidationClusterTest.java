@@ -27,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.admin.client.resource.RoleByIdResource;
 import org.keycloak.admin.client.resource.RoleResource;
 import org.keycloak.admin.client.resource.RolesResource;
@@ -37,8 +37,8 @@ import org.keycloak.testsuite.util.RoleBuilder;
 
 import javax.ws.rs.NotFoundException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.keycloak.common.util.reflections.Reflections.resolveListType;
 import static org.keycloak.common.util.reflections.Reflections.setAccessible;
 import static org.keycloak.common.util.reflections.Reflections.unsetAccessible;
@@ -49,7 +49,7 @@ import static org.keycloak.common.util.reflections.Reflections.unsetAccessible;
  */
 public class RoleInvalidationClusterTest extends AbstractInvalidationClusterTestWithTestRealm<RoleRepresentation, RoleResource> {
 
-    @Before
+    @BeforeEach
     public void setExcludedComparisonFields() {
         excludedComparisonFields.add("composites");
     }

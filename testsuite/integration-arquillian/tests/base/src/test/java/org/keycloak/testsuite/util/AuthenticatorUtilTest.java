@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.util;
 
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.AuthenticatorUtil;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.Constants;

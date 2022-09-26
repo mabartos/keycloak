@@ -31,9 +31,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.adapters.AdapterUtils;
@@ -114,10 +114,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
@@ -125,8 +125,7 @@ import static org.junit.Assert.assertNull;
  */
 public class ClientAuthSignedJWTTest extends AbstractKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
     private static String client1SAUserId;
 
     private static RealmRepresentation testRealm;
@@ -192,7 +191,7 @@ public class ClientAuthSignedJWTTest extends AbstractKeycloakTest {
         testRealms.add(testRealm);
     }
 
-    @Before
+    @BeforeEach
     public void recreateApp3() {
         app3 = ClientBuilder.create()
                 .id(KeycloakModelUtils.generateId())
@@ -366,7 +365,7 @@ public class ClientAuthSignedJWTTest extends AbstractKeycloakTest {
 
             testCodeToTokenRequestSuccess(Algorithm.ES256, true);
         } catch (Exception e) {
-            Assert.fail();
+            Assertions.fail();
         } finally {
             clientResource = ApiUtil.findClientByClientId(adminClient.realm("test"), "client2");
             clientRep = clientResource.toRepresentation();
@@ -736,7 +735,7 @@ public class ClientAuthSignedJWTTest extends AbstractKeycloakTest {
             final String publicKeyNew = client.getAttributes().get(JWTClientAuthenticator.ATTR_PREFIX + "." + CertificateInfoHelper.PUBLIC_KEY);
             // Just assert it's valid public key
             PublicKey pk = KeycloakModelUtils.getPublicKey(publicKeyNew);
-            Assert.assertNotNull(pk);
+            Assertions.assertNotNull(pk);
         } else if (keystoreFormat.equals(org.keycloak.services.resources.admin.ClientAttributeCertificateResource.CERTIFICATE_PEM)) {
             String pem = new String(Files.readAllBytes(keystoreFile.toPath()));
             assertCertificate(client, certOld, pem);
@@ -997,8 +996,8 @@ public class ClientAuthSignedJWTTest extends AbstractKeycloakTest {
 
         assertEquals(200, response.getStatusCode());
         AccessToken accessToken = oauth.verifyToken(response.getAccessToken());
-        Assert.assertNotNull(accessToken);
-        Assert.assertNull(response.getError());
+        Assertions.assertNotNull(accessToken);
+        Assertions.assertNull(response.getError());
 
         // 2nd attempt to reuse same JWT should fail
         response = doClientCredentialsGrantRequest(clientJwt);
@@ -1137,7 +1136,7 @@ public class ClientAuthSignedJWTTest extends AbstractKeycloakTest {
 
             testCodeToTokenRequestFailure(Algorithm.RS256, "invalid_client", "invalid_client_credentials");
         } catch (Exception e) {
-            Assert.fail();
+            Assertions.fail();
         } finally {
             clientResource = ApiUtil.findClientByClientId(adminClient.realm("test"), "client2");
             clientRep = clientResource.toRepresentation();

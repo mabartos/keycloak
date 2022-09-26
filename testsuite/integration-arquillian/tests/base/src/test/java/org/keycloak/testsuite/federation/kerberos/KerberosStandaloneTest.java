@@ -22,10 +22,10 @@ import java.util.List;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.common.constants.KerberosConstants;
 import org.keycloak.federation.kerberos.CommonKerberosConfig;
@@ -58,7 +58,7 @@ public class KerberosStandaloneTest extends AbstractKerberosSingleRealmTest {
         return kerberosRule;
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         // don't run this test when map storage is enabled, as map storage doesn't support the legacy style federation
         ProfileAssume.assumeFeatureDisabled(Profile.Feature.MAP_STORAGE);
@@ -96,10 +96,10 @@ public class KerberosStandaloneTest extends AbstractKerberosSingleRealmTest {
 
         // Assert update profile page is displayed
         Response spnegoResponse = spnegoLogin("hnelson", "secret");
-        Assert.assertEquals(200, spnegoResponse.getStatus());
+        Assertions.assertEquals(200, spnegoResponse.getStatus());
         String responseText = spnegoResponse.readEntity(String.class);
-        Assert.assertTrue(responseText.contains("You need to update your user profile to activate your account."));
-        Assert.assertTrue(responseText.contains("hnelson@" + kerberosRule.getConfig().get(KerberosConstants.KERBEROS_REALM).toLowerCase()));
+        Assertions.assertTrue(responseText.contains("You need to update your user profile to activate your account."));
+        Assertions.assertTrue(responseText.contains("hnelson@" + kerberosRule.getConfig().get(KerberosConstants.KERBEROS_REALM).toLowerCase()));
         spnegoResponse.close();
 
         // Assert user was imported and has required action on him
@@ -136,7 +136,7 @@ public class KerberosStandaloneTest extends AbstractKerberosSingleRealmTest {
         String context = spnegoResponse.readEntity(String.class);
         spnegoResponse.close();
 
-        Assert.assertTrue(context.contains("Sign in to test"));
+        Assertions.assertTrue(context.contains("Sign in to test"));
 
         String url = ActionURIUtils.getActionURIFromPageSource(context);
 
@@ -178,7 +178,7 @@ public class KerberosStandaloneTest extends AbstractKerberosSingleRealmTest {
         UserRepresentation john = new UserRepresentation();
         john.setUsername("john");
         Response response = testRealmResource().users().create(john);
-        Assert.assertEquals(500, response.getStatus());
+        Assertions.assertEquals(500, response.getStatus());
         response.close();
     }
 

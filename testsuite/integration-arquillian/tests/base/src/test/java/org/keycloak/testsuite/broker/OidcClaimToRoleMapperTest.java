@@ -6,7 +6,7 @@ import static org.keycloak.models.IdentityProviderMapperSyncMode.LEGACY;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.IdentityProviderResource;
 import org.keycloak.broker.oidc.mappers.ClaimToRoleMapper;
 import org.keycloak.broker.provider.ConfigConstants;

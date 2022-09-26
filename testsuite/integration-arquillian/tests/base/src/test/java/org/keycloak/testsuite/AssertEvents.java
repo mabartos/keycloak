@@ -22,9 +22,9 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.Assert;
-import org.junit.rules.TestRule;
-import org.junit.runners.model.Statement;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.authentication.authenticators.client.ClientIdAndSecretAuthenticator;
 import org.keycloak.events.Details;
@@ -40,13 +40,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.keycloak.testsuite.util.ServerURLs.getAuthServerContextRoot;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
-public class AssertEvents implements TestRule {
+public class AssertEvents implements BeforeAllCallback {
 
     public static final String DEFAULT_CLIENT_ID = "test-app";
     public static final String DEFAULT_IP_ADDRESS = "127.0.0.1";
@@ -64,28 +66,20 @@ public class AssertEvents implements TestRule {
     }
 
     @Override
-    public Statement apply(final Statement base, org.junit.runner.Description description) {
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                // TODO: Ideally clear the queue just before testClass rather then before each method
-                clear();
-                base.evaluate();
-                // TODO Test should fail if there are leftover events
-            }
-        };
+    public void beforeAll(ExtensionContext extensionContext) throws Exception {
+        clear();
     }
 
     public EventRepresentation poll() {
         EventRepresentation event = fetchNextEvent();
-        Assert.assertNotNull("Event expected", event);
+        Assertions.assertNotNull(event, "Event expected");
 
         return event;
     }
 
     public void assertEmpty() {
         EventRepresentation event = fetchNextEvent();
-        Assert.assertNull("Empty event queue expected, but there is " + event, event);
+        Assertions.assertNull(event, "Empty event queue expected, but there is " + event);
     }
 
     public void clear() {
@@ -362,33 +356,33 @@ public class AssertEvents implements TestRule {
         }
 
         public EventRepresentation assertEvent(EventRepresentation actual) {
-            if (expected.getError() != null && ! expected.getType().toString().endsWith("_ERROR")) {
+            if (expected.getError() != null && !expected.getType().toString().endsWith("_ERROR")) {
                 expected.setType(expected.getType() + "_ERROR");
             }
-            Assert.assertThat("type", actual.getType(), is(expected.getType()));
-            Assert.assertThat("realm ID", actual.getRealmId(), is(realmId));
-            Assert.assertThat("client ID", actual.getClientId(), is(expected.getClientId()));
-            Assert.assertThat("error", actual.getError(), is(expected.getError()));
-            Assert.assertThat("ip address", actual.getIpAddress(), ipAddress);
-            Assert.assertThat("user ID", actual.getUserId(), is(userId));
-            Assert.assertThat("session ID", actual.getSessionId(), is(sessionId));
+            assertThat("type", actual.getType(), is(expected.getType()));
+            assertThat("realm ID", actual.getRealmId(), is(realmId));
+            assertThat("client ID", actual.getClientId(), is(expected.getClientId()));
+            assertThat("error", actual.getError(), is(expected.getError()));
+            assertThat("ip address", actual.getIpAddress(), ipAddress);
+            assertThat("user ID", actual.getUserId(), is(userId));
+            assertThat("session ID", actual.getSessionId(), is(sessionId));
 
             if (details == null || details.isEmpty()) {
-//                Assert.assertNull(actual.getDetails());
+//                Assertions.assertNull(actual.getDetails());
             } else {
-                Assert.assertNotNull(actual.getDetails());
+                Assertions.assertNotNull(actual.getDetails());
                 for (Map.Entry<String, Matcher<? super String>> d : details.entrySet()) {
                     String actualValue = actual.getDetails().get(d.getKey());
                     if (!actual.getDetails().containsKey(d.getKey())) {
-                        Assert.fail(d.getKey() + " missing");
+                        Assertions.fail(d.getKey() + " missing");
                     }
 
-                    Assert.assertThat("Unexpected value for " + d.getKey(), actualValue, is(d.getValue()));
+                    assertThat("Unexpected value for " + d.getKey(), actualValue, is(d.getValue()));
                 }
                 /*
                 for (String k : actual.getDetails().keySet()) {
                     if (!details.containsKey(k)) {
-                        Assert.fail(k + " was not expected");
+                        Assertions.fail(k + " was not expected");
                     }
                 }
                 */

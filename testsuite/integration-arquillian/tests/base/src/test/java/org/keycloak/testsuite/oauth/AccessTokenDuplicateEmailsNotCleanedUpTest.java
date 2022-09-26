@@ -18,10 +18,10 @@ package org.keycloak.testsuite.oauth;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -37,15 +37,14 @@ import org.openqa.selenium.By;
  */
 public class AccessTokenDuplicateEmailsNotCleanedUpTest extends AbstractKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Override
     public void beforeAbstractKeycloakTest() throws Exception {
         super.beforeAbstractKeycloakTest();
     }
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         oauth.clientId("test-app");
         oauth.realm("test-duplicate-emails");

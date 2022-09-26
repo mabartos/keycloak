@@ -16,8 +16,8 @@
  */
 package org.keycloak.testsuite.adapter.example.authorization;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.common.Profile.Feature.AUTHORIZATION;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 import static org.keycloak.testsuite.utils.io.IOUtil.loadRealm;
@@ -31,8 +31,8 @@ import java.util.List;
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientsResource;
@@ -66,7 +66,7 @@ public class AbstractServletPolicyEnforcerTest extends AbstractExampleAdapterTes
     @Page
     protected InfoPage infoPage;
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
         ProfileAssume.assumeFeatureEnabled(AUTHORIZATION);
     }

@@ -7,8 +7,8 @@ import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.adapters.jetty.KeycloakJettyAuthenticator;
 import org.keycloak.adapters.saml.jetty.KeycloakSamlAuthenticator;
 import org.keycloak.testsuite.arquillian.jetty.container.JettyAppServerProvider;
@@ -59,10 +59,10 @@ public abstract class AbstractJettyAppServerTest {
         boolean wasFreeOnHTTPSWhenServerStopped = isFree("localhost", httpsPort);
 
         // then
-        Assert.assertFalse(wasFreeOnHTTPPortWhenServerStarted);
-        Assert.assertTrue(wasFreeOnHTTPWhenServerStopped);
-        Assert.assertFalse(wasFreeOnHTTPSPortWhenServerStarted);
-        Assert.assertTrue(wasFreeOnHTTPSWhenServerStopped);
+        Assertions.assertFalse(wasFreeOnHTTPPortWhenServerStarted);
+        Assertions.assertTrue(wasFreeOnHTTPWhenServerStopped);
+        Assertions.assertFalse(wasFreeOnHTTPSPortWhenServerStarted);
+        Assertions.assertTrue(wasFreeOnHTTPSWhenServerStopped);
     }
 
     @Test
@@ -89,8 +89,8 @@ public abstract class AbstractJettyAppServerTest {
         }
 
         // assert
-        Assert.assertNotNull(responseFromTheApp);
-        Assert.assertEquals(200, responseFromTheApp.getStatus());
+        Assertions.assertNotNull(responseFromTheApp);
+        Assertions.assertEquals(200, responseFromTheApp.getStatus());
     }
 
     @Test
@@ -117,8 +117,8 @@ public abstract class AbstractJettyAppServerTest {
         }
 
         // assert
-        Assert.assertNotNull(responseFromTheApp);
-        Assert.assertEquals(200, responseFromTheApp.getStatus());
+        Assertions.assertNotNull(responseFromTheApp);
+        Assertions.assertEquals(200, responseFromTheApp.getStatus());
     }
 
     @Test
@@ -147,8 +147,8 @@ public abstract class AbstractJettyAppServerTest {
         }
 
         // assert
-        Assert.assertNotNull(responseFromTheApp);
-        Assert.assertEquals(404, responseFromTheApp.getStatus());
+        Assertions.assertNotNull(responseFromTheApp);
+        Assertions.assertEquals(404, responseFromTheApp.getStatus());
     }
 
     @Test
@@ -174,7 +174,7 @@ public abstract class AbstractJettyAppServerTest {
         }
 
         // assert
-        Assert.assertTrue(installedAuthenticator instanceof KeycloakSamlAuthenticator);
+        Assertions.assertTrue(installedAuthenticator instanceof KeycloakSamlAuthenticator);
     }
 
     @Test
@@ -200,7 +200,7 @@ public abstract class AbstractJettyAppServerTest {
         }
 
         // assert
-        Assert.assertTrue(installedAuthenticator instanceof KeycloakJettyAuthenticator);
+        Assertions.assertTrue(installedAuthenticator instanceof KeycloakJettyAuthenticator);
     }
 
     @Test
@@ -212,7 +212,7 @@ public abstract class AbstractJettyAppServerTest {
         String appServerName = new JettyAppServerProvider().getName();
 
         // assert
-        Assert.assertTrue(appServerName.matches(versionRegexp));
+        Assertions.assertTrue(appServerName.matches(versionRegexp));
     }
 
     @WebServlet(name = TEST_SERVLET_NAME, urlPatterns = "/" + TEST_SERVLET_URL_MAPPING)

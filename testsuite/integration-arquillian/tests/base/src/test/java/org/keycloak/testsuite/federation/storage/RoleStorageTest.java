@@ -25,10 +25,10 @@ import javax.ws.rs.core.Response;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.util.MultivaluedHashMap;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.RealmModel;
@@ -42,7 +42,7 @@ import org.keycloak.testsuite.ProfileAssume;
 import org.keycloak.testsuite.admin.ApiUtil;
 import org.keycloak.testsuite.auth.page.AuthRealm;
 import org.keycloak.testsuite.federation.HardcodedRoleStorageProviderFactory;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 
 public class RoleStorageTest extends AbstractTestRealmKeycloakTest {
 
@@ -60,12 +60,12 @@ public class RoleStorageTest extends AbstractTestRealmKeycloakTest {
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void checkNotMapStorage() {
         ProfileAssume.assumeFeatureDisabled(Feature.MAP_STORAGE);
     }
 
-    @Before
+    @BeforeEach
     public void addProvidersBeforeTest() throws URISyntaxException, IOException {
         ComponentRepresentation provider = new ComponentRepresentation();
         provider.setName("role-storage-hardcoded");
@@ -223,8 +223,8 @@ public class RoleStorageTest extends AbstractTestRealmKeycloakTest {
 //        testingClient.server().run(session -> {
 //            RealmModel realm = session.realms().getRealmByName("test");
 //            RoleModel hardcoded = realm.getRole("hardcoded-role");
-//            Assert.assertNotNull(hardcoded);
-//            Assert.assertThat(hardcoded, not(instanceOf(RoleAdapter.class)));
+//            Assertions.assertNotNull(hardcoded);
+//            Assertions.assertThat(hardcoded, not(instanceOf(RoleAdapter.class)));
 //        });
 //    }
 //
@@ -232,8 +232,8 @@ public class RoleStorageTest extends AbstractTestRealmKeycloakTest {
 //        testingClient.server().run(session -> {
 //            RealmModel realm = session.realms().getRealmByName("test");
 //            RoleModel hardcoded = realm.getRole("hardcoded-role");
-//            Assert.assertNotNull(hardcoded);
-//            Assert.assertThat(hardcoded, instanceOf(RoleAdapter.class));
+//            Assertions.assertNotNull(hardcoded);
+//            Assertions.assertThat(hardcoded, instanceOf(RoleAdapter.class));
 //        });
 //    }
 //

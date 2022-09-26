@@ -16,9 +16,9 @@
  */
 package org.keycloak.testsuite.keys;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 
 import java.security.KeyFactory;
@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response;
 
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.util.Base64;
 import org.keycloak.common.util.MultivaluedHashMap;
 import org.keycloak.crypto.KeyType;
@@ -53,8 +53,7 @@ public class GeneratedEcdsaKeyProviderTest extends AbstractKeycloakTest {
     private static final String ECDSA_ELLIPTIC_CURVE_KEY = "ecdsaEllipticCurveKey";
     private static final String TEST_REALM_NAME = "test";
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;

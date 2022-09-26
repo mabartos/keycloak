@@ -5,8 +5,8 @@ import com.google.common.collect.Lists;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientsResource;
 import org.keycloak.admin.client.resource.IdentityProviderResource;
@@ -71,7 +71,7 @@ public final class KcOidcBrokerTest extends AbstractAdvancedBrokerTest {
         return KcOidcBrokerConfiguration.INSTANCE;
     }
 
-    @Before
+    @BeforeEach
     public void setUpTotp() {
         totp = new TimeBasedOTP();
     }
@@ -178,7 +178,7 @@ public final class KcOidcBrokerTest extends AbstractAdvancedBrokerTest {
 
             waitForPage(driver, "update account information", false);
             updateAccountInformationPage.assertCurrent();
-            Assert.assertTrue("We must be on correct realm right now",
+            Assertions.assertTrue("We must be on correct realm right now",
                     driver.getCurrentUrl().contains("/auth/realms/" + bc.consumerRealmName() + "/"));
 
             log.debug("Updating info on updateAccount page");
@@ -187,7 +187,7 @@ public final class KcOidcBrokerTest extends AbstractAdvancedBrokerTest {
             UsersResource consumerUsers = adminClient.realm(bc.consumerRealmName()).users();
 
             int userCount = consumerUsers.count();
-            Assert.assertTrue("There must be at least one user", userCount > 0);
+            Assertions.assertTrue("There must be at least one user", userCount > 0);
 
             List<UserRepresentation> users = consumerUsers.search("", 0, userCount);
 
@@ -199,7 +199,7 @@ public final class KcOidcBrokerTest extends AbstractAdvancedBrokerTest {
                 }
             }
 
-            Assert.assertTrue("There must be user " + bc.getUserLogin() + " in realm " + bc.consumerRealmName(),
+            Assertions.assertTrue("There must be user " + bc.getUserLogin() + " in realm " + bc.consumerRealmName(),
                     isUserFound);
         } finally {
             brokerApp.getAttributes().put(OIDCConfigAttributes.USER_INFO_RESPONSE_SIGNATURE_ALG, null);
@@ -237,8 +237,8 @@ public final class KcOidcBrokerTest extends AbstractAdvancedBrokerTest {
 
         UserRepresentation user = getFederatedIdentity();
 
-        Assert.assertEquals(1, user.getAttributes().size());
-        Assert.assertEquals("hard-coded", user.getAttributes().get("hard-coded").get(0));
+        Assertions.assertEquals(1, user.getAttributes().size());
+        Assertions.assertEquals("hard-coded", user.getAttributes().get("hard-coded").get(0));
     }
 
     /**
@@ -443,7 +443,7 @@ public final class KcOidcBrokerTest extends AbstractAdvancedBrokerTest {
             assertThat(error, notNullValue());
             assertThat(error.getError(), is("Identity Provider [" + notExistingIdP + "] not found."));
         } catch (IOException ex) {
-            Assert.fail("Cannot create HTTP client. Details: " + ex.getMessage());
+            Assertions.fail("Cannot create HTTP client. Details: " + ex.getMessage());
         }
     }
 
@@ -586,7 +586,7 @@ public final class KcOidcBrokerTest extends AbstractAdvancedBrokerTest {
     private UserRepresentation getFederatedIdentity() {
         List<UserRepresentation> users = realmsResouce().realm(bc.consumerRealmName()).users().search(bc.getUserLogin());
 
-        Assert.assertEquals(1, users.size());
+        Assertions.assertEquals(1, users.size());
 
         return users.get(0);
     }

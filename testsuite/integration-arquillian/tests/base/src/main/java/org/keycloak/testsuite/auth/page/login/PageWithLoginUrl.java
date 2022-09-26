@@ -22,7 +22,7 @@ import org.openqa.selenium.WebDriver;
 import java.net.URI;
 
 /**
- * Used by util class LoginAssert. Implementing classes: AuthRealm, AdminConsole.
+ * Used by util class LoginAssertions. Implementing classes: AuthRealm, AdminConsole.
  * @author tkyjovsk
  */
 public interface PageWithLoginUrl {

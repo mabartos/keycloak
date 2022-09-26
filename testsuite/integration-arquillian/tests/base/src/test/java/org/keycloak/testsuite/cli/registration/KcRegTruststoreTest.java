@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.cli.registration;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.client.registration.cli.config.ConfigData;
 import org.keycloak.client.registration.cli.config.FileConfigHandler;
 import org.keycloak.client.registration.cli.util.OsUtil;
@@ -30,8 +30,8 @@ public class KcRegTruststoreTest extends AbstractRegCliTest {
         KcRegExec exe = execute("config truststore --no-config '" + truststore.getAbsolutePath() + "'");
 
         assertExitCodeAndStreamSizes(exe, 1, 0, 2);
-        Assert.assertEquals("stderr first line", "Unsupported option: --no-config", exe.stderrLines().get(0));
-        Assert.assertEquals("try help", "Try '" + OsUtil.CMD + " help config truststore' for more information", exe.stderrLines().get(1));
+        Assertions.assertEquals("stderr first line", "Unsupported option: --no-config", exe.stderrLines().get(0));
+        Assertions.assertEquals("try help", "Try '" + OsUtil.CMD + " help config truststore' for more information", exe.stderrLines().get(1));
 
         // only run the rest of this test if ssl protected keycloak server is available
         if (!AUTH_SERVER_SSL_REQUIRED) {
@@ -100,19 +100,19 @@ public class KcRegTruststoreTest extends AbstractRegCliTest {
 
         exe = execute("config truststore --delete '" + truststore.getAbsolutePath() + "'");
         assertExitCodeAndStreamSizes(exe, 1, 0, 2);
-        Assert.assertEquals("incompatible", "Option --delete is mutually exclusive with specifying a TRUSTSTORE", exe.stderrLines().get(0));
-        Assert.assertEquals("try help", "Try '" + CMD + " help config truststore' for more information", exe.stderrLines().get(1));
+        Assertions.assertEquals("incompatible", "Option --delete is mutually exclusive with specifying a TRUSTSTORE", exe.stderrLines().get(0));
+        Assertions.assertEquals("try help", "Try '" + CMD + " help config truststore' for more information", exe.stderrLines().get(1));
 
         exe = execute("config truststore --delete --trustpass secret");
         assertExitCodeAndStreamSizes(exe, 1, 0, 2);
-        Assert.assertEquals("no truststore error", "Options --trustpass and --delete are mutually exclusive", exe.stderrLines().get(0));
-        Assert.assertEquals("try help", "Try '" + CMD + " help config truststore' for more information", exe.stderrLines().get(1));
+        Assertions.assertEquals("no truststore error", "Options --trustpass and --delete are mutually exclusive", exe.stderrLines().get(0));
+        Assertions.assertEquals("try help", "Try '" + CMD + " help config truststore' for more information", exe.stderrLines().get(1));
 
         FileConfigHandler cfghandler = new FileConfigHandler();
         cfghandler.setConfigFile(DEFAULT_CONFIG_FILE_PATH);
         ConfigData config = cfghandler.loadConfig();
-        Assert.assertNull("truststore null", config.getTruststore());
-        Assert.assertNull("trustpass null", config.getTrustpass());
+        Assertions.assertNull("truststore null", config.getTruststore());
+        Assertions.assertNull("trustpass null", config.getTrustpass());
 
 
         // perform no-config CRUD test against ssl protected endpoint

@@ -31,7 +31,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 
 /**
  * @author mhajas
@@ -236,7 +236,7 @@ public class KeycloakContainerFeaturesController {
     }
 
     // KEYCLOAK-13572 Precedence is too low in order to ensure the feature change will be executed as last.
-    // If some fail occurs in @Before method, the feature doesn't change its state.
+    // If some fail occurs in @BeforeEach method, the feature doesn't change its state.
     public void handleChangeStateFeaturePriorityBeforeTest(@Observes(precedence = -100) Before event) throws Exception {
         if (shouldExecuteAsLast(event.getTestMethod())) {
             checkAnnotatedElementForFeatureAnnotations(event.getTestMethod(), State.BEFORE);

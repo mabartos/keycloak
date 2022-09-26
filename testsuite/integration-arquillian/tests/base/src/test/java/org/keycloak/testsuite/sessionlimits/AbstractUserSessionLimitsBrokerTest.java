@@ -1,14 +1,14 @@
 package org.keycloak.testsuite.sessionlimits;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.authenticators.sessionlimits.UserSessionLimitsAuthenticatorFactory;
 import org.keycloak.models.AuthenticationFlowModel;
 import org.keycloak.models.IdentityProviderModel;
 import org.keycloak.models.RealmModel;
 import org.keycloak.testsuite.broker.AbstractInitializedBaseBrokerTest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import static org.keycloak.testsuite.sessionlimits.UserSessionLimitsUtil.assertSessionCount;
 import static org.keycloak.testsuite.sessionlimits.UserSessionLimitsUtil.configureSessionLimits;

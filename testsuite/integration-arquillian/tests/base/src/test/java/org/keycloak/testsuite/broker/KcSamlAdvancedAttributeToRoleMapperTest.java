@@ -2,7 +2,7 @@ package org.keycloak.testsuite.broker;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.IdentityProviderResource;
 import org.keycloak.broker.provider.ConfigConstants;
 import org.keycloak.broker.saml.mappers.AdvancedAttributeToRoleMapper;

@@ -18,9 +18,9 @@
 package org.keycloak.testsuite.oidc;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.events.Details;
 import org.keycloak.protocol.oidc.OIDCAdvancedConfigWrapper;
@@ -45,8 +45,7 @@ import org.keycloak.testsuite.util.OAuthClient;
  */
 public class OIDCBackwardsCompatibilityTest extends AbstractTestRealmKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -67,7 +66,7 @@ public class OIDCBackwardsCompatibilityTest extends AbstractTestRealmKeycloakTes
     public void configureTestRealm(RealmRepresentation testRealm) {
     }
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         ClientManager.realm(adminClient.realm("test")).clientId("test-app").directAccessGrant(true);
         /*
@@ -87,8 +86,8 @@ public class OIDCBackwardsCompatibilityTest extends AbstractTestRealmKeycloakTes
         // Open login form and login successfully. Assert session_state is present
         OAuthClient.AuthorizationEndpointResponse authzResponse = oauth.doLogin("test-user@localhost", "password");
         EventRepresentation loginEvent = events.expectLogin().assertEvent();
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(authzResponse.getSessionState());
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(authzResponse.getSessionState());
 
         // Switch "exclude session_state" to on
         ClientResource client = ApiUtil.findClientByClientId(adminClient.realm("test"), "test-app");
@@ -103,7 +102,7 @@ public class OIDCBackwardsCompatibilityTest extends AbstractTestRealmKeycloakTes
         loginEvent = events.expectLogin().detail(Details.USERNAME, "test-user@localhost").assertEvent();
 
         authzResponse = new OAuthClient.AuthorizationEndpointResponse(oauth);
-        Assert.assertNull(authzResponse.getSessionState());
+        Assertions.assertNull(authzResponse.getSessionState());
 
         // Revert
         config.setExcludeSessionStateFromAuthResponse(false);

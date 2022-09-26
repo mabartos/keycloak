@@ -21,10 +21,10 @@ import com.webauthn4j.data.AttestationConveyancePreference;
 import com.webauthn4j.data.AuthenticatorAttachment;
 import com.webauthn4j.data.UserVerificationRequirement;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.Constants;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AssertEvents;
@@ -76,8 +76,7 @@ public class WebAuthnPolicySettingsTest extends AbstractConsoleTest {
     protected static final String ALL_ZERO_AAGUID = "00000000-0000-0000-0000-000000000000";
     protected static final String ALL_ONE_AAGUID = "11111111-1111-1111-1111-111111111111";
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     WebAuthnPolicyPage webAuthnPolicyPage;
@@ -85,7 +84,7 @@ public class WebAuthnPolicySettingsTest extends AbstractConsoleTest {
     @Page
     WebAuthnPolicyPasswordlessPage webAuthnPolicyPasswordlessPage;
 
-    @Before
+    @BeforeEach
     public void navigateToPolicy() {
         driver.manage().window().maximize();
         getPolicyPage().navigateTo();
@@ -303,7 +302,7 @@ public class WebAuthnPolicySettingsTest extends AbstractConsoleTest {
 
         try {
             getPolicyPage().setAttestationConveyancePreference(AttestationConveyancePreference.ENTERPRISE);
-            Assert.fail("We don't support 'Enterprise' mode at this moment");
+            Assertions.fail("We don't support 'Enterprise' mode at this moment");
         } catch (NoSuchElementException e) {
             // Expected - NOP
         }

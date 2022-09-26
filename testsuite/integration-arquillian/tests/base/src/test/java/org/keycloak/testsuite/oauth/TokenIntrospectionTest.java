@@ -29,7 +29,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.admin.client.resource.ClientScopesResource;
@@ -69,10 +69,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Igor</a>
@@ -80,8 +80,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class TokenIntrospectionTest extends AbstractTestRealmKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected LoginPage loginPage;
@@ -169,7 +168,7 @@ public class TokenIntrospectionTest extends AbstractTestRealmKeycloakTest {
         // We have single audience in the token - hence it is simple string
         assertTrue(jsonNode.get("aud") instanceof TextNode);
         audiences.add(jsonNode.get("aud").asText());
-        Assert.assertNames(audiences, rep.getAudience());
+        Assertions.assertNames(audiences, rep.getAudience());
 
         assertEquals(jsonNode.get("iss").asText(), rep.getIssuer());
         assertEquals(jsonNode.get("jti").asText(), rep.getId());
@@ -183,8 +182,8 @@ public class TokenIntrospectionTest extends AbstractTestRealmKeycloakTest {
         String tokenResponse = oauth.introspectAccessTokenWithClientCredential("confidential-cli", "bad_credential", accessTokenResponse.getAccessToken());
 
         OAuth2ErrorRepresentation errorRep = JsonSerialization.readValue(tokenResponse, OAuth2ErrorRepresentation.class);
-        Assert.assertEquals("Authentication failed.", errorRep.getErrorDescription());
-        Assert.assertEquals(OAuthErrorException.INVALID_REQUEST, errorRep.getError());
+        Assertions.assertEquals("Authentication failed.", errorRep.getErrorDescription());
+        Assertions.assertEquals(OAuthErrorException.INVALID_REQUEST, errorRep.getError());
     }
 
     @Test
@@ -237,7 +236,7 @@ public class TokenIntrospectionTest extends AbstractTestRealmKeycloakTest {
         loginPage.login("password");
         events.expectLogin().assertEvent();
 
-        Assert.assertFalse(loginPage.isCurrent());
+        Assertions.assertFalse(loginPage.isCurrent());
 
         String code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
         OAuthClient.AccessTokenResponse tokenResponse2 = oauth.doAccessTokenRequest(code, "password");
@@ -263,8 +262,8 @@ public class TokenIntrospectionTest extends AbstractTestRealmKeycloakTest {
         String tokenResponse = oauth.introspectAccessTokenWithClientCredential("public-cli", "it_doesnt_matter", accessTokenResponse.getAccessToken());
 
         OAuth2ErrorRepresentation errorRep = JsonSerialization.readValue(tokenResponse, OAuth2ErrorRepresentation.class);
-        Assert.assertEquals("Client not allowed.", errorRep.getErrorDescription());
-        Assert.assertEquals(OAuthErrorException.INVALID_REQUEST, errorRep.getError());
+        Assertions.assertEquals("Client not allowed.", errorRep.getErrorDescription());
+        Assertions.assertEquals(OAuthErrorException.INVALID_REQUEST, errorRep.getError());
     }
 
     @Test

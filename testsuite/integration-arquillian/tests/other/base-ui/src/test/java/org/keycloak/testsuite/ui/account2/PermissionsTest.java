@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.ui.account2;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RoleScopeResource;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.testsuite.ui.account2.page.ForbiddenPage;

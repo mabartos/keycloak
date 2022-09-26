@@ -22,10 +22,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.requiredactions.TermsAndConditions;
 import org.keycloak.events.Details;
 import org.keycloak.events.EventType;
@@ -55,8 +55,7 @@ public class RequiredActionPriorityTest extends AbstractTestRealmKeycloakTest {
     public void configureTestRealm(RealmRepresentation testRealm) {
     }
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -76,7 +75,7 @@ public class RequiredActionPriorityTest extends AbstractTestRealmKeycloakTest {
     @Page
     protected LoginConfigTotpPage totpPage;
 
-    @Before
+    @BeforeEach
     public void setupRequiredActions() {
         setRequiredActionEnabled("test", TermsAndConditions.PROVIDER_ID, true, false);
 
@@ -122,7 +121,7 @@ public class RequiredActionPriorityTest extends AbstractTestRealmKeycloakTest {
 
         // Logged in
         appPage.assertCurrent();
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
         events.expectLogin().assertEvent();
     }
 
@@ -162,7 +161,7 @@ public class RequiredActionPriorityTest extends AbstractTestRealmKeycloakTest {
 
         // Logined
         appPage.assertCurrent();
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
         events.expectLogin().assertEvent();
     }
 

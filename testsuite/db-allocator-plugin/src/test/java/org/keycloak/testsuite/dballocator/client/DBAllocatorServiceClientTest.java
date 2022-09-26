@@ -1,8 +1,8 @@
 package org.keycloak.testsuite.dballocator.client;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.dballocator.client.data.AllocationResult;
 import org.keycloak.testsuite.dballocator.client.data.EraseResult;
 import org.keycloak.testsuite.dballocator.client.data.ReleaseResult;
@@ -37,12 +37,12 @@ public class DBAllocatorServiceClientTest {
         AllocationResult allocationResult = client.allocate("user", "mariadb_galera_101", 1440, TimeUnit.SECONDS, "geo_RDU");
 
         //then
-        Assert.assertEquals("d328bb0e-3dcc-42da-8ce1-83738a8dfede", allocationResult.getUUID());
-        Assert.assertEquals("org.mariadb.jdbc.Driver", allocationResult.getDriver());
-        Assert.assertEquals("dbname", allocationResult.getDatabase());
-        Assert.assertEquals("username", allocationResult.getUser());
-        Assert.assertEquals("password", allocationResult.getPassword());
-        Assert.assertEquals("jdbc:mariadb://mariadb-101-galera.keycloak.org:3306", allocationResult.getURL());
+        Assertions.assertEquals("d328bb0e-3dcc-42da-8ce1-83738a8dfede", allocationResult.getUUID());
+        Assertions.assertEquals("org.mariadb.jdbc.Driver", allocationResult.getDriver());
+        Assertions.assertEquals("dbname", allocationResult.getDatabase());
+        Assertions.assertEquals("username", allocationResult.getUser());
+        Assertions.assertEquals("password", allocationResult.getPassword());
+        Assertions.assertEquals("jdbc:mariadb://mariadb-101-galera.keycloak.org:3306", allocationResult.getURL());
 
         EraseResult erase = client.erase(allocationResult);
         ReleaseResult result = client.release(allocationResult);
@@ -63,9 +63,9 @@ public class DBAllocatorServiceClientTest {
         //when
         try {
             client.allocate("user", "mariadb_galera_101", 1440, TimeUnit.SECONDS, "geo_RDU");
-            Assert.fail();
+            Assertions.fail();
         } catch (DBAllocatorException e) {
-            Assert.assertEquals(500, e.getErrorResponse().getStatus());
+            Assertions.assertEquals(500, e.getErrorResponse().getStatus());
         }
     }
 }

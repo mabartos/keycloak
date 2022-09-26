@@ -18,9 +18,9 @@
 package org.keycloak.testsuite.keys;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.TokenVerifier;
 import org.keycloak.crypto.Algorithm;
@@ -38,9 +38,9 @@ import java.util.List;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 
 /**
@@ -48,8 +48,7 @@ import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
  */
 public class FallbackKeyProviderTest extends AbstractKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -83,7 +82,7 @@ public class FallbackKeyProviderTest extends AbstractKeycloakTest {
 
         assertNotNull(response.getAccessToken());
 
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         providers = realmsResouce().realm("test").components().query(realmId, "org.keycloak.keys.KeyProvider");
         assertProviders(providers, "fallback-RS256", "fallback-HS256");

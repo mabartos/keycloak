@@ -22,7 +22,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.adapters.HttpClientBuilder;
@@ -124,7 +124,7 @@ public class LinkAndExchangeServlet extends HttpServlet {
                     System.out.println("*** link-url: " + response.getOtherClaims().get("account-link-url"));
                     linkUrl = (String)response.getOtherClaims().get("account-link-url");
                 } else {
-                    Assert.assertNotNull(response.getToken());
+                    Assertions.assertNotNull(response.getToken());
                     resp.setStatus(200);
                     resp.setContentType("text/html");
                     PrintWriter pw = resp.getWriter();

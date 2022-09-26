@@ -22,8 +22,8 @@
 package org.keycloak.testsuite.console.events;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientsResource;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -38,7 +38,7 @@ import org.openqa.selenium.WebElement;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.auth.page.login.Login.OIDC;
 import static org.keycloak.testsuite.console.clients.AbstractClientTest.createClientRep;
 
@@ -59,7 +59,7 @@ public class AdminEventsTest extends AbstractConsoleTest {
 
     private ClientRepresentation newClient;
 
-    @Before
+    @BeforeEach
     public void beforeAdminEventsTest() {
         RealmRepresentation realm = testRealmResource().toRepresentation();
 

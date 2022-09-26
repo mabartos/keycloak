@@ -16,10 +16,10 @@
  */
 package org.keycloak.testsuite.actions;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.events.Details;
 import org.keycloak.events.EventType;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -44,8 +44,8 @@ public class AppInitiatedActionUpdateEmailTest extends AbstractAppInitiatedActio
         assertKcActionStatus("success");
 
         UserRepresentation user = ActionUtil.findUserWithAdminClient(adminClient, "test-user@localhost");
-        Assert.assertEquals("new@email.com", user.getEmail());
-        Assert.assertEquals("Tom", user.getFirstName());
-        Assert.assertEquals("Brady", user.getLastName());
+        Assertions.assertEquals("new@email.com", user.getEmail());
+        Assertions.assertEquals("Tom", user.getFirstName());
+        Assertions.assertEquals("Brady", user.getLastName());
     }
 }

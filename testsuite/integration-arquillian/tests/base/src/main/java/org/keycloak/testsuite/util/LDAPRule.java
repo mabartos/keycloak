@@ -18,10 +18,9 @@
 package org.keycloak.testsuite.util;
 
 import org.jboss.logging.Logger;
-import org.junit.Assume;
-import org.junit.runners.model.Statement;
-import org.junit.runner.Description;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.rules.ExternalResource;
+import org.junit.runner.Description;
 import org.keycloak.models.LDAPConstants;
 import org.keycloak.util.ldap.LDAPEmbeddedServer;
 
@@ -79,7 +78,7 @@ public class LDAPRule extends ExternalResource {
         String connectionPropsLocation = getConnectionPropertiesLocation();
         ldapTestConfiguration = LDAPTestConfiguration.readConfiguration(connectionPropsLocation);
 
-        Assume.assumeTrue("Assumption in LDAPRule is false. Skiping the test", assume==null || assume.assumeTrue(ldapTestConfiguration));
+        Assumptions.assumeTrue("Assumption in LDAPRule is false. Skiping the test", assume==null || assume.assumeTrue(ldapTestConfiguration));
 
         if (ldapTestConfiguration.isStartEmbeddedLdapServer()) {
             ldapEmbeddedServer = createServer();

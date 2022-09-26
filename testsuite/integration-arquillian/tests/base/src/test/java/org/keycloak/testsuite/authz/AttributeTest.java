@@ -18,9 +18,9 @@
 package org.keycloak.testsuite.authz;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.InetAddress;
 import java.text.ParseException;
@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections.map.HashedMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authorization.attribute.Attributes;
 
 /**

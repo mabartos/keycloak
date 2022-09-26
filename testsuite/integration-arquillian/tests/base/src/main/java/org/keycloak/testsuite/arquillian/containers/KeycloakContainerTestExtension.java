@@ -56,7 +56,7 @@ import org.keycloak.testsuite.arquillian.ModelTestExecutor;
  * This Extension Overrides the original ContainerTestExtension. 
  * 
  * Needed to change the behavior of ContainerEventController 
- * to stopManualContainers @AfterSuite instead of @AfterClass
+ * to stopManualContainers @AfterEachSuite instead of @AfterAll
  *
  * @see base/src/main/resources/META-INF/services/org.jboss.arquillian.core.spi.LoadableExtension
  * @see https://issues.jboss.org/browse/ARQ-2186

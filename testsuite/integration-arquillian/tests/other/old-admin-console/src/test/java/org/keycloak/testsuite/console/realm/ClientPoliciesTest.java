@@ -19,8 +19,8 @@ package org.keycloak.testsuite.console.realm;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.authenticators.client.ClientIdAndSecretAuthenticator;
 import org.keycloak.authentication.authenticators.client.JWTClientAuthenticator;
 import org.keycloak.representations.idm.ClientPoliciesRepresentation;
@@ -51,9 +51,9 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createClientAccessTypeConditionConfig;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createHolderOfKeyEnforceExecutorConfig;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createSecureClientAuthenticatorExecutorConfig;
@@ -102,7 +102,7 @@ public class ClientPoliciesTest extends AbstractRealmTest {
     @Page
     private CreateExecutor createExecutorPage;
 
-    @After
+    @AfterEach
     public void cleanup() {
         testRealmResource().clientPoliciesPoliciesResource().updatePolicies(new ClientPoliciesRepresentation());
         testRealmResource().clientPoliciesProfilesResource().updateProfiles(new ClientProfilesRepresentation());

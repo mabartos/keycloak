@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.model;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
@@ -80,20 +80,20 @@ public class MultipleRealmsTest extends AbstractTestRealmKeycloakTest {
 
             r1user1Atomic.set(r1user1);
 
-            Assert.assertEquals(r1user1.getUsername(), r2user1.getUsername());
-            Assert.assertNotEquals(r1user1.getId(), r2user1.getId());
+            Assertions.assertEquals(r1user1.getUsername(), r2user1.getUsername());
+            Assertions.assertNotEquals(r1user1.getId(), r2user1.getId());
 
             // Test password
             r1user1.credentialManager().updateCredential(UserCredentialModel.password("pass1"));
             r2user1.credentialManager().updateCredential(UserCredentialModel.password("pass2"));
 
-            Assert.assertTrue(r1user1.credentialManager().isValid(UserCredentialModel.password("pass1")));
-            Assert.assertFalse(r1user1.credentialManager().isValid(UserCredentialModel.password("pass2")));
-            Assert.assertFalse(r2user1.credentialManager().isValid(UserCredentialModel.password("pass1")));
-            Assert.assertTrue(r2user1.credentialManager().isValid(UserCredentialModel.password("pass2")));
+            Assertions.assertTrue(r1user1.credentialManager().isValid(UserCredentialModel.password("pass1")));
+            Assertions.assertFalse(r1user1.credentialManager().isValid(UserCredentialModel.password("pass2")));
+            Assertions.assertFalse(r2user1.credentialManager().isValid(UserCredentialModel.password("pass1")));
+            Assertions.assertTrue(r2user1.credentialManager().isValid(UserCredentialModel.password("pass2")));
 
             // Test searching
-            Assert.assertEquals(2, currentSession.users().searchForUserStream(realm1, "user").count());
+            Assertions.assertEquals(2, currentSession.users().searchForUserStream(realm1, "user").count());
         });
 
         KeycloakModelUtils.runJobInTransaction(session.getKeycloakSessionFactory(), (KeycloakSession sessionTestUser2) -> {
@@ -107,8 +107,8 @@ public class MultipleRealmsTest extends AbstractTestRealmKeycloakTest {
             currentSession.users().removeUser(realm1, r1user1);
             UserModel user2 = currentSession.users().getUserByUsername(realm1, "user2");
             currentSession.users().removeUser(realm1, user2);
-            Assert.assertEquals(0, currentSession.users().searchForUserStream(realm1, "user").count());
-            Assert.assertEquals(2, currentSession.users().searchForUserStream(realm2, "user").count());
+            Assertions.assertEquals(0, currentSession.users().searchForUserStream(realm1, "user").count());
+            Assertions.assertEquals(2, currentSession.users().searchForUserStream(realm2, "user").count());
 
 
             UserModel user1 = currentSession.users().getUserByUsername(realm1, "user1");
@@ -147,31 +147,31 @@ public class MultipleRealmsTest extends AbstractTestRealmKeycloakTest {
             createObjects(currentSession, realm1);
             createObjects(currentSession, realm2);
 
-            Assert.assertEquals(realm1, currentSession.realms().getRealm(id1));
-            Assert.assertEquals(realm1, currentSession.realms().getRealmByName("realm1"));
-            Assert.assertEquals(realm2, currentSession.realms().getRealm(id2));
-            Assert.assertEquals(realm2, currentSession.realms().getRealmByName("realm2"));
+            Assertions.assertEquals(realm1, currentSession.realms().getRealm(id1));
+            Assertions.assertEquals(realm1, currentSession.realms().getRealmByName("realm1"));
+            Assertions.assertEquals(realm2, currentSession.realms().getRealm(id2));
+            Assertions.assertEquals(realm2, currentSession.realms().getRealmByName("realm2"));
 
             ClientModel r1app1 = realm1.getClientByClientId("app1");
 
-            Assert.assertNotNull(realm1.getClientByClientId("app2"));
-            Assert.assertNotNull(realm2.getClientByClientId("app1"));
-            Assert.assertNotNull(realm2.getClientByClientId("app2"));
+            Assertions.assertNotNull(realm1.getClientByClientId("app2"));
+            Assertions.assertNotNull(realm2.getClientByClientId("app1"));
+            Assertions.assertNotNull(realm2.getClientByClientId("app2"));
 
-            Assert.assertEquals(r1app1, realm1.getClientById(r1app1.getId()));
-            Assert.assertNull(realm2.getClientById(r1app1.getId()));
+            Assertions.assertEquals(r1app1, realm1.getClientById(r1app1.getId()));
+            Assertions.assertNull(realm2.getClientById(r1app1.getId()));
 
             ClientModel r2cl1 = realm2.getClientByClientId("cl1");
-            Assert.assertEquals(r2cl1.getId(), realm2.getClientById(r2cl1.getId()).getId());
-            Assert.assertNull(realm1.getClientByClientId(r2cl1.getId()));
+            Assertions.assertEquals(r2cl1.getId(), realm2.getClientById(r2cl1.getId()).getId());
+            Assertions.assertNull(realm1.getClientByClientId(r2cl1.getId()));
 
             RoleModel r1App1Role = r1app1.getRole("app1Role1");
-            Assert.assertEquals(r1App1Role, realm1.getRoleById(r1App1Role.getId()));
-            Assert.assertNull(realm2.getRoleById(r1App1Role.getId()));
+            Assertions.assertEquals(r1App1Role, realm1.getRoleById(r1App1Role.getId()));
+            Assertions.assertNull(realm2.getRoleById(r1App1Role.getId()));
 
             RoleModel r2Role1 = realm2.getRole("role2");
-            Assert.assertNull(realm1.getRoleById(r2Role1.getId()));
-            Assert.assertEquals(r2Role1, realm2.getRoleById(r2Role1.getId()));
+            Assertions.assertNull(realm1.getRoleById(r2Role1.getId()));
+            Assertions.assertEquals(r2Role1, realm2.getRoleById(r2Role1.getId()));
 
 
             UserModel user1 = currentSession.users().getUserByUsername(realm1, "user1");

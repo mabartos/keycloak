@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.admin;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RoleByIdResource;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.events.admin.ResourceType;
@@ -44,11 +44,11 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
@@ -63,7 +63,7 @@ public class RoleByIdResourceTest extends AbstractAdminTest {
 
     private String clientUuid;
 
-    @Before
+    @BeforeEach
     public void before() {
         adminClient.realm(REALM_NAME).roles().create(RoleBuilder.create().name("role-a").description("Role A").build());
         adminClient.realm(REALM_NAME).roles().create(RoleBuilder.create().name("role-b").description("Role B").build());
@@ -147,28 +147,28 @@ public class RoleByIdResourceTest extends AbstractAdminTest {
         Set<RoleRepresentation> composites = resource.getRoleComposites(ids.get("role-a"));
 
         assertTrue(resource.getRole(ids.get("role-a")).isComposite());
-        Assert.assertNames(composites, "role-b", "role-c");
+        Assertions.assertNames(composites, "role-b", "role-c");
 
         Set<RoleRepresentation> realmComposites = resource.getRealmRoleComposites(ids.get("role-a"));
-        Assert.assertNames(realmComposites, "role-b");
+        Assertions.assertNames(realmComposites, "role-b");
 
         Set<RoleRepresentation> clientComposites = resource.getClientRoleComposites(ids.get("role-a"), clientUuid);
-        Assert.assertNames(clientComposites, "role-c");
+        Assertions.assertNames(clientComposites, "role-c");
 
         composites = resource.searchRoleComposites(ids.get("role-a"), null, null, null);
-        Assert.assertNames(composites, "role-b", "role-c");
+        Assertions.assertNames(composites, "role-b", "role-c");
 
         composites = resource.searchRoleComposites(ids.get("role-a"), "b", null, null);
-        Assert.assertNames(composites, "role-b");
+        Assertions.assertNames(composites, "role-b");
 
         composites = resource.searchRoleComposites(ids.get("role-a"), null, 0, 0);
         assertThat(composites, is(empty()));
 
         composites = resource.searchRoleComposites(ids.get("role-a"), null, 0, 1);
-        Assert.assertNames(composites, "role-b");
+        Assertions.assertNames(composites, "role-b");
 
         composites = resource.searchRoleComposites(ids.get("role-a"), null, 1, 1);
-        Assert.assertNames(composites, "role-c");
+        Assertions.assertNames(composites, "role-c");
 
         resource.deleteComposites(ids.get("role-a"), l);
         assertAdminEvents.assertEvent(realmId, OperationType.DELETE, AdminEventPaths.roleByIdResourceCompositesPath(ids.get("role-a")), l, ResourceType.REALM_ROLE);
@@ -249,7 +249,7 @@ public class RoleByIdResourceTest extends AbstractAdminTest {
             Map<String, List<String>> roleAttributes = role.getAttributes();
             assertNotNull(roleAttributes);
 
-            Assert.assertRoleAttributes(attributes, roleAttributes);
+            Assertions.assertRoleAttributes(attributes, roleAttributes);
 
 
             // delete an attribute
@@ -261,7 +261,7 @@ public class RoleByIdResourceTest extends AbstractAdminTest {
             roleAttributes = role.getAttributes();
             assertNotNull(roleAttributes);
 
-            Assert.assertRoleAttributes(attributes, roleAttributes);
+            Assertions.assertRoleAttributes(attributes, roleAttributes);
         }
     }
 

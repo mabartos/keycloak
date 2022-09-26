@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.console.clients;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientsResource;
 import org.keycloak.protocol.saml.SamlConfigAttributes;
@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.auth.page.login.OIDCLogin.OIDC;
 import static org.keycloak.testsuite.auth.page.login.OIDCLogin.SAML;
 import static org.keycloak.testsuite.console.page.clients.settings.ClientSettingsForm.SAMLClientSettingsForm.SAML_AUTHNSTATEMENT;
@@ -29,10 +29,10 @@ import static org.keycloak.testsuite.console.page.clients.settings.ClientSetting
 import static org.keycloak.testsuite.console.page.clients.settings.ClientSettingsForm.SAMLClientSettingsForm.SAML_NAME_ID_FORMAT;
 import static org.keycloak.testsuite.console.page.clients.settings.ClientSettingsForm.SAMLClientSettingsForm.SAML_SERVER_SIGNATURE;
 import static org.keycloak.testsuite.console.page.clients.settings.ClientSettingsForm.SAMLClientSettingsForm.SAML_SIGNATURE_ALGORITHM;
-import static org.keycloak.testsuite.util.AttributesAssert.assertEqualsBooleanAttributes;
-import static org.keycloak.testsuite.util.AttributesAssert.assertEqualsListAttributes;
-import static org.keycloak.testsuite.util.AttributesAssert.assertEqualsStringAttributes;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
+import static org.keycloak.testsuite.util.AttributesAssertions.assertEqualsBooleanAttributes;
+import static org.keycloak.testsuite.util.AttributesAssertions.assertEqualsListAttributes;
+import static org.keycloak.testsuite.util.AttributesAssertions.assertEqualsStringAttributes;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
 
 /**
  *
@@ -50,7 +50,7 @@ public abstract class AbstractClientTest extends AbstractConsoleTest {
     @Page
     protected CreateClient createClientPage;
 
-    @Before
+    @BeforeEach
     public void beforeClientTest() {
         clientsPage.navigateTo();
     }

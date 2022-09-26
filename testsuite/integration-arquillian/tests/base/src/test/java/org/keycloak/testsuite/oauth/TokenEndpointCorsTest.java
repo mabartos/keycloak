@@ -2,7 +2,7 @@ package org.keycloak.testsuite.oauth;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractKeycloakTest;
@@ -15,9 +15,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 
 /**
@@ -28,8 +28,7 @@ public class TokenEndpointCorsTest extends AbstractKeycloakTest {
     private static final String VALID_CORS_URL = "http://localtest.me:8180";
     private static final String INVALID_CORS_URL = "http://invalid.localtest.me:8180";
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Override
     public void beforeAbstractKeycloakTest() throws Exception {

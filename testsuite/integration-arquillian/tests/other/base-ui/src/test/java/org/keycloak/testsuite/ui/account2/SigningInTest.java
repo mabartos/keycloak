@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.ui.account2;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.credential.OTPCredentialModel;
 import org.keycloak.models.credential.PasswordCredentialModel;
 import org.keycloak.models.utils.Base32;
@@ -77,7 +77,7 @@ public class SigningInTest extends BaseAccountPageTest {
         otpSetupPage.setAuthRealm(TEST);
     }
 
-    @Before
+    @BeforeEach
     public void beforeSigningInTest() {
         passwordCredentialType = signingInPage.getCredentialType(PasswordCredentialModel.TYPE);
         otpCredentialType = signingInPage.getCredentialType(OTPCredentialModel.TYPE);

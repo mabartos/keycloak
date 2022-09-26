@@ -16,9 +16,9 @@
  */
 package org.keycloak.testsuite.actions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import javax.mail.Address;
@@ -26,9 +26,9 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.events.Details;
 import org.keycloak.events.EventType;
 import org.keycloak.models.UserModel;
@@ -36,13 +36,11 @@ import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.pages.ErrorPage;
 import org.keycloak.testsuite.pages.InfoPage;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.MailUtils;
 
+@ExtendWith(GreenMailExtension.class)
 public class RequiredActionUpdateEmailTestWithVerificationTest extends AbstractRequiredActionUpdateEmailTest {
-
-	@Rule
-	public GreenMailRule greenMail = new GreenMailRule();
 
 	@Page
 	private InfoPage infoPage;

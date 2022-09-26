@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.script;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.keycloak.common.Profile.Feature.SCRIPTS;
 import static org.keycloak.testsuite.arquillian.DeploymentTargetModifier.AUTH_SERVER_CURRENT;
 
@@ -32,11 +32,11 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.authenticators.browser.ScriptBasedAuthenticatorFactory;
 import org.keycloak.authentication.authenticators.browser.UsernamePasswordFormFactory;
 import org.keycloak.events.Details;
@@ -82,13 +82,12 @@ public class DeployedScriptAuthenticatorTest extends AbstractFlowTest {
                 .addAsResource("scripts/authenticator-example.js", "authenticator-a.js");
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void verifyEnvironment() {
         ContainerAssume.assumeNotAuthServerUndertow();
     }
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected LoginPage loginPage;
@@ -139,7 +138,7 @@ public class DeployedScriptAuthenticatorTest extends AbstractFlowTest {
                 .build();
 
         Response createFlowResponse = adminClient.realm(TEST_REALM_NAME).flows().createFlow(scriptBrowserFlow);
-        Assert.assertEquals(201, createFlowResponse.getStatus());
+        Assertions.assertEquals(201, createFlowResponse.getStatus());
 
         RealmRepresentation realm = adminClient.realm(TEST_REALM_NAME).toRepresentation();
         realm.setBrowserFlow(scriptFlow);
@@ -163,17 +162,17 @@ public class DeployedScriptAuthenticatorTest extends AbstractFlowTest {
                 .build();
 
         Response addExecutionResponse = testRealm().flows().addExecution(usernamePasswordFormExecution);
-        Assert.assertEquals(201, addExecutionResponse.getStatus());
+        Assertions.assertEquals(201, addExecutionResponse.getStatus());
         addExecutionResponse.close();
 
         addExecutionResponse = testRealm().flows().addExecution(authScriptExecution);
-        Assert.assertEquals(201, addExecutionResponse.getStatus());
+        Assertions.assertEquals(201, addExecutionResponse.getStatus());
         addExecutionResponse.close();
 
         testContext.setInitialized(true);
     }
 
-    @After
+    @AfterEach
     public void onAfter() throws Exception {
         deployer.undeploy(SCRIPT_DEPLOYMENT_NAME);
         reconnectAdminClient();

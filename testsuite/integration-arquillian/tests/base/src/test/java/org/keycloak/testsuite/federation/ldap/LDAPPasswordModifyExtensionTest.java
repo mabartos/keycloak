@@ -18,11 +18,11 @@
 
 package org.keycloak.testsuite.federation.ldap;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.common.Profile;
 import org.keycloak.component.ComponentModel;
@@ -98,7 +98,7 @@ public class LDAPPasswordModifyExtensionTest extends AbstractLDAPTest  {
         });
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         // don't run this test when map storage is enabled, as map storage doesn't support the legacy style federation
         ProfileAssume.assumeFeatureDisabled(Profile.Feature.MAP_STORAGE);
@@ -111,22 +111,22 @@ public class LDAPPasswordModifyExtensionTest extends AbstractLDAPTest  {
         loginPage.login("johnkeycloak", "Password1");
         changePasswordPage.changePassword("Password1", "New-password1", "New-password1");
 
-        Assert.assertEquals("Your password has been updated.", profilePage.getSuccess());
+        Assertions.assertEquals("Your password has been updated.", profilePage.getSuccess());
 
         changePasswordPage.logout();
 
         loginPage.open();
         loginPage.login("johnkeycloak", "Bad-password1");
-        Assert.assertEquals("Invalid username or password.", loginPage.getInputError());
+        Assertions.assertEquals("Invalid username or password.", loginPage.getInputError());
 
         loginPage.open();
         loginPage.login("johnkeycloak", "New-password1");
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         // Change password back to previous value
         changePasswordPage.open();
         changePasswordPage.changePassword("New-password1", "Password1", "Password1");
-        Assert.assertEquals("Your password has been updated.", profilePage.getSuccess());
+        Assertions.assertEquals("Your password has been updated.", profilePage.getSuccess());
     }
 
     @Test
@@ -136,21 +136,21 @@ public class LDAPPasswordModifyExtensionTest extends AbstractLDAPTest  {
         registerPage.assertCurrent();
 
         registerPage.register("firstName", "lastName", "email2@check.cz", "registerUserSuccess2", "Password1", "Password1");
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         UserRepresentation user = ApiUtil.findUserByUsername(testRealm(),"registerUserSuccess2");
-        Assert.assertNotNull(user);
+        Assertions.assertNotNull(user);
         assertFederatedUserLink(user);
-        Assert.assertEquals("registerusersuccess2", user.getUsername());
-        Assert.assertEquals("firstName", user.getFirstName());
-        Assert.assertEquals("lastName", user.getLastName());
-        Assert.assertTrue(user.isEnabled());
+        Assertions.assertEquals("registerusersuccess2", user.getUsername());
+        Assertions.assertEquals("firstName", user.getFirstName());
+        Assertions.assertEquals("lastName", user.getLastName());
+        Assertions.assertTrue(user.isEnabled());
     }
 
 
     protected void assertFederatedUserLink(UserRepresentation user) {
-        Assert.assertTrue(StorageId.isLocalStorage(user.getId()));
-        Assert.assertNotNull(user.getFederationLink());
-        Assert.assertEquals(user.getFederationLink(), ldapModelId);
+        Assertions.assertTrue(StorageId.isLocalStorage(user.getId()));
+        Assertions.assertNotNull(user.getFederationLink());
+        Assertions.assertEquals(user.getFederationLink(), ldapModelId);
     }
 }

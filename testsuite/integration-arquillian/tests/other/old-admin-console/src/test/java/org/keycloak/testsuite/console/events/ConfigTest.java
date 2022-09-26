@@ -1,13 +1,13 @@
 package org.keycloak.testsuite.console.events;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.console.AbstractConsoleTest;
 import org.keycloak.testsuite.console.page.events.Config;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author mhajas
@@ -17,7 +17,7 @@ public class ConfigTest extends AbstractConsoleTest {
     @Page
     private Config configPage;
 
-    @Before
+    @BeforeEach
     public void beforeConfigTest() {
         configPage.navigateTo();
     }

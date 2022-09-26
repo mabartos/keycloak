@@ -19,9 +19,9 @@ package org.keycloak.testsuite.adapter.servlet.cluster;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 
 import java.net.URI;
@@ -36,8 +36,8 @@ import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.common.util.Retry;
 import org.keycloak.protocol.oidc.OIDCLoginProtocolService;
@@ -131,7 +131,7 @@ public class OIDCAdapterClusterTest extends AbstractAdapterClusteredTest {
         deployer.undeploy(SessionPortalDistributable.DEPLOYMENT_NAME + "_2");
     }
 
-    @Before
+    @BeforeEach
     public void onBefore() {
         loginPage.setAuthRealm(AuthRealm.DEMO);
     }

@@ -17,7 +17,7 @@
 package org.keycloak.testsuite.broker;
 
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.IdentityProviderSyncMode;
 import org.keycloak.representations.idm.IdentityProviderRepresentation;
 import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
@@ -62,14 +62,14 @@ public class KcOidcBrokerHiddenIdpHintTest extends AbstractInitializedBaseBroker
         String url = driver.getCurrentUrl() + "&kc_idp_hint=" + bc.getIDPAlias();
         driver.navigate().to(url);
         waitForPage(driver, "sign in to", true);
-        Assert.assertTrue("Driver should be on the provider realm page right now",
+        Assertions.assertTrue("Driver should be on the provider realm page right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName() + "/"));
 
         log.debug("Logging in");
         loginPage.login(bc.getUserLogin(), bc.getUserPassword());
         
         // authenticated and redirected to app
-        Assert.assertTrue(driver.getCurrentUrl().contains("/auth/realms/" + bc.consumerRealmName() + "/"));
+        Assertions.assertTrue(driver.getCurrentUrl().contains("/auth/realms/" + bc.consumerRealmName() + "/"));
     }
         
 }

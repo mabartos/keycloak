@@ -17,9 +17,9 @@
 
 package org.keycloak.testsuite.federation.kerberos;
 
-import org.junit.ClassRule;
+
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.federation.kerberos.CommonKerberosConfig;
 import org.keycloak.representations.AccessToken;
@@ -69,7 +69,7 @@ public class KerberosLdapCrossRealmTrustTest extends AbstractKerberosTest {
         // Login as user from realm KC2.COM . Realm KEYCLOAK.ORG will trust us
         AccessToken token = assertSuccessfulSpnegoLogin("hnelson2@KC2.COM", "hnelson2", "secret");
 
-        Assert.assertEquals(token.getEmail(), "hnelson2@kc2.com");
+        Assertions.assertEquals(token.getEmail(), "hnelson2@kc2.com");
         assertUser("hnelson2", "hnelson2@kc2.com", "Horatio", "Nelson", false);
     }
 
@@ -85,7 +85,7 @@ public class KerberosLdapCrossRealmTrustTest extends AbstractKerberosTest {
         // as it's not possible to start GSS context ( initSecContext ) due the missing trust among realms.
         try {
             Response spnegoResponse = spnegoLogin("hnelson2@KC2.COM", "secret");
-            Assert.fail("Not expected to successfully login");
+            Assertions.fail("Not expected to successfully login");
         } catch (Exception e) {
             // Expected
         }

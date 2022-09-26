@@ -19,14 +19,14 @@
 
 package org.keycloak.testsuite.admin.userprofile;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.userprofile.DeclarativeUserProfileProvider.REALM_USER_PROFILE_ENABLED;
 import static org.keycloak.userprofile.config.UPConfigUtils.readDefaultConfig;
 
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.UserProfileResource;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.idm.RealmRepresentation;

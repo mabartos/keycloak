@@ -20,9 +20,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.common.Profile;
 import org.keycloak.events.Details;
@@ -47,9 +47,9 @@ import org.keycloak.testsuite.util.RealmBuilder;
 import org.keycloak.testsuite.util.UserBuilder;
 import org.openqa.selenium.By;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Stan Silvert
@@ -66,7 +66,7 @@ public class AppInitiatedActionTotpSetupTest extends AbstractAppInitiatedActionT
         testRealm.setResetPasswordAllowed(Boolean.TRUE);
     }
 
-    @Before
+    @BeforeEach
     public void setOTPAuthRequired() {
         adminClient.realm("test").flows().getExecutions("browser")
                 .stream()
@@ -412,7 +412,7 @@ public class AppInitiatedActionTotpSetupTest extends AbstractAppInitiatedActionT
         String uri = driver.getCurrentUrl();
         String src = driver.getPageSource();
         assertTrue(loginPage.isCurrent());
-        Assert.assertFalse(totpPage.isCurrent());
+        Assertions.assertFalse(totpPage.isCurrent());
 
         setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
 

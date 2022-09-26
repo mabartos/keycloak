@@ -19,11 +19,11 @@
 package org.keycloak.testsuite.federation.ldap;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.UserResource;
@@ -53,8 +53,8 @@ import javax.ws.rs.ClientErrorException;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test for more advanced scenarios related to LDAP read-only mode
@@ -77,7 +77,7 @@ public class LDAPReadOnlyTest extends AbstractLDAPTest  {
 
     private TimeBasedOTP totp = new TimeBasedOTP();
 
-    @Before
+    @BeforeEach
     public void before() {
         // don't run this test when map storage is enabled, as map storage doesn't support LDAP, yet
         ProfileAssume.assumeFeatureDisabled(Profile.Feature.MAP_STORAGE);
@@ -126,8 +126,8 @@ public class LDAPReadOnlyTest extends AbstractLDAPTest  {
 
         totpPage.configure(totp.generateTOTP(totpPage.getTotpSecret()));
 
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         // Revert TOTP
         setTotpRequirementExecutionForRealm(AuthenticationExecutionModel.Requirement.CONDITIONAL);
@@ -149,8 +149,8 @@ public class LDAPReadOnlyTest extends AbstractLDAPTest  {
         // assert
         user = ApiUtil.findUserByUsernameId(testRealm(), "johnkeycloak");
         userRepresentation = user.toRepresentation();
-        Assert.assertEquals(userRepresentation.getRequiredActions().size(), 1);
-        Assert.assertEquals(userRepresentation.getRequiredActions().get(0), UserModel.RequiredAction.CONFIGURE_TOTP.toString());
+        Assertions.assertEquals(userRepresentation.getRequiredActions().size(), 1);
+        Assertions.assertEquals(userRepresentation.getRequiredActions().get(0), UserModel.RequiredAction.CONFIGURE_TOTP.toString());
 
         // reset
         userRepresentation.setRequiredActions(Collections.emptyList());
@@ -176,8 +176,8 @@ public class LDAPReadOnlyTest extends AbstractLDAPTest  {
 
 
     protected void assertFederatedUserLink(UserRepresentation user) {
-        Assert.assertTrue(StorageId.isLocalStorage(user.getId()));
-        Assert.assertNotNull(user.getFederationLink());
-        Assert.assertEquals(user.getFederationLink(), ldapModelId);
+        Assertions.assertTrue(StorageId.isLocalStorage(user.getId()));
+        Assertions.assertNotNull(user.getFederationLink());
+        Assertions.assertEquals(user.getFederationLink(), ldapModelId);
     }
 }

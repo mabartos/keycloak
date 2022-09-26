@@ -17,11 +17,11 @@
 
 package org.keycloak.testsuite.federation.ldap;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.common.Profile;
@@ -63,7 +63,7 @@ public class LDAPLegacyImportTest extends AbstractLDAPTest {
         return ldapRule;
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         // don't run this test when map storage is enabled, as map storage doesn't support the legacy style federation
         ProfileAssume.assumeFeatureDisabled(Profile.Feature.MAP_STORAGE);
@@ -109,8 +109,8 @@ public class LDAPLegacyImportTest extends AbstractLDAPTest {
         loginPage.open();
         loginPage.login("marykeycloak", "password-app");
 
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
     }
 
@@ -120,13 +120,13 @@ public class LDAPLegacyImportTest extends AbstractLDAPTest {
         loginPage.open();
         loginPage.login("johnkeycloak", "Password1");
 
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         profilePage.open();
-        Assert.assertEquals("John", profilePage.getFirstName());
-        Assert.assertEquals("Doe", profilePage.getLastName());
-        Assert.assertEquals("john@email.org", profilePage.getEmail());
+        Assertions.assertEquals("John", profilePage.getFirstName());
+        Assertions.assertEquals("Doe", profilePage.getLastName());
+        Assertions.assertEquals("john@email.org", profilePage.getEmail());
     }
 
 

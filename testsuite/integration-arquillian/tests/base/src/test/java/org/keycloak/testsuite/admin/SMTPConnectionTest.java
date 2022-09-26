@@ -17,14 +17,15 @@
 
 package org.keycloak.testsuite.admin;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.AbstractKeycloakTest;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.UserBuilder;
 
 import javax.mail.internet.MimeMessage;
@@ -33,19 +34,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.representations.idm.ComponentRepresentation.SECRET_VALUE;
 
 /**
  * @author <a href="mailto:bruno@abstractj.org">Bruno Oliveira</a>
  */
+@ExtendWith(GreenMailExtension.class)
 public class SMTPConnectionTest extends AbstractKeycloakTest {
 
     public final String SMTP_PASSWORD = setSmtpPassword();
-
-    @Rule
-    public GreenMailRule greenMailRule = new GreenMailRule();
     private RealmResource realm;
 
     @Override
@@ -56,7 +55,7 @@ public class SMTPConnectionTest extends AbstractKeycloakTest {
         return "admin";
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         realm = adminClient.realm("master");
         List<UserRepresentation> admin = realm.users().search("admin", 0, 1);
@@ -109,7 +108,7 @@ public class SMTPConnectionTest extends AbstractKeycloakTest {
 
     @Test
     public void testWithAuthEnabledValidCredentials() throws Exception {
-        greenMailRule.credentials("admin@localhost", "admin");
+        greenMailExtension.credentials("admin@localhost", "admin");
         Response response = realm.testSMTPConnection(settings("127.0.0.1", "3025", "auto@keycloak.org", "true", null, null,
                 "admin@localhost", SMTP_PASSWORD));
         assertStatus(response, 204);
@@ -124,7 +123,7 @@ public class SMTPConnectionTest extends AbstractKeycloakTest {
                     "admin@localhost", SMTP_PASSWORD, null, null));
             realm.update(realmRep);
 
-            greenMailRule.credentials("admin@localhost", "admin");
+            greenMailExtension.credentials("admin@localhost", "admin");
             Response response = realm.testSMTPConnection(settings("127.0.0.1", "3025", "auto@keycloak.org", "true", null, null,
                     "admin@localhost", SECRET_VALUE));
             assertStatus(response, 204);
@@ -141,9 +140,9 @@ public class SMTPConnectionTest extends AbstractKeycloakTest {
     }
 
     private void assertMailReceived() {
-        if (greenMailRule.getReceivedMessages().length == 1) {
+        if (greenMailExtension.getReceivedMessages().length == 1) {
             try {
-                MimeMessage message = greenMailRule.getReceivedMessages()[0];
+                MimeMessage message = greenMailExtension.getReceivedMessages()[0];
                 assertEquals("[KEYCLOAK] - SMTP test message", message.getSubject());
             } catch (Exception e) {
                 e.printStackTrace();

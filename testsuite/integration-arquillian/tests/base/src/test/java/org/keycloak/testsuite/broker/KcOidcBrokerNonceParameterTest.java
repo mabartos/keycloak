@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.broker;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.jose.jws.JWSInput;
 import org.keycloak.jose.jws.JWSInputException;
 import org.keycloak.representations.IDToken;
@@ -47,7 +47,7 @@ public class KcOidcBrokerNonceParameterTest extends AbstractBrokerTest {
         OAuthClient.AccessTokenResponse response = oauth.doAccessTokenRequest(code, null);
         IDToken idToken = toIdToken(response.getIdToken());
         
-        Assert.assertEquals("123456", idToken.getNonce());
+        Assertions.assertEquals("123456", idToken.getNonce());
     }
     
     @Test
@@ -64,7 +64,7 @@ public class KcOidcBrokerNonceParameterTest extends AbstractBrokerTest {
         OAuthClient.AccessTokenResponse response = oauth.doAccessTokenRequest(code, null);
         IDToken idToken = toIdToken(response.getIdToken());
 
-        Assert.assertNull(idToken.getNonce());
+        Assertions.assertNull(idToken.getNonce());
     }
 
     protected IDToken toIdToken(String encoded) {

@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.admin.client.authorization;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.testsuite.ProfileAssume;
 import org.keycloak.testsuite.admin.client.AbstractClientTest;
@@ -27,15 +27,15 @@ import org.keycloak.testsuite.arquillian.annotation.UncaughtServerErrorExpected;
 import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
 public class AuthorizationDisabledInPreviewTest extends AbstractClientTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
         ProfileAssume.assumeFeatureDisabled(Profile.Feature.AUTHORIZATION);
     }

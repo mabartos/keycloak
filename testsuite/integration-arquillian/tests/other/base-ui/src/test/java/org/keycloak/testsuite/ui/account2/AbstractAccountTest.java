@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.ui.account2;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.arquillian.annotation.EnableFeature;
@@ -28,7 +28,7 @@ import org.keycloak.testsuite.ui.account2.page.WelcomeScreen;
 
 import java.util.List;
 
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWithLoginUrlOf;
 
 /**
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
@@ -51,7 +51,7 @@ public abstract class AbstractAccountTest extends AbstractUiTest {
         testRealmRep.setAccountTheme(getAccountThemeName());
     }
 
-    @Before
+    @BeforeEach
     public void navigateBeforeTest() {
         accountWelcomeScreen.navigateTo();
     }

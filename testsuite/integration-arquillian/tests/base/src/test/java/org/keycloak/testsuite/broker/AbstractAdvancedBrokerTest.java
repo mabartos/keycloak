@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.broker;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.IdentityProviderResource;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
@@ -43,11 +43,11 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.admin.ApiUtil.removeUserByUsername;
 import static org.keycloak.testsuite.broker.BrokerRunOnServerUtil.configurePostBrokerLoginWithOTP;
 import static org.keycloak.testsuite.broker.BrokerRunOnServerUtil.disablePostBrokerLoginFlow;
@@ -242,14 +242,14 @@ public abstract class AbstractAdvancedBrokerTest extends AbstractBrokerTest {
         } catch (TimeoutException e) {
             log.debug(driver.getTitle());
             log.debug(driver.getPageSource());
-            Assert.fail("Timeout while waiting for login page");
+            Assertions.fail("Timeout while waiting for login page");
         }
 
         for (int i = 0; i < 3; i++) {
             try {
                 waitForElementEnabled(driver, "login");
             } catch (TimeoutException e) {
-                Assert.fail("Timeout while waiting for login element enabled");
+                Assertions.fail("Timeout while waiting for login element enabled");
             }
 
             loginPage.login(bc.getUserLogin(), "invalid");
@@ -264,10 +264,10 @@ public abstract class AbstractAdvancedBrokerTest extends AbstractBrokerTest {
         } catch (TimeoutException e) {
             log.debug(driver.getTitle());
             log.debug(driver.getPageSource());
-            Assert.fail("Timeout while waiting for login page");
+            Assertions.fail("Timeout while waiting for login page");
         }
 
-        Assert.assertTrue("Driver should be on the provider realm page right now", driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName() + "/"));
+        Assertions.assertTrue("Driver should be on the provider realm page right now", driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName() + "/"));
 
         loginPage.login(bc.getUserLogin(), bc.getUserPassword());
 
@@ -453,7 +453,7 @@ public abstract class AbstractAdvancedBrokerTest extends AbstractBrokerTest {
         waitForPage(driver, "sorry", false);
         errorPage.assertCurrent();
         String link = errorPage.getBackToApplicationLink();
-        Assert.assertTrue(link.endsWith("/auth/realms/consumer/account/"));
+        Assertions.assertTrue(link.endsWith("/auth/realms/consumer/account/"));
     }
 
     /**
@@ -524,14 +524,14 @@ public abstract class AbstractAdvancedBrokerTest extends AbstractBrokerTest {
 
             // Login for 2 times with incorrect TOTP. This should temporarily disable the user
             loginTotpPage.login("bad-totp");
-            Assert.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
+            Assertions.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
 
             loginTotpPage.login("bad-totp");
-            Assert.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
+            Assertions.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
 
             // Login with valid TOTP. I should not be able to login
             loginTotpPage.login(totp.generateTOTP(totpSecret));
-            Assert.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
+            Assertions.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
 
             // Clear login failures
             String userId = ApiUtil.findUserByUsername(realm, bc.getUserLogin()).getId();

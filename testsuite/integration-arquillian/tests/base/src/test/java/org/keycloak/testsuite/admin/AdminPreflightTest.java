@@ -4,27 +4,27 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.services.resources.Cors;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AdminPreflightTest extends AbstractAdminTest {
 
 
     private CloseableHttpClient client;
 
-    @Before
+    @BeforeEach
     public void before() {
         client = HttpClientBuilder.create().build();
     }
 
-    @After
+    @AfterEach
     public void after() {
         try {
             client.close();

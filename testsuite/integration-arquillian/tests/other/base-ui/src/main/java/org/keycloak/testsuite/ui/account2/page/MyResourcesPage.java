@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.jboss.arquillian.graphene.Graphene.waitGui;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MyResourcesPage extends AbstractLoggedInPage {
 

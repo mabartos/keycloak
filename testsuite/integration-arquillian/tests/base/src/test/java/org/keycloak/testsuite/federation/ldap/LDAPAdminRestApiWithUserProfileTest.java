@@ -18,10 +18,10 @@
 
 package org.keycloak.testsuite.federation.ldap;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.testsuite.forms.VerifyProfileTest.disableDynamicUserProfile;
 import static org.keycloak.testsuite.forms.VerifyProfileTest.setUserProfileConfiguration;
 import static org.keycloak.util.JsonSerialization.readValue;
@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.common.Profile;

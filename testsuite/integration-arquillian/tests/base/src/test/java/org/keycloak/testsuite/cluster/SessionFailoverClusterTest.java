@@ -1,10 +1,10 @@
 package org.keycloak.testsuite.cluster;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Cookie;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.util.WaitUtils.pause;
 
 /**
@@ -13,7 +13,7 @@ import static org.keycloak.testsuite.util.WaitUtils.pause;
  */
 public class SessionFailoverClusterTest extends AbstractFailoverClusterTest {
 
-    @Before
+    @BeforeEach
     public void beforeSessionFailover() {
         log.info("Initial node failure");
         failure();

@@ -61,15 +61,15 @@ import javax.ws.rs.core.UriBuilderException;
 import javax.xml.transform.dom.DOMSource;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.keycloak.testsuite.util.Matchers.*;
 import static org.keycloak.testsuite.util.SamlClient.Binding.*;
 
@@ -90,7 +90,7 @@ public class LogoutTest extends AbstractSamlTest {
     private ClientRepresentation salesRep;
     private ClientRepresentation sales2Rep;
 
-    @Before
+    @BeforeEach
     public void setup() {
         salesRep = adminClient.realm(REALM_NAME).clients().findByClientId(SAML_CLIENT_ID_SALES_POST).get(0);
         sales2Rep = adminClient.realm(REALM_NAME).clients().findByClientId(SAML_CLIENT_ID_SALES_POST2).get(0);

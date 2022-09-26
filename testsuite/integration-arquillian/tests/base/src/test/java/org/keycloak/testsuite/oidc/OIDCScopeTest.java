@@ -17,9 +17,9 @@
 
 package org.keycloak.testsuite.oidc;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientScopeResource;
@@ -57,7 +57,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test for OAuth2 'scope' parameter and for some other aspects of client scopes
@@ -148,7 +148,7 @@ public class OIDCScopeTest extends AbstractOIDCScopeTest {
         testRealm.getUsers().add(user);
     }
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         ClientManager.realm(adminClient.realm("test")).clientId("test-app").directAccessGrant(true);
         oauth.clientId("test-app");
@@ -156,7 +156,7 @@ public class OIDCScopeTest extends AbstractOIDCScopeTest {
         oauth.maxAge(null);
     }
 
-    @After
+    @AfterEach
     public void removePersistentConsentFromUser() {
         try {
             adminClient.realm("test").users().get(userId).revokeConsent("third-party");
@@ -212,27 +212,27 @@ public class OIDCScopeTest extends AbstractOIDCScopeTest {
 
     private void assertProfile(IDToken idToken, boolean claimsIn) {
         if (claimsIn) {
-            Assert.assertEquals("john", idToken.getPreferredUsername());
-            Assert.assertEquals("John", idToken.getGivenName());
-            Assert.assertEquals("Doe", idToken.getFamilyName());
-            Assert.assertEquals("John Doe", idToken.getName());
-            Assert.assertEquals(new Long(1643282255L),idToken.getUpdatedAt());
+            Assertions.assertEquals("john", idToken.getPreferredUsername());
+            Assertions.assertEquals("John", idToken.getGivenName());
+            Assertions.assertEquals("Doe", idToken.getFamilyName());
+            Assertions.assertEquals("John Doe", idToken.getName());
+            Assertions.assertEquals(new Long(1643282255L),idToken.getUpdatedAt());
         } else {
-            Assert.assertNull(idToken.getPreferredUsername());
-            Assert.assertNull(idToken.getGivenName());
-            Assert.assertNull(idToken.getFamilyName());
-            Assert.assertNull(idToken.getName());
+            Assertions.assertNull(idToken.getPreferredUsername());
+            Assertions.assertNull(idToken.getGivenName());
+            Assertions.assertNull(idToken.getFamilyName());
+            Assertions.assertNull(idToken.getName());
         }
     }
 
 
     private void assertEmail(IDToken idToken, boolean claimsIn) {
         if (claimsIn) {
-            Assert.assertEquals("john@email.cz", idToken.getEmail());
-            Assert.assertEquals(true, idToken.getEmailVerified());
+            Assertions.assertEquals("john@email.cz", idToken.getEmail());
+            Assertions.assertEquals(true, idToken.getEmailVerified());
         } else {
-            Assert.assertNull(idToken.getEmail());
-            Assert.assertNull(idToken.getEmailVerified());
+            Assertions.assertNull(idToken.getEmail());
+            Assertions.assertNull(idToken.getEmailVerified());
         }
     }
 
@@ -240,36 +240,36 @@ public class OIDCScopeTest extends AbstractOIDCScopeTest {
     private void assertAddress(IDToken idToken, boolean claimsIn) {
         AddressClaimSet address = idToken.getAddress();
         if (claimsIn) {
-            Assert.assertNotNull(address);
-            Assert.assertEquals("Elm 5", address.getStreetAddress());
+            Assertions.assertNotNull(address);
+            Assertions.assertEquals("Elm 5", address.getStreetAddress());
         } else {
-            Assert.assertNull(address);
+            Assertions.assertNull(address);
         }
     }
 
 
     private void assertPhone(IDToken idToken, boolean claimsIn) {
         if (claimsIn) {
-            Assert.assertEquals("111-222-333", idToken.getPhoneNumber());
-            Assert.assertEquals(true, idToken.getPhoneNumberVerified());
+            Assertions.assertEquals("111-222-333", idToken.getPhoneNumber());
+            Assertions.assertEquals(true, idToken.getPhoneNumberVerified());
         } else {
-            Assert.assertNull(idToken.getPhoneNumber());
-            Assert.assertNull(idToken.getPhoneNumberVerified());
+            Assertions.assertNull(idToken.getPhoneNumber());
+            Assertions.assertNull(idToken.getPhoneNumberVerified());
         }
     }
 
 
     private void assertMicroprofile(IDToken idToken, boolean claimsIn) {
         if (claimsIn) {
-            Assert.assertTrue(idToken.getOtherClaims().containsKey("upn"));
-            Assert.assertEquals("john", idToken.getOtherClaims().get("upn"));
-            Assert.assertTrue(idToken.getOtherClaims().containsKey("groups"));
+            Assertions.assertTrue(idToken.getOtherClaims().containsKey("upn"));
+            Assertions.assertEquals("john", idToken.getOtherClaims().get("upn"));
+            Assertions.assertTrue(idToken.getOtherClaims().containsKey("groups"));
             List<String> groups = (List<String>) idToken.getOtherClaims().get("groups");
-            Assert.assertNotNull(groups);
-            Assert.assertTrue(groups.containsAll(Arrays.asList("role-1", "role-2")));
+            Assertions.assertNotNull(groups);
+            Assertions.assertTrue(groups.containsAll(Arrays.asList("role-1", "role-2")));
         } else {
-            Assert.assertFalse(idToken.getOtherClaims().containsKey("upn"));
-            Assert.assertFalse(idToken.getOtherClaims().containsKey("groups"));
+            Assertions.assertFalse(idToken.getOtherClaims().containsKey("upn"));
+            Assertions.assertFalse(idToken.getOtherClaims().containsKey("groups"));
         }
     }
 
@@ -488,7 +488,7 @@ public class OIDCScopeTest extends AbstractOIDCScopeTest {
 
         // Ensure that I can refresh token
         OAuthClient.AccessTokenResponse refreshResponse = oauth.doRefreshTokenRequest(tokens.refreshToken, "password");
-        Assert.assertEquals(200, refreshResponse.getStatusCode());
+        Assertions.assertEquals(200, refreshResponse.getStatusCode());
         idToken = oauth.verifyIDToken(refreshResponse.getIdToken());
 
         assertProfile(idToken, true);
@@ -566,30 +566,30 @@ public class OIDCScopeTest extends AbstractOIDCScopeTest {
                 .assertEvent();
 
         Tokens tokens1 = sendTokenRequest(loginEvent, userId,"openid email profile scope-role-1", "test-app");
-        Assert.assertTrue(tokens1.accessToken.getRealmAccess().isUserInRole("role-1"));
-        Assert.assertFalse(tokens1.accessToken.getRealmAccess().isUserInRole("role-2"));
+        Assertions.assertTrue(tokens1.accessToken.getRealmAccess().isUserInRole("role-1"));
+        Assertions.assertFalse(tokens1.accessToken.getRealmAccess().isUserInRole("role-2"));
 
         //SSO login with scope-role-2. Save refresh token
         oauth.scope("scope-role-2");
         oauth.openLoginForm();
         loginEvent = events.expectLogin().user(userId).removeDetail(Details.USERNAME).client("test-app").assertEvent();
         Tokens tokens2 = sendTokenRequest(loginEvent, userId,"openid email profile scope-role-2", "test-app");
-        Assert.assertFalse(tokens2.accessToken.getRealmAccess().isUserInRole("role-1"));
-        Assert.assertTrue(tokens2.accessToken.getRealmAccess().isUserInRole("role-2"));
+        Assertions.assertFalse(tokens2.accessToken.getRealmAccess().isUserInRole("role-1"));
+        Assertions.assertTrue(tokens2.accessToken.getRealmAccess().isUserInRole("role-2"));
 
         // Ensure I can refresh refreshToken1. Just role1 is present
         OAuthClient.AccessTokenResponse refreshResponse1 = oauth.doRefreshTokenRequest(tokens1.refreshToken, "password");
-        Assert.assertEquals(200, refreshResponse1.getStatusCode());
+        Assertions.assertEquals(200, refreshResponse1.getStatusCode());
         AccessToken accessToken1 = oauth.verifyToken(refreshResponse1.getAccessToken());
-        Assert.assertTrue(accessToken1.getRealmAccess().isUserInRole("role-1"));
-        Assert.assertFalse(accessToken1.getRealmAccess().isUserInRole("role-2"));
+        Assertions.assertTrue(accessToken1.getRealmAccess().isUserInRole("role-1"));
+        Assertions.assertFalse(accessToken1.getRealmAccess().isUserInRole("role-2"));
 
         // Ensure I can refresh refreshToken2. Just role2 is present
         OAuthClient.AccessTokenResponse refreshResponse2 = oauth.doRefreshTokenRequest(tokens2.refreshToken, "password");
-        Assert.assertEquals(200, refreshResponse2.getStatusCode());
+        Assertions.assertEquals(200, refreshResponse2.getStatusCode());
         AccessToken accessToken2 = oauth.verifyToken(refreshResponse2.getAccessToken());
-        Assert.assertFalse(accessToken2.getRealmAccess().isUserInRole("role-1"));
-        Assert.assertTrue(accessToken2.getRealmAccess().isUserInRole("role-2"));
+        Assertions.assertFalse(accessToken2.getRealmAccess().isUserInRole("role-1"));
+        Assertions.assertTrue(accessToken2.getRealmAccess().isUserInRole("role-2"));
 
         // Revert
         testAppRep.setFullScopeAllowed(true);
@@ -661,7 +661,7 @@ public class OIDCScopeTest extends AbstractOIDCScopeTest {
                 .assertEvent();
 
         Tokens tokens = sendTokenRequest(loginEvent, userId,"openid email profile " + expectedRoleScopes, "test-app");
-        Assert.assertNames(tokens.accessToken.getRealmAccess().getRoles(), expectedRoles);
+        Assertions.assertNames(tokens.accessToken.getRealmAccess().getRoles(), expectedRoles);
 
         oauth.doLogout(tokens.refreshToken, "password");
         events.expectLogout(tokens.idToken.getSessionState())

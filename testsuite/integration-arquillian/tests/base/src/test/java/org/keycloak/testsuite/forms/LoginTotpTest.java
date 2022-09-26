@@ -17,14 +17,14 @@
 package org.keycloak.testsuite.forms;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.events.Details;
 import org.keycloak.models.Constants;
-import org.keycloak.models.OTPPolicy;
 import org.keycloak.models.utils.TimeBasedOTP;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -36,11 +36,10 @@ import org.keycloak.testsuite.pages.LoginPage;
 import org.keycloak.testsuite.pages.LoginTotpPage;
 import org.keycloak.testsuite.updaters.RealmAttributeUpdater;
 import org.keycloak.testsuite.util.AdminClientUtil;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.keycloak.testsuite.util.RealmRepUtil;
 import org.keycloak.testsuite.util.UserBuilder;
-import org.keycloak.testsuite.util.WaitUtils;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -56,6 +55,7 @@ import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  * @author Stan Silvert ssilvert@redhat.com (C) 2016 Red Hat Inc.
  */
+@ExtendWith(GreenMailExtension.class)
 public class LoginTotpTest extends AbstractTestRealmKeycloakTest {
 
     @Override
@@ -66,11 +66,7 @@ public class LoginTotpTest extends AbstractTestRealmKeycloakTest {
                    .otpEnabled();
     }
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
-
-    @Rule
-    public GreenMailRule greenMail = new GreenMailRule();
+    
 
     @Page
     protected AppPage appPage;
@@ -85,7 +81,7 @@ public class LoginTotpTest extends AbstractTestRealmKeycloakTest {
 
     private int lifespan;
 
-    @Before
+    @BeforeEach
     public void before() throws MalformedURLException {
         totp = new TimeBasedOTP();
     }
@@ -95,14 +91,14 @@ public class LoginTotpTest extends AbstractTestRealmKeycloakTest {
         loginPage.open();
         loginPage.login("test-user@localhost", "password");
 
-        Assert.assertTrue(loginTotpPage.isCurrent());
+        Assertions.assertTrue(loginTotpPage.isCurrent());
 
         loginTotpPage.login("123456");
         loginTotpPage.assertCurrent();
-        Assert.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
+        Assertions.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
 
         //loginPage.assertCurrent();  // Invalid authenticator code.
-        //Assert.assertEquals("Invalid username or password.", loginPage.getError());
+        //Assertions.assertEquals("Invalid username or password.", loginPage.getError());
 
         events.expectLogin().error("invalid_user_credentials").session((String) null)
                 .removeDetail(Details.CONSENT)
@@ -114,14 +110,14 @@ public class LoginTotpTest extends AbstractTestRealmKeycloakTest {
         loginPage.open();
         loginPage.login("test-user@localhost", "password");
 
-        Assert.assertTrue(loginTotpPage.isCurrent());
+        Assertions.assertTrue(loginTotpPage.isCurrent());
 
         loginTotpPage.login(null);
         loginTotpPage.assertCurrent();
-        Assert.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
+        Assertions.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
 
         //loginPage.assertCurrent();  // Invalid authenticator code.
-        //Assert.assertEquals("Invalid username or password.", loginPage.getError());
+        //Assertions.assertEquals("Invalid username or password.", loginPage.getError());
 
         events.expectLogin().error("invalid_user_credentials").session((String) null)
                 .removeDetail(Details.CONSENT)
@@ -133,13 +129,13 @@ public class LoginTotpTest extends AbstractTestRealmKeycloakTest {
         loginPage.open();
         loginPage.login("test-user@localhost", "password");
 
-        Assert.assertTrue(loginTotpPage.isCurrent());
+        Assertions.assertTrue(loginTotpPage.isCurrent());
 
         setOtpTimeOffset(TimeBasedOTP.DEFAULT_INTERVAL_SECONDS, totp);
 
         loginTotpPage.login(totp.generateTOTP("totpSecret"));
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         events.expectLogin().assertEvent();
     }
@@ -150,7 +146,7 @@ public class LoginTotpTest extends AbstractTestRealmKeycloakTest {
         loginPage.open();
         loginPage.login("test-user@localhost", "password");
 
-        Assert.assertTrue(loginTotpPage.isCurrent());
+        Assertions.assertTrue(loginTotpPage.isCurrent());
 
         // Refresh TOTP page
         driver.navigate().refresh();
@@ -159,7 +155,7 @@ public class LoginTotpTest extends AbstractTestRealmKeycloakTest {
 
         loginTotpPage.login(totp.generateTOTP("totpSecret"));
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         events.expectLogin().assertEvent();
     }
@@ -169,9 +165,9 @@ public class LoginTotpTest extends AbstractTestRealmKeycloakTest {
         loginPage.open();
         loginPage.login("test-user@localhost", "invalid");
 
-        Assert.assertTrue(loginPage.isCurrent());
+        Assertions.assertTrue(loginPage.isCurrent());
 
-        Assert.assertEquals("Invalid username or password.", loginPage.getInputError());
+        Assertions.assertEquals("Invalid username or password.", loginPage.getInputError());
 
         events.expectLogin().error("invalid_user_credentials").session((String) null)
                 .removeDetail(Details.CONSENT)
@@ -188,11 +184,11 @@ public class LoginTotpTest extends AbstractTestRealmKeycloakTest {
 
         loginPage.login("test-user@localhost", "password");
 
-        Assert.assertTrue(loginTotpPage.isCurrent());
+        Assertions.assertTrue(loginTotpPage.isCurrent());
 
         // Assert attempted-username available
         loginPage.assertAttemptedUsernameAvailability(true);
-        Assert.assertEquals("test-user@localhost", loginPage.getAttemptedUsername());
+        Assertions.assertEquals("test-user@localhost", loginPage.getAttemptedUsername());
 
         // Reset login and assert back on the login screen
         loginTotpPage.clickResetLogin();
@@ -220,13 +216,13 @@ public class LoginTotpTest extends AbstractTestRealmKeycloakTest {
             Response response = exchangeUrl.request()
                     .post(Entity.form(form.param("otp", totp.generateTOTP("totpSecret"))));
 
-            Assert.assertEquals(200, response.getStatus());
+            Assertions.assertEquals(200, response.getStatus());
             response.close();
 
             response = exchangeUrl.request()
                     .post(Entity.form(form.param("totp", totp.generateTOTP("totpSecret"))));
 
-            Assert.assertEquals(200, response.getStatus());
+            Assertions.assertEquals(200, response.getStatus());
             response.close();
 
         } finally {

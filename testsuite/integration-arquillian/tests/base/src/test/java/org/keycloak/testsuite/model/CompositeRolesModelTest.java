@@ -17,9 +17,9 @@
 
 package org.keycloak.testsuite.model;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.KeycloakSession;
@@ -86,12 +86,12 @@ public class CompositeRolesModelTest extends AbstractTestRealmKeycloakTest {
     private static void assertContains(RealmModel realm, String appName, String roleName, Set<RoleModel> requestedRoles) {
         RoleModel expectedRole = getRole(realm, appName, roleName);
 
-        Assert.assertTrue(requestedRoles.contains(expectedRole));
+        Assertions.assertTrue(requestedRoles.contains(expectedRole));
 
         // Check if requestedRole has correct role container
         for (RoleModel role : requestedRoles) {
             if (role.equals(expectedRole)) {
-                Assert.assertEquals(role.getContainer(), expectedRole.getContainer());
+                Assertions.assertEquals(role.getContainer(), expectedRole.getContainer());
             }
         }
     }
@@ -125,7 +125,7 @@ public class CompositeRolesModelTest extends AbstractTestRealmKeycloakTest {
 
             Set<RoleModel> requestedRoles = getRequestedRoles(realm.getClientByClientId("APP_COMPOSITE_APPLICATION"), session.users().getUserByUsername(realm, "APP_COMPOSITE_USER"));
 
-            Assert.assertEquals(5, requestedRoles.size());
+            Assertions.assertEquals(5, requestedRoles.size());
             assertContains(realm, "APP_COMPOSITE_APPLICATION", "APP_COMPOSITE_ROLE", requestedRoles);
             assertContains(realm, "APP_COMPOSITE_APPLICATION", "APP_COMPOSITE_CHILD", requestedRoles);
             assertContains(realm, "APP_COMPOSITE_APPLICATION", "APP_ROLE_2", requestedRoles);
@@ -133,25 +133,25 @@ public class CompositeRolesModelTest extends AbstractTestRealmKeycloakTest {
             assertContains(realm, "realm", "REALM_ROLE_1", requestedRoles);
 
             Set<RoleModel> requestedRoles2 = getRequestedRoles(realm.getClientByClientId("APP_COMPOSITE_APPLICATION"), session5.users().getUserByUsername(realm, "REALM_APP_COMPOSITE_USER"));
-            Assert.assertEquals(4, requestedRoles2.size());
+            Assertions.assertEquals(4, requestedRoles2.size());
             assertContains(realm, "APP_ROLE_APPLICATION", "APP_ROLE_1", requestedRoles2);
 
             requestedRoles = getRequestedRoles(realm.getClientByClientId("REALM_COMPOSITE_1_APPLICATION"), session5.users().getUserByUsername(realm, "REALM_COMPOSITE_1_USER"));
-            Assert.assertEquals(1, requestedRoles.size());
+            Assertions.assertEquals(1, requestedRoles.size());
             assertContains(realm, "realm", "REALM_COMPOSITE_1", requestedRoles);
 
             requestedRoles = getRequestedRoles(realm.getClientByClientId("REALM_COMPOSITE_2_APPLICATION"), session5.users().getUserByUsername(realm, "REALM_COMPOSITE_1_USER"));
-            Assert.assertEquals(3, requestedRoles.size());
+            Assertions.assertEquals(3, requestedRoles.size());
             assertContains(realm, "realm", "REALM_COMPOSITE_1", requestedRoles);
             assertContains(realm, "realm", "REALM_COMPOSITE_CHILD", requestedRoles);
             assertContains(realm, "realm", "REALM_ROLE_4", requestedRoles);
 
             requestedRoles = getRequestedRoles(realm.getClientByClientId("REALM_ROLE_1_APPLICATION"), session5.users().getUserByUsername(realm, "REALM_COMPOSITE_1_USER"));
-            Assert.assertEquals(1, requestedRoles.size());
+            Assertions.assertEquals(1, requestedRoles.size());
             assertContains(realm, "realm", "REALM_ROLE_1", requestedRoles);
 
             requestedRoles = getRequestedRoles(realm.getClientByClientId("REALM_COMPOSITE_1_APPLICATION"), session5.users().getUserByUsername(realm, "REALM_ROLE_1_USER"));
-            Assert.assertEquals(1, requestedRoles.size());
+            Assertions.assertEquals(1, requestedRoles.size());
             assertContains(realm, "realm", "REALM_ROLE_1", requestedRoles);
         });
 

@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.broker;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.IdentityProviderRepresentation;
@@ -9,8 +9,8 @@ import org.keycloak.testsuite.Assert;
 import org.keycloak.testsuite.pages.LoginUpdateProfilePage;
 import org.openqa.selenium.NoSuchElementException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.admin.ApiUtil.removeUserByUsername;
 import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
@@ -85,7 +85,7 @@ public class KcOidcFirstBrokerLoginTest extends AbstractFirstBrokerLoginTest {
 
             try {
                 this.loginPage.findSocialButton(bc.getIDPAlias());
-                org.junit.Assert.fail("Not expected to see social button with " + samlBrokerConfig.getIDPAlias());
+                org.junit.jupiter.api.Assertions.fail("Not expected to see social button with " + samlBrokerConfig.getIDPAlias());
             } catch (NoSuchElementException expected) {
             }
 
@@ -145,7 +145,7 @@ public class KcOidcFirstBrokerLoginTest extends AbstractFirstBrokerLoginTest {
 
             try {
                 this.loginPage.findSocialButton(bc.getIDPAlias());
-                org.junit.Assert.fail("Not expected to see social button with " + bc.getIDPAlias());
+                org.junit.jupiter.api.Assertions.fail("Not expected to see social button with " + bc.getIDPAlias());
             } catch (NoSuchElementException expected) {
             }
 
@@ -192,7 +192,7 @@ public class KcOidcFirstBrokerLoginTest extends AbstractFirstBrokerLoginTest {
 
             try {
                 this.loginPage.findSocialButton(bc.getIDPAlias());
-                org.junit.Assert.fail("Not expected to see social button with " + samlBrokerConfig.getIDPAlias());
+                org.junit.jupiter.api.Assertions.fail("Not expected to see social button with " + samlBrokerConfig.getIDPAlias());
             } catch (NoSuchElementException expected) {
             }
 
@@ -256,7 +256,7 @@ public class KcOidcFirstBrokerLoginTest extends AbstractFirstBrokerLoginTest {
         log.debug("Clicking social " + bc.getIDPAlias());
         loginPage.clickSocial(bc.getIDPAlias());
         waitForPage(driver, "sign in to", true);
-        Assert.assertTrue("Driver should be on the provider realm page right now",
+        Assertions.assertTrue("Driver should be on the provider realm page right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName() + "/"));
         log.debug("Logging in");
         loginPage.login("no-first-name", "password");
@@ -271,10 +271,10 @@ public class KcOidcFirstBrokerLoginTest extends AbstractFirstBrokerLoginTest {
         updateAccountInformationPage.updateAccountInformation("new-username", "no-first-name@localhost.com", "First Name", "Last Name");
         waitForAccountManagementTitle();
         accountUpdateProfilePage.assertCurrent();
-        Assert.assertEquals("First Name", accountUpdateProfilePage.getFirstName());
-        Assert.assertEquals("Last Name", accountUpdateProfilePage.getLastName());
-        Assert.assertEquals("no-first-name@localhost.com", accountUpdateProfilePage.getEmail());
-        Assert.assertEquals("new-username", accountUpdateProfilePage.getUsername());
+        Assertions.assertEquals("First Name", accountUpdateProfilePage.getFirstName());
+        Assertions.assertEquals("Last Name", accountUpdateProfilePage.getLastName());
+        Assertions.assertEquals("no-first-name@localhost.com", accountUpdateProfilePage.getEmail());
+        Assertions.assertEquals("new-username", accountUpdateProfilePage.getUsername());
 
     }
 }

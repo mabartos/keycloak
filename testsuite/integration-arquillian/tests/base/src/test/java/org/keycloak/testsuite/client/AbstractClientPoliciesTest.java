@@ -59,9 +59,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.hamcrest.Matchers;
 import org.jboss.logging.Logger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.Rule;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
@@ -146,10 +146,10 @@ import org.keycloak.testsuite.util.ServerURLs;
 import org.keycloak.util.JsonSerialization;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createClientAccessTypeConditionConfig;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createClientRolesConditionConfig;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createClientScopesConditionConfig;
@@ -188,10 +188,9 @@ public abstract class AbstractClientPoliciesTest extends AbstractKeycloakTest {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         setInitialAccessTokenForDynamicClientRegistration();
     }
@@ -203,7 +202,7 @@ public abstract class AbstractClientPoliciesTest extends AbstractKeycloakTest {
         reg.auth(Auth.token(token));
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         reg.close();
         revertToBuiltinProfiles();
@@ -1122,43 +1121,43 @@ public abstract class AbstractClientPoliciesTest extends AbstractKeycloakTest {
 
     protected void assertExpectedAnyClientCondition(ClientPolicyRepresentation policyRep) {
         ClientPolicyConditionConfigurationRepresentation config = getConfigAsExpectedType(policyRep, AnyClientConditionFactory.PROVIDER_ID, ClientPolicyConditionConfigurationRepresentation.class);
-        Assert.assertTrue("Expected empty configuration for provider " + AnyClientConditionFactory.PROVIDER_ID, config.getConfigAsMap().isEmpty());
+        Assertions.assertTrue("Expected empty configuration for provider " + AnyClientConditionFactory.PROVIDER_ID, config.getConfigAsMap().isEmpty());
     }
 
     protected void assertExpectedClientAccessTypeCondition(List<String> type, ClientPolicyRepresentation policyRep) {
         ClientAccessTypeCondition.Configuration cfg = getConfigAsExpectedType(policyRep, ClientAccessTypeConditionFactory.PROVIDER_ID, ClientAccessTypeCondition.Configuration.class);
-        Assert.assertEquals(cfg.getType(), type);
+        Assertions.assertEquals(cfg.getType(), type);
     }
 
     protected void assertExpectedClientRolesCondition(List<String> roles, ClientPolicyRepresentation policyRep) {
         ClientRolesCondition.Configuration cfg = getConfigAsExpectedType(policyRep, ClientRolesConditionFactory.PROVIDER_ID,  ClientRolesCondition.Configuration.class);
-        Assert.assertEquals(cfg.getRoles(), roles);
+        Assertions.assertEquals(cfg.getRoles(), roles);
     }
 
     protected void assertExpectedClientScopesCondition(String type, List<String> scopes, ClientPolicyRepresentation policyRep) {
         ClientScopesCondition.Configuration cfg = getConfigAsExpectedType(policyRep, ClientScopesConditionFactory.PROVIDER_ID,  ClientScopesCondition.Configuration.class);
-        Assert.assertEquals(cfg.getType(), type);
-        Assert.assertEquals(cfg.getScopes(), scopes);
+        Assertions.assertEquals(cfg.getType(), type);
+        Assertions.assertEquals(cfg.getScopes(), scopes);
     }
 
     protected void assertExpectedClientUpdateContextCondition(List<String> updateClientSources, ClientPolicyRepresentation policyRep) {
         ClientUpdaterContextCondition.Configuration cfg = getConfigAsExpectedType(policyRep, ClientUpdaterContextConditionFactory.PROVIDER_ID,  ClientUpdaterContextCondition.Configuration.class);
-        Assert.assertEquals(cfg.getUpdateClientSource(), updateClientSources);
+        Assertions.assertEquals(cfg.getUpdateClientSource(), updateClientSources);
     }
 
     protected void assertExpectedClientUpdateSourceGroupsCondition(List<String> groups, ClientPolicyRepresentation policyRep) {
         ClientUpdaterSourceGroupsCondition.Configuration cfg = getConfigAsExpectedType(policyRep, ClientUpdaterSourceGroupsConditionFactory.PROVIDER_ID,  ClientUpdaterSourceGroupsCondition.Configuration.class);
-        Assert.assertEquals(cfg.getGroups(), groups);
+        Assertions.assertEquals(cfg.getGroups(), groups);
     }
 
     protected void assertExpectedClientUpdateSourceHostsCondition(List<String> trustedHosts, ClientPolicyRepresentation policyRep) {
         ClientUpdaterSourceHostsCondition.Configuration cfg = getConfigAsExpectedType(policyRep, ClientUpdaterSourceHostsConditionFactory.PROVIDER_ID,  ClientUpdaterSourceHostsCondition.Configuration.class);
-        Assert.assertEquals(cfg.getTrustedHosts(), trustedHosts);
+        Assertions.assertEquals(cfg.getTrustedHosts(), trustedHosts);
     }
 
     protected void assertExpectedClientUpdateSourceRolesCondition(List<String> roles, ClientPolicyRepresentation policyRep) {
         ClientUpdaterSourceRolesCondition.Configuration cfg = getConfigAsExpectedType(policyRep, ClientUpdaterSourceRolesConditionFactory.PROVIDER_ID,  ClientUpdaterSourceRolesCondition.Configuration.class);
-        Assert.assertEquals(cfg.getRoles(), roles);
+        Assertions.assertEquals(cfg.getRoles(), roles);
     }
 
     private <CFG extends ClientPolicyConditionConfigurationRepresentation> CFG getConfigAsExpectedType(ClientPolicyRepresentation policyRep, String conditionProviderId, Class<CFG> configClass) {
@@ -1205,7 +1204,7 @@ public abstract class AbstractClientPoliciesTest extends AbstractKeycloakTest {
 
     private void assertExpectedEmptyConfig(String executorProviderId, ClientProfileRepresentation profileRep) {
         JsonNode config = getConfigOfExecutor(executorProviderId, profileRep);
-        Assert.assertTrue("Expected empty configuration for provider " + executorProviderId, config.isEmpty());
+        Assertions.assertTrue("Expected empty configuration for provider " + executorProviderId, config.isEmpty());
     }
 
 }

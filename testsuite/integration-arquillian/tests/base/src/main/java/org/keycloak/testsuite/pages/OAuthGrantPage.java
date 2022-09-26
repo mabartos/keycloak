@@ -21,7 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -78,7 +78,7 @@ public class OAuthGrantPage extends LanguageComboboxAwarePage {
     public void assertGrants(String... expectedGrants) {
         List<String> displayed = getDisplayedGrants();
         List<String> expected = Arrays.asList(expectedGrants);
-        Assert.assertTrue("Not matched grants. Displayed grants: " + displayed + ", expected grants: " + expected,
+        Assertions.assertTrue("Not matched grants. Displayed grants: " + displayed + ", expected grants: " + expected,
                 displayed.containsAll(expected) && expected.containsAll(displayed));
     }
 

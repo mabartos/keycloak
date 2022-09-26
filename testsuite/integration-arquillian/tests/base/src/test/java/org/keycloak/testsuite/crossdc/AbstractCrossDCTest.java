@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.testsuite.client.KeycloakTestingClient;
 
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -54,7 +54,7 @@ public abstract class AbstractCrossDCTest extends AbstractTestRealmKeycloakTest 
     @LoadBalancer(value = QUALIFIER_NODE_BALANCER)
     protected LoadBalancerController loadBalancerCtrl;
 
-    @Before
+    @BeforeEach
     @Override
     public void beforeAbstractKeycloakTest() throws Exception {
         enableOnlyFirstNodeInFirstDc();
@@ -62,7 +62,7 @@ public abstract class AbstractCrossDCTest extends AbstractTestRealmKeycloakTest 
         super.beforeAbstractKeycloakTest();
     }
 
-    @After
+    @AfterEach
     @Override
     public void afterAbstractKeycloakTest() throws Exception {
         log.debug("--DC: after AbstractCrossDCTest");

@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.AuthenticationExecutionModel;
 import org.keycloak.models.AuthenticationFlowModel;
@@ -79,7 +79,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
         testRealms.add(realm2);
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         testingClient.server().run(session -> {
             testRealmId = session.realms().getRealmByName("test").getId();
@@ -97,7 +97,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
             ((session, realm2, realm1ComponentId) -> {
 
                 ComponentModel component = realm2.getComponent(realm1ComponentId);
-                Assert.assertNull(component);
+                Assertions.assertNull(component);
 
             }),
             // Try to update some component in realm1 through the realm2
@@ -112,7 +112,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
             ((session, realm1, realm1ComponentId) -> {
 
                 ComponentModel component = realm1.getComponent(realm1ComponentId);
-                Assert.assertNull(component.get("key1"));
+                Assertions.assertNull(component.get("key1"));
 
             }),
             // Try remove component from realm1 in the context of realm2
@@ -126,7 +126,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
             ((session, realm1, realm1ComponentId) -> {
 
                 ComponentModel component = realm1.getComponent(realm1ComponentId);
-                Assert.assertNotNull(component);
+                Assertions.assertNotNull(component);
 
             })
         );
@@ -142,7 +142,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session, realm2, realm1ReqActionId) -> {
 
                     RequiredActionProviderModel reqAction = realm2.getRequiredActionProviderById(realm1ReqActionId);
-                    Assert.assertNull(reqAction);
+                    Assertions.assertNull(reqAction);
 
                 }),
                 // Try to update some object in realm1 through the realm2
@@ -157,7 +157,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session, realm1, realm1ReqActionId) -> {
 
                     RequiredActionProviderModel reqAction = realm1.getRequiredActionProviderById(realm1ReqActionId);
-                    Assert.assertNull(reqAction.getConfig().get("key1"));
+                    Assertions.assertNull(reqAction.getConfig().get("key1"));
 
                 }),
                 // Try remove object from realm1 in the context of realm2
@@ -171,7 +171,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session, realm1, realm1ReqActionId) -> {
 
                     RequiredActionProviderModel reqAction = realm1.getRequiredActionProviderById(realm1ReqActionId);
-                    Assert.assertNotNull(reqAction);
+                    Assertions.assertNotNull(reqAction);
 
                 })
         );
@@ -193,7 +193,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session, realm2, realm1FlowId) -> {
 
                     AuthenticationFlowModel flow = realm2.getAuthenticationFlowById(realm1FlowId);
-                    Assert.assertNull(flow);
+                    Assertions.assertNull(flow);
 
                 }),
                 // Try to update some object in realm1 through the realm2
@@ -208,7 +208,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session, realm1, realm1FlowId) -> {
 
                     AuthenticationFlowModel flow = realm1.getAuthenticationFlowById(realm1FlowId);
-                    Assert.assertNotEquals("foo", flow.getDescription());
+                    Assertions.assertNotEquals("foo", flow.getDescription());
 
                 }),
                 // Try remove object from realm1 in the context of realm2
@@ -222,7 +222,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session, realm1, realm1FlowId) -> {
 
                     AuthenticationFlowModel flow = realm1.getAuthenticationFlowById(realm1FlowId);
-                    Assert.assertNotNull(flow);
+                    Assertions.assertNotNull(flow);
 
                 })
         );
@@ -244,7 +244,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session, realm2, realm1ExecutionId) -> {
 
                     AuthenticationExecutionModel execution = realm2.getAuthenticationExecutionById(realm1ExecutionId);
-                    Assert.assertNull(execution);
+                    Assertions.assertNull(execution);
 
                 }),
                 // Try to update some object in realm1 through the realm2
@@ -259,7 +259,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session, realm1, realm1ExecutionId) -> {
 
                     AuthenticationExecutionModel execution = realm1.getAuthenticationExecutionById(realm1ExecutionId);
-                    Assert.assertNotEquals(1234, execution.getPriority());
+                    Assertions.assertNotEquals(1234, execution.getPriority());
 
                 }),
                 // Try remove object from realm1 in the context of realm2
@@ -273,7 +273,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session,realm1, realm1ExecutionId) -> {
 
                     AuthenticationExecutionModel execution = realm1.getAuthenticationExecutionById(realm1ExecutionId);
-                    Assert.assertNotNull(execution);
+                    Assertions.assertNotNull(execution);
 
                 })
         );
@@ -290,7 +290,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session, realm2, realm1AuthConfigId) -> {
 
                     AuthenticatorConfigModel config = realm2.getAuthenticatorConfigById(realm1AuthConfigId);
-                    Assert.assertNull(config);
+                    Assertions.assertNull(config);
 
                 }),
                 // Try to update some object in realm1 through the realm2
@@ -305,7 +305,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session, realm1, realm1AuthConfigId) -> {
 
                     AuthenticatorConfigModel config = realm1.getAuthenticatorConfigById(realm1AuthConfigId);
-                    Assert.assertNull(config.getConfig().get("key1"));
+                    Assertions.assertNull(config.getConfig().get("key1"));
 
                 }),
                 // Try remove object from realm1 in the context of realm2
@@ -319,7 +319,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session, realm1, realm1AuthConfigId) -> {
 
                     AuthenticatorConfigModel config = realm1.getAuthenticatorConfigById(realm1AuthConfigId);
-                    Assert.assertNotNull(config);
+                    Assertions.assertNotNull(config);
 
                 })
         );
@@ -341,7 +341,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session, realm2, realm1ClientInitialAccessId) -> {
 
                     ClientInitialAccessModel clientInitialAccess = session.getProvider(RealmProvider.class).getClientInitialAccessModel(realm2, realm1ClientInitialAccessId);
-                    Assert.assertNull(clientInitialAccess);
+                    Assertions.assertNull(clientInitialAccess);
 
                 }),
                 // Try to update some object in realm1 through the realm2
@@ -366,7 +366,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session, realm1, realm1ClientInitialAccessId) -> {
 
                     ClientInitialAccessModel clientInitialAccess = session.getProvider(RealmProvider.class).getClientInitialAccessModel(realm1, realm1ClientInitialAccessId);
-                    Assert.assertNotNull(clientInitialAccess);
+                    Assertions.assertNotNull(clientInitialAccess);
 
                 })
         );
@@ -387,7 +387,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session, realm2, realm1RoleId) -> {
 
                     RoleModel role = session.getProvider(RoleProvider.class).getRoleById(realm2, realm1RoleId);
-                    Assert.assertNull(role);
+                    Assertions.assertNull(role);
 
                 }),
                 // Try to update some object in realm1 through the realm2
@@ -433,7 +433,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session, realm2, realm1SessionId) -> {
 
                     UserSessionModel userSession = session.sessions().getUserSession(realm2, realm1SessionId);
-                    Assert.assertNull(userSession);
+                    Assertions.assertNull(userSession);
 
                 }),
                 // Try to update some object in realm1 through the realm2
@@ -459,7 +459,7 @@ public class OwnerReplacementTest extends AbstractKeycloakTest {
                 ((session, realm1, realm1SessionId) -> {
 
                     UserSessionModel userSession = session.sessions().getUserSession(realm1, realm1SessionId);
-                    Assert.assertNotNull(userSession);
+                    Assertions.assertNotNull(userSession);
 
                 })
         );

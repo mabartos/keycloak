@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.vault;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractKeycloakTest;
@@ -66,29 +66,29 @@ public class KeycloakVaultTest extends AbstractKeycloakTest {
         @Override
         public void run(KeycloakSession session) {
             VaultTranscriber transcriber = session.vault();
-            Assert.assertNotNull(transcriber);
+            Assertions.assertNotNull(transcriber);
 
             // use the transcriber to obtain a secret from the vault.
             try (VaultStringSecret secret = transcriber.getStringSecret(testKey)){
                 Optional<String> optional = secret.get();
-                Assert.assertTrue(optional.isPresent());
+                Assertions.assertTrue(optional.isPresent());
                 String secretString = optional.get();
-                Assert.assertEquals(expectedSecret, secretString);
+                Assertions.assertEquals(expectedSecret, secretString);
             }
 
             // try obtaining a secret using a key that does not exist in the vault.
             String invalidEntry = "${vault.invalid_entry}";
             try (VaultStringSecret secret = transcriber.getStringSecret(invalidEntry)) {
                 Optional<String> optional = secret.get();
-                Assert.assertFalse(optional.isPresent());
+                Assertions.assertFalse(optional.isPresent());
             }
 
             // invoke the transcriber using a string that is not a vault expression.
             try (VaultStringSecret secret = transcriber.getStringSecret("mysecret")) {
                 Optional<String> optional = secret.get();
-                Assert.assertTrue(optional.isPresent());
+                Assertions.assertTrue(optional.isPresent());
                 String secretString = optional.get();
-                Assert.assertEquals("mysecret", secretString);
+                Assertions.assertEquals("mysecret", secretString);
             }
         }
     }

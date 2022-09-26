@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.cli.registration;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.client.registration.cli.config.FileConfigHandler;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.testsuite.cli.KcRegExec;
@@ -40,10 +40,10 @@ public class KcRegUpdateTest extends AbstractRegCliTest {
 
             ClientRepresentation client = JsonSerialization.readValue(exe.stdout(), ClientRepresentation.class);
 
-            Assert.assertEquals("enabled", true, client.isEnabled());
-            Assert.assertEquals("publicClient", false, client.isPublicClient());
-            Assert.assertEquals("bearerOnly", false, client.isBearerOnly());
-            Assert.assertTrue("redirectUris is empty", client.getRedirectUris().isEmpty());
+            Assertions.assertEquals("enabled", true, client.isEnabled());
+            Assertions.assertEquals("publicClient", false, client.isPublicClient());
+            Assertions.assertEquals("bearerOnly", false, client.isBearerOnly());
+            Assertions.assertTrue("redirectUris is empty", client.getRedirectUris().isEmpty());
 
 
             // Merge update
@@ -53,8 +53,8 @@ public class KcRegUpdateTest extends AbstractRegCliTest {
             assertExitCodeAndStdErrSize(exe, 0, 0);
 
             client = JsonSerialization.readValue(exe.stdout(), ClientRepresentation.class);
-            Assert.assertEquals("enabled", false, client.isEnabled());
-            Assert.assertEquals("redirectUris", Arrays.asList("http://localhost:8980/myapp/*"), client.getRedirectUris());
+            Assertions.assertEquals("enabled", false, client.isEnabled());
+            Assertions.assertEquals("redirectUris", Arrays.asList("http://localhost:8980/myapp/*"), client.getRedirectUris());
 
 
 
@@ -65,8 +65,8 @@ public class KcRegUpdateTest extends AbstractRegCliTest {
 
             client = JsonSerialization.readValue(exe.stdout(), ClientRepresentation.class);
 
-            Assert.assertTrue("redirectUris is empty", client.getRedirectUris().isEmpty());
-            Assert.assertEquals("webOrigins", Arrays.asList("http://localhost:8981/myapp"), client.getWebOrigins());
+            Assertions.assertTrue("redirectUris is empty", client.getRedirectUris().isEmpty());
+            Assertions.assertEquals("webOrigins", Arrays.asList("http://localhost:8981/myapp"), client.getWebOrigins());
 
 
 
@@ -79,10 +79,10 @@ public class KcRegUpdateTest extends AbstractRegCliTest {
             assertExitCodeAndStdErrSize(exe, 0, 0);
 
             client = JsonSerialization.readValue(exe.stdout(), ClientRepresentation.class);
-            Assert.assertEquals("protocolMapper[0].config.\"id.token.claim\"", "false", client.getProtocolMappers().get(0).getConfig().get("id.token.claim"));
-            Assert.assertEquals("protocolMappers[4].config.single", "true", client.getProtocolMappers().get(4).getConfig().get("single"));
-            Assert.assertEquals("protocolMappers[4].config.\"attribute.nameformat\"", "Basic", client.getProtocolMappers().get(4).getConfig().get("attribute.nameformat"));
-            Assert.assertEquals("protocolMappers[4].config.\"attribute.name\"", "Role", client.getProtocolMappers().get(4).getConfig().get("attribute.name"));
+            Assertions.assertEquals("protocolMapper[0].config.\"id.token.claim\"", "false", client.getProtocolMappers().get(0).getConfig().get("id.token.claim"));
+            Assertions.assertEquals("protocolMappers[4].config.single", "true", client.getProtocolMappers().get(4).getConfig().get("single"));
+            Assertions.assertEquals("protocolMappers[4].config.\"attribute.nameformat\"", "Basic", client.getProtocolMappers().get(4).getConfig().get("attribute.nameformat"));
+            Assertions.assertEquals("protocolMappers[4].config.\"attribute.name\"", "Role", client.getProtocolMappers().get(4).getConfig().get("attribute.name"));
             */
 
             // update using oidc format
@@ -92,15 +92,15 @@ public class KcRegUpdateTest extends AbstractRegCliTest {
             exe = execute("update my_client --nonexisting --config '" + configFile.getName() + "'");
 
             assertExitCodeAndStreamSizes(exe, 1, 0, 2);
-            Assert.assertEquals("error message", "Unsupported option: --nonexisting", exe.stderrLines().get(0));
-            Assert.assertEquals("try help", "Try '" + CMD + " help update' for more information", exe.stderrLines().get(1));
+            Assertions.assertEquals("error message", "Unsupported option: --nonexisting", exe.stderrLines().get(0));
+            Assertions.assertEquals("try help", "Try '" + CMD + " help update' for more information", exe.stderrLines().get(1));
 
 
             // try use incompatible endpoint
             exe = execute("update my_client --config '" + configFile.getName() + "' -o -s enabled=true -e oidc");
 
             assertExitCodeAndStreamSizes(exe, 1, 0, 1);
-            Assert.assertEquals("error message", "Failed to set attribute 'enabled' on document type 'oidc'", exe.stderrLines().get(0));
+            Assertions.assertEquals("error message", "Failed to set attribute 'enabled' on document type 'oidc'", exe.stderrLines().get(0));
 
 
 
@@ -115,9 +115,9 @@ public class KcRegUpdateTest extends AbstractRegCliTest {
 
             client = JsonSerialization.readValue(exe.stdout(), ClientRepresentation.class);
             // web origin is not sent to the server, thus it retains the current value
-            Assert.assertEquals("webOrigins", Arrays.asList("http://localhost:8981/myapp"), client.getWebOrigins());
-            Assert.assertFalse("enabled is false", client.isEnabled());
-            Assert.assertEquals("redirectUris", Arrays.asList("http://localhost:8980/myapp/*"), client.getRedirectUris());
+            Assertions.assertEquals("webOrigins", Arrays.asList("http://localhost:8981/myapp"), client.getWebOrigins());
+            Assertions.assertFalse("enabled is false", client.isEnabled());
+            Assertions.assertEquals("redirectUris", Arrays.asList("http://localhost:8980/myapp/*"), client.getRedirectUris());
 
 
 
@@ -131,9 +131,9 @@ public class KcRegUpdateTest extends AbstractRegCliTest {
             assertExitCodeAndStdErrSize(exe, 0, 0);
 
             client = JsonSerialization.readValue(exe.stdout(), ClientRepresentation.class);
-            Assert.assertEquals("webOrigins", Arrays.asList("http://localhost:8980/myapp"), client.getWebOrigins());
-            Assert.assertTrue("enabled is true", client.isEnabled());
-            Assert.assertEquals("redirectUris", Arrays.asList("http://localhost:8980/myapp/*"), client.getRedirectUris());
+            Assertions.assertEquals("webOrigins", Arrays.asList("http://localhost:8980/myapp"), client.getWebOrigins());
+            Assertions.assertTrue("enabled is true", client.isEnabled());
+            Assertions.assertEquals("redirectUris", Arrays.asList("http://localhost:8980/myapp/*"), client.getRedirectUris());
 
 
 
@@ -143,7 +143,7 @@ public class KcRegUpdateTest extends AbstractRegCliTest {
 
             assertExitCodeAndStdErrSize(exe, 0, 0);
 
-            Assert.assertNull("my_client registration token", handler.loadConfig().ensureRealmConfigData(serverUrl, realm).getClients().get("my_client"));
+            Assertions.assertNull("my_client registration token", handler.loadConfig().ensureRealmConfigData(serverUrl, realm).getClients().get("my_client"));
         }
     }
 }

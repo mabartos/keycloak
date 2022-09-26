@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.crossdc;
 
-import org.keycloak.admin.client.Keycloak;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.common.Profile;
 import org.keycloak.common.util.Retry;
@@ -27,7 +27,7 @@ import org.keycloak.testsuite.admin.ApiUtil;
 import org.keycloak.testsuite.page.LoginPasswordUpdatePage;
 import org.keycloak.testsuite.pages.ErrorPage;
 import org.keycloak.testsuite.pages.PageUtils;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.MailUtils;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -36,11 +36,11 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.ws.rs.core.Response;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Assume;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.Rule;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.keycloak.testsuite.arquillian.annotation.JmxInfinispanCacheStatistics;
 import org.keycloak.testsuite.arquillian.annotation.JmxInfinispanChannelStatistics;
 import org.keycloak.testsuite.arquillian.InfinispanStatistics;
@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
 import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import org.keycloak.testsuite.arquillian.CrossDCTestEnricher;
 import org.keycloak.testsuite.arquillian.annotation.InitialDcState;
 
@@ -60,10 +60,8 @@ import org.keycloak.testsuite.arquillian.annotation.InitialDcState;
  *
  * @author hmlnarik
  */
+@ExtendWith(GreenMailExtension.class)
 public class ActionTokenCrossDCTest extends AbstractAdminCrossDCTest {
-
-    @Rule
-    public GreenMailRule greenMail = new GreenMailRule();
 
     @Page
     protected LoginPasswordUpdatePage passwordUpdatePage;
@@ -96,7 +94,7 @@ public class ActionTokenCrossDCTest extends AbstractAdminCrossDCTest {
         // KEYCLOAK-17584: Temporarily disable the test for 'community' profile till KEYCLOAK-17628 isn't fixed. In other words till:
         // * The test is either rewritten to start using the new Wildfly subsystem for base metrics introduced in Wildfly 22,
         // * Or Keycloak is able to load the Eclipse MicroProfile Metrics subsystem from the microprofile Galleon feature-pack
-        Assume.assumeTrue("Ignoring test as product profile is not enabled", Profile.getName().equals("product"));
+        Assumptions.assumeTrue("Ignoring test as product profile is not enabled", Profile.getName().equals("product"));
 
         cacheDc0Node1Statistics.waitToBecomeAvailable(10, TimeUnit.SECONDS);
 
@@ -116,7 +114,7 @@ public class ActionTokenCrossDCTest extends AbstractAdminCrossDCTest {
         actions.add(UserModel.RequiredAction.UPDATE_PASSWORD.name());
         user.executeActionsEmail(actions);
 
-        Assert.assertEquals(1, greenMail.getReceivedMessages().length);
+        Assertions.assertEquals(1, greenMail.getReceivedMessages().length);
 
         log.infof("After sending email. %s", dumpNumberOfEntriesInMemory(cacheDc0Node0Statistics, cacheDc0Node1Statistics, cacheDc1Node0Statistics));
 
@@ -150,7 +148,7 @@ public class ActionTokenCrossDCTest extends AbstractAdminCrossDCTest {
                     int newReceived = ((Number) newStats.get(Constants.STAT_CHANNEL_RECEIVED_MESSAGES)).intValue();
 
                     log.infof("oldSent: %d, newSent: %d, oldReceived: %d, newReceived: %d", oldSent, newSent, oldReceived, newReceived);
-                    Assert.assertTrue(newSent - oldSent > 0 || newReceived - oldReceived > 0);
+                    Assertions.assertTrue(newSent - oldSent > 0 || newReceived - oldReceived > 0);
                 }
         );
 
@@ -206,7 +204,7 @@ public class ActionTokenCrossDCTest extends AbstractAdminCrossDCTest {
         actions.add(UserModel.RequiredAction.UPDATE_PASSWORD.name());
         user.executeActionsEmail(actions);
 
-        Assert.assertEquals(1, greenMail.getReceivedMessages().length);
+        Assertions.assertEquals(1, greenMail.getReceivedMessages().length);
 
         MimeMessage message = greenMail.getReceivedMessages()[0];
 

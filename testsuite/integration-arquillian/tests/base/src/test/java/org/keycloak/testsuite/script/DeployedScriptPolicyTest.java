@@ -16,8 +16,8 @@
  */
 package org.keycloak.testsuite.script;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.keycloak.testsuite.arquillian.DeploymentTargetModifier.AUTH_SERVER_CURRENT;
 
 import javax.ws.rs.core.Response;
@@ -31,10 +31,10 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientsResource;
@@ -83,7 +83,7 @@ public class DeployedScriptPolicyTest extends AbstractAuthzTest {
                 .addAsResource(new StringAsset("$evaluation.deny();"), "policy-deny.js");
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void verifyEnvironment() {
         ContainerAssume.assumeNotAuthServerUndertow();
     }
@@ -106,7 +106,7 @@ public class DeployedScriptPolicyTest extends AbstractAuthzTest {
                 .build());
     }
 
-    @Before
+    @BeforeEach
     public void onBefore() throws Exception {
         deployer.deploy(SCRIPT_DEPLOYMENT_NAME);
         reconnectAdminClient();
@@ -114,7 +114,7 @@ public class DeployedScriptPolicyTest extends AbstractAuthzTest {
         authorization.resources().create(new ResourceRepresentation("Default Resource"));
     }
 
-    @After
+    @AfterEach
     public void onAfter() throws Exception {
         deployer.undeploy(SCRIPT_DEPLOYMENT_NAME);
         reconnectAdminClient();

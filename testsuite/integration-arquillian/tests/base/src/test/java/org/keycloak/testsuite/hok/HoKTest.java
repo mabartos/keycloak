@@ -3,11 +3,11 @@ package org.keycloak.testsuite.hok;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.admin.ApiUtil.findUserByUsername;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
 
@@ -115,9 +115,9 @@ public class HoKTest extends AbstractTestRealmKeycloakTest {
         configTestRealmForTokenIntrospection(testRealm);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void checkIfTLSIsTurnedOn() {
-        Assume.assumeTrue(AUTH_SERVER_SSL_REQUIRED);
+        Assumptions.assumeTrue(AUTH_SERVER_SSL_REQUIRED);
     }
 
     private void addRedirectUrlForTls(RealmRepresentation testRealm, String clientId) {
@@ -160,7 +160,7 @@ public class HoKTest extends AbstractTestRealmKeycloakTest {
     }
 
     // enable HoK Token as default
-    @Before
+    @BeforeEach
     public void enableHoKToken() {
         // Enable MTLS HoK Token
         for (String clientId : CLIENT_LIST) enableHoKToken(clientId);
@@ -218,8 +218,8 @@ public class HoKTest extends AbstractTestRealmKeycloakTest {
     private void expectSuccessfulResponseFromTokenEndpoint(String sessionId, String codeId, AccessTokenResponse response) throws Exception {
         assertEquals(200, response.getStatusCode());
 
-        Assert.assertThat(response.getExpiresIn(), allOf(greaterThanOrEqualTo(250), lessThanOrEqualTo(300)));
-        Assert.assertThat(response.getRefreshExpiresIn(), allOf(greaterThanOrEqualTo(1750), lessThanOrEqualTo(1800)));
+        Assertions.assertThat(response.getExpiresIn(), allOf(greaterThanOrEqualTo(250), lessThanOrEqualTo(300)));
+        Assertions.assertThat(response.getRefreshExpiresIn(), allOf(greaterThanOrEqualTo(1750), lessThanOrEqualTo(1800)));
 
         assertEquals("Bearer", response.getTokenType());
 
@@ -245,7 +245,7 @@ public class HoKTest extends AbstractTestRealmKeycloakTest {
         AccessToken token = oauth.verifyToken(response.getAccessToken());
 
         assertEquals(findUserByUsername(adminClient.realm("test"), "test-user@localhost").getId(), token.getSubject());
-        Assert.assertNotEquals("test-user@localhost", token.getSubject());
+        Assertions.assertNotEquals("test-user@localhost", token.getSubject());
 
         assertEquals(sessionId, token.getSessionState());
 
@@ -326,11 +326,11 @@ public class HoKTest extends AbstractTestRealmKeycloakTest {
         RefreshToken refreshToken = oauth.parseRefreshToken(refreshTokenString);
         EventRepresentation tokenEvent = events.expectCodeToToken(codeId, sessionId).assertEvent();
 
-        Assert.assertNotNull(refreshTokenString);
+        Assertions.assertNotNull(refreshTokenString);
         assertEquals("Bearer", tokenResponse.getTokenType());
-        Assert.assertThat(token.getExpiration() - getCurrentTime(), allOf(greaterThanOrEqualTo(200), lessThanOrEqualTo(350)));
+        Assertions.assertThat(token.getExpiration() - getCurrentTime(), allOf(greaterThanOrEqualTo(200), lessThanOrEqualTo(350)));
         int actual = refreshToken.getExpiration() - getCurrentTime();
-        Assert.assertThat(actual, allOf(greaterThanOrEqualTo(1799 - RefreshTokenTest.ALLOWED_CLOCK_SKEW), lessThanOrEqualTo(1800 + RefreshTokenTest.ALLOWED_CLOCK_SKEW)));
+        Assertions.assertThat(actual, allOf(greaterThanOrEqualTo(1799 - RefreshTokenTest.ALLOWED_CLOCK_SKEW), lessThanOrEqualTo(1800 + RefreshTokenTest.ALLOWED_CLOCK_SKEW)));
         assertEquals(sessionId, refreshToken.getSessionState());
 
         setTimeOffset(2);
@@ -363,11 +363,11 @@ public class HoKTest extends AbstractTestRealmKeycloakTest {
         String refreshTokenString = tokenResponse.getRefreshToken();
         RefreshToken refreshToken = oauth.parseRefreshToken(refreshTokenString);
 
-        Assert.assertNotNull(refreshTokenString);
+        Assertions.assertNotNull(refreshTokenString);
         assertEquals("Bearer", tokenResponse.getTokenType());
-        Assert.assertThat(token.getExpiration() - getCurrentTime(), allOf(greaterThanOrEqualTo(200), lessThanOrEqualTo(350)));
+        Assertions.assertThat(token.getExpiration() - getCurrentTime(), allOf(greaterThanOrEqualTo(200), lessThanOrEqualTo(350)));
         int actual = refreshToken.getExpiration() - getCurrentTime();
-        Assert.assertThat(actual, allOf(greaterThanOrEqualTo(1799 - RefreshTokenTest.ALLOWED_CLOCK_SKEW), lessThanOrEqualTo(1800 + RefreshTokenTest.ALLOWED_CLOCK_SKEW)));
+        Assertions.assertThat(actual, allOf(greaterThanOrEqualTo(1799 - RefreshTokenTest.ALLOWED_CLOCK_SKEW), lessThanOrEqualTo(1800 + RefreshTokenTest.ALLOWED_CLOCK_SKEW)));
         assertEquals(sessionId, refreshToken.getSessionState());
 
         setTimeOffset(2);
@@ -402,29 +402,29 @@ public class HoKTest extends AbstractTestRealmKeycloakTest {
         assertEquals(sessionId, refreshedToken.getSessionState());
         assertEquals(sessionId, refreshedRefreshToken.getSessionState());
 
-        Assert.assertThat(response.getExpiresIn(), allOf(greaterThanOrEqualTo(250), lessThanOrEqualTo(300)));
-        Assert.assertThat(refreshedToken.getExpiration() - getCurrentTime(), allOf(greaterThanOrEqualTo(250 - RefreshTokenTest.ALLOWED_CLOCK_SKEW), lessThanOrEqualTo(300 + RefreshTokenTest.ALLOWED_CLOCK_SKEW)));
+        Assertions.assertThat(response.getExpiresIn(), allOf(greaterThanOrEqualTo(250), lessThanOrEqualTo(300)));
+        Assertions.assertThat(refreshedToken.getExpiration() - getCurrentTime(), allOf(greaterThanOrEqualTo(250 - RefreshTokenTest.ALLOWED_CLOCK_SKEW), lessThanOrEqualTo(300 + RefreshTokenTest.ALLOWED_CLOCK_SKEW)));
 
-        Assert.assertThat(refreshedToken.getExpiration() - token.getExpiration(), allOf(greaterThanOrEqualTo(1), lessThanOrEqualTo(10)));
-        Assert.assertThat(refreshedRefreshToken.getExpiration() - refreshToken.getExpiration(), allOf(greaterThanOrEqualTo(1), lessThanOrEqualTo(10)));
+        Assertions.assertThat(refreshedToken.getExpiration() - token.getExpiration(), allOf(greaterThanOrEqualTo(1), lessThanOrEqualTo(10)));
+        Assertions.assertThat(refreshedRefreshToken.getExpiration() - refreshToken.getExpiration(), allOf(greaterThanOrEqualTo(1), lessThanOrEqualTo(10)));
 
-        Assert.assertNotEquals(token.getId(), refreshedToken.getId());
-        Assert.assertNotEquals(refreshToken.getId(), refreshedRefreshToken.getId());
+        Assertions.assertNotEquals(token.getId(), refreshedToken.getId());
+        Assertions.assertNotEquals(refreshToken.getId(), refreshedRefreshToken.getId());
 
         assertEquals("Bearer", response.getTokenType());
 
         assertEquals(findUserByUsername(adminClient.realm("test"), username).getId(), refreshedToken.getSubject());
-        Assert.assertNotEquals(username, refreshedToken.getSubject());
+        Assertions.assertNotEquals(username, refreshedToken.getSubject());
 
         assertEquals(2, refreshedToken.getRealmAccess().getRoles().size());
-        Assert.assertTrue(refreshedToken.getRealmAccess().isUserInRole("user"));
+        Assertions.assertTrue(refreshedToken.getRealmAccess().isUserInRole("user"));
 
         assertEquals(1, refreshedToken.getResourceAccess(oauth.getClientId()).getRoles().size());
-        Assert.assertTrue(refreshedToken.getResourceAccess(oauth.getClientId()).isUserInRole("customer-user"));
+        Assertions.assertTrue(refreshedToken.getResourceAccess(oauth.getClientId()).isUserInRole("customer-user"));
 
         EventRepresentation refreshEvent = events.expectRefresh(tokenEvent.getDetails().get(Details.REFRESH_TOKEN_ID), sessionId).user(AssertEvents.isUUID()).assertEvent();
-        Assert.assertNotEquals(tokenEvent.getDetails().get(Details.TOKEN_ID), refreshEvent.getDetails().get(Details.TOKEN_ID));
-        Assert.assertNotEquals(tokenEvent.getDetails().get(Details.REFRESH_TOKEN_ID), refreshEvent.getDetails().get(Details.UPDATED_REFRESH_TOKEN_ID));
+        Assertions.assertNotEquals(tokenEvent.getDetails().get(Details.TOKEN_ID), refreshEvent.getDetails().get(Details.TOKEN_ID));
+        Assertions.assertNotEquals(tokenEvent.getDetails().get(Details.REFRESH_TOKEN_ID), refreshEvent.getDetails().get(Details.UPDATED_REFRESH_TOKEN_ID));
 
         setTimeOffset(0);
     }
@@ -572,26 +572,26 @@ public class HoKTest extends AbstractTestRealmKeycloakTest {
 
         EventRepresentation loginEvent = events.expectLogin().assertEvent();
         OAuthClient.AuthorizationEndpointResponse authzResponse = new OAuthClient.AuthorizationEndpointResponse(oauth, true);
-        Assert.assertNotNull(authzResponse.getSessionState());
+        Assertions.assertNotNull(authzResponse.getSessionState());
         List<IDToken> idTokens = testAuthzResponseAndRetrieveIDTokens(authzResponse, loginEvent);
         for (IDToken idToken : idTokens) {
-            Assert.assertEquals(nonce, idToken.getNonce());
-            Assert.assertEquals(authzResponse.getSessionState(), idToken.getSessionState());
+            Assertions.assertEquals(nonce, idToken.getNonce());
+            Assertions.assertEquals(authzResponse.getSessionState(), idToken.getSessionState());
         }
     }
 
     protected List<IDToken> testAuthzResponseAndRetrieveIDTokens(OAuthClient.AuthorizationEndpointResponse authzResponse, EventRepresentation loginEvent) {
-        Assert.assertEquals(OIDCResponseType.CODE + " " + OIDCResponseType.ID_TOKEN, loginEvent.getDetails().get(Details.RESPONSE_TYPE));
+        Assertions.assertEquals(OIDCResponseType.CODE + " " + OIDCResponseType.ID_TOKEN, loginEvent.getDetails().get(Details.RESPONSE_TYPE));
 
         // IDToken from the authorization response
-        Assert.assertNull(authzResponse.getAccessToken());
+        Assertions.assertNull(authzResponse.getAccessToken());
         String idTokenStr = authzResponse.getIdToken();
         IDToken idToken = oauth.verifyIDToken(idTokenStr);
 
         // Validate "c_hash"
-        Assert.assertNull(idToken.getAccessTokenHash());
-        Assert.assertNotNull(idToken.getCodeHash());
-        Assert.assertEquals(idToken.getCodeHash(), HashUtils.oidcHash(Algorithm.RS256, authzResponse.getCode()));
+        Assertions.assertNull(idToken.getAccessTokenHash());
+        Assertions.assertNotNull(idToken.getCodeHash());
+        Assertions.assertEquals(idToken.getCodeHash(), HashUtils.oidcHash(Algorithm.RS256, authzResponse.getCode()));
 
         // IDToken exchanged for the code
         IDToken idToken2 = sendTokenRequestAndGetIDToken(loginEvent);
@@ -717,7 +717,7 @@ public class HoKTest extends AbstractTestRealmKeycloakTest {
             jws = new JWSInput(response.getAccessToken());
             at = jws.readJsonContent(AccessToken.class);
         } catch (JWSInputException e) {
-            Assert.fail(e.toString());
+            Assertions.fail(e.toString());
         }
         assertTrue(MessageDigest.isEqual(certThumbPrint.getBytes(), at.getCertConf().getCertThumbprint().getBytes()));
 
@@ -727,7 +727,7 @@ public class HoKTest extends AbstractTestRealmKeycloakTest {
                 jws = new JWSInput(response.getRefreshToken());
                 rt = jws.readJsonContent(RefreshToken.class);
             } catch (JWSInputException e) {
-                Assert.fail(e.toString());
+                Assertions.fail(e.toString());
             }
             assertTrue(MessageDigest.isEqual(certThumbPrint.getBytes(), rt.getCertConf().getCertThumbprint().getBytes()));
         }

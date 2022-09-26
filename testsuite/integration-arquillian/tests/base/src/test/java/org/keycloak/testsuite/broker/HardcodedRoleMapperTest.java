@@ -6,8 +6,8 @@ import static org.keycloak.models.IdentityProviderMapperSyncMode.LEGACY;
 
 import java.util.HashMap;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.IdentityProviderResource;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.broker.provider.ConfigConstants;
@@ -31,7 +31,7 @@ public class HardcodedRoleMapperTest extends AbstractRoleMapperTest {
         return new KcOidcBrokerConfiguration();
     }
 
-    @Before
+    @BeforeEach
     public void setupRealm() {
         super.addClients();
         realm = adminClient.realm(bc.consumerRealmName());

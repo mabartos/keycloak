@@ -22,9 +22,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.authentication.authenticators.client.ClientIdAndSecretAuthenticator;
@@ -65,10 +65,10 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.hamcrest.MatcherAssert.assertThat;;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
@@ -78,8 +78,7 @@ public class ServiceAccountTest extends AbstractKeycloakTest {
     private static String userId;
     private static String userName;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -180,9 +179,9 @@ public class ServiceAccountTest extends AbstractKeycloakTest {
 
         assertEquals(accessToken.getSessionState(), refreshToken.getSessionState());
         System.out.println("Access token other claims: " + accessToken.getOtherClaims());
-        Assert.assertEquals("service-account-cl-refresh-on", accessToken.getOtherClaims().get(ServiceAccountConstants.CLIENT_ID));
-        Assert.assertTrue(accessToken.getOtherClaims().containsKey(ServiceAccountConstants.CLIENT_ADDRESS));
-        Assert.assertTrue(accessToken.getOtherClaims().containsKey(ServiceAccountConstants.CLIENT_HOST));
+        Assertions.assertEquals("service-account-cl-refresh-on", accessToken.getOtherClaims().get(ServiceAccountConstants.CLIENT_ID));
+        Assertions.assertTrue(accessToken.getOtherClaims().containsKey(ServiceAccountConstants.CLIENT_ADDRESS));
+        Assertions.assertTrue(accessToken.getOtherClaims().containsKey(ServiceAccountConstants.CLIENT_HOST));
 
         OAuthClient.AccessTokenResponse refreshedResponse = oauth.doRefreshTokenRequest(response.getRefreshToken(), "secret1");
 
@@ -290,7 +289,7 @@ public class ServiceAccountTest extends AbstractKeycloakTest {
         assertEquals(200, response.getStatusCode());
 
         AccessToken accessToken = oauth.verifyToken(response.getAccessToken());
-        Assert.assertEquals("updated-client", accessToken.getOtherClaims().get(ServiceAccountConstants.CLIENT_ID));
+        Assertions.assertEquals("updated-client", accessToken.getOtherClaims().get(ServiceAccountConstants.CLIENT_ID));
 
         // Username updated after client ID changed
         events.expectClientLogin()
@@ -369,7 +368,7 @@ public class ServiceAccountTest extends AbstractKeycloakTest {
                 .assertEvent();
 
         // Check that it is not possible to introspect token anymore
-        Assert.assertFalse(getIntrospectionResponse("service-account-cl", "secret1", tokenString));
+        Assertions.assertFalse(getIntrospectionResponse("service-account-cl", "secret1", tokenString));
         // TODO: This would be better to be "INTROSPECT_TOKEN_ERROR"
         events.expect(EventType.INTROSPECT_TOKEN)
                 .client("service-account-cl")
@@ -399,10 +398,10 @@ public class ServiceAccountTest extends AbstractKeycloakTest {
         assertEquals(200, response.getStatusCode());
         String tokenString = response.getAccessToken();
 
-        Assert.assertNotNull("Access-Token should be present", tokenString);
+        Assertions.assertNotNull("Access-Token should be present", tokenString);
         AccessToken accessToken = oauth.verifyToken(tokenString);
-        Assert.assertNull(accessToken.getSessionState());
-        Assert.assertNull("Refresh-Token should not be present", response.getRefreshToken());
+        Assertions.assertNull(accessToken.getSessionState());
+        Assertions.assertNull("Refresh-Token should not be present", response.getRefreshToken());
 
         events.expectClientLogin()
                 .client("service-account-cl")
@@ -417,7 +416,7 @@ public class ServiceAccountTest extends AbstractKeycloakTest {
         assertThat(clientSessionStats, empty());
 
         // Check that token is possible to introspect
-        Assert.assertTrue(getIntrospectionResponse("service-account-cl", "secret1", tokenString));
+        Assertions.assertTrue(getIntrospectionResponse("service-account-cl", "secret1", tokenString));
         events.expect(EventType.INTROSPECT_TOKEN)
                 .client("service-account-cl")
                 .user(AssertEvents.isUUID())
@@ -480,9 +479,9 @@ public class ServiceAccountTest extends AbstractKeycloakTest {
 
         assertEquals(accessToken.getSessionState(), refreshToken.getSessionState());
         System.out.println("Access token other claims: " + accessToken.getOtherClaims());
-        Assert.assertEquals("service-account-cl-refresh-on", accessToken.getOtherClaims().get(ServiceAccountConstants.CLIENT_ID));
-        Assert.assertTrue(accessToken.getOtherClaims().containsKey(ServiceAccountConstants.CLIENT_ADDRESS));
-        Assert.assertTrue(accessToken.getOtherClaims().containsKey(ServiceAccountConstants.CLIENT_HOST));
+        Assertions.assertEquals("service-account-cl-refresh-on", accessToken.getOtherClaims().get(ServiceAccountConstants.CLIENT_ID));
+        Assertions.assertTrue(accessToken.getOtherClaims().containsKey(ServiceAccountConstants.CLIENT_ADDRESS));
+        Assertions.assertTrue(accessToken.getOtherClaims().containsKey(ServiceAccountConstants.CLIENT_HOST));
 
         OAuthClient.AccessTokenResponse refreshedResponse = oauth.doRefreshTokenRequest(response.getRefreshToken(), "secret1");
 

@@ -2,7 +2,7 @@ package org.keycloak.testsuite.forms;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.AuthenticationFlow;
 import org.keycloak.authentication.authenticators.browser.RecoveryAuthnCodesFormAuthenticatorFactory;
 import org.keycloak.authentication.authenticators.browser.PasswordFormFactory;
@@ -27,7 +27,7 @@ import org.keycloak.testsuite.pages.SelectAuthenticatorPage;
 import org.keycloak.testsuite.pages.SetupRecoveryAuthnCodesPage;
 import org.keycloak.testsuite.util.FlowUtil;
 import org.openqa.selenium.WebDriver;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import  org.keycloak.testsuite.util.WaitUtils;
 
 import java.util.Arrays;
@@ -110,7 +110,7 @@ public class RecoveryAuthnCodesAuthenticatorTest extends AbstractTestRealmKeyclo
             // On the password page, username should be shown as we know the user
             passwordPage.assertCurrent();
             passwordPage.assertAttemptedUsernameAvailability(true);
-            Assert.assertEquals("test-user@localhost", passwordPage.getAttemptedUsername());
+            Assertions.assertEquals("test-user@localhost", passwordPage.getAttemptedUsername());
             passwordPage.assertTryAnotherWayLinkAvailability(true);
             List<String> generatedRecoveryAuthnCodes = RecoveryAuthnCodesUtils.generateRawCodes();
             testingClient.server().run(session -> {
@@ -124,7 +124,7 @@ public class RecoveryAuthnCodesAuthenticatorTest extends AbstractTestRealmKeyclo
             });
             passwordPage.clickTryAnotherWayLink();
             selectAuthenticatorPage.assertCurrent();
-            Assert.assertEquals(Arrays.asList(SelectAuthenticatorPage.PASSWORD, SelectAuthenticatorPage.RECOVERY_AUTHN_CODES), selectAuthenticatorPage.getAvailableLoginMethods());
+            Assertions.assertEquals(Arrays.asList(SelectAuthenticatorPage.PASSWORD, SelectAuthenticatorPage.RECOVERY_AUTHN_CODES), selectAuthenticatorPage.getAvailableLoginMethods());
             selectAuthenticatorPage.selectLoginMethod(SelectAuthenticatorPage.RECOVERY_AUTHN_CODES);
             enterRecoveryAuthnCodePage.assertCurrent();
             enterRecoveryAuthnCodePage.enterRecoveryAuthnCode(generatedRecoveryAuthnCodes.get(enterRecoveryAuthnCodePage.getRecoveryAuthnCodeToEnterNumber()));
@@ -155,7 +155,7 @@ public class RecoveryAuthnCodesAuthenticatorTest extends AbstractTestRealmKeyclo
             // On the password page, username should be shown as we know the user
             passwordPage.assertCurrent();
             //passwordPage.assertAttemptedUsernameAvailability(true);
-            Assert.assertEquals("test-user@localhost", passwordPage.getAttemptedUsername());
+            Assertions.assertEquals("test-user@localhost", passwordPage.getAttemptedUsername());
             passwordPage.login("password");
             setupRecoveryAuthnCodesPage.assertCurrent();
             setupRecoveryAuthnCodesPage.clickSaveRecoveryAuthnCodesButton();
@@ -184,7 +184,7 @@ public class RecoveryAuthnCodesAuthenticatorTest extends AbstractTestRealmKeyclo
             // On the password page, username should be shown as we know the user
             passwordPage.assertCurrent();
             passwordPage.assertAttemptedUsernameAvailability(true);
-            Assert.assertEquals("test-user@localhost", passwordPage.getAttemptedUsername());
+            Assertions.assertEquals("test-user@localhost", passwordPage.getAttemptedUsername());
             passwordPage.assertTryAnotherWayLinkAvailability(true);
             List<String> generatedRecoveryAuthnCodes = RecoveryAuthnCodesUtils.generateRawCodes();
             testingClient.server().run(session -> {
@@ -198,7 +198,7 @@ public class RecoveryAuthnCodesAuthenticatorTest extends AbstractTestRealmKeyclo
             });
             passwordPage.clickTryAnotherWayLink();
             selectAuthenticatorPage.assertCurrent();
-            Assert.assertEquals(Arrays.asList(SelectAuthenticatorPage.PASSWORD, SelectAuthenticatorPage.RECOVERY_AUTHN_CODES), selectAuthenticatorPage.getAvailableLoginMethods());
+            Assertions.assertEquals(Arrays.asList(SelectAuthenticatorPage.PASSWORD, SelectAuthenticatorPage.RECOVERY_AUTHN_CODES), selectAuthenticatorPage.getAvailableLoginMethods());
             selectAuthenticatorPage.selectLoginMethod(SelectAuthenticatorPage.RECOVERY_AUTHN_CODES);
             enterRecoveryAuthnCodePage.assertCurrent();
             generatedRecoveryAuthnCodes.forEach(code -> System.out.println(code));
@@ -209,13 +209,13 @@ public class RecoveryAuthnCodesAuthenticatorTest extends AbstractTestRealmKeyclo
                 WaitUtils.waitForPageToLoad();
                 enterRecoveryAuthnCodePage.assertCurrent();
                 String feedbackText = enterRecoveryAuthnCodePage.getFeedbackText();
-                Assert.assertEquals(feedbackText, "Invalid recovery authentication code");
+                Assertions.assertEquals(feedbackText, "Invalid recovery authentication code");
             }
             // Now enter the right code which should not work
             enterRecoveryAuthnCodePage.enterRecoveryAuthnCode(generatedRecoveryAuthnCodes.get(enterRecoveryAuthnCodePage.getRecoveryAuthnCodeToEnterNumber()));
             enterRecoveryAuthnCodePage.clickSignInButton();
             // Message changes after exhausting number of brute force attempts
-            Assert.assertEquals(enterRecoveryAuthnCodePage.getFeedbackText(), "Invalid username or password.");
+            Assertions.assertEquals(enterRecoveryAuthnCodePage.getFeedbackText(), "Invalid username or password.");
             enterRecoveryAuthnCodePage.assertAccountLinkAvailability(false);
         } finally {
             RealmRepresentation rep = testRealm().toRepresentation();

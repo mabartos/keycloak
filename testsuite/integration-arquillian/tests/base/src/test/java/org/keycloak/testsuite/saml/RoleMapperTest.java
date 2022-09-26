@@ -41,12 +41,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_PORT;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SCHEME;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
@@ -68,7 +68,7 @@ public class RoleMapperTest extends AbstractSamlTest {
     private ProtocolMappersUpdater pmu;
     private static int COUNTER = 1;
 
-    @Before
+    @BeforeEach
     public void cleanMappersAndScopes() {
         this.cau = ClientAttributeUpdater.forClient(adminClient, REALM_NAME, SAML_CLIENT_ID_EMPLOYEE_2)
           .setDefaultClientScopes(Collections.EMPTY_LIST)
@@ -78,7 +78,7 @@ public class RoleMapperTest extends AbstractSamlTest {
           .update();
     }
 
-    @After
+    @AfterEach
     public void revertCleanMappersAndScopes() throws IOException {
         this.pmu.close();
         this.cau.close();

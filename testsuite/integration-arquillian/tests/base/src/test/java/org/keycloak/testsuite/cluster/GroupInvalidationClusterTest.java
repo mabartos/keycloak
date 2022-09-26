@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.cluster;
 
 import org.apache.commons.lang.RandomStringUtils;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.admin.client.resource.GroupResource;
 import org.keycloak.admin.client.resource.GroupsResource;
 import org.keycloak.representations.idm.GroupRepresentation;
@@ -15,9 +15,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.Assert.assertNames;
 
 /**
@@ -26,7 +26,7 @@ import static org.keycloak.testsuite.Assert.assertNames;
  */
 public class GroupInvalidationClusterTest extends AbstractInvalidationClusterTestWithTestRealm<GroupRepresentation, GroupResource> {
 
-    @Before
+    @BeforeEach
     public void setExcludedComparisonFields() {
         excludedComparisonFields.add("subGroups");
     }

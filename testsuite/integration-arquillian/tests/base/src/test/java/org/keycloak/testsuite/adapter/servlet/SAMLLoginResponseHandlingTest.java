@@ -3,8 +3,8 @@ package org.keycloak.testsuite.adapter.servlet;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.adapters.rotation.PublicKeyLocator;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ProtocolMappersResource;
@@ -40,14 +40,14 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.keycloak.testsuite.admin.ApiUtil.getCreatedId;
 import static org.keycloak.testsuite.saml.AbstractSamlTest.REALM_PRIVATE_KEY;
 import static org.keycloak.testsuite.saml.AbstractSamlTest.REALM_PUBLIC_KEY;
 import static org.keycloak.testsuite.util.Matchers.bodyHC;
 import static org.keycloak.testsuite.util.Matchers.statusCodeIsHC;
 import static org.keycloak.testsuite.util.UIUtils.getRawPageSource;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
 
@@ -105,8 +105,8 @@ public class SAMLLoginResponseHandlingTest extends AbstractSAMLServletAdapterTes
                 .build()
                 .navigateTo(employee2ServletPage.getUriBuilder().clone().path("getAttributes").build())
                 .execute(response -> {
-                            Assert.assertThat(response, statusCodeIsHC(Response.Status.OK));
-                            Assert.assertThat(response, bodyHC(containsString("attribute-with-null-attribute-value: <br />")));
+                            Assertions.assertThat(response, statusCodeIsHC(Response.Status.OK));
+                            Assertions.assertThat(response, bodyHC(containsString("attribute-with-null-attribute-value: <br />")));
                         }
                 );
     }
@@ -122,7 +122,7 @@ public class SAMLLoginResponseHandlingTest extends AbstractSAMLServletAdapterTes
         new SamlClientBuilder()
                 .addStep((client, currentURI, currentResponse, context) ->
                         SamlClient.Binding.REDIRECT.createSamlUnsignedResponse(URI.create(employeeSigServletPage.toString() + "/saml"), null, document))
-                .execute(closeableHttpResponse -> Assert.assertThat(closeableHttpResponse, bodyHC(containsString("INVALID_SIGNATURE"))));
+                .execute(closeableHttpResponse -> Assertions.assertThat(closeableHttpResponse, bodyHC(containsString("INVALID_SIGNATURE"))));
     }
 
     @Test
@@ -136,7 +136,7 @@ public class SAMLLoginResponseHandlingTest extends AbstractSAMLServletAdapterTes
         new SamlClientBuilder()
                 .addStep((client, currentURI, currentResponse, context) ->
                         SamlClient.Binding.REDIRECT.createSamlSignedResponse(URI.create(employeeSigServletPage.toString() + "/saml"), null, document, REALM_PRIVATE_KEY, REALM_PUBLIC_KEY))
-                .execute(closeableHttpResponse -> Assert.assertThat(closeableHttpResponse, bodyHC(containsString("ERROR_STATUS"))));
+                .execute(closeableHttpResponse -> Assertions.assertThat(closeableHttpResponse, bodyHC(containsString("ERROR_STATUS"))));
     }
 
     @Test
@@ -194,7 +194,7 @@ public class SAMLLoginResponseHandlingTest extends AbstractSAMLServletAdapterTes
 
         driver.navigate().to(employee2ServletPage.getUriBuilder().clone().path("getAssertionFromDocument").build().toURL());
         waitForPageToLoad();
-        Assert.assertEquals("", getRawPageSource());
+        Assertions.assertEquals("", getRawPageSource());
 
         employee2ServletPage.logout();
         checkLoggedOut(employee2ServletPage, testRealmSAMLPostLoginPage);

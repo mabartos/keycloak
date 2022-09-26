@@ -1,15 +1,15 @@
 package org.keycloak.testsuite.broker;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.broker.BrokerRunOnServerUtil.removeBrokerExpiredSessions;
 import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
 
 import java.util.List;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -31,7 +31,7 @@ public class KcOidcBrokerWithConsentTest extends AbstractInitializedBaseBrokerTe
         // Require broker to show consent screen
         RealmResource brokeredRealm = adminClient.realm(bc.providerRealmName());
         List<ClientRepresentation> clients = brokeredRealm.clients().findByClientId("brokerapp");
-        org.junit.Assert.assertEquals(1, clients.size());
+        org.junit.jupiter.api.Assertions.assertEquals(1, clients.size());
         ClientRepresentation brokerApp = clients.get(0);
         brokerApp.setConsentRequired(true);
         brokeredRealm.clients().get(brokerApp.getId()).update(brokerApp);
@@ -66,7 +66,7 @@ public class KcOidcBrokerWithConsentTest extends AbstractInitializedBaseBrokerTe
             grantPage.cancel();
 
             // Assert login page with "You took too long to login..." message
-            org.junit.Assert.assertEquals("Your login attempt timed out. Login will start from the beginning.", loginPage.getError());
+            org.junit.jupiter.api.Assertions.assertEquals("Your login attempt timed out. Login will start from the beginning.", loginPage.getError());
 
         } finally {
             invokeTimeOffset(0);
@@ -92,7 +92,7 @@ public class KcOidcBrokerWithConsentTest extends AbstractInitializedBaseBrokerTe
             grantPage.cancel();
 
             // Assert login page with "You took too long to login..." message
-            Assert.assertEquals("Your login attempt timed out. Login will start from the beginning.", loginPage.getError());
+            Assertions.assertEquals("Your login attempt timed out. Login will start from the beginning.", loginPage.getError());
 
         } finally {
             invokeTimeOffset(0);
@@ -124,7 +124,7 @@ public class KcOidcBrokerWithConsentTest extends AbstractInitializedBaseBrokerTe
 
             // Assert account error page with "staleCodeAccount" error displayed
             accountFederatedIdentityPage.assertCurrent();
-            Assert.assertEquals("The page expired. Please try one more time.", accountFederatedIdentityPage.getError());
+            Assertions.assertEquals("The page expired. Please try one more time.", accountFederatedIdentityPage.getError());
 
 
             // Try to link one more time
@@ -140,7 +140,7 @@ public class KcOidcBrokerWithConsentTest extends AbstractInitializedBaseBrokerTe
 
             // Assert account error page with "staleCodeAccount" error displayed
             accountFederatedIdentityPage.assertCurrent();
-            Assert.assertEquals("The page expired. Please try one more time.", accountFederatedIdentityPage.getError());
+            Assertions.assertEquals("The page expired. Please try one more time.", accountFederatedIdentityPage.getError());
 
         } finally {
             invokeTimeOffset(0);
@@ -185,6 +185,6 @@ public class KcOidcBrokerWithConsentTest extends AbstractInitializedBaseBrokerTe
 
         // Assert account error page with "consentDenied" error displayed
         accountFederatedIdentityPage.assertCurrent();
-        Assert.assertEquals("Consent denied.", accountFederatedIdentityPage.getError());
+        Assertions.assertEquals("Consent denied.", accountFederatedIdentityPage.getError());
     }
 }

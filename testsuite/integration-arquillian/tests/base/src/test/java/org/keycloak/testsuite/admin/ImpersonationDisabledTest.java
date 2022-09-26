@@ -17,15 +17,15 @@
 
 package org.keycloak.testsuite.admin;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import org.junit.Assume;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Assumptions;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
 
 /**
@@ -36,9 +36,9 @@ public class ImpersonationDisabledTest extends AbstractAdminTest {
     public static boolean IMPERSONATION_DISABLED = "impersonation".equals(System.getProperty("feature.name")) 
                 && "disabled".equals(System.getProperty("feature.value"));
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
-        Assume.assumeTrue(IMPERSONATION_DISABLED);
+        Assumptions.assumeTrue(IMPERSONATION_DISABLED);
     }
 
     @Test

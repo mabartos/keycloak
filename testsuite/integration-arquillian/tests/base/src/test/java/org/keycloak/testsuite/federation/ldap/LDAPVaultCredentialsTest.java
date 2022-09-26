@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.federation.ldap;
 
-import org.junit.ClassRule;
+
 import org.keycloak.testsuite.arquillian.annotation.EnableVault;
 import org.keycloak.testsuite.util.LDAPRule;
 import org.keycloak.testsuite.util.LDAPTestConfiguration;

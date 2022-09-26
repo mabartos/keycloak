@@ -25,10 +25,10 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -43,13 +43,13 @@ public class TextFileCheckerTest {
         return (Stream<String> s) -> s.forEachOrdered(target::add);
     }
 
-    @Before
+    @BeforeEach
     public void before() throws IOException {
         tempFile = File.createTempFile("TextFileCheckerTest-", ".tmp");
         tfc = new TextFileChecker(tempFile.toPath());
     }
 
-    @After
+    @AfterEach
     public void after() throws IOException {
         tempFile.delete();
     }
@@ -87,7 +87,7 @@ public class TextFileCheckerTest {
     public void assertCheckedOutputIs(String... expectedOutput) throws IOException {
         List<String> target = new LinkedList<>();
         tfc.checkFiles(false, collector(target));
-        Assert.assertThat(target,
+        Assertions.assertThat(target,
           expectedOutput == null || expectedOutput.length == 0
             ? Matchers.empty()
             : Matchers.contains(expectedOutput));

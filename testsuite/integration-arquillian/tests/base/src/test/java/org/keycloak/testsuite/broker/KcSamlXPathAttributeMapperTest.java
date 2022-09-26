@@ -1,8 +1,8 @@
 package org.keycloak.testsuite.broker;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.broker.saml.mappers.UserAttributeMapper;
 import org.keycloak.broker.saml.mappers.XPathAttributeMapper;
@@ -118,10 +118,10 @@ public class KcSamlXPathAttributeMapperTest extends AbstractInitializedBaseBroke
         RealmResource realm = adminClient.realm(bc.consumerRealmName());
 
         UserRepresentation user = realm.users().search(bc.getUserLogin()).get(0);
-        Assert.assertThat(user.getFirstName(), equalTo("Theo"));
-        Assert.assertThat(user.getLastName(), equalTo("Tester"));
-        Assert.assertThat(user.getEmail(), equalTo("test@example.org"));
-        Assert.assertThat(user.getAttributes().get("xml-output"), equalTo(Collections.singletonList("Some random text")));
+        Assertions.assertThat(user.getFirstName(), equalTo("Theo"));
+        Assertions.assertThat(user.getLastName(), equalTo("Tester"));
+        Assertions.assertThat(user.getEmail(), equalTo("test@example.org"));
+        Assertions.assertThat(user.getAttributes().get("xml-output"), equalTo(Collections.singletonList("Some random text")));
     }
 
 }

@@ -25,13 +25,13 @@ import javax.mail.internet.MimeMessage.RecipientType;
 import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MailAssert {
 
-    private static final Logger log = Logger.getLogger(MailAssert.class);
+    private static final Logger log = Logger.getLogger(MailAssertions.class);
     
     public static String assertEmailAndGetUrl(String from, String recipient, String content, Boolean sslEnabled) {
 

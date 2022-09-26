@@ -19,11 +19,11 @@
 package org.keycloak.testsuite.x509;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.authentication.authenticators.x509.X509AuthenticatorConfigModel;
 import org.keycloak.events.Details;
@@ -42,7 +42,7 @@ import org.openqa.selenium.WebDriver;
 import javax.ws.rs.core.Response;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.authentication.authenticators.x509.X509AuthenticatorConfigModel.IdentityMapperType.USERNAME_EMAIL;
 import static org.keycloak.authentication.authenticators.x509.X509AuthenticatorConfigModel.IdentityMapperType.USER_ATTRIBUTE;
 import static org.keycloak.authentication.authenticators.x509.X509AuthenticatorConfigModel.MappingSourceType.ISSUERDN;
@@ -60,7 +60,7 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
     @PhantomJSBrowser
     private WebDriver phantomJS;
 
-    @Before
+    @BeforeEach
     public void replaceTheDefaultDriver() {
         replaceDefaultWebDriver(phantomJS);
     }
@@ -70,19 +70,19 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
 
         AuthenticatorConfigRepresentation cfg = newConfig("x509-directgrant-config", createLoginIssuerDN_OU2CustomAttributeConfig().getConfig());
         String cfgId = createConfig(directGrantExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         // Set up the users so that the identity extracted from X509 client cert
         // matches more than a single user to trigger DuplicateModelException.
 
         UserRepresentation user = testRealm().users().get(userId2).toRepresentation();
-        Assert.assertNotNull(user);
+        Assertions.assertNotNull(user);
 
         user.singleAttribute("x509_certificate_identity", "Red Hat");
         this.updateUser(user);
 
         user = testRealm().users().get(userId).toRepresentation();
-        Assert.assertNotNull(user);
+        Assertions.assertNotNull(user);
 
         user.singleAttribute("x509_certificate_identity", "Red Hat");
         this.updateUser(user);
@@ -94,7 +94,7 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
 
         assertEquals(401, response.getStatusCode());
         assertEquals("invalid_request", response.getError());
-        Assert.assertThat(response.getErrorDescription(), containsString("X509 certificate authentication's failed."));
+        Assertions.assertThat(response.getErrorDescription(), containsString("X509 certificate authentication's failed."));
     }
 
     @Test
@@ -102,10 +102,10 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
 
         AuthenticatorConfigRepresentation cfg = newConfig("x509-directgrant-config", createLoginIssuerDN_OU2CustomAttributeConfig().getConfig());
         String cfgId = createConfig(directGrantExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         UserRepresentation user = testRealm().users().get(userId2).toRepresentation();
-        Assert.assertNotNull(user);
+        Assertions.assertNotNull(user);
 
         user.singleAttribute("x509_certificate_identity", "-");
         this.updateUser(user);
@@ -137,14 +137,14 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
         AuthenticatorConfigRepresentation cfg = newConfig("x509-directgrant-config",
                 createLoginSubjectEmailWithKeyUsage("dataEncipherment").getConfig());
         String cfgId = createConfig(directGrantExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         oauth.clientId("resource-owner");
         OAuthClient.AccessTokenResponse response = oauth.doGrantAccessTokenRequest("secret", "", "", null);
 
         assertEquals(401, response.getStatusCode());
         assertEquals("invalid_request", response.getError());
-        Assert.assertThat(response.getErrorDescription(), containsString("Key Usage bit 'dataEncipherment' is not set."));
+        Assertions.assertThat(response.getErrorDescription(), containsString("Key Usage bit 'dataEncipherment' is not set."));
         events.clear();
     }
 
@@ -154,7 +154,7 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
         AuthenticatorConfigRepresentation cfg = newConfig("x509-directgrant-config",
                 createLoginSubjectEmailWithExtendedKeyUsage("serverAuth").getConfig());
         String cfgId = createConfig(directGrantExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         oauth.clientId("resource-owner");
         OAuthClient.AccessTokenResponse response = oauth.doGrantAccessTokenRequest("secret", "", "", null);
@@ -169,7 +169,7 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
         AuthenticatorConfigRepresentation cfg = newConfig("x509-directgrant-config", config.getConfig());
 
         String cfgId = createConfig(directGrantExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         oauth.clientId("resource-owner");
         OAuthClient.AccessTokenResponse response = oauth.doGrantAccessTokenRequest("secret", "", "", null);
@@ -196,7 +196,7 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
         try {
             AuthenticatorConfigRepresentation cfg = newConfig("x509-directgrant-config", createLoginSubjectEmail2UsernameOrEmailConfig().getConfig());
             String cfgId = createConfig(directGrantExecution.getId(), cfg);
-            Assert.assertNotNull(cfgId);
+            Assertions.assertNotNull(cfgId);
 
             oauth.clientId("resource-owner");
             OAuthClient.AccessTokenResponse response = oauth.doGrantAccessTokenRequest("secret", "", "", null);
@@ -235,14 +235,14 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
                         .setUserIdentityMapperType(USERNAME_EMAIL);
         AuthenticatorConfigRepresentation cfg = newConfig("x509-directgrant-config", config.getConfig());
         String cfgId = createConfig(directGrantExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         oauth.clientId("resource-owner");
         OAuthClient.AccessTokenResponse response = oauth.doGrantAccessTokenRequest("secret", "", "", null);
 
         assertEquals(401, response.getStatusCode());
         assertEquals("invalid_request", response.getError());
-        Assert.assertThat(response.getErrorDescription(), containsString("Certificate has been revoked, certificate's subject:"));
+        Assertions.assertThat(response.getErrorDescription(), containsString("Certificate has been revoked, certificate's subject:"));
 
     }
 
@@ -256,7 +256,7 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
                     .setUserIdentityMapperType(USERNAME_EMAIL);
         AuthenticatorConfigRepresentation cfg = newConfig("x509-directgrant-config", config.getConfig());
         String cfgId = createConfig(directGrantExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         oauth.clientId("resource-owner");
         OAuthClient.AccessTokenResponse response = oauth.doGrantAccessTokenRequest("secret", "", "", null);
@@ -266,7 +266,7 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
 
     @Test
     public void loginCertificateExpired() throws Exception {
-        Assume.assumeFalse("Time offset is causing integer overflow. With the old store it works, because root authentication session has also timestamp overflown, this is not true for the new store so the test is failing.", keycloakUsingProviderWithId(AuthenticationSessionProvider.class, "map"));
+        Assumptions.assumeFalse("Time offset is causing integer overflow. With the old store it works, because root authentication session has also timestamp overflown, this is not true for the new store so the test is failing.", keycloakUsingProviderWithId(AuthenticationSessionProvider.class, "map"));
 
         X509AuthenticatorConfigModel config =
                 new X509AuthenticatorConfigModel()
@@ -276,7 +276,7 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
                     .setUserIdentityMapperType(USERNAME_EMAIL);
         AuthenticatorConfigRepresentation cfg = newConfig("x509-directgrant-config", config.getConfig());
         String cfgId = createConfig(directGrantExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         setTimeOffset(50 * 365 * 24 * 60 * 60);
 
@@ -287,7 +287,7 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
 
         assertEquals(401, response.getStatusCode());
         assertEquals("invalid_request", response.getError());
-        Assert.assertThat(response.getErrorDescription(), containsString("has expired on:"));
+        Assertions.assertThat(response.getErrorDescription(), containsString("has expired on:"));
     }
 
     private void loginForceTemporaryAccountLock() throws Exception {
@@ -299,10 +299,10 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
 
         AuthenticatorConfigRepresentation cfg = newConfig("x509-directgrant-config", config.getConfig());
         String cfgId = createConfig(directGrantExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         UserRepresentation user = testRealm().users().get(userId).toRepresentation();
-        Assert.assertNotNull(user);
+        Assertions.assertNotNull(user);
 
         user.singleAttribute("x509_certificate_identity", "-");
         this.updateUser(user);
@@ -319,14 +319,14 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
 
 
     @Test
-    @Ignore
+    @Disabled
     public void loginFailedTemporarilyDisabledUser() throws Exception {
 
         loginForceTemporaryAccountLock();
 
         AuthenticatorConfigRepresentation cfg = newConfig("x509-directgrant-config", createLoginSubjectEmail2UsernameOrEmailConfig().getConfig());
         String cfgId = createConfig(directGrantExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         oauth.clientId("resource-owner");
         OAuthClient.AccessTokenResponse response = oauth.doGrantAccessTokenRequest("secret", "", "", null);
@@ -381,7 +381,7 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
                         .setUserIdentityMapperType(USERNAME_EMAIL);
         AuthenticatorConfigRepresentation cfg = newConfig("x509-directgrant-config", config.getConfig());
         String cfgId = createConfig(directGrantExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         doResourceOwnerCredentialsLogin("resource-owner", "secret", "test-user@localhost", "");
     }

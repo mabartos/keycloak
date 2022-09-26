@@ -18,10 +18,10 @@
 package org.keycloak.testsuite.forms;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.authenticators.browser.UsernamePasswordFormFactory;
 import org.keycloak.events.Details;
 import org.keycloak.models.AuthenticationExecutionModel;
@@ -48,8 +48,7 @@ import java.util.Map;
  */
 public class AuthenticatorSubflowsTest extends AbstractTestRealmKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -64,7 +63,7 @@ public class AuthenticatorSubflowsTest extends AbstractTestRealmKeycloakTest {
     public void configureTestRealm(RealmRepresentation testRealm) {
     }
 
-    @Before
+    @BeforeEach
     public void setupFlows() {
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
@@ -292,7 +291,7 @@ public class AuthenticatorSubflowsTest extends AbstractTestRealmKeycloakTest {
 
         driver.navigate().to(loginFormUrl);
 
-        Assert.assertEquals("PushTheButton", driver.getTitle());
+        Assertions.assertEquals("PushTheButton", driver.getTitle());
 
         // Push the button. I am redirected to username+password form
         driver.findElement(By.name("submit1")).click();
@@ -318,7 +317,7 @@ public class AuthenticatorSubflowsTest extends AbstractTestRealmKeycloakTest {
 //        //Thread.sleep(10000000);
 //
 //        driver.navigate().to(loginFormUrl);
-//        Assert.assertEquals("PushTheButton", driver.getTitle());
+//        Assertions.assertEquals("PushTheButton", driver.getTitle());
 //
 //        // Confirm push button. I am authenticated as john-doh@localhost
 //        driver.findElement(By.name("submit1")).click();

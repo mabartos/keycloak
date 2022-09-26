@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.admin;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Version;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.info.ProviderRepresentation;
@@ -27,8 +27,8 @@ import org.keycloak.testsuite.AbstractKeycloakTest;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>

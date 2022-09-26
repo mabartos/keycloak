@@ -16,11 +16,11 @@
  */
 package org.keycloak.testsuite.authz;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -32,9 +32,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientsResource;
@@ -92,7 +92,7 @@ public class PermissionClaimTest extends AbstractAuthzTest {
                 .build());
     }
 
-    @Before
+    @BeforeEach
     public void configureAuthorization() throws Exception {
         ClientResource client = getClient(getRealm());
         AuthorizationResource authorization = client.authorization();
@@ -126,7 +126,7 @@ public class PermissionClaimTest extends AbstractAuthzTest {
         authorization.policies().js().create(denyPolicy).close();
     }
 
-    @After
+    @AfterEach
     public void removeAuthorization() throws Exception {
         ClientResource client = getClient(getRealm());
         ClientRepresentation representation = client.toRepresentation();

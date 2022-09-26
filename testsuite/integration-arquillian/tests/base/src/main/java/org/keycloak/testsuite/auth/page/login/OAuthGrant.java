@@ -26,7 +26,7 @@ import org.openqa.selenium.support.FindBy;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.util.UIUtils.clickLink;
 
 /**
@@ -66,7 +66,6 @@ public class OAuthGrant extends RequiredActions {
 
     public void assertClientScopes(List<String> expectedScopes) {
         List<String> actualScopes = scopesToApprove.stream().map(WebElement::getText).collect(Collectors.toList());
-        assertTrue("Expected and actual Client Scopes to approve don't match",
-                CollectionUtil.collectionEquals(expectedScopes, actualScopes)); // order of scopes doesn't matter
+        assertTrue(CollectionUtil.collectionEquals(expectedScopes, actualScopes), "Expected and actual Client Scopes to approve don't match"); // order of scopes doesn't matter
     }
 }

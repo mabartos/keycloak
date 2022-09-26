@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.oauth;
 
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.events.Details;
 import org.keycloak.representations.idm.EventRepresentation;
@@ -36,8 +36,7 @@ import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
  */
 public class OAuthDanceClientSessionExtensionTest extends AbstractKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Override
     public void beforeAbstractKeycloakTest() throws Exception {

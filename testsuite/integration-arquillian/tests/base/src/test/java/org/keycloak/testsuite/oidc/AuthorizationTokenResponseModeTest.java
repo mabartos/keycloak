@@ -16,9 +16,9 @@
  */
 package org.keycloak.testsuite.oidc;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.events.Details;
@@ -38,16 +38,15 @@ import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AuthorizationTokenResponseModeTest extends AbstractTestRealmKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Test
     public void authorizationRequestQueryJWTResponseMode() throws Exception {
@@ -60,9 +59,9 @@ public class AuthorizationTokenResponseModeTest extends AbstractTestRealmKeycloa
         AuthorizationResponseToken responseToken = oauth.verifyAuthorizationResponseToken(response.getResponse());
 
         assertEquals("test-app", responseToken.getAudience()[0]);
-        Assert.assertNotNull(responseToken.getOtherClaims().get("code"));
+        Assertions.assertNotNull(responseToken.getOtherClaims().get("code"));
         assertEquals("OpenIdConnect.AuthenticationProperties=2302984sdlk", responseToken.getOtherClaims().get("state"));
-        Assert.assertNull(responseToken.getOtherClaims().get("error"));
+        Assertions.assertNull(responseToken.getOtherClaims().get("error"));
 
         String codeId = events.expectLogin().assertEvent().getDetails().get(Details.CODE_ID);
     }
@@ -79,15 +78,15 @@ public class AuthorizationTokenResponseModeTest extends AbstractTestRealmKeycloa
         AuthorizationResponseToken responseToken = oauth.verifyAuthorizationResponseToken(response.getResponse());
 
         assertEquals("test-app", responseToken.getAudience()[0]);
-        Assert.assertNotNull(responseToken.getOtherClaims().get("code"));
+        Assertions.assertNotNull(responseToken.getOtherClaims().get("code"));
         // should not return code when response_type not 'token'
         assertFalse(responseToken.getOtherClaims().containsKey(OAuth2Constants.SCOPE));
         assertEquals("OpenIdConnect.AuthenticationProperties=2302984sdlk", responseToken.getOtherClaims().get("state"));
-        Assert.assertNull(responseToken.getOtherClaims().get("error"));
+        Assertions.assertNull(responseToken.getOtherClaims().get("error"));
 
         URI currentUri = new URI(driver.getCurrentUrl());
-        Assert.assertNotNull(currentUri.getRawQuery());
-        Assert.assertNull(currentUri.getRawFragment());
+        Assertions.assertNotNull(currentUri.getRawQuery());
+        Assertions.assertNull(currentUri.getRawFragment());
 
         String codeId = events.expectLogin().assertEvent().getDetails().get(Details.CODE_ID);
     }
@@ -103,13 +102,13 @@ public class AuthorizationTokenResponseModeTest extends AbstractTestRealmKeycloa
         AuthorizationResponseToken responseToken = oauth.verifyAuthorizationResponseToken(response.getResponse());
 
         assertEquals("test-app", responseToken.getAudience()[0]);
-        Assert.assertNotNull(responseToken.getOtherClaims().get("code"));
+        Assertions.assertNotNull(responseToken.getOtherClaims().get("code"));
         assertEquals("OpenIdConnect.AuthenticationProperties=2302984sdlk", responseToken.getOtherClaims().get("state"));
-        Assert.assertNull(responseToken.getOtherClaims().get("error"));
+        Assertions.assertNull(responseToken.getOtherClaims().get("error"));
 
         URI currentUri = new URI(driver.getCurrentUrl());
-        Assert.assertNull(currentUri.getRawQuery());
-        Assert.assertNotNull(currentUri.getRawFragment());
+        Assertions.assertNull(currentUri.getRawQuery());
+        Assertions.assertNotNull(currentUri.getRawFragment());
 
         String codeId = events.expectLogin().assertEvent().getDetails().get(Details.CODE_ID);
     }
@@ -128,9 +127,9 @@ public class AuthorizationTokenResponseModeTest extends AbstractTestRealmKeycloa
         AuthorizationResponseToken responseToken = oauth.verifyAuthorizationResponseToken(responseTokenEncoded);
 
         assertEquals("test-app", responseToken.getAudience()[0]);
-        Assert.assertNotNull(responseToken.getOtherClaims().get("code"));
+        Assertions.assertNotNull(responseToken.getOtherClaims().get("code"));
         assertEquals("OpenIdConnect.AuthenticationProperties=2302984sdlk", responseToken.getOtherClaims().get("state"));
-        Assert.assertNull(responseToken.getOtherClaims().get("error"));
+        Assertions.assertNull(responseToken.getOtherClaims().get("error"));
 
         String codeId = events.expectLogin().assertEvent().getDetails().get(Details.CODE_ID);
     }
@@ -150,18 +149,18 @@ public class AuthorizationTokenResponseModeTest extends AbstractTestRealmKeycloa
         AuthorizationResponseToken responseToken = oauth.verifyAuthorizationResponseToken(response.getResponse());
 
         assertEquals("test-app", responseToken.getAudience()[0]);
-        Assert.assertNotNull(responseToken.getOtherClaims().get("code"));
+        Assertions.assertNotNull(responseToken.getOtherClaims().get("code"));
         assertEquals("OpenIdConnect.AuthenticationProperties=2302984sdlk", responseToken.getOtherClaims().get("state"));
-        Assert.assertNull(responseToken.getOtherClaims().get("error"));
+        Assertions.assertNull(responseToken.getOtherClaims().get("error"));
 
-        Assert.assertNotNull(responseToken.getOtherClaims().get("id_token"));
+        Assertions.assertNotNull(responseToken.getOtherClaims().get("id_token"));
         String idTokenEncoded = (String) responseToken.getOtherClaims().get("id_token");
         IDToken idToken = oauth.verifyIDToken(idTokenEncoded);
         assertEquals("123456", idToken.getNonce());
 
         URI currentUri = new URI(driver.getCurrentUrl());
-        Assert.assertNull(currentUri.getRawQuery());
-        Assert.assertNotNull(currentUri.getRawFragment());
+        Assertions.assertNull(currentUri.getRawQuery());
+        Assertions.assertNotNull(currentUri.getRawFragment());
 
         String codeId = events.expectLogin().assertEvent().getDetails().get(Details.CODE_ID);
     }
@@ -181,23 +180,23 @@ public class AuthorizationTokenResponseModeTest extends AbstractTestRealmKeycloa
         AuthorizationResponseToken responseToken = oauth.verifyAuthorizationResponseToken(response.getResponse());
 
         assertEquals("test-app", responseToken.getAudience()[0]);
-        Assert.assertNull(responseToken.getOtherClaims().get("code"));
+        Assertions.assertNull(responseToken.getOtherClaims().get("code"));
         assertEquals("OpenIdConnect.AuthenticationProperties=2302984sdlk", responseToken.getOtherClaims().get("state"));
-        Assert.assertNull(responseToken.getOtherClaims().get("error"));
+        Assertions.assertNull(responseToken.getOtherClaims().get("error"));
 
-        Assert.assertNotNull(responseToken.getOtherClaims().get("id_token"));
+        Assertions.assertNotNull(responseToken.getOtherClaims().get("id_token"));
         String idTokenEncoded = (String) responseToken.getOtherClaims().get("id_token");
         IDToken idToken = oauth.verifyIDToken(idTokenEncoded);
         assertEquals("123456", idToken.getNonce());
 
-        Assert.assertNotNull(responseToken.getOtherClaims().get("access_token"));
+        Assertions.assertNotNull(responseToken.getOtherClaims().get("access_token"));
         String accessTokenEncoded = (String) responseToken.getOtherClaims().get("access_token");
         AccessToken accessToken = oauth.verifyToken(accessTokenEncoded);
         assertEquals("123456", accessToken.getNonce());
 
         URI currentUri = new URI(driver.getCurrentUrl());
-        Assert.assertNull(currentUri.getRawQuery());
-        Assert.assertNotNull(currentUri.getRawFragment());
+        Assertions.assertNull(currentUri.getRawQuery());
+        Assertions.assertNotNull(currentUri.getRawFragment());
     }
 
     @Test
@@ -212,8 +211,8 @@ public class AuthorizationTokenResponseModeTest extends AbstractTestRealmKeycloa
 
         OAuthClient.AuthorizationEndpointResponse errorResponse = new OAuthClient.AuthorizationEndpointResponse(oauth);
         AuthorizationResponseToken responseToken = oauth.verifyAuthorizationResponseToken(errorResponse.getResponse());
-        Assert.assertEquals(OAuthErrorException.INVALID_REQUEST, responseToken.getOtherClaims().get("error"));
-        Assert.assertEquals("Response_mode 'query.jwt' is allowed only when the authorization response token is encrypted", responseToken.getOtherClaims().get("error_description"));
+        Assertions.assertEquals(OAuthErrorException.INVALID_REQUEST, responseToken.getOtherClaims().get("error"));
+        Assertions.assertEquals("Response_mode 'query.jwt' is allowed only when the authorization response token is encrypted", responseToken.getOtherClaims().get("error_description"));
 
         events.expectLogin().error(Errors.INVALID_REQUEST).user((String) null).session((String) null).clearDetails().assertEvent();
     }

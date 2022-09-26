@@ -17,9 +17,9 @@
 
 package org.keycloak.testsuite.admin;
 
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -60,7 +60,7 @@ import static org.keycloak.models.map.user.MapUserProviderFactory.REALM_ATTR_USE
 
 public class UsersTest extends AbstractAdminTest {
 
-    @Before
+    @BeforeEach
     public void cleanUsers() {
         List<UserRepresentation> userRepresentations = realm.users().list();
         for (UserRepresentation user : userRepresentations) {
@@ -77,7 +77,7 @@ public class UsersTest extends AbstractAdminTest {
 
     @Test
     public void searchUserCaseSensitiveFirst() throws Exception {
-        Assume.assumeFalse(isJpaRealmProvider());
+        Assumptions.assumeFalse(isJpaRealmProvider());
         Map<String, String> attributes = new HashMap<>();
         attributes.put(REALM_ATTR_USERNAME_CASE_SENSITIVE, "true");
         try (AutoCloseable c = new RealmAttributeUpdater(adminClient.realm(REALM_NAME))
@@ -99,7 +99,7 @@ public class UsersTest extends AbstractAdminTest {
 
     @Test
     public void searchUserCaseInSensitiveFirst() throws Exception {
-        Assume.assumeFalse(isJpaRealmProvider());
+        Assumptions.assumeFalse(isJpaRealmProvider());
         Map<String, String> attributes = new HashMap<>();
         attributes.put(REALM_ATTR_USERNAME_CASE_SENSITIVE, "false");
         try (AutoCloseable c = new RealmAttributeUpdater(adminClient.realm(REALM_NAME))

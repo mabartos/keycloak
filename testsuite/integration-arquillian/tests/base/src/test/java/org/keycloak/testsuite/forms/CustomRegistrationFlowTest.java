@@ -17,10 +17,10 @@
 package org.keycloak.testsuite.forms;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.AuthenticationExecutionModel;
 import org.keycloak.representations.idm.AuthenticationExecutionRepresentation;
 import org.keycloak.representations.idm.AuthenticationFlowRepresentation;
@@ -45,7 +45,7 @@ public class CustomRegistrationFlowTest extends AbstractFlowTest {
     public void configureTestRealm(RealmRepresentation testRealm) {
     }
 
-    @Before
+    @BeforeEach
     public void configureFlow() {
         AuthenticationFlowRepresentation flow = FlowBuilder.create()
                                                            .alias("dummy registration")
@@ -72,8 +72,7 @@ public class CustomRegistrationFlowTest extends AbstractFlowTest {
         testRealm().flows().addExecution(execution);
     }
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -95,7 +94,7 @@ public class CustomRegistrationFlowTest extends AbstractFlowTest {
         loginPage.open();
         loginPage.clickRegister();
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         String userId = events.expectRegister(PassThroughRegistration.username, PassThroughRegistration.email).assertEvent().getUserId();
         events.expectLogin().detail("username", PassThroughRegistration.username).user(userId).assertEvent();

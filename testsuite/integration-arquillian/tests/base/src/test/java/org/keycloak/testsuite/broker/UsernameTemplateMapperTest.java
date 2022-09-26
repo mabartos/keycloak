@@ -2,8 +2,8 @@ package org.keycloak.testsuite.broker;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.IdentityProviderResource;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.broker.oidc.mappers.UserAttributeMapper;
@@ -12,7 +12,7 @@ import org.keycloak.representations.idm.IdentityProviderMapperRepresentation;
 import org.keycloak.representations.idm.IdentityProviderRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
 
 public class UsernameTemplateMapperTest extends AbstractBaseBrokerTest {
@@ -24,12 +24,12 @@ public class UsernameTemplateMapperTest extends AbstractBaseBrokerTest {
         return KcOidcBrokerConfiguration.INSTANCE;
     }
 
-    @Before
+    @BeforeEach
     public void addClients() {
         addClientsToProviderAndConsumer();
     }
 
-    @Before
+    @BeforeEach
     public void addIdentityProviderToConsumerRealm() {
 
         log.debug("adding identity provider to realm " + bc.consumerRealmName());
@@ -45,7 +45,7 @@ public class UsernameTemplateMapperTest extends AbstractBaseBrokerTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void createUserInIdp() {
         idpUserId = createUser(bc.providerRealmName(), bc.getUserLogin(), bc.getUserPassword(), "First", "Last", bc.getUserEmail());
     }

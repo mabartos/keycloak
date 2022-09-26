@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.admin;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.GroupResource;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -28,9 +28,9 @@ import org.keycloak.testsuite.arquillian.annotation.EnableFeature;
 
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author <a href="mailto:leon.graser@bosch-si.com">Leon Graser</a>

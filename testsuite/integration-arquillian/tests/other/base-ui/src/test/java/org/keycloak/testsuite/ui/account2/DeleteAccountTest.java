@@ -21,11 +21,11 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.events.EventType;
 import org.keycloak.models.AccountRoles;
 import org.keycloak.representations.idm.ClientRepresentation;
@@ -62,13 +62,13 @@ public class DeleteAccountTest extends BaseAccountPageTest {
     return personalInfoPage;
   }
 
-  @Before
+  @BeforeEach
   public void setup() {
     enableDeleteAccountRequiredAction();
     addDeleteAccountRoleToUserClientRoles();
   }
 
-  @After
+  @AfterEach
   public void clean() {
     disableDeleteAccountRequiredAction();
   }
@@ -97,9 +97,9 @@ public class DeleteAccountTest extends BaseAccountPageTest {
 
     reauthenticateUser();
 
-    Assert.assertTrue(deleteAccountActionConfirmPage.isCurrent());
+    Assertions.assertTrue(deleteAccountActionConfirmPage.isCurrent());
     deleteAccountActionConfirmPage.clickCancelAIA();
-    Assert.assertTrue(personalInfoPage.isCurrent());
+    Assertions.assertTrue(personalInfoPage.isCurrent());
   }
 
   @Test
@@ -111,11 +111,11 @@ public class DeleteAccountTest extends BaseAccountPageTest {
 
     reauthenticateUser();
 
-    Assert.assertTrue(deleteAccountActionConfirmPage.isCurrent());
+    Assertions.assertTrue(deleteAccountActionConfirmPage.isCurrent());
     removeDeleteAccountRoleFromUserClientRoles();
     deleteAccountActionConfirmPage.clickConfirmAction();
-    Assert.assertTrue(deleteAccountActionConfirmPage.isErrorMessageDisplayed());
-    Assert.assertEquals(deleteAccountActionConfirmPage.getErrorMessageText(), "You do not have enough permissions to delete your own account, contact admin.");
+    Assertions.assertTrue(deleteAccountActionConfirmPage.isErrorMessageDisplayed());
+    Assertions.assertEquals(deleteAccountActionConfirmPage.getErrorMessageText(), "You do not have enough permissions to delete your own account, contact admin.");
   }
 
   @Test
@@ -130,7 +130,7 @@ public class DeleteAccountTest extends BaseAccountPageTest {
     deleteAccountActionConfirmPage.isCurrent();
     deleteAccountActionConfirmPage.clickConfirmAction();
     events.expectAccount(EventType.DELETE_ACCOUNT);
-    Assert.assertTrue(testRealmResource().users().search(testUser.getUsername()).isEmpty());
+    Assertions.assertTrue(testRealmResource().users().search(testUser.getUsername()).isEmpty());
   }
 
   private void reauthenticateUser() {

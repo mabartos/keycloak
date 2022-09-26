@@ -41,10 +41,10 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.Config;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
@@ -85,7 +85,7 @@ public class ConcurrentLoginTest extends AbstractConcurrencyTest {
 
     private String userSessionProvider;
 
-    @Before
+    @BeforeEach
     public void beforeTest() {
         userSessionProvider = testingClient.server().fetch(session -> Config.getProvider(UserSessionSpi.NAME), String.class);
         createClients();
@@ -114,7 +114,7 @@ public class ConcurrentLoginTest extends AbstractConcurrencyTest {
 
     @Test
     public void concurrentLoginSingleUser() throws Throwable {
-        Assume.assumeThat("Test runs only with InfinispanUserSessionProvider",
+        Assumptions.assumeThat("Test runs only with InfinispanUserSessionProvider",
                 userSessionProvider,
                 Matchers.is(InfinispanUserSessionProviderFactory.PROVIDER_ID));
 
@@ -130,7 +130,7 @@ public class ConcurrentLoginTest extends AbstractConcurrencyTest {
             ));
             run(DEFAULT_THREADS, DEFAULT_CLIENTS_COUNT, loginTask);
             int clientSessionsCount = testingClient.testing().getClientSessionsCountInUserSession("test", userSessionId.get());
-            Assert.assertEquals(1 + DEFAULT_CLIENTS_COUNT, clientSessionsCount);
+            Assertions.assertEquals(1 + DEFAULT_CLIENTS_COUNT, clientSessionsCount);
         } finally {
             long end = System.currentTimeMillis() - start;
             log.infof("Statistics: %s", loginTask == null ? "??" : loginTask.getHistogram());
@@ -153,7 +153,7 @@ public class ConcurrentLoginTest extends AbstractConcurrencyTest {
         CookieStore cookieStore = new BasicCookieStore();
         context.setCookieStore(cookieStore);
         HttpUriRequest request = handleLogin(getPageContent(oauth.getLoginFormUrl(), httpClient, context), userName, password);
-        Assert.assertThat(parseAndCloseResponse(httpClient.execute(request, context)), containsString("<title>AUTH_RESPONSE</title>"));
+        Assertions.assertThat(parseAndCloseResponse(httpClient.execute(request, context)), containsString("<title>AUTH_RESPONSE</title>"));
         return context;
     }
 
@@ -171,7 +171,7 @@ public class ConcurrentLoginTest extends AbstractConcurrencyTest {
             ));
             run(DEFAULT_THREADS, DEFAULT_CLIENTS_COUNT, loginTask);
             int clientSessionsCount = testingClient.testing().getClientSessionsCountInUserSession("test", userSessionId.get());
-            Assert.assertEquals(2, clientSessionsCount);
+            Assertions.assertEquals(2, clientSessionsCount);
         } finally {
             long end = System.currentTimeMillis() - start;
             log.infof("Statistics: %s", loginTask == null ? "??" : loginTask.getHistogram());
@@ -182,7 +182,7 @@ public class ConcurrentLoginTest extends AbstractConcurrencyTest {
 
     @Test
     public void concurrentLoginMultipleUsers() throws Throwable {
-        Assume.assumeThat("Test runs only with InfinispanUserSessionProvider",
+        Assumptions.assumeThat("Test runs only with InfinispanUserSessionProvider",
                 userSessionProvider,
                 Matchers.is(InfinispanUserSessionProviderFactory.PROVIDER_ID));
 
@@ -201,7 +201,7 @@ public class ConcurrentLoginTest extends AbstractConcurrencyTest {
 
             run(DEFAULT_THREADS, DEFAULT_CLIENTS_COUNT, loginTask);
             int clientSessionsCount = testingClient.testing().getClientSessionsCountInUserSession("test", userSessionId.get());
-            Assert.assertEquals(1 + DEFAULT_CLIENTS_COUNT / 3 + (DEFAULT_CLIENTS_COUNT % 3 <= 0 ? 0 : 1), clientSessionsCount);
+            Assertions.assertEquals(1 + DEFAULT_CLIENTS_COUNT / 3 + (DEFAULT_CLIENTS_COUNT % 3 <= 0 ? 0 : 1), clientSessionsCount);
         } finally {
             long end = System.currentTimeMillis() - start;
             log.infof("Statistics: %s", loginTask == null ? "??" : loginTask.getHistogram());
@@ -225,7 +225,7 @@ public class ConcurrentLoginTest extends AbstractConcurrencyTest {
             OAuthClient.AuthorizationEndpointResponse resp = oauth1.doLogin("test-user@localhost", "password");
             String code = resp.getCode();
             String idTokenHint = oauth1.doAccessTokenRequest(code, "password").getIdToken();
-            Assert.assertNotNull(code);
+            Assertions.assertNotNull(code);
             String codeURL = driver.getCurrentUrl();
 
 
@@ -253,8 +253,8 @@ public class ConcurrentLoginTest extends AbstractConcurrencyTest {
             oauth1.idTokenHint(idTokenHint).openLogout();
 
             // Code should be successfully exchanged for the token at max once. In some cases (EG. Cross-DC) it may not be even successfully exchanged
-            Assert.assertThat(codeToTokenSuccessCount.get(), Matchers.lessThanOrEqualTo(0));
-            Assert.assertThat(codeToTokenErrorsCount.get(), Matchers.greaterThanOrEqualTo(DEFAULT_THREADS));
+            Assertions.assertThat(codeToTokenSuccessCount.get(), Matchers.lessThanOrEqualTo(0));
+            Assertions.assertThat(codeToTokenErrorsCount.get(), Matchers.greaterThanOrEqualTo(DEFAULT_THREADS));
 
             log.infof("Iteration %d passed successfully", i);
         }
@@ -394,23 +394,23 @@ public class ConcurrentLoginTest extends AbstractConcurrencyTest {
             final HttpClientContext context = HttpClientContext.create();
             context.setCookieStore(templateContext.getCookieStore());
             String pageContent = getPageContent(oauth1.getLoginFormUrl(), httpClient, context);
-            Assert.assertThat(pageContent, Matchers.containsString("<title>AUTH_RESPONSE</title>"));
-            Assert.assertThat(context.getRedirectLocations(), Matchers.notNullValue());
-            Assert.assertThat(context.getRedirectLocations(), Matchers.not(Matchers.empty()));
+            Assertions.assertThat(pageContent, Matchers.containsString("<title>AUTH_RESPONSE</title>"));
+            Assertions.assertThat(context.getRedirectLocations(), Matchers.notNullValue());
+            Assertions.assertThat(context.getRedirectLocations(), Matchers.not(Matchers.empty()));
             String currentUrl = context.getRedirectLocations().get(0).toString();
 
             Map<String, String> query = getQueryFromUrl(currentUrl);
             String code = query.get(OAuth2Constants.CODE);
             String state = query.get(OAuth2Constants.STATE);
 
-            Assert.assertEquals("Invalid state.", state, oauth1.getState());
+            Assertions.assertEquals("Invalid state.", state, oauth1.getState());
 
             AtomicReference<OAuthClient.AccessTokenResponse> accessResRef = new AtomicReference<>();
             totalInvocations.incrementAndGet();
 
             // obtain access + refresh token via code-to-token flow
             OAuthClient.AccessTokenResponse accessRes = oauth1.doAccessTokenRequest(code, "password");
-            Assert.assertEquals("AccessTokenResponse: client: " + oauth1.getClientId() + ", error: '" + accessRes.getError() + "' desc: '" + accessRes.getErrorDescription() + "'",
+            Assertions.assertEquals("AccessTokenResponse: client: " + oauth1.getClientId() + ", error: '" + accessRes.getError() + "' desc: '" + accessRes.getErrorDescription() + "'",
               200, accessRes.getStatusCode());
             accessResRef.set(accessRes);
 
@@ -419,7 +419,7 @@ public class ConcurrentLoginTest extends AbstractConcurrencyTest {
 
             int invocationIndex = Retry.execute(() -> {
                 OAuthClient.AccessTokenResponse refreshRes = oauth1.doRefreshTokenRequest(accessResRef.get().getRefreshToken(), "password");
-                Assert.assertEquals("AccessTokenResponse: client: " + oauth1.getClientId() + ", error: '" + refreshRes.getError() + "' desc: '" + refreshRes.getErrorDescription() + "'",
+                Assertions.assertEquals("AccessTokenResponse: client: " + oauth1.getClientId() + ", error: '" + refreshRes.getError() + "' desc: '" + refreshRes.getErrorDescription() + "'",
                   200, refreshRes.getStatusCode());
 
                 refreshResRef.set(refreshRes);
@@ -428,10 +428,10 @@ public class ConcurrentLoginTest extends AbstractConcurrencyTest {
             retryHistogram[invocationIndex].incrementAndGet();
 
             AccessToken token = JsonSerialization.readValue(new JWSInput(accessResRef.get().getAccessToken()).getContent(), AccessToken.class);
-            Assert.assertEquals("Invalid nonce.", token.getNonce(), oauth1.getNonce());
+            Assertions.assertEquals("Invalid nonce.", token.getNonce(), oauth1.getNonce());
 
             AccessToken refreshedToken = JsonSerialization.readValue(new JWSInput(refreshResRef.get().getAccessToken()).getContent(), AccessToken.class);
-            Assert.assertEquals("Invalid nonce.", refreshedToken.getNonce(), oauth1.getNonce());
+            Assertions.assertEquals("Invalid nonce.", refreshedToken.getNonce(), oauth1.getNonce());
 
             if (userSessionId.get() == null) {
                 userSessionId.set(token.getSessionState());

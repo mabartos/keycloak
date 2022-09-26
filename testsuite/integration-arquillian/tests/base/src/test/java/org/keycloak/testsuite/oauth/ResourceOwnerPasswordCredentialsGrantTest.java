@@ -25,7 +25,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -73,10 +73,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
@@ -91,8 +91,7 @@ public class ResourceOwnerPasswordCredentialsGrantTest extends AbstractKeycloakT
 
     private final TimeBasedOTP totp = new TimeBasedOTP();
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+
 
     @Override
     public void beforeAbstractKeycloakTest() throws Exception {
@@ -172,7 +171,7 @@ public class ResourceOwnerPasswordCredentialsGrantTest extends AbstractKeycloakT
         grantAccessToken("direct-login", "resource-owner");
 
         // Check that count of authSessions is same as before authentication (as authentication session was removed)
-        Assert.assertEquals(authSessionsBefore, getAuthenticationSessionsCount());
+        Assertions.assertEquals(authSessionsBefore, getAuthenticationSessionsCount());
     }
 
     @Test
@@ -302,7 +301,7 @@ public class ResourceOwnerPasswordCredentialsGrantTest extends AbstractKeycloakT
                 .assertEvent();
 
         // Check that count of authSessions is same as before authentication (as authentication session was removed)
-        Assert.assertEquals(authSessionsBefore, getAuthenticationSessionsCount());
+        Assertions.assertEquals(authSessionsBefore, getAuthenticationSessionsCount());
     }
 
     private void grantAccessToken(String login, String clientId) throws Exception {
@@ -332,7 +331,7 @@ public class ResourceOwnerPasswordCredentialsGrantTest extends AbstractKeycloakT
                 .removeDetail(Details.CONSENT)
                 .assertEvent();
 
-        Assert.assertTrue(login.equals(accessToken.getPreferredUsername()) || login.equals(accessToken.getEmail()));
+        Assertions.assertTrue(login.equals(accessToken.getPreferredUsername()) || login.equals(accessToken.getEmail()));
 
         assertEquals(accessToken.getSessionState(), refreshToken.getSessionState());
 
@@ -405,7 +404,7 @@ public class ResourceOwnerPasswordCredentialsGrantTest extends AbstractKeycloakT
                 .removeDetail(Details.CONSENT)
                 .assertEvent();
 
-        Assert.assertTrue(login.equals(accessToken.getPreferredUsername()) || login.equals(accessToken.getEmail()));
+        Assertions.assertTrue(login.equals(accessToken.getPreferredUsername()) || login.equals(accessToken.getEmail()));
 
         assertEquals(accessToken.getSessionState(), refreshToken.getSessionState());
 
@@ -548,7 +547,7 @@ public class ResourceOwnerPasswordCredentialsGrantTest extends AbstractKeycloakT
         UserManager.realm(realmResource).username("test-user@localhost").removeRequiredAction(UserModel.RequiredAction.VERIFY_EMAIL.toString());
 
         // Check that count of authSessions is same as before authentication (as authentication session was removed)
-        Assert.assertEquals(authSessionsBefore, getAuthenticationSessionsCount());
+        Assertions.assertEquals(authSessionsBefore, getAuthenticationSessionsCount());
     }
     
     @Test

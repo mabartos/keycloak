@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.webauthn.account;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.authentication.authenticators.browser.UsernamePasswordFormFactory;
 import org.keycloak.authentication.authenticators.browser.WebAuthnAuthenticatorFactory;
 import org.keycloak.authentication.authenticators.browser.WebAuthnPasswordlessAuthenticatorFactory;
@@ -75,7 +75,7 @@ public abstract class AbstractWebAuthnAccountTest extends AbstractAuthTest imple
     protected static final String DEFAULT_FLOW = "browser";
 
     @Override
-    @Before
+    @BeforeEach
     public void setUpVirtualAuthenticator() {
         if (!isDriverFirefox(driver)) {
             webAuthnManager = AbstractWebAuthnVirtualTest.createDefaultVirtualManager(driver, getDefaultOptions());
@@ -83,14 +83,14 @@ public abstract class AbstractWebAuthnAccountTest extends AbstractAuthTest imple
     }
 
     @Override
-    @After
+    @AfterEach
     public void removeVirtualAuthenticator() {
         if (!isDriverFirefox(driver)) {
             webAuthnManager.removeAuthenticator();
         }
     }
 
-    @Before
+    @BeforeEach
     public void navigateBeforeTest() {
         driver.manage().window().maximize();
 

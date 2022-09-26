@@ -2,13 +2,14 @@ package org.keycloak.testsuite.federation.storage;
 
 import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.common.Profile;
@@ -48,7 +49,7 @@ import org.keycloak.testsuite.pages.LoginPage;
 import org.keycloak.testsuite.pages.RegisterPage;
 import org.keycloak.testsuite.pages.VerifyEmailPage;
 import org.keycloak.testsuite.updaters.RealmAttributeUpdater;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.TestCleanup;
 
 import javax.mail.internet.MimeMessage;
@@ -74,11 +75,11 @@ import static java.util.Calendar.HOUR_OF_DAY;
 import static java.util.Calendar.MINUTE;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.models.UserModel.RequiredAction.UPDATE_PROFILE;
 import static org.keycloak.storage.UserStorageProviderModel.CACHE_POLICY;
 import static org.keycloak.storage.UserStorageProviderModel.EVICTION_DAY;
@@ -88,22 +89,20 @@ import static org.keycloak.storage.UserStorageProviderModel.IMPORT_ENABLED;
 import static org.keycloak.storage.UserStorageProviderModel.MAX_LIFESPAN;
 import static org.keycloak.testsuite.actions.RequiredActionEmailVerificationTest.getPasswordResetEmailLink;
 
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlDoesntStartWith;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlDoesntStartWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 
 /**
  *
  * @author tkyjovsk
  */
+@ExtendWith(GreenMailExtension.class)
 @DisableFeature(value = Profile.Feature.ACCOUNT2, skipRestart = true) // TODO remove this (KEYCLOAK-16228)
 public class UserStorageTest extends AbstractAuthTest {
 
     private String memProviderId;
     private String propProviderROId;
     private String propProviderRWId;
-
-    @Rule
-    public GreenMailRule greenMail = new GreenMailRule();
 
     @Page
     protected LoginPage loginPage;
@@ -116,9 +115,9 @@ public class UserStorageTest extends AbstractAuthTest {
 
     private static final File CONFIG_DIR = new File(System.getProperty("auth.server.config.dir", ""));
 
-    @Before
+    @BeforeEach
     public void addProvidersBeforeTest() throws URISyntaxException, IOException {
-        Assume.assumeTrue("User cache disabled.", isUserCacheEnabled());
+        Assumptions.assumeTrue("User cache disabled.", isUserCacheEnabled());
 
         ComponentRepresentation memProvider = new ComponentRepresentation();
         memProvider.setName("memory");
@@ -156,7 +155,7 @@ public class UserStorageTest extends AbstractAuthTest {
 
     }
 
-    @After
+    @AfterEach
     public void afterTestCleanUp() throws URISyntaxException, IOException {
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
@@ -172,7 +171,7 @@ public class UserStorageTest extends AbstractAuthTest {
 
             //we need to clear userPasswords and userGroups from UserMapStorageFactory
             UserMapStorageFactory userMapStorageFactory = (UserMapStorageFactory) session.getKeycloakSessionFactory().getProviderFactory(UserStorageProvider.class, UserMapStorageFactory.PROVIDER_ID);
-            Assert.assertNotNull(userMapStorageFactory);
+            Assertions.assertNotNull(userMapStorageFactory);
             userMapStorageFactory.clear();
         });
     }
@@ -261,13 +260,13 @@ public class UserStorageTest extends AbstractAuthTest {
 
         // check entity
         thor = ApiUtil.findUserByUsername(testRealmResource(), "thor");
-        Assert.assertEquals("Stian", thor.getFirstName());
-        Assert.assertEquals("Thorgersen", thor.getLastName());
-        Assert.assertEquals("thor@hammer.com", thor.getEmail());
-        Assert.assertTrue(thor.getAttributes().containsKey("test-attribute"));
-        Assert.assertEquals(1, thor.getAttributes().get("test-attribute").size());
-        Assert.assertEquals("value", thor.getAttributes().get("test-attribute").get(0));
-        Assert.assertTrue(thor.isEmailVerified());
+        Assertions.assertEquals("Stian", thor.getFirstName());
+        Assertions.assertEquals("Thorgersen", thor.getLastName());
+        Assertions.assertEquals("thor@hammer.com", thor.getEmail());
+        Assertions.assertTrue(thor.getAttributes().containsKey("test-attribute"));
+        Assertions.assertEquals(1, thor.getAttributes().get("test-attribute").size());
+        Assertions.assertEquals("value", thor.getAttributes().get("test-attribute").get(0));
+        Assertions.assertTrue(thor.isEmailVerified());
 
         // update group
         GroupRepresentation g = new GroupRepresentation();
@@ -283,7 +282,7 @@ public class UserStorageTest extends AbstractAuthTest {
                 foundGroup = true;
             }
         }
-        Assert.assertTrue(foundGroup);
+        Assertions.assertTrue(foundGroup);
 
         // check required actions
         assertTrue(thor.getRequiredActions().contains(UPDATE_PROFILE.name()));
@@ -317,11 +316,11 @@ public class UserStorageTest extends AbstractAuthTest {
 
         thor = ApiUtil.findUserByUsername(testRealmResource(), "thor");
 
-        Assert.assertNull(thor.getFirstName());
-        Assert.assertNull(thor.getLastName());
-        Assert.assertNull(thor.getEmail());
-        Assert.assertNull(thor.getAttributes());
-        Assert.assertFalse(thor.isEmailVerified());
+        Assertions.assertNull(thor.getFirstName());
+        Assertions.assertNull(thor.getLastName());
+        Assertions.assertNull(thor.getEmail());
+        Assertions.assertNull(thor.getAttributes());
+        Assertions.assertFalse(thor.isEmailVerified());
 
         foundGroup = false;
         for (GroupRepresentation ug : testRealmResource().users().get(thor.getId()).groups()) {
@@ -329,7 +328,7 @@ public class UserStorageTest extends AbstractAuthTest {
                 foundGroup = true;
             }
         }
-        Assert.assertFalse(foundGroup);
+        Assertions.assertFalse(foundGroup);
 
         foundRole = false;
         for (RoleRepresentation rr : user(thor.getId()).roles().getAll().getRealmMappings()) {
@@ -361,7 +360,7 @@ public class UserStorageTest extends AbstractAuthTest {
 
             verifyEmailPage.assertCurrent();
 
-            Assert.assertEquals(1, greenMail.getReceivedMessages().length);
+            Assertions.assertEquals(1, greenMail.getReceivedMessages().length);
 
             MimeMessage message = greenMail.getReceivedMessages()[0];
 
@@ -390,7 +389,7 @@ public class UserStorageTest extends AbstractAuthTest {
         assertNotNull(memuser);
         assertNotNull(memuser.getOrigin());
         ComponentRepresentation origin = testRealmResource().components().component(memuser.getOrigin()).toRepresentation();
-        Assert.assertEquals("memory", origin.getName());
+        Assertions.assertEquals("memory", origin.getName());
 
         testRealmResource().users().get(memuser.getId()).remove();
         try {
@@ -419,15 +418,15 @@ public class UserStorageTest extends AbstractAuthTest {
             usernames.add(user.getUsername());
             log.info(user.getUsername());
         }
-        Assert.assertEquals(8, queried.size());
-        Assert.assertTrue(usernames.contains("thor"));
-        Assert.assertTrue(usernames.contains("zeus"));
-        Assert.assertTrue(usernames.contains("apollo"));
-        Assert.assertTrue(usernames.contains("perseus"));
-        Assert.assertTrue(usernames.contains("tbrady"));
-        Assert.assertTrue(usernames.contains("rob"));
-        Assert.assertTrue(usernames.contains("jules"));
-        Assert.assertTrue(usernames.contains("danny"));
+        Assertions.assertEquals(8, queried.size());
+        Assertions.assertTrue(usernames.contains("thor"));
+        Assertions.assertTrue(usernames.contains("zeus"));
+        Assertions.assertTrue(usernames.contains("apollo"));
+        Assertions.assertTrue(usernames.contains("perseus"));
+        Assertions.assertTrue(usernames.contains("tbrady"));
+        Assertions.assertTrue(usernames.contains("rob"));
+        Assertions.assertTrue(usernames.contains("jules"));
+        Assertions.assertTrue(usernames.contains("danny"));
 
         // test searchForUser
         List<UserRepresentation> users = testRealmResource().users().search("tbrady", 0, -1);
@@ -462,10 +461,10 @@ public class UserStorageTest extends AbstractAuthTest {
             usernames.add(u.getUsername());
             log.info(u.getUsername());
         }
-        Assert.assertEquals(3, queried.size());
-        Assert.assertTrue(usernames.contains("apollo"));
-        Assert.assertTrue(usernames.contains("zeus"));
-        Assert.assertTrue(usernames.contains("thor"));
+        Assertions.assertEquals(3, queried.size());
+        Assertions.assertTrue(usernames.contains("apollo"));
+        Assertions.assertTrue(usernames.contains("zeus"));
+        Assertions.assertTrue(usernames.contains("thor"));
 
         // search by single attribute
         testingClient.server().run(session -> {
@@ -477,16 +476,16 @@ public class UserStorageTest extends AbstractAuthTest {
 
             List<UserModel> userModels = session.users().searchForUserByUserAttributeStream(realm, "weapon", "hammer")
                     .peek(System.out::println).collect(Collectors.toList());
-            Assert.assertEquals(1, userModels.size());
-            Assert.assertEquals("thor", userModels.get(0).getUsername());
+            Assertions.assertEquals(1, userModels.size());
+            Assertions.assertEquals("thor", userModels.get(0).getUsername());
         });
     }
 
     @Test
     public void testQueryExactMatch() {
-        Assert.assertThat(testRealmResource().users().search("a", true), hasSize(0));
-        Assert.assertThat(testRealmResource().users().search("apollo", true), hasSize(1));
-        Assert.assertThat(testRealmResource().users().search("tbrady", true), hasSize(1));
+        Assertions.assertThat(testRealmResource().users().search("a", true), hasSize(0));
+        Assertions.assertThat(testRealmResource().users().search("apollo", true), hasSize(1));
+        Assertions.assertThat(testRealmResource().users().search("tbrady", true), hasSize(1));
     }
 
     private void setDailyEvictionTime(int hour, int minutes) {
@@ -532,7 +531,7 @@ public class UserStorageTest extends AbstractAuthTest {
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
-            Assert.assertTrue(user instanceof CachedUserModel); // should be newly cached
+            Assertions.assertTrue(user instanceof CachedUserModel); // should be newly cached
         });
 
 
@@ -542,7 +541,7 @@ public class UserStorageTest extends AbstractAuthTest {
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
-            Assert.assertTrue(user instanceof CachedUserModel); // should be returned from cache
+            Assertions.assertTrue(user instanceof CachedUserModel); // should be returned from cache
         });
 
 
@@ -551,21 +550,21 @@ public class UserStorageTest extends AbstractAuthTest {
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
-            Assert.assertFalse(user instanceof CachedUserModel); // should have been invalidated
+            Assertions.assertFalse(user instanceof CachedUserModel); // should have been invalidated
         });
 
 
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
-            Assert.assertTrue(user instanceof CachedUserModel); // should have been newly cached
+            Assertions.assertTrue(user instanceof CachedUserModel); // should have been newly cached
         });
 
 
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
-            Assert.assertTrue(user instanceof CachedUserModel); // should be returned from cache
+            Assertions.assertTrue(user instanceof CachedUserModel); // should be returned from cache
         });
 
 
@@ -574,7 +573,7 @@ public class UserStorageTest extends AbstractAuthTest {
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
-            Assert.assertTrue(user instanceof CachedUserModel); // should be returned from cache
+            Assertions.assertTrue(user instanceof CachedUserModel); // should be returned from cache
         });
 
 
@@ -585,7 +584,7 @@ public class UserStorageTest extends AbstractAuthTest {
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
-            Assert.assertTrue(user instanceof CachedUserModel); // should be returned from cache - it's still good for almost the whole day
+            Assertions.assertTrue(user instanceof CachedUserModel); // should be returned from cache - it's still good for almost the whole day
         });
 
 
@@ -595,7 +594,7 @@ public class UserStorageTest extends AbstractAuthTest {
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
-            Assert.assertTrue(user instanceof CachedUserModel); // should be returned from cache - it's still good until 23:45
+            Assertions.assertTrue(user instanceof CachedUserModel); // should be returned from cache - it's still good until 23:45
         });
 
         // at 23:50
@@ -604,7 +603,7 @@ public class UserStorageTest extends AbstractAuthTest {
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
-            Assert.assertFalse(user instanceof CachedUserModel); // should be invalidated
+            Assertions.assertFalse(user instanceof CachedUserModel); // should be invalidated
         });
 
         setTimeOfDay(23, 55, 0, 24 * 60 * 60);
@@ -612,7 +611,7 @@ public class UserStorageTest extends AbstractAuthTest {
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
-            Assert.assertTrue(user instanceof CachedUserModel); // should be newly cached
+            Assertions.assertTrue(user instanceof CachedUserModel); // should be newly cached
         });
 
 
@@ -621,7 +620,7 @@ public class UserStorageTest extends AbstractAuthTest {
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
-            Assert.assertTrue(user instanceof CachedUserModel); // should be returned from cache
+            Assertions.assertTrue(user instanceof CachedUserModel); // should be returned from cache
         });
 
         setTimeOfDay(23, 50, 0, 2 * 24 * 60 * 60);
@@ -629,19 +628,19 @@ public class UserStorageTest extends AbstractAuthTest {
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
-            Assert.assertFalse(user instanceof CachedUserModel); // should be invalidated
+            Assertions.assertFalse(user instanceof CachedUserModel); // should be invalidated
         });
 
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
-            Assert.assertTrue(user instanceof CachedUserModel); // should be newly cached
+            Assertions.assertTrue(user instanceof CachedUserModel); // should be newly cached
         });
 
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
-            Assert.assertTrue(user instanceof CachedUserModel); // should be returned from cache
+            Assertions.assertTrue(user instanceof CachedUserModel); // should be returned from cache
         });
     }
 
@@ -664,7 +663,7 @@ public class UserStorageTest extends AbstractAuthTest {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
             System.out.println("User class: " + user.getClass());
-            Assert.assertTrue(user instanceof CachedUserModel); // should still be cached
+            Assertions.assertTrue(user instanceof CachedUserModel); // should still be cached
         });
 
         setTimeOffset(2 * 24 * 60 * 60); // 2 days in future
@@ -674,7 +673,7 @@ public class UserStorageTest extends AbstractAuthTest {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
             System.out.println("User class: " + user.getClass());
-            Assert.assertTrue(user instanceof CachedUserModel); // should still be cached
+            Assertions.assertTrue(user instanceof CachedUserModel); // should still be cached
         });
 
         setTimeOffset(5 * 24 * 60 * 60); // 5 days in future
@@ -683,7 +682,7 @@ public class UserStorageTest extends AbstractAuthTest {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
             System.out.println("User class: " + user.getClass());
-            Assert.assertFalse(user instanceof CachedUserModel); // should be evicted
+            Assertions.assertFalse(user instanceof CachedUserModel); // should be evicted
         });
 
     }
@@ -703,7 +702,7 @@ public class UserStorageTest extends AbstractAuthTest {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
             System.out.println("User class: " + user.getClass());
-            Assert.assertTrue(user instanceof CachedUserModel); // should still be cached
+            Assertions.assertTrue(user instanceof CachedUserModel); // should still be cached
         });
 
         setTimeOffset(1/2 * 60 * 60); // 1/2 hour in future
@@ -712,7 +711,7 @@ public class UserStorageTest extends AbstractAuthTest {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
             System.out.println("User class: " + user.getClass());
-            Assert.assertTrue(user instanceof CachedUserModel); // should still be cached
+            Assertions.assertTrue(user instanceof CachedUserModel); // should still be cached
         });
 
         setTimeOffset(2 * 60 * 60); // 2 hours in future
@@ -721,7 +720,7 @@ public class UserStorageTest extends AbstractAuthTest {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
             System.out.println("User class: " + user.getClass());
-            Assert.assertFalse(user instanceof CachedUserModel); // should be evicted
+            Assertions.assertFalse(user instanceof CachedUserModel); // should be evicted
         });
 
     }
@@ -739,14 +738,14 @@ public class UserStorageTest extends AbstractAuthTest {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().getUserByUsername(realm, "thor");
             System.out.println("User class: " + user.getClass());
-            Assert.assertFalse(user instanceof CachedUserModel); // should be evicted
+            Assertions.assertFalse(user instanceof CachedUserModel); // should be evicted
         });
 
 
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel thor2 = session.users().getUserByUsername(realm, "thor");
-            Assert.assertFalse(thor2 instanceof CachedUserModel);
+            Assertions.assertFalse(thor2 instanceof CachedUserModel);
         });
 
         propProviderRW = testRealmResource().components().component(propProviderRWId).toRepresentation();
@@ -772,19 +771,19 @@ public class UserStorageTest extends AbstractAuthTest {
 
             RealmModel realm = session.realms().getRealmByName("test");
             UserModel user = session.users().addUser(realm, "memuser");
-            Assert.assertNotNull(user);
+            Assertions.assertNotNull(user);
             user = session.users().getUserByUsername(realm, "nonexistent");
-            Assert.assertNull(user);
+            Assertions.assertNull(user);
 
-            Assert.assertEquals(1, UserMapStorage.allocations.get());
-            Assert.assertEquals(0, UserMapStorage.closings.get());
+            Assertions.assertEquals(1, UserMapStorage.allocations.get());
+            Assertions.assertEquals(0, UserMapStorage.closings.get());
 
             session.users().removeUser(realm,session.users().getUserByUsername(realm, "memuser"));
         });
 
         testingClient.server().run(session -> {
-            Assert.assertEquals(1, UserMapStorage.allocations.get());
-            Assert.assertEquals(1, UserMapStorage.closings.get());
+            Assertions.assertEquals(1, UserMapStorage.allocations.get());
+            Assertions.assertEquals(1, UserMapStorage.closings.get());
         });
 
     }
@@ -807,7 +806,7 @@ public class UserStorageTest extends AbstractAuthTest {
         testRealmResource().groups().group(gid1).remove();
         testRealmResource().groups().group(gid2).remove();
         testingClient.server().run(session -> {
-            Assert.assertEquals(2, UserMapStorage.groupRemovals.get());
+            Assertions.assertEquals(2, UserMapStorage.groupRemovals.get());
             UserMapStorage.realmRemovals.set(0);
         });
 
@@ -821,7 +820,7 @@ public class UserStorageTest extends AbstractAuthTest {
         testRealmResource().roles().get("role1").remove();
         testRealmResource().roles().get("role2").remove();
         testingClient.server().run(session -> {
-            Assert.assertEquals(2, UserMapStorage.roleRemovals.get());
+            Assertions.assertEquals(2, UserMapStorage.roleRemovals.get());
             UserMapStorage.realmRemovals.set(0);
         });
 
@@ -829,7 +828,7 @@ public class UserStorageTest extends AbstractAuthTest {
         RealmRepresentation testRealmRepresentation = testRealmResource().toRepresentation();
         testRealmResource().remove();
         testingClient.server().run(session -> {
-            Assert.assertEquals(1, UserMapStorage.realmRemovals.get());
+            Assertions.assertEquals(1, UserMapStorage.realmRemovals.get());
             UserMapStorage.realmRemovals.set(0);
         });
 
@@ -839,7 +838,7 @@ public class UserStorageTest extends AbstractAuthTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testEntityRemovalHooksCascade() {
         testingClient.server().run(session -> {
             UserMapStorage.realmRemovals.set(0);
@@ -864,9 +863,9 @@ public class UserStorageTest extends AbstractAuthTest {
         // remove realm with groups and roles in it
         testRealmResource().remove();
         testingClient.server().run(session -> {
-            Assert.assertEquals(1, UserMapStorage.realmRemovals.get());
-            Assert.assertEquals(2, UserMapStorage.groupRemovals.get()); // check if group removal hooks were called
-            Assert.assertEquals(2, UserMapStorage.roleRemovals.get()); // check if role removal hooks were called
+            Assertions.assertEquals(1, UserMapStorage.realmRemovals.get());
+            Assertions.assertEquals(2, UserMapStorage.groupRemovals.get()); // check if group removal hooks were called
+            Assertions.assertEquals(2, UserMapStorage.roleRemovals.get()); // check if role removal hooks were called
         });
 
     }
@@ -883,7 +882,7 @@ public class UserStorageTest extends AbstractAuthTest {
             RealmModel realm = currentSession.realms().getRealmByName("test");
 
             UserModel user = currentSession.users().getUserByUsername(realm, "thor");
-            Assert.assertFalse(StorageId.isLocalStorage(user));
+            Assertions.assertFalse(StorageId.isLocalStorage(user));
 
             Stream<CredentialModel> credentials = user.credentialManager().getStoredCredentialsStream();
             org.keycloak.testsuite.Assert.assertEquals(0, credentials.count());
@@ -992,7 +991,7 @@ public class UserStorageTest extends AbstractAuthTest {
             RealmModel realm = session.realms().getRealmByName("test");
 
             UserModel user = session.users().getUserByUsername(realm, "thor");
-            Assert.assertFalse(StorageId.isLocalStorage(user));
+            Assertions.assertFalse(StorageId.isLocalStorage(user));
 
             CredentialModel otp1 = OTPCredentialModel.createFromPolicy(realm, "secret1");
             user.credentialManager().createStoredCredential(otp1);
@@ -1008,21 +1007,21 @@ public class UserStorageTest extends AbstractAuthTest {
         UserResource user2 = ApiUtil.findUserByUsernameId(testRealmResource(), "tbrady");
         try {
             user2.setCredentialUserLabel(otpCredential.getId(), "new-label");
-            Assert.fail("Not expected to successfully update user label");
+            Assertions.fail("Not expected to successfully update user label");
         } catch (NotFoundException nfe) {
             // Expected
         }
 
         try {
             user2.moveCredentialToFirst(otpCredential.getId());
-            Assert.fail("Not expected to successfully move credential");
+            Assertions.fail("Not expected to successfully move credential");
         } catch (NotFoundException nfe) {
             // Expected
         }
 
         try {
             user2.removeCredential(otpCredential.getId());
-            Assert.fail("Not expected to successfully remove credential");
+            Assertions.fail("Not expected to successfully remove credential");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -1032,8 +1031,8 @@ public class UserStorageTest extends AbstractAuthTest {
                 .filter(credentialRep -> OTPCredentialModel.TYPE.equals(credentialRep.getType()))
                 .findFirst()
                 .get();
-        Assert.assertTrue(ObjectUtil.isEqualOrBothNull(otpCredential.getUserLabel(), otpCredentialLoaded.getUserLabel()));
-        Assert.assertTrue(ObjectUtil.isEqualOrBothNull(otpCredential.getPriority(), otpCredentialLoaded.getPriority()));
+        Assertions.assertTrue(ObjectUtil.isEqualOrBothNull(otpCredential.getUserLabel(), otpCredentialLoaded.getUserLabel()));
+        Assertions.assertTrue(ObjectUtil.isEqualOrBothNull(otpCredential.getPriority(), otpCredentialLoaded.getPriority()));
     }
 
 

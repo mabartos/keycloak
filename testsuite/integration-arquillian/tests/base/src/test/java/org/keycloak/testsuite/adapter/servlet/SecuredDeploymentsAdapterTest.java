@@ -20,13 +20,13 @@ package org.keycloak.testsuite.adapter.servlet;
 
 import static org.hamcrest.Matchers.containsString;
 
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.keycloak.testsuite.arquillian.AppServerTestEnricher.CURRENT_APP_SERVER;
 import static org.keycloak.testsuite.arquillian.AppServerTestEnricher.enableHTTPSForAppServer;
 import static org.keycloak.testsuite.util.ServerURLs.APP_SERVER_SSL_REQUIRED;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWithLoginUrlOf;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -36,11 +36,11 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.adapter.AbstractServletsAdapterTest;
 import org.keycloak.testsuite.adapter.filter.AdapterActionsFilter;
 import org.keycloak.testsuite.adapter.page.CustomerDb;
@@ -84,12 +84,12 @@ public class SecuredDeploymentsAdapterTest extends AbstractServletsAdapterTest i
         return servletDeployment(CustomerDb.DEPLOYMENT_NAME, AdapterActionsFilter.class, CustomerDatabaseServlet.class);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void assumeTLSEnabled() {
-        Assume.assumeTrue(AUTH_SERVER_SSL_REQUIRED);
+        Assumptions.assumeTrue(AUTH_SERVER_SSL_REQUIRED);
     }
 
-    @Before
+    @BeforeEach
     @Override
     public void startServer() throws InterruptedException, IOException, OperationException, TimeoutException, CommandFailedException, CliException {
         try {
@@ -113,7 +113,7 @@ public class SecuredDeploymentsAdapterTest extends AbstractServletsAdapterTest i
         return false;
     }
 
-    @After
+    @AfterEach
     @Override
     public void stopServer() {
         controller.stop(testContext.getAppServerInfo().getQualifier());

@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.ui.account2;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.ui.account2.page.ApplicationsPage;
 import org.keycloak.testsuite.ui.account2.page.DeviceActivityPage;
@@ -26,8 +26,8 @@ import org.keycloak.testsuite.ui.account2.page.LinkedAccountsPage;
 import org.keycloak.testsuite.ui.account2.page.MyResourcesPage;
 import org.keycloak.testsuite.ui.account2.page.PersonalInfoPage;
 
-import static org.junit.Assert.assertEquals;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWithLoginUrlOf;
 
 /**
  * @author Vaclav Muzikar <vmuzikar@redhat.com>

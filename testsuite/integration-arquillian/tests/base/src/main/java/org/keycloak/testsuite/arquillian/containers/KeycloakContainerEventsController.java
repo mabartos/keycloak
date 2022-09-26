@@ -58,7 +58,7 @@ import org.jboss.shrinkwrap.api.Archive;
 
 /**
  * Changes behaviour of original ContainerEventController to stop manual containers 
- * @AfterSuite, not @AfterClass
+ * @AfterEachSuite, not @AfterAll
  * 
  * @see https://issues.jboss.org/browse/ARQ-2186
  * 

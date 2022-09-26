@@ -33,9 +33,9 @@ public @interface EnableFeature {
     boolean onlyForProduct() default false;
 
     /**
-     * Feature enable should be the last action in @Before context.
+     * Feature enable should be the last action in @BeforeEach context.
      * If the test halted, the feature is returned to the previous state.
-     * If it's false, feature will be enabled before @Before method.
+     * If it's false, feature will be enabled before @BeforeEach method.
      */
     boolean executeAsLast() default true;
 }

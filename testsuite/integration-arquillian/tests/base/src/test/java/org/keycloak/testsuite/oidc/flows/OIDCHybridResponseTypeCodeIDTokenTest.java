@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.oidc.flows;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.events.Details;
 import org.keycloak.jose.jws.crypto.HashUtils;
 import org.keycloak.protocol.oidc.utils.OIDCResponseType;
@@ -37,7 +37,7 @@ import java.util.List;
  */
 public class OIDCHybridResponseTypeCodeIDTokenTest extends AbstractOIDCResponseTypeTest {
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         clientManagerBuilder().standardFlow(true).implicitFlow(true);
 
@@ -53,15 +53,15 @@ public class OIDCHybridResponseTypeCodeIDTokenTest extends AbstractOIDCResponseT
 
 
     protected List<IDToken> testAuthzResponseAndRetrieveIDTokens(OAuthClient.AuthorizationEndpointResponse authzResponse, EventRepresentation loginEvent) {
-        Assert.assertEquals(OIDCResponseType.CODE + " " + OIDCResponseType.ID_TOKEN, loginEvent.getDetails().get(Details.RESPONSE_TYPE));
+        Assertions.assertEquals(OIDCResponseType.CODE + " " + OIDCResponseType.ID_TOKEN, loginEvent.getDetails().get(Details.RESPONSE_TYPE));
 
         // IDToken from the authorization response
-        Assert.assertNull(authzResponse.getAccessToken());
+        Assertions.assertNull(authzResponse.getAccessToken());
         String idTokenStr = authzResponse.getIdToken();
         IDToken idToken = oauth.verifyIDToken(idTokenStr);
 
         // Validate "at_hash"
-        Assert.assertNull(idToken.getAccessTokenHash());
+        Assertions.assertNull(idToken.getAccessTokenHash());
 
         // Validate "c_hash"
         assertValidCodeHash(idToken.getCodeHash(), authzResponse.getCode());
@@ -69,15 +69,15 @@ public class OIDCHybridResponseTypeCodeIDTokenTest extends AbstractOIDCResponseT
         // Financial API - Part 2: Read and Write API Security Profile
         // http://openid.net/specs/openid-financial-api-part-2.html#authorization-server
         // Validate "s_hash"
-        Assert.assertNotNull(idToken.getStateHash());
+        Assertions.assertNotNull(idToken.getStateHash());
 
-        Assert.assertEquals(idToken.getStateHash(), HashUtils.oidcHash(getIdTokenSignatureAlgorithm(), authzResponse.getState()));
+        Assertions.assertEquals(idToken.getStateHash(), HashUtils.oidcHash(getIdTokenSignatureAlgorithm(), authzResponse.getState()));
 
         // Validate if token_type is null
-        Assert.assertNull(authzResponse.getTokenType());
+        Assertions.assertNull(authzResponse.getTokenType());
 
         // Validate if expires_in is null
-        Assert.assertNull(authzResponse.getExpiresIn());
+        Assertions.assertNull(authzResponse.getExpiresIn());
 
         // IDToken exchanged for the code
         IDToken idToken2 = sendTokenRequestAndGetIDToken(loginEvent);

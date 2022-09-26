@@ -19,6 +19,7 @@ package org.keycloak.testsuite.admin.group;
 
 import javax.ws.rs.core.Response;
 import org.junit.Rule;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.RSATokenVerifier;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -49,14 +50,13 @@ import static org.keycloak.testsuite.util.ServerURLs.getAuthServerContextRoot;
 /**
  * @author <a href="mailto:mstrukel@redhat.com">Marko Strukelj</a>
  */
+@ExtendWith(AssertAdminEvents.class)
+@ExtendWith(AssertEvents.class)
 public abstract class AbstractGroupTest extends AbstractKeycloakTest {
 
     protected String testRealmId;
 
-    @Rule
     public AssertEvents events = new AssertEvents(this);
-
-    @Rule
     public AssertAdminEvents assertAdminEvents = new AssertAdminEvents(this);
 
     @Override

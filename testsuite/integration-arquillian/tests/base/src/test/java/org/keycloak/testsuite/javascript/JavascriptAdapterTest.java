@@ -1,10 +1,10 @@
 package org.keycloak.testsuite.javascript;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assume;
-import org.junit.Before;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.common.Profile;
@@ -54,12 +54,12 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_HOST;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlDoesntStartWith;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlDoesntStartWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
 
@@ -73,8 +73,7 @@ public class JavascriptAdapterTest extends AbstractJavascriptTest {
     protected JavascriptTestExecutor testExecutor;
     private static int TIME_SKEW_TOLERANCE = 3;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     @JavascriptBrowser
@@ -93,7 +92,7 @@ public class JavascriptAdapterTest extends AbstractJavascriptTest {
         return builder.accessTokenLifespan(30 + TOKEN_LIFESPAN_LEEWAY).build();
     }
 
-    @Before
+    @BeforeEach
     public void setDefaultEnvironment() {
         String testAppRootUrl = authServerContextRootPage.toString().replace(AUTH_SERVER_HOST, JS_APP_HOST) + JAVASCRIPT_URL;
         testAppUrl = testAppRootUrl + "/index.html";
@@ -283,13 +282,13 @@ public class JavascriptAdapterTest extends AbstractJavascriptTest {
                 .login(this::assertOnLoginPage)
                 .loginForm(testUser, this::assertOnTestAppUrl)
                 .init(defaultArguments(), this::assertInitAuth)
-                .getProfile((driver1, output, events) -> Assert.assertThat((Map<String, String>) output, hasEntry("username", testUser.getUsername())));
+                .getProfile((driver1, output, events) -> Assertions.assertThat((Map<String, String>) output, hasEntry("username", testUser.getUsername())));
     }
 
     @Test
     @DisableFeature(value = Profile.Feature.ACCOUNT2, skipRestart = true) // TODO remove this (KEYCLOAK-16228)
     public void grantBrowserBasedApp() {
-        Assume.assumeTrue("This test doesn't work with phantomjs", !"phantomjs".equals(System.getProperty("js.browser")));
+        Assumptions.assumeTrue("This test doesn't work with phantomjs", !"phantomjs".equals(System.getProperty("js.browser")));
 
         ClientResource clientResource = ApiUtil.findClientResourceByClientId(adminClient.realm(REALM_NAME), CLIENT_ID);
         ClientRepresentation client = clientResource.toRepresentation();
@@ -431,7 +430,7 @@ public class JavascriptAdapterTest extends AbstractJavascriptTest {
         if (!"phantomjs".equals(System.getProperty("js.browser"))) {
             // I have no idea why, but this request doesn't work with phantomjs, it works in chrome
             testExecutor.logInAndInit(defaultArguments(), unauthorizedUser, this::assertInitAuth)
-                    .sendXMLHttpRequest(request, output -> Assert.assertThat(output, hasEntry("status", 403L)))
+                    .sendXMLHttpRequest(request, output -> Assertions.assertThat(output, hasEntry("status", 403L)))
                     .logout(this::assertOnTestAppUrl)
                     .refresh();
         }
@@ -517,7 +516,7 @@ public class JavascriptAdapterTest extends AbstractJavascriptTest {
             try {
                 String queryString = new URL(driver.getCurrentUrl()).getQuery();
                 String claimsParam = UriUtils.decodeQueryString(queryString).getFirst(OIDCLoginProtocol.CLAIMS_PARAM);
-                Assert.assertNull(claimsParam);
+                Assertions.assertNull(claimsParam);
             } catch (IOException ioe) {
                 throw new AssertionError(ioe);
             }
@@ -536,12 +535,12 @@ public class JavascriptAdapterTest extends AbstractJavascriptTest {
             try {
                 String queryString = new URL(driver.getCurrentUrl()).getQuery();
                 String claimsParam = UriUtils.decodeQueryString(queryString).getFirst(OIDCLoginProtocol.CLAIMS_PARAM);
-                Assert.assertNotNull(claimsParam);
+                Assertions.assertNotNull(claimsParam);
 
                 ClaimsRepresentation claimsRep = JsonSerialization.readValue(claimsParam, ClaimsRepresentation.class);
                 ClaimsRepresentation.ClaimValue<String> claimValue = claimsRep.getClaimValue(IDToken.ACR, ClaimsRepresentation.ClaimContext.ID_TOKEN, String.class);
-                Assert.assertNames(claimValue.getValues(), "foo", "bar");
-                Assert.assertThat(claimValue.isEssential(), is(false));
+                Assertions.assertNames(claimValue.getValues(), "foo", "bar");
+                Assertions.assertThat(claimValue.isEssential(), is(false));
             } catch (IOException ioe) {
                 throw new AssertionError(ioe);
             }
@@ -647,7 +646,7 @@ public class JavascriptAdapterTest extends AbstractJavascriptTest {
     public void spaceInRealmNameTest() {
         // Unfortunately this test doesn't work on phantomjs
         // it looks like phantomjs double encode %20 => %25%20
-        Assume.assumeTrue("This test doesn't work with phantomjs", !"phantomjs".equals(System.getProperty("js.browser")));
+        Assumptions.assumeTrue("This test doesn't work with phantomjs", !"phantomjs".equals(System.getProperty("js.browser")));
 
         try {
             adminClient.realm(REALM_NAME).update(RealmBuilder.edit(adminClient.realm(REALM_NAME).toRepresentation()).name(SPACE_REALM_NAME).build());

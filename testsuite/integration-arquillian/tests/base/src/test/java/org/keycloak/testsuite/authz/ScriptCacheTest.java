@@ -29,7 +29,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.BiConsumer;
 import javax.script.ScriptContext;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authorization.policy.provider.js.ScriptCache;
 import org.keycloak.models.ScriptModel;
 import org.keycloak.models.utils.KeycloakModelUtils;

@@ -17,19 +17,19 @@
 
 package org.keycloak.testsuite.ui.account2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.representations.idm.CredentialRepresentation.PASSWORD;
 import static org.keycloak.testsuite.admin.Users.setPasswordFor;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.models.LDAPConstants;
 import org.keycloak.models.RealmModel;
@@ -60,7 +60,7 @@ public class LDAPAccountTest extends AbstractAccountTest {
     @ClassRule
     public static LDAPRule ldapRule = new LDAPRule();
 
-    @Before
+    @BeforeEach
     public void beforeSigningInTest() {
         passwordCredentialType = signingInPage.getCredentialType(PasswordCredentialModel.TYPE);
 

@@ -1,8 +1,8 @@
 package org.keycloak.testsuite.console.users;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.testsuite.arquillian.annotation.DisableFeature;
 import org.keycloak.testsuite.auth.page.account.Account;
@@ -16,13 +16,13 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 import static org.jboss.arquillian.graphene.Graphene.waitGui;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.representations.idm.CredentialRepresentation.PASSWORD;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
 import static org.keycloak.testsuite.model.RequiredUserAction.TERMS_AND_CONDITIONS;
 import static org.keycloak.testsuite.model.RequiredUserAction.UPDATE_PASSWORD;
 import static org.keycloak.testsuite.model.RequiredUserAction.UPDATE_PROFILE;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 
 /**
  * @author tkyjovsk
@@ -66,7 +66,7 @@ public class RequiredUserActionsTest extends AbstractUserTest {
         termsAndConditionsPage.setAuthRealm(TEST);
     }
 
-    @Before
+    @BeforeEach
     public void beforeRequiredActionsTest() {
 //        usersPage.table().viewAllUsers();
 //        usersPage.table().clickUser(testUser.getUsername());

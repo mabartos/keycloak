@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.federation.ldap;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.UserProvider;
@@ -39,26 +39,26 @@ public class LDAPTestAsserts {
 
 
     public static void assertLoaded(UserModel user, String username, String expectedFirstName, String expectedLastName, String expectedEmail, String expectedPostalCode) {
-        Assert.assertNotNull(user);
-        Assert.assertEquals(expectedFirstName, user.getFirstName());
-        Assert.assertEquals(expectedLastName, user.getLastName());
-        Assert.assertEquals(expectedEmail, user.getEmail());
-        Assert.assertEquals(expectedPostalCode, user.getFirstAttribute("postal_code"));
+        Assertions.assertNotNull(user);
+        Assertions.assertEquals(expectedFirstName, user.getFirstName());
+        Assertions.assertEquals(expectedLastName, user.getLastName());
+        Assertions.assertEquals(expectedEmail, user.getEmail());
+        Assertions.assertEquals(expectedPostalCode, user.getFirstAttribute("postal_code"));
     }
 
 
     public static void assertSyncEquals(SynchronizationResult syncResult, int expectedAdded, int expectedUpdated, int expectedRemoved, int expectedFailed) {
-        Assert.assertEquals(expectedAdded, syncResult.getAdded());
-        Assert.assertEquals(expectedUpdated, syncResult.getUpdated());
-        Assert.assertEquals(expectedRemoved, syncResult.getRemoved());
-        Assert.assertEquals(expectedFailed, syncResult.getFailed());
+        Assertions.assertEquals(expectedAdded, syncResult.getAdded());
+        Assertions.assertEquals(expectedUpdated, syncResult.getUpdated());
+        Assertions.assertEquals(expectedRemoved, syncResult.getRemoved());
+        Assertions.assertEquals(expectedFailed, syncResult.getFailed());
     }
 
 
     public static void assertSyncEquals(SynchronizationResultRepresentation syncResult, int expectedAdded, int expectedUpdated, int expectedRemoved, int expectedFailed) {
-        Assert.assertEquals(expectedAdded, syncResult.getAdded());
-        Assert.assertEquals(expectedUpdated, syncResult.getUpdated());
-        Assert.assertEquals(expectedRemoved, syncResult.getRemoved());
-        Assert.assertEquals(expectedFailed, syncResult.getFailed());
+        Assertions.assertEquals(expectedAdded, syncResult.getAdded());
+        Assertions.assertEquals(expectedUpdated, syncResult.getUpdated());
+        Assertions.assertEquals(expectedRemoved, syncResult.getRemoved());
+        Assertions.assertEquals(expectedFailed, syncResult.getFailed());
     }
 }

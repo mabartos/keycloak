@@ -21,12 +21,12 @@ import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.admin.client.resource.ComponentResource;
@@ -55,8 +55,8 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.common.Profile.Feature.OPENSHIFT_INTEGRATION;
 import static org.keycloak.testsuite.ProfileAssume.assumeFeatureEnabled;
 import static org.keycloak.testsuite.admin.ApiUtil.findUserByUsername;
@@ -71,8 +71,7 @@ public final class OpenshiftClientStorageTest extends AbstractTestRealmKeycloakT
 
     private static Undertow OPENSHIFT_API_SERVER;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+
 
     @Page
     private LoginPage loginPage;
@@ -93,12 +92,12 @@ public final class OpenshiftClientStorageTest extends AbstractTestRealmKeycloakT
     public void configureTestRealm(RealmRepresentation testRealm) {
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void checkNotMapStorage() {
         ProfileAssume.assumeFeatureDisabled(Feature.MAP_STORAGE);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void onBeforeClass() {
         OPENSHIFT_API_SERVER = Undertow.builder().addHttpListener(8880, "localhost", new HttpHandler() {
             @Override
@@ -138,14 +137,14 @@ public final class OpenshiftClientStorageTest extends AbstractTestRealmKeycloakT
         OPENSHIFT_API_SERVER.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void onAfterClass() {
         if (OPENSHIFT_API_SERVER != null) {
             OPENSHIFT_API_SERVER.stop();
         }
     }
 
-    @Before
+    @BeforeEach
     public void onBefore() {
         assumeFeatureEnabled(OPENSHIFT_INTEGRATION);
         ComponentRepresentation provider = new ComponentRepresentation();
@@ -165,7 +164,7 @@ public final class OpenshiftClientStorageTest extends AbstractTestRealmKeycloakT
         getCleanup().addComponentId(clientStorageId);
     }
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         userId = findUserByUsername(adminClient.realm("test"), "test-user@localhost").getId();
     }
@@ -268,7 +267,7 @@ public final class OpenshiftClientStorageTest extends AbstractTestRealmKeycloakT
         String code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
         OAuthClient.AccessTokenResponse tokenResponse = oauth.doAccessTokenRequest(code, null);
         String accessToken = tokenResponse.getAccessToken();
-        Assert.assertNotNull(accessToken);
+        Assertions.assertNotNull(accessToken);
 
         try {
             AccessToken token = new JWSInput(accessToken).readJsonContent(AccessToken.class);
@@ -281,7 +280,7 @@ public final class OpenshiftClientStorageTest extends AbstractTestRealmKeycloakT
             e.printStackTrace();
         }
 
-        Assert.assertNotNull(tokenResponse.getRefreshToken());
+        Assertions.assertNotNull(tokenResponse.getRefreshToken());
         oauth.doLogout(tokenResponse.getRefreshToken(), null);
         events.clear();
     }

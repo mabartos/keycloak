@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.ui.account2;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.credential.PasswordCredentialModel;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -37,8 +37,8 @@ import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
@@ -60,7 +60,7 @@ public class InternationalizationTest extends AbstractAccountTest {
         configureInternationalizationForRealm(testRealms.get(0));
     }
 
-    @Before
+    @BeforeEach
     public void beforeI18nTest() {
         assertTestUserLocale(null);
         passwordCredentialType = signingInPage.getCredentialType(PasswordCredentialModel.TYPE);

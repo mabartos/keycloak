@@ -25,8 +25,8 @@ import org.hamcrest.Matchers;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.adapters.HttpClientBuilder;
 import org.keycloak.admin.client.resource.UserResource;
@@ -91,7 +91,7 @@ public class LoginPageTest extends AbstractI18NTest {
         ProfileAssume.assumeCommunity();
 
         loginPage.open();
-        Assert.assertEquals("English", loginPage.getLanguageDropdownText());
+        Assertions.assertEquals("English", loginPage.getLanguageDropdownText());
 
         switchLanguageToGermanAndBack("Username or email", "Benutzername oder E-Mail", loginPage);
     }
@@ -99,26 +99,26 @@ public class LoginPageTest extends AbstractI18NTest {
     @Test
     public void uiLocalesParameter() {
         loginPage.open();
-        Assert.assertEquals("English", loginPage.getLanguageDropdownText());
+        Assertions.assertEquals("English", loginPage.getLanguageDropdownText());
 
         //test if cookie works
         oauth.uiLocales("de");
         loginPage.open();
-        Assert.assertEquals("Deutsch", loginPage.getLanguageDropdownText());
+        Assertions.assertEquals("Deutsch", loginPage.getLanguageDropdownText());
 
         driver.manage().deleteAllCookies();
         loginPage.open();
-        Assert.assertEquals("Deutsch", loginPage.getLanguageDropdownText());
+        Assertions.assertEquals("Deutsch", loginPage.getLanguageDropdownText());
 
         oauth.uiLocales("en de");
         driver.manage().deleteAllCookies();
         loginPage.open();
-        Assert.assertEquals("English", loginPage.getLanguageDropdownText());
+        Assertions.assertEquals("English", loginPage.getLanguageDropdownText());
 
         oauth.uiLocales("fr de");
         driver.manage().deleteAllCookies();
         loginPage.open();
-        Assert.assertEquals("Deutsch", loginPage.getLanguageDropdownText());
+        Assertions.assertEquals("Deutsch", loginPage.getLanguageDropdownText());
     }
 
     @Test
@@ -132,10 +132,10 @@ public class LoginPageTest extends AbstractI18NTest {
             loginPage.open();
 
             try(Response responseDe = client.target(driver.getCurrentUrl()).request().acceptLanguage("de").get()) {
-                Assert.assertTrue(responseDe.readEntity(String.class).contains("Anmeldung bei test"));
+                Assertions.assertTrue(responseDe.readEntity(String.class).contains("Anmeldung bei test"));
 
                 try(Response responseEn = client.target(driver.getCurrentUrl()).request().acceptLanguage("en").get()) {
-                    Assert.assertTrue(responseEn.readEntity(String.class).contains("Sign in to test"));
+                    Assertions.assertTrue(responseEn.readEntity(String.class).contains("Sign in to test"));
                 }
             }
 
@@ -146,9 +146,9 @@ public class LoginPageTest extends AbstractI18NTest {
     @Test
     public void testIdentityProviderCapitalization(){
         loginPage.open();
-        Assert.assertEquals("GitHub", loginPage.findSocialButton("github").getText());
-        Assert.assertEquals("mysaml", loginPage.findSocialButton("mysaml").getText());
-        Assert.assertEquals("MyOIDC", loginPage.findSocialButton("myoidc").getText());
+        Assertions.assertEquals("GitHub", loginPage.findSocialButton("github").getText());
+        Assertions.assertEquals("mysaml", loginPage.findSocialButton("mysaml").getText());
+        Assertions.assertEquals("MyOIDC", loginPage.findSocialButton("myoidc").getText());
 
     }
 
@@ -167,7 +167,7 @@ public class LoginPageTest extends AbstractI18NTest {
 
         loginPage.login("test-user@localhost", "password");
         changePasswordPage.assertCurrent();
-        Assert.assertEquals("English", changePasswordPage.getLanguageDropdownText());
+        Assertions.assertEquals("English", changePasswordPage.getLanguageDropdownText());
 
         // Switch language
         switchLanguageToGermanAndBack("Update password", "Passwort aktualisieren", changePasswordPage);
@@ -175,8 +175,8 @@ public class LoginPageTest extends AbstractI18NTest {
         // Update password
         changePasswordPage.changePassword("password", "password");
 
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
     }
 
 
@@ -193,7 +193,7 @@ public class LoginPageTest extends AbstractI18NTest {
         loginPage.login("test-user@localhost", "password");
 
         grantPage.assertCurrent();
-        Assert.assertEquals("English", grantPage.getLanguageDropdownText());
+        Assertions.assertEquals("English", grantPage.getLanguageDropdownText());
 
         // Switch language
         switchLanguageToGermanAndBack("Do you grant these access privileges?", "Wollen Sie diese Zugriffsrechte", changePasswordPage);
@@ -201,8 +201,8 @@ public class LoginPageTest extends AbstractI18NTest {
         // Confirm grant
         grantPage.accept();
 
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         // Revert client
         oauth.clientId("test-app");
@@ -215,16 +215,16 @@ public class LoginPageTest extends AbstractI18NTest {
         loginPage.open();
         loginPage.openLanguage("Deutsch");
 
-        Assert.assertEquals("Deutsch", loginPage.getLanguageDropdownText());
+        Assertions.assertEquals("Deutsch", loginPage.getLanguageDropdownText());
 
         Cookie localeCookie = driver.manage().getCookieNamed(LocaleSelectorProvider.LOCALE_COOKIE);
-        Assert.assertEquals("de", localeCookie.getValue());
+        Assertions.assertEquals("de", localeCookie.getValue());
 
         loginPage.login("test-user@localhost", "password");
 
         UserResource user = ApiUtil.findUserByUsernameId(testRealm(), "test-user@localhost");
         UserRepresentation userRep = user.toRepresentation();
-        Assert.assertEquals("de", userRep.getAttributes().get("locale").get(0));
+        Assertions.assertEquals("de", userRep.getAttributes().get("locale").get(0));
 
         String code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
         String idTokenHint = oauth.doAccessTokenRequest(code, "password").getIdToken();
@@ -232,7 +232,7 @@ public class LoginPageTest extends AbstractI18NTest {
 
         loginPage.open();
 
-        Assert.assertEquals("Deutsch", loginPage.getLanguageDropdownText());
+        Assertions.assertEquals("Deutsch", loginPage.getLanguageDropdownText());
 
         userRep.getAttributes().remove("locale");
         user.update(userRep);
@@ -242,7 +242,7 @@ public class LoginPageTest extends AbstractI18NTest {
 
         // User locale should not be updated due to previous cookie
         userRep = user.toRepresentation();
-        Assert.assertNull(userRep.getAttributes());
+        Assertions.assertNull(userRep.getAttributes());
 
         code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
         idTokenHint = oauth.doAccessTokenRequest(code, "password").getIdToken();
@@ -252,7 +252,7 @@ public class LoginPageTest extends AbstractI18NTest {
 
         // Cookie should be removed as last user to login didn't have a locale
         localeCookie = driver.manage().getCookieNamed(LocaleSelectorProvider.LOCALE_COOKIE);
-        Assert.assertNull(localeCookie);
+        Assertions.assertNull(localeCookie);
     }
 
     // KEYCLOAK-18590
@@ -298,16 +298,16 @@ public class LoginPageTest extends AbstractI18NTest {
     private void switchLanguageToGermanAndBack(String expectedEnglishMessage, String expectedGermanMessage, LanguageComboboxAwarePage page) {
         // Switch language to Deutsch
         page.openLanguage("Deutsch");
-        Assert.assertEquals("Deutsch", page.getLanguageDropdownText());
+        Assertions.assertEquals("Deutsch", page.getLanguageDropdownText());
         String pageSource = driver.getPageSource();
-        Assert.assertFalse(pageSource.contains(expectedEnglishMessage));
-        Assert.assertTrue(pageSource.contains(expectedGermanMessage));
+        Assertions.assertFalse(pageSource.contains(expectedEnglishMessage));
+        Assertions.assertTrue(pageSource.contains(expectedGermanMessage));
 
         // Revert language
         page.openLanguage("English");
-        Assert.assertEquals("English", page.getLanguageDropdownText());
+        Assertions.assertEquals("English", page.getLanguageDropdownText());
         pageSource = driver.getPageSource();
-        Assert.assertTrue(pageSource.contains(expectedEnglishMessage));
-        Assert.assertFalse(pageSource.contains(expectedGermanMessage));
+        Assertions.assertTrue(pageSource.contains(expectedEnglishMessage));
+        Assertions.assertFalse(pageSource.contains(expectedGermanMessage));
     }
 }

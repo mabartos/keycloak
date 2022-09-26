@@ -16,10 +16,10 @@
  */
 package org.keycloak.testsuite.admin.client.authorization;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.common.Profile.Feature.AUTHORIZATION;
 
 import java.io.IOException;
@@ -31,8 +31,8 @@ import java.util.function.Supplier;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientsResource;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -53,7 +53,7 @@ import org.keycloak.testsuite.util.UserBuilder;
  */
 public abstract class AbstractPolicyManagementTest extends AbstractKeycloakTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
         ProfileAssume.assumeFeatureEnabled(AUTHORIZATION);
     }
@@ -75,7 +75,7 @@ public abstract class AbstractPolicyManagementTest extends AbstractKeycloakTest 
                         .directAccessGrants());
     }
 
-    @Before
+    @BeforeEach
     public void configureAuthorization() throws Exception {
         createResourcesAndScopes();
         RealmResource realm = getRealm();

@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.authz;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.authorization.AuthorizationProvider;
 import org.keycloak.authorization.client.resource.PermissionResource;
@@ -54,15 +54,15 @@ public class UmaRepresentationTest extends AbstractResourceServerTest {
         createPermissionTicket();
 
         List<PermissionTicketRepresentation> permissionTickets = permission.find(resource.getId(), null, null, null, null, true, null, null);
-        Assert.assertFalse(permissionTickets.isEmpty());
-        Assert.assertEquals(1, permissionTickets.size());
+        Assertions.assertFalse(permissionTickets.isEmpty());
+        Assertions.assertEquals(1, permissionTickets.size());
 
         PermissionTicketRepresentation ticket = permissionTickets.get(0);
-        Assert.assertEquals(ticket.getOwnerName(), "marta");
-        Assert.assertEquals(ticket.getRequesterName(), "kolo");
-        Assert.assertEquals(ticket.getResourceName(), "Resource A");
-        Assert.assertEquals(ticket.getScopeName(), "ScopeA");
-        Assert.assertTrue(ticket.isGranted());
+        Assertions.assertEquals(ticket.getOwnerName(), "marta");
+        Assertions.assertEquals(ticket.getRequesterName(), "kolo");
+        Assertions.assertEquals(ticket.getResourceName(), "Resource A");
+        Assertions.assertEquals(ticket.getScopeName(), "ScopeA");
+        Assertions.assertTrue(ticket.isGranted());
     }
 
     @Test
@@ -72,15 +72,15 @@ public class UmaRepresentationTest extends AbstractResourceServerTest {
         createPermissionTicket();
 
         List<PermissionTicketRepresentation> permissionTickets = permission.find(resource.getId(), null, null, null, null, true, null, null);
-        Assert.assertFalse(permissionTickets.isEmpty());
-        Assert.assertEquals(1, permissionTickets.size());
+        Assertions.assertFalse(permissionTickets.isEmpty());
+        Assertions.assertEquals(1, permissionTickets.size());
 
         PermissionTicketRepresentation ticket = permissionTickets.get(0);
-        Assert.assertEquals(ticket.getOwnerName(), "resource-server-test");
-        Assert.assertEquals(ticket.getRequesterName(), "kolo");
-        Assert.assertEquals(ticket.getResourceName(), "Resource A");
-        Assert.assertEquals(ticket.getScopeName(), "ScopeA");
-        Assert.assertTrue(ticket.isGranted());
+        Assertions.assertEquals(ticket.getOwnerName(), "resource-server-test");
+        Assertions.assertEquals(ticket.getRequesterName(), "kolo");
+        Assertions.assertEquals(ticket.getResourceName(), "Resource A");
+        Assertions.assertEquals(ticket.getScopeName(), "ScopeA");
+        Assertions.assertTrue(ticket.isGranted());
     }
 
     @Test
@@ -98,18 +98,18 @@ public class UmaRepresentationTest extends AbstractResourceServerTest {
         request.setClientId(resourceServerId);
         request.addResource("Resource A", "ScopeA");
         PolicyEvaluationResponse result = getClient(realm).authorization().policies().evaluate(request);
-        Assert.assertEquals(result.getStatus(), DecisionEffect.PERMIT);
+        Assertions.assertEquals(result.getStatus(), DecisionEffect.PERMIT);
 
         List<PolicyEvaluationResponse.EvaluationResultRepresentation> evaluations = result.getResults();
-        Assert.assertFalse(evaluations.isEmpty());
-        Assert.assertEquals(1, evaluations.size());
+        Assertions.assertFalse(evaluations.isEmpty());
+        Assertions.assertEquals(1, evaluations.size());
 
         List<PolicyEvaluationResponse.PolicyResultRepresentation> policies = evaluations.get(0).getPolicies();
-        Assert.assertFalse(evaluations.isEmpty());
-        Assert.assertEquals(1, evaluations.size());
+        Assertions.assertFalse(evaluations.isEmpty());
+        Assertions.assertEquals(1, evaluations.size());
 
         String description = policies.get(0).getPolicy().getDescription();
-        Assert.assertTrue(description.startsWith("Resource owner (marta) grants access"));
+        Assertions.assertTrue(description.startsWith("Resource owner (marta) grants access"));
     }
 
     @Test
@@ -127,18 +127,18 @@ public class UmaRepresentationTest extends AbstractResourceServerTest {
         request.setClientId(resourceServerId);
         request.addResource("Resource A", "ScopeA");
         PolicyEvaluationResponse result = getClient(realm).authorization().policies().evaluate(request);
-        Assert.assertEquals(result.getStatus(), DecisionEffect.PERMIT);
+        Assertions.assertEquals(result.getStatus(), DecisionEffect.PERMIT);
 
         List<PolicyEvaluationResponse.EvaluationResultRepresentation> evaluations = result.getResults();
-        Assert.assertFalse(evaluations.isEmpty());
-        Assert.assertEquals(1, evaluations.size());
+        Assertions.assertFalse(evaluations.isEmpty());
+        Assertions.assertEquals(1, evaluations.size());
 
         List<PolicyEvaluationResponse.PolicyResultRepresentation> policies = evaluations.get(0).getPolicies();
-        Assert.assertFalse(evaluations.isEmpty());
-        Assert.assertEquals(1, evaluations.size());
+        Assertions.assertFalse(evaluations.isEmpty());
+        Assertions.assertEquals(1, evaluations.size());
 
         String description = policies.get(0).getPolicy().getDescription();
-        Assert.assertTrue(description.startsWith("Resource owner (resource-server-test) grants access"));
+        Assertions.assertTrue(description.startsWith("Resource owner (resource-server-test) grants access"));
     }
 
     @Test
@@ -162,11 +162,11 @@ public class UmaRepresentationTest extends AbstractResourceServerTest {
             )
         );
 
-        Assert.assertEquals("Resource A", resourceBean.getName());
-        Assert.assertEquals("marta", resourceBean.getOwnerName());
-        Assert.assertNotNull(resourceBean.getUserOwner());
-        Assert.assertEquals("marta", resourceBean.getUserOwner().getUsername());
-        Assert.assertNull(resourceBean.getClientOwner());
+        Assertions.assertEquals("Resource A", resourceBean.getName());
+        Assertions.assertEquals("marta", resourceBean.getOwnerName());
+        Assertions.assertNotNull(resourceBean.getUserOwner());
+        Assertions.assertEquals("marta", resourceBean.getUserOwner().getUsername());
+        Assertions.assertNull(resourceBean.getClientOwner());
     }
 
     @Test
@@ -189,10 +189,10 @@ public class UmaRepresentationTest extends AbstractResourceServerTest {
             )
         );
 
-        Assert.assertEquals("Resource A", resourceBean.getName());
-        Assert.assertEquals("resource-server-test", resourceBean.getOwnerName());
-        Assert.assertNotNull(resourceBean.getClientOwner());
-        Assert.assertEquals("resource-server-test", resourceBean.getClientOwner().getClientId());
-        Assert.assertNull(resourceBean.getUserOwner());
+        Assertions.assertEquals("Resource A", resourceBean.getName());
+        Assertions.assertEquals("resource-server-test", resourceBean.getOwnerName());
+        Assertions.assertNotNull(resourceBean.getClientOwner());
+        Assertions.assertEquals("resource-server-test", resourceBean.getClientOwner().getClientId());
+        Assertions.assertNull(resourceBean.getUserOwner());
     }
 }

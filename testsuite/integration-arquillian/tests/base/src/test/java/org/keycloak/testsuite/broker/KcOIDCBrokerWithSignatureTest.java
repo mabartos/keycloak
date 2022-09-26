@@ -22,8 +22,8 @@ import java.nio.charset.StandardCharsets;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.common.Profile;
@@ -46,8 +46,8 @@ import org.keycloak.testsuite.client.resources.TestingCacheResource;
 import org.keycloak.testsuite.updaters.ClientAttributeUpdater;
 import org.keycloak.testsuite.util.OAuthClient;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.keycloak.testsuite.admin.ApiUtil.createUserWithAdminClient;
 import static org.keycloak.testsuite.admin.ApiUtil.resetUserPassword;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
@@ -62,7 +62,7 @@ public class KcOIDCBrokerWithSignatureTest extends AbstractBaseBrokerTest {
         return KcOidcBrokerConfiguration.INSTANCE;
     }
 
-    @Before
+    @BeforeEach
     public void createUser() {
         log.debug("creating user for realm " + bc.providerRealmName());
 
@@ -79,7 +79,7 @@ public class KcOIDCBrokerWithSignatureTest extends AbstractBaseBrokerTest {
     }
 
     // TODO: Possibly move to parent superclass
-    @Before
+    @BeforeEach
     public void addIdentityProviderToProviderRealm() {
         log.debug("adding identity provider to realm " + bc.consumerRealmName());
 
@@ -89,7 +89,7 @@ public class KcOIDCBrokerWithSignatureTest extends AbstractBaseBrokerTest {
     }
 
 
-    @Before
+    @BeforeEach
     public void addClients() {
         addClientsToProviderAndConsumer();
     }
@@ -322,12 +322,12 @@ public class KcOIDCBrokerWithSignatureTest extends AbstractBaseBrokerTest {
         IdentityProviderRepresentation idpRep = getIdentityProvider();
         String expectedCacheKey = PublicKeyStorageUtils.getIdpModelCacheKey(consumerRealm().toRepresentation().getId(), idpRep.getInternalId());
         TestingCacheResource cache = testingClient.testing(bc.consumerRealmName()).cache(InfinispanConnectionProvider.KEYS_CACHE_NAME);
-        Assert.assertTrue(cache.contains(expectedCacheKey));
+        Assertions.assertTrue(cache.contains(expectedCacheKey));
 
         // Clear cache and check nothing cached
         consumerRealm().clearKeysCache();
-        Assert.assertFalse(cache.contains(expectedCacheKey));
-        Assert.assertEquals(cache.size(), 0);
+        Assertions.assertFalse(cache.contains(expectedCacheKey));
+        Assertions.assertEquals(cache.size(), 0);
     }
 
 
@@ -349,7 +349,7 @@ public class KcOIDCBrokerWithSignatureTest extends AbstractBaseBrokerTest {
         IdentityProviderRepresentation idpRep = getIdentityProvider();
         String expectedCacheKey = PublicKeyStorageUtils.getIdpModelCacheKey(consumerRealm().toRepresentation().getId(), idpRep.getInternalId());
         TestingCacheResource cache = testingClient.testing(bc.consumerRealmName()).cache(InfinispanConnectionProvider.KEYS_CACHE_NAME);
-        Assert.assertTrue(cache.contains(expectedCacheKey));
+        Assertions.assertTrue(cache.contains(expectedCacheKey));
 
         // Update identityProvider to some bad JWKS_URL
         OIDCIdentityProviderConfigRep cfg = new OIDCIdentityProviderConfigRep(idpRep);
@@ -357,7 +357,7 @@ public class KcOIDCBrokerWithSignatureTest extends AbstractBaseBrokerTest {
         updateIdentityProvider(idpRep);
 
         // Check that key is not cached anymore
-        Assert.assertFalse(cache.contains(expectedCacheKey));
+        Assertions.assertFalse(cache.contains(expectedCacheKey));
 
         // Check that user is not able to login with IDP
         setTimeOffset(20);
@@ -443,7 +443,7 @@ public class KcOIDCBrokerWithSignatureTest extends AbstractBaseBrokerTest {
         }
 
         String updatedActiveKid = providerRealm().keys().getKeyMetadata().getActive().get(algorithm);
-        Assert.assertNotNull(updatedActiveKid);
+        Assertions.assertNotNull(updatedActiveKid);
     }
 
     private RealmResource providerRealm() {

@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.pages;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.keycloak.testsuite.util.DroneUtils;
 import org.keycloak.testsuite.util.WaitUtils;
 import org.openqa.selenium.By;
@@ -66,9 +66,9 @@ public abstract class LanguageComboboxAwarePage extends AbstractPage {
     public void assertTryAnotherWayLinkAvailability(boolean expectedAvailability) {
         try {
             driver.findElement(By.id("try-another-way"));
-            Assert.assertTrue(expectedAvailability);
+            Assertions.assertTrue(expectedAvailability);
         } catch (NoSuchElementException nse) {
-            Assert.assertFalse(expectedAvailability);
+            Assertions.assertFalse(expectedAvailability);
         }
     }
 
@@ -79,9 +79,9 @@ public abstract class LanguageComboboxAwarePage extends AbstractPage {
     public void assertAccountLinkAvailability(boolean expectedAvailability) {
         try {
             driver.findElement(By.id("account"));
-            Assert.assertTrue(expectedAvailability);
+            Assertions.assertTrue(expectedAvailability);
         } catch (NoSuchElementException nse) {
-            Assert.assertFalse(expectedAvailability);
+            Assertions.assertFalse(expectedAvailability);
         }
     }
 
@@ -97,9 +97,9 @@ public abstract class LanguageComboboxAwarePage extends AbstractPage {
     public static void assertAttemptedUsernameAvailability(WebDriver driver, boolean expectedAvailability) {
         try {
             driver.findElement(By.id("kc-attempted-username"));
-            Assert.assertTrue(expectedAvailability);
+            Assertions.assertTrue(expectedAvailability);
         } catch (NoSuchElementException nse) {
-            Assert.assertFalse(expectedAvailability);
+            Assertions.assertFalse(expectedAvailability);
         }
     }
 

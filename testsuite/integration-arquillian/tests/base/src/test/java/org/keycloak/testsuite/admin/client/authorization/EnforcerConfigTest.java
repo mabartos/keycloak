@@ -16,8 +16,8 @@
  */
 package org.keycloak.testsuite.admin.client.authorization;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.KeycloakDeploymentBuilder;
 import org.keycloak.adapters.authorization.PolicyEnforcer;
@@ -29,8 +29,8 @@ import org.keycloak.testsuite.AbstractKeycloakTest;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.keycloak.testsuite.ProfileAssume;
 
@@ -42,7 +42,7 @@ import static org.keycloak.testsuite.utils.io.IOUtil.loadRealm;
  */
 public class EnforcerConfigTest extends AbstractKeycloakTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
         ProfileAssume.assumeFeatureEnabled(AUTHORIZATION);
     }

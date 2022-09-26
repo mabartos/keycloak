@@ -19,7 +19,7 @@
 package org.keycloak.testsuite.forms;
 
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.UserSessionModel;
 import org.keycloak.models.utils.DefaultAuthenticationFlows;
 import org.keycloak.representations.AccessToken;
@@ -32,8 +32,8 @@ import org.keycloak.testsuite.AssertEvents;
 import org.keycloak.testsuite.util.FlowUtil;
 import org.keycloak.testsuite.util.OAuthClient;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.keycloak.models.AuthenticationExecutionModel.Requirement.REQUIRED;
 
 /**
@@ -43,8 +43,7 @@ import static org.keycloak.models.AuthenticationExecutionModel.Requirement.REQUI
  */
 public class TransientSessionTest extends AbstractTestRealmKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Override
     public void configureTestRealm(RealmRepresentation testRealm) {
@@ -72,9 +71,9 @@ public class TransientSessionTest extends AbstractTestRealmKeycloakTest {
 
         // Refresh will fail. There is no userSession on the server
         OAuthClient.AccessTokenResponse refreshedResponse = oauth.doRefreshTokenRequest(response.getRefreshToken(), "password");
-        Assert.assertNull(refreshedResponse.getAccessToken());
+        Assertions.assertNull(refreshedResponse.getAccessToken());
         assertNotNull(refreshedResponse.getError());
-        Assert.assertEquals("Session not active", refreshedResponse.getErrorDescription());
+        Assertions.assertEquals("Session not active", refreshedResponse.getErrorDescription());
     }
 
     private void setUpDirectGrantFlowWithSetClientNoteAuthenticator() {

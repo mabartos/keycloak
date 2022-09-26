@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.cli;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractKeycloakTest;
 import org.keycloak.testsuite.cli.exec.AbstractExec;
@@ -40,7 +40,7 @@ public abstract class AbstractCliTest extends AbstractKeycloakTest {
     }
 
     public void assertExitCodeAndStreamSizes(AbstractExec exe, int exitCode, int stdOutLineCount, int stdErrLineCount) {
-        Assert.assertEquals("exitCode == " + exitCode, exitCode, exe.exitCode());
+        Assertions.assertEquals("exitCode == " + exitCode, exitCode, exe.exitCode());
         if (stdOutLineCount != -1) {
             try {
                 assertLineCount("stdout output", exe.stdoutLines(), stdOutLineCount);
@@ -67,7 +67,7 @@ public abstract class AbstractCliTest extends AbstractKeycloakTest {
                 return;
             }
         }
-        Assert.assertTrue(label + " has " + lines.size() + " lines (expected: " + count + ")", lines.size() == count);
+        Assertions.assertTrue(label + " has " + lines.size() + " lines (expected: " + count + ")", lines.size() == count);
     }
 
 }

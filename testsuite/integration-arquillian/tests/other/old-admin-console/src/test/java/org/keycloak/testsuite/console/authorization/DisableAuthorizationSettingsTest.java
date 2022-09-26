@@ -16,11 +16,11 @@
  */
 package org.keycloak.testsuite.console.authorization;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.util.Retry;
 
 /**

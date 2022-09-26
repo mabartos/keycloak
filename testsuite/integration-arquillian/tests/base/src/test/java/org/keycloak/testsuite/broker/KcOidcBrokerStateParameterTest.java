@@ -21,7 +21,7 @@ package org.keycloak.testsuite.broker;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.common.util.KeycloakUriBuilder;
 import org.keycloak.common.util.UriUtils;
@@ -31,7 +31,7 @@ import org.keycloak.testsuite.AssertEvents;
 import org.keycloak.testsuite.pages.AppPage;
 import org.keycloak.testsuite.pages.LoginExpiredPage;
 
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
 import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
 
@@ -48,8 +48,7 @@ public class KcOidcBrokerStateParameterTest extends AbstractInitializedBaseBroke
     @Page
     protected LoginExpiredPage loginExpiredPage;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+
 
     @Override
     protected BrokerConfiguration getBrokerConfiguration() {

@@ -1,12 +1,12 @@
 package org.keycloak.testsuite.adapter.servlet;
 
 import org.jboss.arquillian.test.spi.execution.SkippedTestExecutionException;
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.arquillian.annotation.AppServerContainer;
 import org.keycloak.testsuite.util.ContainerAssume;
 import org.keycloak.testsuite.util.ServerURLs;
@@ -25,17 +25,17 @@ import org.keycloak.testsuite.utils.arquillian.ContainerConstants;
         filterDependency = "org.keycloak:keycloak-saml-servlet-filter-adapter")
 public class SAMLFilterServletAdapterTest extends SAMLServletAdapterTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
         String appServerJavaHome = System.getProperty("app.server.java.home", "");
-        Assume.assumeFalse(appServerJavaHome.contains("1.7") || appServerJavaHome.contains("ibm-java-70"));
+        Assumptions.assumeFalse(appServerJavaHome.contains("1.7") || appServerJavaHome.contains("ibm-java-70"));
 
         // SAMLServletAdapterTest has too many deployments, with so many deployments (with filter dependency in each
         // of them) it is impossible to reload container after TLS is enabled, GC time limit exceeds
         ContainerAssume.assumeNotAppServerSSL();
     }
 
-    @Before
+    @BeforeEach
     public void checkRoles() {
         badClientSalesPostSigServletPage.checkRoles(true);
         badRealmSalesPostSigServletPage.checkRoles(true);
@@ -68,7 +68,7 @@ public class SAMLFilterServletAdapterTest extends SAMLServletAdapterTest {
         salesPostSigEmailServletPage.logout();
     }
 
-    @After
+    @AfterEach
     public void uncheckRoles() {
         badClientSalesPostSigServletPage.checkRoles(false);
         badRealmSalesPostSigServletPage.checkRoles(false);
@@ -93,21 +93,21 @@ public class SAMLFilterServletAdapterTest extends SAMLServletAdapterTest {
 
     @Test
     @Override
-    @Ignore
+    @Disabled
     public void testSavedPostRequest() {
 
     }
 
     @Test
     @Override
-    @Ignore
+    @Disabled
     public void multiTenant1SamlTest() throws Exception {
 
     }
 
     @Test
     @Override
-    @Ignore
+    @Disabled
     public void multiTenant2SamlTest() throws Exception {
 
     }

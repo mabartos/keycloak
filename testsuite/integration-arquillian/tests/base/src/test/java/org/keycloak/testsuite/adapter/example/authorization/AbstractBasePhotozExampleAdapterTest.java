@@ -20,7 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.keycloak.common.Profile.Feature.AUTHORIZATION;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 import static org.keycloak.testsuite.utils.io.IOUtil.loadJson;
 import static org.keycloak.testsuite.utils.io.IOUtil.loadRealm;
@@ -45,10 +45,10 @@ import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientScopesResource;
@@ -111,7 +111,7 @@ public abstract class AbstractBasePhotozExampleAdapterTest extends AbstractPhoto
     @JavascriptBrowser
     protected WebElement eventsArea;
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
         ProfileAssume.assumeFeatureEnabled(AUTHORIZATION);
     }
@@ -123,7 +123,7 @@ public abstract class AbstractBasePhotozExampleAdapterTest extends AbstractPhoto
         oAuthGrantPage.setAuthRealm(REALM_NAME);
     }
 
-    @Before
+    @BeforeEach
     public void beforePhotozExampleAdapterTest() throws Exception {
         DroneUtils.addWebDriver(jsDriver);
         deployIgnoreIfDuplicate(RESOURCE_SERVER_ID);
@@ -143,7 +143,7 @@ public abstract class AbstractBasePhotozExampleAdapterTest extends AbstractPhoto
     }
 
     // workaround for KEYCLOAK-8660 from https://stackoverflow.com/questions/50917932/what-versions-of-jackson-are-allowed-in-jboss-6-4-20-patch
-    @Before
+    @BeforeEach
     public void fixBrokenDeserializationOnEAP6() throws IOException, CliException, TimeoutException, InterruptedException {
         if (AppServerTestEnricher.isEAP6AppServer()) {
             OnlineManagementClient client = AppServerTestEnricher.getManagementClient();
@@ -154,7 +154,7 @@ public abstract class AbstractBasePhotozExampleAdapterTest extends AbstractPhoto
         }
     }
     
-    @After
+    @AfterEach
     public void afterPhotozExampleAdapterTest() {
         this.deployer.undeploy(RESOURCE_SERVER_ID);
         DroneUtils.removeWebDriver();
@@ -276,7 +276,7 @@ public abstract class AbstractBasePhotozExampleAdapterTest extends AbstractPhoto
         RealmResource realmResource = realmsResouce().realm(REALM_NAME);
         ClientScopesResource clientScopes = realmResource.clientScopes();
         Response resp = clientScopes.create(clientScope);
-        Assert.assertEquals(201, resp.getStatus());
+        Assertions.assertEquals(201, resp.getStatus());
         resp.close();
         String clientScopeId = ApiUtil.getCreatedId(resp);
         ClientResource resourceServer = getClientResource(RESOURCE_SERVER_ID);

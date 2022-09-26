@@ -27,12 +27,12 @@ import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.Config;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
@@ -98,8 +98,7 @@ public class ImpersonationTest extends AbstractKeycloakTest {
         }
     }
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -125,13 +124,13 @@ public class ImpersonationTest extends AbstractKeycloakTest {
         testRealms.add(realm.build());
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
-        Assume.assumeFalse("impersonation".equals(System.getProperty("feature.name"))
+        Assumptions.assumeFalse("impersonation".equals(System.getProperty("feature.name"))
                 && "disabled".equals(System.getProperty("feature.value")));
     }
 
-    @Before
+    @BeforeEach
     public void beforeTest() {
         impersonatedUserId = ApiUtil.findUserByUsername(adminClient.realm("test"), "test-user@localhost").getId();
     }
@@ -217,7 +216,7 @@ public class ImpersonationTest extends AbstractKeycloakTest {
         driver.navigate().to(loginFormUrl);
         appPage.assertCurrent();
         //KEYCLOAK-12783
-        Assert.assertEquals("/auth/realms/master/app/auth", new URL(DroneUtils.getCurrentDriver().getCurrentUrl()).getPath());
+        Assertions.assertEquals("/auth/realms/master/app/auth", new URL(DroneUtils.getCurrentDriver().getCurrentUrl()).getPath());
 
         // Remove test client
         ApiUtil.findClientByClientId(realm, "test-app").remove();
@@ -301,8 +300,8 @@ public class ImpersonationTest extends AbstractKeycloakTest {
             HttpResponse res = httpClient.execute(req);
             String resBody = EntityUtils.toString(res.getEntity());
 
-            Assert.assertNotNull(resBody);
-            Assert.assertTrue(resBody.contains("redirect"));
+            Assertions.assertNotNull(resBody);
+            Assertions.assertTrue(resBody.contains("redirect"));
 
             events.expect(EventType.IMPERSONATE)
                     .session(AssertEvents.isUUID())
@@ -322,16 +321,16 @@ public class ImpersonationTest extends AbstractKeycloakTest {
 
             // Check impersonation details
             final Map<String, String> notes = notesHolder.getNotes();
-            Assert.assertNotNull(notes.get(ImpersonationSessionNote.IMPERSONATOR_ID.toString()));
-            Assert.assertEquals(admin, notes.get(ImpersonationSessionNote.IMPERSONATOR_USERNAME.toString()));
+            Assertions.assertNotNull(notes.get(ImpersonationSessionNote.IMPERSONATOR_ID.toString()));
+            Assertions.assertEquals(admin, notes.get(ImpersonationSessionNote.IMPERSONATOR_USERNAME.toString()));
 
             Set<Cookie> cookies = cookieStore.getCookies().stream()
                     .filter(c -> c.getName().startsWith(AuthenticationManager.KEYCLOAK_IDENTITY_COOKIE))
                     .map(c -> new Cookie(c.getName(), c.getValue(), c.getDomain(), c.getPath(), c.getExpiryDate(), c.isSecure(), true))
                     .collect(Collectors.toSet());
 
-            Assert.assertNotNull(cookies);
-            Assert.assertThat(cookies, is(not(empty())));
+            Assertions.assertNotNull(cookies);
+            Assertions.assertThat(cookies, is(not(empty())));
 
             return cookies;
         } catch (IOException e) {
@@ -342,9 +341,9 @@ public class ImpersonationTest extends AbstractKeycloakTest {
     protected void testForbiddenImpersonation(String admin, String adminRealm) {
         try (Keycloak client = createAdminClient(adminRealm, establishClientId(adminRealm), admin)) {
             client.realms().realm("test").users().get(impersonatedUserId).impersonate();
-            Assert.fail("Expected ClientErrorException wasn't thrown.");
+            Assertions.fail("Expected ClientErrorException wasn't thrown.");
         } catch (ClientErrorException e) {
-            Assert.assertThat(e.getMessage(), containsString("403 Forbidden"));
+            Assertions.assertThat(e.getMessage(), containsString("403 Forbidden"));
         }
     }
 
@@ -379,9 +378,9 @@ public class ImpersonationTest extends AbstractKeycloakTest {
         // - since for master testing event listener is not installed
         if (!AuthRealm.MASTER.equals(realm)) {
             EventRepresentation e = events.poll();
-            Assert.assertEquals("Event type", EventType.LOGIN.toString(), e.getType());
-            Assert.assertEquals("Client ID", clientId, e.getClientId());
-            Assert.assertEquals("Username", username, e.getDetails().get("username"));
+            Assertions.assertEquals("Event type", EventType.LOGIN.toString(), e.getType());
+            Assertions.assertEquals("Client ID", clientId, e.getClientId());
+            Assertions.assertEquals("Username", username, e.getDetails().get("username"));
         }
         return client;
     }
@@ -430,15 +429,15 @@ public class ImpersonationTest extends AbstractKeycloakTest {
             HttpResponse res = httpClient.execute(req);
             String resBody = EntityUtils.toString(res.getEntity());
 
-            Assert.assertNotNull(resBody);
-            Assert.assertTrue(resBody.contains("redirect"));
+            Assertions.assertNotNull(resBody);
+            Assertions.assertTrue(resBody.contains("redirect"));
             Set<Cookie> cookies = cookieStore.getCookies().stream()
                     .filter(c -> c.getName().startsWith(AuthenticationManager.KEYCLOAK_IDENTITY_COOKIE))
                     .map(c -> new Cookie(c.getName(), c.getValue(), c.getDomain(), c.getPath(), c.getExpiryDate(), c.isSecure(), true))
                     .collect(Collectors.toSet());
 
-            Assert.assertNotNull(cookies);
-            Assert.assertThat(cookies, is(not(empty())));
+            Assertions.assertNotNull(cookies);
+            Assertions.assertThat(cookies, is(not(empty())));
 
             return cookies;
         } catch (IOException e) {

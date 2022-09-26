@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.admin;
 
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.IdentityProviderResource;
 import org.keycloak.broker.saml.SAMLIdentityProviderConfig;
 import org.keycloak.common.enums.SslRequired;
@@ -84,13 +84,13 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.saml.common.constants.JBossSAMLURIConstants.XMLDSIG_NSURI;
 
 /**
@@ -125,7 +125,7 @@ public class IdentityProviderTest extends AbstractAdminTest {
 
         create(createRep("facebook", "facebook"));
 
-        Assert.assertNames(realm.identityProviders().findAll(), "google", "facebook");
+        Assertions.assertNames(realm.identityProviders().findAll(), "google", "facebook");
     }
 
     @Test
@@ -136,7 +136,7 @@ public class IdentityProviderTest extends AbstractAdminTest {
         newIdentityProvider.getConfig().put("clientSecret", "some secret value");
 
         Response response = realm.identityProviders().create(newIdentityProvider);
-        Assert.assertEquals(400, response.getStatus());
+        Assertions.assertEquals(400, response.getStatus());
     }
     
     @Test
@@ -473,7 +473,7 @@ public class IdentityProviderTest extends AbstractAdminTest {
 
         try {
             realm.identityProviders().get("remove-identity-provider").toRepresentation();
-            Assert.fail("Not expected to found");
+            Assertions.fail("Not expected to found");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -481,7 +481,7 @@ public class IdentityProviderTest extends AbstractAdminTest {
 
     private void create(IdentityProviderRepresentation idpRep) {
         Response response = realm.identityProviders().create(idpRep);
-        Assert.assertNotNull(ApiUtil.getCreatedId(response));
+        Assertions.assertNotNull(ApiUtil.getCreatedId(response));
         response.close();
 
         getCleanup().addIdentityProviderAlias(idpRep.getAlias());
@@ -578,7 +578,7 @@ public class IdentityProviderTest extends AbstractAdminTest {
         expected.add("multi-valued-test-idp-mapper");
         expected.addAll(Arrays.asList(mapperIds));
 
-        Assert.assertEquals("mapperTypes", expected, mapperTypes.keySet());
+        Assertions.assertEquals("mapperTypes", expected, mapperTypes.keySet());
     }
 
     @Test
@@ -586,9 +586,9 @@ public class IdentityProviderTest extends AbstractAdminTest {
         create(createRep("keycloak-oidc", "keycloak-oidc"));
 
         Response response = realm.identityProviders().get("keycloak-oidc").export("json");
-        Assert.assertEquals("status", 204, response.getStatus());
+        Assertions.assertEquals("status", 204, response.getStatus());
         String body = response.readEntity(String.class);
-        Assert.assertNull("body", body);
+        Assertions.assertNull("body", body);
         response.close();
     }
 
@@ -617,13 +617,13 @@ public class IdentityProviderTest extends AbstractAdminTest {
 
         // Now list the providers - we should see the one just created
         List<IdentityProviderRepresentation> providers = realm.identityProviders().findAll();
-        Assert.assertNotNull("identityProviders not null", providers);
-        Assert.assertEquals("identityProviders instance count", 1, providers.size());
+        Assertions.assertNotNull("identityProviders not null", providers);
+        Assertions.assertEquals("identityProviders instance count", 1, providers.size());
         assertEqual(rep, providers.get(0));
 
         // Perform export, and make sure some of the values are like they're supposed to be
         Response response = realm.identityProviders().get("saml").export("xml");
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         body = response.readEntity(String.class);
         response.close();
 
@@ -681,13 +681,13 @@ public class IdentityProviderTest extends AbstractAdminTest {
 
         // Now list the providers - we should see the one just created
         List<IdentityProviderRepresentation> providers = realm.identityProviders().findAll();
-        Assert.assertNotNull("identityProviders not null", providers);
-        Assert.assertEquals("identityProviders instance count", 1, providers.size());
+        Assertions.assertNotNull("identityProviders not null", providers);
+        Assertions.assertEquals("identityProviders instance count", 1, providers.size());
         assertEqual(rep, providers.get(0));
 
         // Perform export, and make sure some of the values are like they're supposed to be
         Response response = realm.identityProviders().get("saml").export("xml");
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         body = response.readEntity(String.class);
         response.close();
 
@@ -712,26 +712,26 @@ public class IdentityProviderTest extends AbstractAdminTest {
         // createRep and add mapper
         Response response = provider.addMapper(mapper);
         String id = ApiUtil.getCreatedId(response);
-        Assert.assertNotNull(id);
+        Assertions.assertNotNull(id);
         response.close();
         assertAdminEvents.assertEvent(realmId, OperationType.CREATE, AdminEventPaths.identityProviderMapperPath("google", id), mapper, ResourceType.IDENTITY_PROVIDER_MAPPER);
 
         // list mappers
         List<IdentityProviderMapperRepresentation> mappers = provider.getMappers();
-        Assert.assertEquals("mappers count", 1, mappers.size());
-        Assert.assertEquals("newly created mapper id", id, mappers.get(0).getId());
+        Assertions.assertEquals("mappers count", 1, mappers.size());
+        Assertions.assertEquals("newly created mapper id", id, mappers.get(0).getId());
 
         // get mapper
         mapper = provider.getMapperById(id);
-        Assert.assertEquals("INHERIT", mappers.get(0).getConfig().get(IdentityProviderMapperModel.SYNC_MODE));
-        Assert.assertNotNull("mapperById not null", mapper);
-        Assert.assertEquals("mapper id", id, mapper.getId());
-        Assert.assertNotNull("mapper.config exists", mapper.getConfig());
-        Assert.assertEquals("config retained", "offline_access", mapper.getConfig().get("role"));
+        Assertions.assertEquals("INHERIT", mappers.get(0).getConfig().get(IdentityProviderMapperModel.SYNC_MODE));
+        Assertions.assertNotNull("mapperById not null", mapper);
+        Assertions.assertEquals("mapper id", id, mapper.getId());
+        Assertions.assertNotNull("mapper.config exists", mapper.getConfig());
+        Assertions.assertEquals("config retained", "offline_access", mapper.getConfig().get("role"));
 
         // add duplicate mapper
         Response error = provider.addMapper(mapper);
-        Assert.assertEquals("mapper unique name", 400, error.getStatus());
+        Assertions.assertEquals("mapper unique name", 400, error.getStatus());
         error.close();
 
         // update mapper
@@ -740,15 +740,15 @@ public class IdentityProviderTest extends AbstractAdminTest {
         assertAdminEvents.assertEvent(realmId, OperationType.UPDATE, AdminEventPaths.identityProviderMapperPath("google", id), mapper, ResourceType.IDENTITY_PROVIDER_MAPPER);
 
         mapper = provider.getMapperById(id);
-        Assert.assertNotNull("mapperById not null", mapper);
-        Assert.assertEquals("config changed", "master-realm.manage-realm", mapper.getConfig().get("role"));
+        Assertions.assertNotNull("mapperById not null", mapper);
+        Assertions.assertEquals("config changed", "master-realm.manage-realm", mapper.getConfig().get("role"));
 
         // delete mapper
         provider.delete(id);
         assertAdminEvents.assertEvent(realmId, OperationType.DELETE, AdminEventPaths.identityProviderMapperPath("google", id), ResourceType.IDENTITY_PROVIDER_MAPPER);
         try {
             provider.getMapperById(id);
-            Assert.fail("Should fail with NotFoundException");
+            Assertions.fail("Should fail with NotFoundException");
         } catch (NotFoundException e) {
             // Expected
         }
@@ -826,80 +826,80 @@ public class IdentityProviderTest extends AbstractAdminTest {
     @Test
     public void testInstalledIdentityProviders() {
         Response response = realm.identityProviders().getIdentityProviders("oidc");
-        Assert.assertEquals("Status", 200, response.getStatus());
+        Assertions.assertEquals("Status", 200, response.getStatus());
         Map<String, String> body = response.readEntity(Map.class);
         assertProviderInfo(body, "oidc", "OpenID Connect v1.0");
 
         response = realm.identityProviders().getIdentityProviders("keycloak-oidc");
-        Assert.assertEquals("Status", 200, response.getStatus());
+        Assertions.assertEquals("Status", 200, response.getStatus());
         body = response.readEntity(Map.class);
         assertProviderInfo(body, "keycloak-oidc", "Keycloak OpenID Connect");
 
         response = realm.identityProviders().getIdentityProviders("saml");
-        Assert.assertEquals("Status", 200, response.getStatus());
+        Assertions.assertEquals("Status", 200, response.getStatus());
         body = response.readEntity(Map.class);
         assertProviderInfo(body, "saml", "SAML v2.0");
 
         response = realm.identityProviders().getIdentityProviders("google");
-        Assert.assertEquals("Status", 200, response.getStatus());
+        Assertions.assertEquals("Status", 200, response.getStatus());
         body = response.readEntity(Map.class);
         assertProviderInfo(body, "google", "Google");
 
         response = realm.identityProviders().getIdentityProviders("facebook");
-        Assert.assertEquals("Status", 200, response.getStatus());
+        Assertions.assertEquals("Status", 200, response.getStatus());
         body = response.readEntity(Map.class);
         assertProviderInfo(body, "facebook", "Facebook");
 
         response = realm.identityProviders().getIdentityProviders("github");
-        Assert.assertEquals("Status", 200, response.getStatus());
+        Assertions.assertEquals("Status", 200, response.getStatus());
         body = response.readEntity(Map.class);
         assertProviderInfo(body, "github", "GitHub");
 
         response = realm.identityProviders().getIdentityProviders("twitter");
-        Assert.assertEquals("Status", 200, response.getStatus());
+        Assertions.assertEquals("Status", 200, response.getStatus());
         body = response.readEntity(Map.class);
         assertProviderInfo(body, "twitter", "Twitter");
 
         response = realm.identityProviders().getIdentityProviders("linkedin");
-        Assert.assertEquals("Status", 200, response.getStatus());
+        Assertions.assertEquals("Status", 200, response.getStatus());
         body = response.readEntity(Map.class);
         assertProviderInfo(body, "linkedin", "LinkedIn");
 
         response = realm.identityProviders().getIdentityProviders("microsoft");
-        Assert.assertEquals("Status", 200, response.getStatus());
+        Assertions.assertEquals("Status", 200, response.getStatus());
         body = response.readEntity(Map.class);
         assertProviderInfo(body, "microsoft", "Microsoft");
 
         response = realm.identityProviders().getIdentityProviders("stackoverflow");
-        Assert.assertEquals("Status", 200, response.getStatus());
+        Assertions.assertEquals("Status", 200, response.getStatus());
         body = response.readEntity(Map.class);
         assertProviderInfo(body, "stackoverflow", "StackOverflow");
 
         response = realm.identityProviders().getIdentityProviders("nonexistent");
-        Assert.assertEquals("Status", 400, response.getStatus());
+        Assertions.assertEquals("Status", 400, response.getStatus());
     }
 
     private void assertEqual(IdentityProviderRepresentation expected, IdentityProviderRepresentation actual) {
         //System.out.println("expected: " + expected);
         //System.out.println("actual: " + actual);
-        Assert.assertNotNull("expected IdentityProviderRepresentation not null", expected);
-        Assert.assertNotNull("actual IdentityProviderRepresentation not null", actual);
-        Assert.assertEquals("internalId", expected.getInternalId(), actual.getInternalId());
-        Assert.assertEquals("alias", expected.getAlias(), actual.getAlias());
-        Assert.assertEquals("providerId", expected.getProviderId(), actual.getProviderId());
-        Assert.assertEquals("enabled", expected.isEnabled(), actual.isEnabled());
-        Assert.assertEquals("firstBrokerLoginFlowAlias", expected.getFirstBrokerLoginFlowAlias(), actual.getFirstBrokerLoginFlowAlias());
-        Assert.assertEquals("config", expected.getConfig(), actual.getConfig());
+        Assertions.assertNotNull("expected IdentityProviderRepresentation not null", expected);
+        Assertions.assertNotNull("actual IdentityProviderRepresentation not null", actual);
+        Assertions.assertEquals("internalId", expected.getInternalId(), actual.getInternalId());
+        Assertions.assertEquals("alias", expected.getAlias(), actual.getAlias());
+        Assertions.assertEquals("providerId", expected.getProviderId(), actual.getProviderId());
+        Assertions.assertEquals("enabled", expected.isEnabled(), actual.isEnabled());
+        Assertions.assertEquals("firstBrokerLoginFlowAlias", expected.getFirstBrokerLoginFlowAlias(), actual.getFirstBrokerLoginFlowAlias());
+        Assertions.assertEquals("config", expected.getConfig(), actual.getConfig());
     }
 
     private void assertCreatedSamlIdp(IdentityProviderRepresentation idp,boolean enabled) {
         //System.out.println("idp: " + idp);
-        Assert.assertNotNull("IdentityProviderRepresentation not null", idp);
-        Assert.assertNotNull("internalId", idp.getInternalId());
-        Assert.assertEquals("alias", "saml", idp.getAlias());
-        Assert.assertEquals("providerId", "saml", idp.getProviderId());
-        Assert.assertEquals("enabled",enabled, idp.isEnabled());
-        Assert.assertEquals("firstBrokerLoginFlowAlias", "first broker login",idp.getFirstBrokerLoginFlowAlias());
+        Assertions.assertNotNull("IdentityProviderRepresentation not null", idp);
+        Assertions.assertNotNull("internalId", idp.getInternalId());
+        Assertions.assertEquals("alias", "saml", idp.getAlias());
+        Assertions.assertEquals("providerId", "saml", idp.getProviderId());
+        Assertions.assertEquals("enabled",enabled, idp.isEnabled());
+        Assertions.assertEquals("firstBrokerLoginFlowAlias", "first broker login",idp.getFirstBrokerLoginFlowAlias());
         assertSamlConfig(idp.getConfig());
     }
 
@@ -939,7 +939,7 @@ public class IdentityProviderTest extends AbstractAdminTest {
         //firtsly check and remove enabledFromMetadata from config
         boolean enabledFromMetadata = Boolean.valueOf(config.get(SAMLIdentityProviderConfig.ENABLED_FROM_METADATA));
         config.remove(SAMLIdentityProviderConfig.ENABLED_FROM_METADATA);
-        Assert.assertEquals(enabledFromMetadata,enabled);
+        Assertions.assertEquals(enabledFromMetadata,enabled);
         assertSamlConfig(config);
         assertThat(config, hasEntry("signingCertificate", expectedSigningCertificates));
     }
@@ -950,54 +950,54 @@ public class IdentityProviderTest extends AbstractAdminTest {
         Object entBody = SAMLParser.getInstance().parse(
                 new ByteArrayInputStream(body.getBytes(Charset.forName("utf-8"))));
 
-        Assert.assertEquals("Parsed export type", EntityDescriptorType.class, entBody.getClass());
+        Assertions.assertEquals("Parsed export type", EntityDescriptorType.class, entBody.getClass());
         EntityDescriptorType entity = (EntityDescriptorType) entBody;
 
-        Assert.assertEquals("EntityID", oauth.AUTH_SERVER_ROOT + "/realms/admin-client-test", entity.getEntityID());
+        Assertions.assertEquals("EntityID", oauth.AUTH_SERVER_ROOT + "/realms/admin-client-test", entity.getEntityID());
 
-        Assert.assertNotNull("ChoiceType not null", entity.getChoiceType());
-        Assert.assertEquals("ChoiceType.size", 1, entity.getChoiceType().size());
+        Assertions.assertNotNull("ChoiceType not null", entity.getChoiceType());
+        Assertions.assertEquals("ChoiceType.size", 1, entity.getChoiceType().size());
 
         List<EntityDescriptorType.EDTDescriptorChoiceType> descriptors = entity.getChoiceType().get(0).getDescriptors();
-        Assert.assertNotNull("Descriptors not null", descriptors);
-        Assert.assertEquals("Descriptors.size", 1, descriptors.size());
+        Assertions.assertNotNull("Descriptors not null", descriptors);
+        Assertions.assertEquals("Descriptors.size", 1, descriptors.size());
 
         SPSSODescriptorType desc = descriptors.get(0).getSpDescriptor();
-        Assert.assertNotNull("SPSSODescriptor not null", desc);
+        Assertions.assertNotNull("SPSSODescriptor not null", desc);
 
-        Assert.assertTrue("AuthnRequestsSigned", desc.isAuthnRequestsSigned());
+        Assertions.assertTrue("AuthnRequestsSigned", desc.isAuthnRequestsSigned());
 
         Set<String> expected = new HashSet<>(Arrays.asList(
                 "urn:oasis:names:tc:SAML:2.0:protocol"));
 
         Set<String> actual = new HashSet<>(desc.getProtocolSupportEnumeration());
 
-        Assert.assertEquals("ProtocolSupportEnumeration", expected, actual);
+        Assertions.assertEquals("ProtocolSupportEnumeration", expected, actual);
 
-        Assert.assertNotNull("AssertionConsumerService not null", desc.getAssertionConsumerService());
-        Assert.assertEquals("AssertionConsumerService.size", 1, desc.getAssertionConsumerService().size());
+        Assertions.assertNotNull("AssertionConsumerService not null", desc.getAssertionConsumerService());
+        Assertions.assertEquals("AssertionConsumerService.size", 1, desc.getAssertionConsumerService().size());
 
         IndexedEndpointType endpoint = desc.getAssertionConsumerService().get(0);
 
-        Assert.assertEquals("AssertionConsumerService.Location",
+        Assertions.assertEquals("AssertionConsumerService.Location",
                 new URI(oauth.AUTH_SERVER_ROOT + "/realms/admin-client-test/broker/saml/endpoint"), endpoint.getLocation());
-        Assert.assertEquals("AssertionConsumerService.Binding",
+        Assertions.assertEquals("AssertionConsumerService.Binding",
                 new URI("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"), endpoint.getBinding());
-        Assert.assertTrue("AssertionConsumerService.isDefault", endpoint.isIsDefault());
+        Assertions.assertTrue("AssertionConsumerService.isDefault", endpoint.isIsDefault());
 
 
-        Assert.assertNotNull("SingleLogoutService not null", desc.getSingleLogoutService());
-        Assert.assertEquals("SingleLogoutService.size", 1, desc.getSingleLogoutService().size());
+        Assertions.assertNotNull("SingleLogoutService not null", desc.getSingleLogoutService());
+        Assertions.assertEquals("SingleLogoutService.size", 1, desc.getSingleLogoutService().size());
 
         EndpointType sloEndpoint = desc.getSingleLogoutService().get(0);
 
-        Assert.assertEquals("SingleLogoutService.Location",
+        Assertions.assertEquals("SingleLogoutService.Location",
                 new URI(oauth.AUTH_SERVER_ROOT + "/realms/admin-client-test/broker/saml/endpoint"), sloEndpoint.getLocation());
-        Assert.assertEquals("SingleLogoutService.Binding",
+        Assertions.assertEquals("SingleLogoutService.Binding",
                 new URI("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"), sloEndpoint.getBinding());
 
-        Assert.assertNotNull("KeyDescriptor not null", desc.getKeyDescriptor());
-        Assert.assertEquals("KeyDescriptor.size", 1, desc.getKeyDescriptor().size());
+        Assertions.assertNotNull("KeyDescriptor not null", desc.getKeyDescriptor());
+        Assertions.assertEquals("KeyDescriptor.size", 1, desc.getKeyDescriptor().size());
         KeyDescriptorType keyDesc = desc.getKeyDescriptor().get(0);
         assertThat(keyDesc, notNullValue());
         assertThat(keyDesc.getUse(), equalTo(KeyTypes.SIGNING));
@@ -1007,8 +1007,8 @@ public class IdentityProviderTest extends AbstractAdminTest {
 
     private void assertProviderInfo(Map<String, String> info, String id, String name) {
         System.out.println(info);
-        Assert.assertEquals("id", id, info.get("id"));
-        Assert.assertEquals("name", name, info.get("name"));
+        Assertions.assertEquals("id", id, info.get("id"));
+        Assertions.assertEquals("name", name, info.get("name"));
     }
 
     @Test
@@ -1034,13 +1034,13 @@ public class IdentityProviderTest extends AbstractAdminTest {
 
         // Perform export, and make sure some of the values are like they're supposed to be
         Response response = realm.identityProviders().get("saml").export("xml");
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         body = response.readEntity(String.class);
         response.close();
 
         Document document = DocumentUtil.getDocument(body);
         Element signatureElement = DocumentUtil.getDirectChildElement(document.getDocumentElement(), XMLDSIG_NSURI.get(), "Signature");
-        Assert.assertNull(signatureElement);
+        Assertions.assertNull(signatureElement);
     }
 
     @Test
@@ -1066,13 +1066,13 @@ public class IdentityProviderTest extends AbstractAdminTest {
 
         // Perform export, and make sure some of the values are like they're supposed to be
         Response response = realm.identityProviders().get("saml").export("xml");
-        Assert.assertEquals(200, response.getStatus());
+        Assertions.assertEquals(200, response.getStatus());
         body = response.readEntity(String.class);
         response.close();
 
         Document document = DocumentUtil.getDocument(body);
 
         Element signatureElement = DocumentUtil.getDirectChildElement(document.getDocumentElement(), XMLDSIG_NSURI.get(), "Signature");
-        Assert.assertNotNull(signatureElement);
+        Assertions.assertNotNull(signatureElement);
     }
 }

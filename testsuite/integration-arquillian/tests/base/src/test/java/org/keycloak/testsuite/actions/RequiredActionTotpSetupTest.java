@@ -17,10 +17,10 @@
 package org.keycloak.testsuite.actions;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.common.Profile;
@@ -57,9 +57,9 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
@@ -82,7 +82,7 @@ public class RequiredActionTotpSetupTest extends AbstractTestRealmKeycloakTest {
         testRealm.setResetPasswordAllowed(Boolean.TRUE);
     }
 
-    @Before
+    @BeforeEach
     public void setOTPAuthRequired() {
 
         adminClient.realm("test").flows().getExecutions("browser").
@@ -102,8 +102,7 @@ public class RequiredActionTotpSetupTest extends AbstractTestRealmKeycloakTest {
     }
 
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -440,7 +439,7 @@ public class RequiredActionTotpSetupTest extends AbstractTestRealmKeycloakTest {
         String uri = driver.getCurrentUrl();
         String src = driver.getPageSource();
         assertTrue(loginPage.isCurrent());
-        Assert.assertFalse(totpPage.isCurrent());
+        Assertions.assertFalse(totpPage.isCurrent());
 
         // Login with one-time password
         loginTotpPage.login(totp.generateTOTP(totpCode));

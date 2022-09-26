@@ -16,9 +16,9 @@
  */
 package org.keycloak.testsuite.admin.client.authorization;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.keycloak.common.Profile.Feature.AUTHORIZATION;
 import static org.keycloak.testsuite.utils.io.IOUtil.loadRealm;
 
@@ -42,9 +42,9 @@ import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.server.handlers.form.FormParserFactory;
 import org.apache.http.impl.client.HttpClients;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.KeycloakDeploymentBuilder;
@@ -73,12 +73,12 @@ public class ClaimInformationPointProviderTest extends AbstractKeycloakTest {
 
     private static Undertow httpService;
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
         ProfileAssume.assumeFeatureEnabled(AUTHORIZATION);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void onBeforeClass() {
         httpService = Undertow.builder().addHttpListener(8989, "localhost").setHandler(exchange -> {
             if (exchange.isInIoThread()) {
@@ -140,7 +140,7 @@ public class ClaimInformationPointProviderTest extends AbstractKeycloakTest {
         httpService.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void onAfterClass() {
         if (httpService != null) {
             httpService.stop();

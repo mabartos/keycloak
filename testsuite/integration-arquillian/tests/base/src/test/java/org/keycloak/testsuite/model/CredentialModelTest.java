@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.model;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.credential.CredentialModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
@@ -40,7 +40,7 @@ public class CredentialModelTest extends AbstractTestRealmKeycloakTest {
             UserModel user = currentSession.users().getUserByUsername(realm, "test-user@localhost");
             List<CredentialModel> list = user.credentialManager().getStoredCredentialsStream()
                     .collect(Collectors.toList());
-            Assert.assertEquals(1, list.size());
+            Assertions.assertEquals(1, list.size());
             passwordId.set(list.get(0).getId());
 
             // Create 2 OTP credentials (password was already created)
@@ -63,13 +63,13 @@ public class CredentialModelTest extends AbstractTestRealmKeycloakTest {
             assertOrder(list, passwordId.get(), otp1Id.get(), otp2Id.get());
 
             // Assert can't move password when newPreviousCredential not found
-            Assert.assertFalse(user.credentialManager().moveStoredCredentialTo(passwordId.get(), "not-known"));
+            Assertions.assertFalse(user.credentialManager().moveStoredCredentialTo(passwordId.get(), "not-known"));
 
             // Assert can't move credential when not found
-            Assert.assertFalse(user.credentialManager().moveStoredCredentialTo("not-known", otp2Id.get()));
+            Assertions.assertFalse(user.credentialManager().moveStoredCredentialTo("not-known", otp2Id.get()));
 
             // Move otp2 up 1 position
-            Assert.assertTrue(user.credentialManager().moveStoredCredentialTo(otp2Id.get(), passwordId.get()));
+            Assertions.assertTrue(user.credentialManager().moveStoredCredentialTo(otp2Id.get(), passwordId.get()));
         });
 
         KeycloakModelUtils.runJobInTransaction(session.getKeycloakSessionFactory(), (KeycloakSession currentSession) -> {
@@ -82,7 +82,7 @@ public class CredentialModelTest extends AbstractTestRealmKeycloakTest {
             assertOrder(list, passwordId.get(), otp2Id.get(), otp1Id.get());
 
             // Move otp2 to the top
-            Assert.assertTrue(user.credentialManager().moveStoredCredentialTo(otp2Id.get(), null));
+            Assertions.assertTrue(user.credentialManager().moveStoredCredentialTo(otp2Id.get(), null));
         });
 
         KeycloakModelUtils.runJobInTransaction(session.getKeycloakSessionFactory(), (KeycloakSession currentSession) -> {
@@ -95,7 +95,7 @@ public class CredentialModelTest extends AbstractTestRealmKeycloakTest {
             assertOrder(list, otp2Id.get(), passwordId.get(), otp1Id.get());
 
             // Move password down
-            Assert.assertTrue(user.credentialManager().moveStoredCredentialTo(passwordId.get(), otp1Id.get()));
+            Assertions.assertTrue(user.credentialManager().moveStoredCredentialTo(passwordId.get(), otp1Id.get()));
         });
 
         KeycloakModelUtils.runJobInTransaction(session.getKeycloakSessionFactory(), (KeycloakSession currentSession) -> {
@@ -108,7 +108,7 @@ public class CredentialModelTest extends AbstractTestRealmKeycloakTest {
             assertOrder(list, otp2Id.get(), otp1Id.get(), passwordId.get());
 
             // Remove otp2 down two positions
-            Assert.assertTrue(user.credentialManager().moveStoredCredentialTo(otp2Id.get(), passwordId.get()));
+            Assertions.assertTrue(user.credentialManager().moveStoredCredentialTo(otp2Id.get(), passwordId.get()));
         });
 
         KeycloakModelUtils.runJobInTransaction(session.getKeycloakSessionFactory(), (KeycloakSession currentSession) -> {
@@ -121,7 +121,7 @@ public class CredentialModelTest extends AbstractTestRealmKeycloakTest {
             assertOrder(list, otp1Id.get(), passwordId.get(), otp2Id.get());
 
             // Remove password
-            Assert.assertTrue(user.credentialManager().removeStoredCredentialById(passwordId.get()));
+            Assertions.assertTrue(user.credentialManager().removeStoredCredentialById(passwordId.get()));
         });
 
         KeycloakModelUtils.runJobInTransaction(session.getKeycloakSessionFactory(), (KeycloakSession currentSession) -> {
@@ -137,12 +137,12 @@ public class CredentialModelTest extends AbstractTestRealmKeycloakTest {
 
 
     private void assertOrder(List<CredentialModel> creds, String... expectedIds) {
-        Assert.assertEquals(expectedIds.length, creds.size());
+        Assertions.assertEquals(expectedIds.length, creds.size());
 
         if (creds.size() == 0) return;
 
         for (int i=0 ; i<expectedIds.length ; i++) {
-            Assert.assertEquals(creds.get(i).getId(), expectedIds[i]);
+            Assertions.assertEquals(creds.get(i).getId(), expectedIds[i]);
         }
     }
 

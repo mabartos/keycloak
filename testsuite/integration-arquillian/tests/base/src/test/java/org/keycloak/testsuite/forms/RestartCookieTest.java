@@ -19,7 +19,7 @@ package org.keycloak.testsuite.forms;
 
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
 import org.keycloak.jose.jws.JWSBuilder;
@@ -47,8 +47,7 @@ public class RestartCookieTest extends AbstractTestRealmKeycloakTest {
     protected LoginPage loginPage;
 
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     // KC_RESTART cookie from Keycloak 3.1.0
     private static final String OLD_RESTART_COOKIE_JSON = "{\n" +
@@ -105,7 +104,7 @@ public class RestartCookieTest extends AbstractTestRealmKeycloakTest {
 
         loginPage.login("foo", "bar");
         loginPage.assertCurrent();
-        Assert.assertEquals("Your login attempt timed out. Login will start from the beginning.", loginPage.getError());
+        Assertions.assertEquals("Your login attempt timed out. Login will start from the beginning.", loginPage.getError());
 
         events.expectLogin().user((String) null).session((String) null).error(Errors.EXPIRED_CODE).clearDetails()
                 .detail(Details.RESTART_AFTER_TIMEOUT, "true")
@@ -145,7 +144,7 @@ public class RestartCookieTest extends AbstractTestRealmKeycloakTest {
 
         loginPage.login("foo", "bar");
         loginPage.assertCurrent();
-        Assert.assertEquals("Your login attempt timed out. Login will start from the beginning.", loginPage.getError());
+        Assertions.assertEquals("Your login attempt timed out. Login will start from the beginning.", loginPage.getError());
 
         events.expectLogin().user((String) null).session((String) null).error(Errors.EXPIRED_CODE).clearDetails()
                 .detail(Details.RESTART_AFTER_TIMEOUT, "true")

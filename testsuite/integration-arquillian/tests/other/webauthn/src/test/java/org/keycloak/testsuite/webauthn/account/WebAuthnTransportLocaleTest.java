@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.webauthn.account;
 
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.arquillian.annotation.IgnoreBrowserDriver;
 import org.keycloak.testsuite.webauthn.authenticators.DefaultVirtualAuthOptions;
 import org.keycloak.testsuite.webauthn.pages.WebAuthnAuthenticatorsList;

@@ -18,7 +18,7 @@ package org.keycloak.testsuite.actions;
 
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.requiredactions.TermsAndConditions;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -28,8 +28,8 @@ import org.keycloak.testsuite.AssertEvents;
 import org.keycloak.testsuite.pages.AppPage;
 import org.keycloak.testsuite.pages.LoginPage;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author <a href="mailto:wadahiro@gmail.com">Hiroyuki Wada</a>
@@ -40,8 +40,7 @@ public class AppInitiatedActionTest extends AbstractTestRealmKeycloakTest {
     public void configureTestRealm(RealmRepresentation testRealm) {
     }
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;

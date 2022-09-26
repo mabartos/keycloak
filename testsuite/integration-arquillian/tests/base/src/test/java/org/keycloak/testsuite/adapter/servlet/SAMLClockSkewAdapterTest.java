@@ -24,8 +24,8 @@ import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.adapters.rotation.PublicKeyLocator;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.adapter.AbstractServletsAdapterTest;
@@ -89,7 +89,7 @@ public class SAMLClockSkewAdapterTest extends AbstractSAMLServletAdapterTest {
                         return doc;
                     }).build().executeAndTransform(resp -> EntityUtils.toString(resp.getEntity()));
 
-            Assert.assertThat(resultPage, matcher);
+            Assertions.assertThat(resultPage, matcher);
         } finally {
             setAdapterAndServerTimeOffset(0, salesPostClockSkewServletPage.toString());
         }

@@ -48,10 +48,10 @@ public class KcOidcBrokerNoLoginHintTest extends AbstractBrokerTest {
 
         waitForPage(driver, "sign in to", true);
 
-        Assert.assertTrue("Driver should be on the provider realm page right now",
+        Assertions.assertTrue("Driver should be on the provider realm page right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName() + "/"));
 
-        Assert.assertTrue("User identifiant should not be fullfilled",
+        Assertions.assertTrue("User identifiant should not be fullfilled",
                 StringUtils.isBlank(loginPage.getUsername()));
         
         log.debug("Logging in");
@@ -60,7 +60,7 @@ public class KcOidcBrokerNoLoginHintTest extends AbstractBrokerTest {
         waitForPage(driver, "update account information", false);
 
         updateAccountInformationPage.assertCurrent();
-        Assert.assertTrue("We must be on correct realm right now",
+        Assertions.assertTrue("We must be on correct realm right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.consumerRealmName() + "/"));
 
         log.debug("Updating info on updateAccount page");
@@ -69,7 +69,7 @@ public class KcOidcBrokerNoLoginHintTest extends AbstractBrokerTest {
         UsersResource consumerUsers = adminClient.realm(bc.consumerRealmName()).users();
 
         int userCount = consumerUsers.count();
-        Assert.assertTrue("There must be at least one user", userCount > 0);
+        Assertions.assertTrue("There must be at least one user", userCount > 0);
 
         List<UserRepresentation> users = consumerUsers.search("", 0, userCount);
 
@@ -81,7 +81,7 @@ public class KcOidcBrokerNoLoginHintTest extends AbstractBrokerTest {
             }
         }
 
-        Assert.assertTrue("There must be user " + bc.getUserLogin() + " in realm " + bc.consumerRealmName(),
+        Assertions.assertTrue("There must be user " + bc.getUserLogin() + " in realm " + bc.consumerRealmName(),
                 isUserFound);
     }
 }

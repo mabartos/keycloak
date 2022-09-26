@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.admin;
 
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.AttackDetectionResource;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.events.admin.ResourceType;
@@ -29,8 +29,8 @@ import org.keycloak.testsuite.util.UserBuilder;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
 
 /**

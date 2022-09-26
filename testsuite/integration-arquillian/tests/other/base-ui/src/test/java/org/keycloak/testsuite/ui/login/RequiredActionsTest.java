@@ -23,7 +23,7 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.models.utils.Base32;
 import org.keycloak.models.utils.HmacOTP;
@@ -56,17 +56,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.google.zxing.BarcodeFormat.QR_CODE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assumptions.assumeFalse;
 import static org.keycloak.models.ClientScopeModel.CONSENT_SCREEN_TEXT;
 import static org.keycloak.models.ClientScopeModel.DISPLAY_ON_CONSENT_SCREEN;
 import static org.keycloak.models.Constants.ACCOUNT_MANAGEMENT_CLIENT_ID;
 import static org.keycloak.representations.idm.CredentialRepresentation.PASSWORD;
 import static org.keycloak.testsuite.admin.ApiUtil.createUserAndResetPasswordWithAdminClient;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWithLoginUrlOf;
 
 /**
  * @author Vaclav Muzikar <vmuzikar@redhat.com>

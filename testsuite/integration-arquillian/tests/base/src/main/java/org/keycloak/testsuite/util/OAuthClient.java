@@ -34,7 +34,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.jboss.arquillian.drone.webdriver.htmlunit.DroneHtmlUnitDriver;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.TokenVerifier;
 import org.keycloak.broker.provider.util.SimpleHttp;
@@ -1227,7 +1227,7 @@ public class OAuthClient {
                 Header[] contentTypeHeaders = response.getHeaders("Content-Type");
                 String contentType = (contentTypeHeaders != null && contentTypeHeaders.length > 0) ? contentTypeHeaders[0].getValue() : null;
                 if (!"application/json".equals(contentType)) {
-                    Assert.fail("Invalid content type. Status: " + statusCode + ", contentType: " + contentType);
+                    Assertions.fail("Invalid content type. Status: " + statusCode + ", contentType: " + contentType);
                 }
 
                 String s = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
@@ -1894,7 +1894,7 @@ public class OAuthClient {
                 Header[] contentTypeHeaders = response.getHeaders("Content-Type");
                 String contentType = (contentTypeHeaders != null && contentTypeHeaders.length > 0) ? contentTypeHeaders[0].getValue() : null;
                 if (!"application/json".equals(contentType)) {
-                    Assert.fail("Invalid content type. Status: " + statusCode + ", contentType: " + contentType);
+                    Assertions.fail("Invalid content type. Status: " + statusCode + ", contentType: " + contentType);
                 }
 
                 String s = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
@@ -1976,7 +1976,7 @@ public class OAuthClient {
                 Header[] contentTypeHeaders = response.getHeaders("Content-Type");
                 String contentType = (contentTypeHeaders != null && contentTypeHeaders.length > 0) ? contentTypeHeaders[0].getValue() : null;
                 if (!"application/json".equals(contentType)) {
-                    Assert.fail("Invalid content type. Status: " + statusCode + ", contentType: " + contentType);
+                    Assertions.fail("Invalid content type. Status: " + statusCode + ", contentType: " + contentType);
                 }
 
                 String s = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
@@ -2193,7 +2193,7 @@ public class OAuthClient {
                 Header[] contentTypeHeaders = response.getHeaders("Content-Type");
                 String contentType = (contentTypeHeaders != null && contentTypeHeaders.length > 0) ? contentTypeHeaders[0].getValue() : null;
                 if (!"application/json".equals(contentType)) {
-                    Assert.fail("Invalid content type. Status: " + statusCode + ", contentType: " + contentType);
+                    Assertions.fail("Invalid content type. Status: " + statusCode + ", contentType: " + contentType);
                 }
 
                 String s = IOUtils.toString(response.getEntity().getContent(), "UTF-8");

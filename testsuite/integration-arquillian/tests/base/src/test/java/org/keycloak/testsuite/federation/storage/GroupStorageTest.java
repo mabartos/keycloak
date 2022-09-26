@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.federation.storage;
 
 import org.keycloak.common.Profile.Feature;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.util.MultivaluedHashMap;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.GroupModel;
@@ -39,12 +39,12 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.stream.Collectors;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;;
 
 public class GroupStorageTest extends AbstractTestRealmKeycloakTest {
 
@@ -62,12 +62,12 @@ public class GroupStorageTest extends AbstractTestRealmKeycloakTest {
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void checkNotMapStorage() {
         ProfileAssume.assumeFeatureDisabled(Feature.MAP_STORAGE);
     }
 
-    @Before
+    @BeforeEach
     public void addProvidersBeforeTest() throws URISyntaxException, IOException {
         ComponentRepresentation provider = new ComponentRepresentation();
         provider.setName("group-storage-hardcoded");
@@ -218,8 +218,8 @@ public class GroupStorageTest extends AbstractTestRealmKeycloakTest {
 //            RealmModel realm = session.realms().getRealmByName("test");
 //            StorageId storageId = new StorageId(providerId, "hardcoded-group");
 //            GroupModel hardcoded = session.groups().getGroupById(realm, storageId.getId());
-//            Assert.assertNotNull(hardcoded);
-//            Assert.assertThat(hardcoded, not(instanceOf(GroupAdapter.class)));
+//            Assertions.assertNotNull(hardcoded);
+//            Assertions.assertThat(hardcoded, not(instanceOf(GroupAdapter.class)));
 //        });
 //    }
 
@@ -227,8 +227,8 @@ public class GroupStorageTest extends AbstractTestRealmKeycloakTest {
 //        testingClient.server().run(session -> {
 //            RealmModel realm = session.realms().getRealmByName("test");
 //            RoleModel hardcoded = realm.getRole("hardcoded-role");
-//            Assert.assertNotNull(hardcoded);
-//            Assert.assertThat(hardcoded, instanceOf(RoleAdapter.class));
+//            Assertions.assertNotNull(hardcoded);
+//            Assertions.assertThat(hardcoded, instanceOf(RoleAdapter.class));
 //        });
 //    }
 

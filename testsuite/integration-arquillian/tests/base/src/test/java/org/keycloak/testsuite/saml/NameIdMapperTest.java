@@ -1,8 +1,8 @@
 package org.keycloak.testsuite.saml;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.dom.saml.v2.assertion.NameIDType;
 import org.keycloak.dom.saml.v2.protocol.ResponseType;
 import org.keycloak.protocol.ProtocolMapperUtils;
@@ -16,7 +16,7 @@ import org.keycloak.testsuite.updaters.ProtocolMappersUpdater;
 import org.keycloak.testsuite.util.SamlClientBuilder;
 import org.keycloak.testsuite.util.SamlClient.Binding;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.saml.RoleMapperTest.createSamlProtocolMapper;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_PORT;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SCHEME;
@@ -32,7 +32,7 @@ public class NameIdMapperTest extends AbstractSamlTest {
     private ClientAttributeUpdater cau;
     private ProtocolMappersUpdater pmu;
 
-    @Before
+    @BeforeEach
     public void setNameIdConfigAndCleanMappers() {
         this.cau = ClientAttributeUpdater.forClient(adminClient, REALM_NAME, SAML_CLIENT_ID_EMPLOYEE_2)
                         .setAttribute(SamlConfigAttributes.SAML_NAME_ID_FORMAT_ATTRIBUTE, "username")
@@ -40,7 +40,7 @@ public class NameIdMapperTest extends AbstractSamlTest {
         this.pmu = cau.protocolMappers().clear().update();
     }
 
-    @After
+    @AfterEach
     public void revertCleanMappersAndScopes() throws IOException {
             this.pmu.close();
             this.cau.close();

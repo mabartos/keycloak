@@ -1,8 +1,8 @@
 package org.keycloak.testsuite.oauth;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 
 import java.net.URL;
@@ -12,8 +12,8 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -227,7 +227,7 @@ public class OAuthScopeInTokenResponseTest extends AbstractKeycloakTest {
         log.info("receivedScopes = " + response.getScope());
     	Collection<String> expectedScopes = Arrays.asList(expectedScope.split(" "));
     	Collection<String> receivedScopes = Arrays.asList(response.getScope().split(" "));
-    	Assert.assertTrue(expectedScopes.containsAll(receivedScopes) && receivedScopes.containsAll(expectedScopes));
+    	Assertions.assertTrue(expectedScopes.containsAll(receivedScopes) && receivedScopes.containsAll(expectedScopes));
 
         oauth.doLogout(response.getRefreshToken(), clientSecret);
     }

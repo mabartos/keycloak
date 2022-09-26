@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.federation.ldap;
 
-import org.junit.ClassRule;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.KeycloakContext;
 import org.keycloak.models.RealmModel;
@@ -89,23 +89,23 @@ public class LDAPUserPropertiesMappingTest extends AbstractLDAPTest {
             RealmModel realm = context.getRealm();
 
             UserModel test10 = session.users().getUserByUsername(DIETMAR, realm);
-            Assert.assertTrue(test10.isEnabled());
-            Assert.assertTrue(test10.isEmailVerified());
+            Assertions.assertTrue(test10.isEnabled());
+            Assertions.assertTrue(test10.isEmailVerified());
 
             UserModel test11 = session.users().getUserByUsername(STEFAN, realm);
-            Assert.assertFalse(test11.isEnabled());
-            Assert.assertFalse(test11.isEmailVerified());
+            Assertions.assertFalse(test11.isEnabled());
+            Assertions.assertFalse(test11.isEmailVerified());
 
             ComponentModel ldapProviderModel = LDAPTestUtils.getLdapProviderModel(realm);
             LDAPStorageProvider ldapProvider = LDAPTestUtils.getLdapProvider(session, ldapProviderModel);
 
             LDAPObject user10FromLdap = ldapProvider.loadLDAPUserByUsername(realm, DIETMAR);
-            Assert.assertTrue(Boolean.parseBoolean(user10FromLdap.getAttributeAsString(USER_EMAIL_VERIFIED_LDAP_ATTRIBUTE)));
-            Assert.assertTrue(Boolean.parseBoolean(user10FromLdap.getAttributeAsString(USER_ENABLED_LDAP_ATTRIBUTE)));
+            Assertions.assertTrue(Boolean.parseBoolean(user10FromLdap.getAttributeAsString(USER_EMAIL_VERIFIED_LDAP_ATTRIBUTE)));
+            Assertions.assertTrue(Boolean.parseBoolean(user10FromLdap.getAttributeAsString(USER_ENABLED_LDAP_ATTRIBUTE)));
 
             LDAPObject user11FromLdap = ldapProvider.loadLDAPUserByUsername(realm, STEFAN);
-            Assert.assertFalse(Boolean.parseBoolean(user11FromLdap.getAttributeAsString(USER_EMAIL_VERIFIED_LDAP_ATTRIBUTE)));
-            Assert.assertFalse(Boolean.parseBoolean(user11FromLdap.getAttributeAsString(USER_ENABLED_LDAP_ATTRIBUTE)));
+            Assertions.assertFalse(Boolean.parseBoolean(user11FromLdap.getAttributeAsString(USER_EMAIL_VERIFIED_LDAP_ATTRIBUTE)));
+            Assertions.assertFalse(Boolean.parseBoolean(user11FromLdap.getAttributeAsString(USER_ENABLED_LDAP_ATTRIBUTE)));
         });
     }
 }

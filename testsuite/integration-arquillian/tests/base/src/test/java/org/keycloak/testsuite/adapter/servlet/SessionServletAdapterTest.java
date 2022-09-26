@@ -21,8 +21,8 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.common.Profile;
@@ -45,10 +45,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.keycloak.testsuite.auth.page.AuthRealm.DEMO;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWithLoginUrlOf;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 
 /**
@@ -87,7 +87,7 @@ public class SessionServletAdapterTest extends AbstractServletsAdapterTest {
         return servletDeployment(SessionPortal.DEPLOYMENT_NAME, "keycloak.json", SessionServlet.class);
     }
 
-    @After
+    @AfterEach
     public void afterSessionServletAdapterTest() {
         sessionPortalPage.navigateTo();
         driver.manage().deleteAllCookies();
@@ -140,7 +140,7 @@ public class SessionServletAdapterTest extends AbstractServletsAdapterTest {
         // Logout in driver2
         driver2.navigate().to(logoutUri);
         driver2.findElement(By.cssSelector("input[type=\"submit\"]")).click();
-        Assert.assertEquals("You are logged out", driver2.findElement(By.className("instruction")).getText());
+        Assertions.assertEquals("You are logged out", driver2.findElement(By.className("instruction")).getText());
     }
 
     //KEYCLOAK-741

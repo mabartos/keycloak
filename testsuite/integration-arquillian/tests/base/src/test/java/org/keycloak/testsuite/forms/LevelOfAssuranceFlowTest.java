@@ -26,11 +26,11 @@ import java.util.Map;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.UriBuilder;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.authentication.authenticators.browser.OTPFormAuthenticatorFactory;
@@ -77,8 +77,7 @@ import static org.hamcrest.CoreMatchers.is;
  */
 public class LevelOfAssuranceFlowTest extends AbstractTestRealmKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+
 
     @Page
     protected LoginPage loginPage;
@@ -116,13 +115,13 @@ public class LevelOfAssuranceFlowTest extends AbstractTestRealmKeycloakTest {
         return JsonSerialization.writeValueAsString(acrLoaMap);
     }
 
-    @Before
+    @BeforeEach
     public void setupFlow() {
         configureStepUpFlow(testingClient);
         canBeOtpCodesReusable(true);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         canBeOtpCodesReusable(false);
     }
@@ -187,7 +186,7 @@ public class LevelOfAssuranceFlowTest extends AbstractTestRealmKeycloakTest {
         configureStepUpFlow(testingClient, maxAge1, maxAge2, maxAge3);
     }
 
-    @After
+    @AfterEach
     public void after() {
         BrowserFlowTest.revertFlows(testRealm(), "browser -  Level of Authentication FLow");
     }
@@ -430,7 +429,7 @@ public class LevelOfAssuranceFlowTest extends AbstractTestRealmKeycloakTest {
         OIDCAdvancedConfigWrapper.fromClientRepresentation(testClientRep).setAttributeMultivalued(Constants.DEFAULT_ACR_VALUES, Arrays.asList("silver", "2", "foo"));
         try {
             testClient.update(testClientRep);
-            Assert.fail("Should not successfully update client");
+            Assertions.fail("Should not successfully update client");
         } catch (BadRequestException bre) {
             // Expected
         }
@@ -439,7 +438,7 @@ public class LevelOfAssuranceFlowTest extends AbstractTestRealmKeycloakTest {
         OIDCAdvancedConfigWrapper.fromClientRepresentation(testClientRep).setAttributeMultivalued(Constants.DEFAULT_ACR_VALUES, Arrays.asList("silver", "2", "5"));
         try {
             testClient.update(testClientRep);
-            Assert.fail("Should not successfully update client");
+            Assertions.fail("Should not successfully update client");
         } catch (BadRequestException bre) {
             // Expected
         }
@@ -662,7 +661,7 @@ public class LevelOfAssuranceFlowTest extends AbstractTestRealmKeycloakTest {
             // Test client scope was not created in the new realm when feature is disabled
             boolean acrScopeExists = newRealm.clientScopes().findAll().stream()
                     .anyMatch(clientScope -> OIDCLoginProtocolFactory.ACR_SCOPE.equals(clientScope.getName()));
-            Assert.assertThat(false, is(acrScopeExists));
+            Assertions.assertThat(false, is(acrScopeExists));
         } finally {
             newRealm.remove();
         }
@@ -692,7 +691,7 @@ public class LevelOfAssuranceFlowTest extends AbstractTestRealmKeycloakTest {
 
     private void reauthenticateWithPassword() {
         loginPage.assertCurrent();
-        Assert.assertEquals("test-user@localhost", loginPage.getAttemptedUsername());
+        Assertions.assertEquals("test-user@localhost", loginPage.getAttemptedUsername());
         loginPage.login("password");
     }
 
@@ -709,12 +708,12 @@ public class LevelOfAssuranceFlowTest extends AbstractTestRealmKeycloakTest {
     private void assertLoggedInWithAcr(String acr) {
         EventRepresentation loginEvent = events.expectLogin().detail(Details.USERNAME, "test-user@localhost").assertEvent();
         IDToken idToken = sendTokenRequestAndGetIDToken(loginEvent);
-        Assert.assertEquals(acr, idToken.getAcr());
+        Assertions.assertEquals(acr, idToken.getAcr());
     }
 
     private void assertErrorPage(String expectedError) {
-        Assert.assertThat(true, is(errorPage.isCurrent()));
-        Assert.assertEquals(expectedError, errorPage.getError());
+        Assertions.assertThat(true, is(errorPage.isCurrent()));
+        Assertions.assertEquals(expectedError, errorPage.getError());
         events.clear();
     }
 }

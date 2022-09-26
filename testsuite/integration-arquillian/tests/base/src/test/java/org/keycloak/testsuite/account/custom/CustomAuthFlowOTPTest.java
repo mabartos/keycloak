@@ -17,8 +17,8 @@
 package org.keycloak.testsuite.account.custom;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.AuthenticationExecutionModel.Requirement;
 import org.keycloak.models.utils.DefaultAuthenticationFlows;
 import org.keycloak.models.utils.TimeBasedOTP;
@@ -47,8 +47,8 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.authentication.authenticators.browser.ConditionalOtpFormAuthenticator.DEFAULT_OTP_OUTCOME;
 import static org.keycloak.authentication.authenticators.browser.ConditionalOtpFormAuthenticator.FORCE;
 import static org.keycloak.authentication.authenticators.browser.ConditionalOtpFormAuthenticator.FORCE_OTP_FOR_HTTP_HEADER;
@@ -60,7 +60,7 @@ import static org.keycloak.authentication.authenticators.browser.ConditionalOtpF
 import static org.keycloak.models.UserModel.RequiredAction.CONFIGURE_TOTP;
 import static org.keycloak.representations.idm.CredentialRepresentation.PASSWORD;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_PORT;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 
 /**
  *
@@ -85,7 +85,7 @@ public class CustomAuthFlowOTPTest extends AbstractCustomAccountManagementTest {
         testLoginOneTimeCodePage.setAuthRealm(testRealmPage);
     }
     
-    @Before
+    @BeforeEach
     @Override
     public void beforeTest() {
         super.beforeTest();

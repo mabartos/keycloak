@@ -16,8 +16,8 @@
  */
 package org.keycloak.testsuite.admin;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientsResource;
 import org.keycloak.authorization.AuthorizationProvider;
 import org.keycloak.authorization.model.Policy;
@@ -48,7 +48,7 @@ import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
  */
 public class AuthzCleanupTest extends AbstractKeycloakTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
         ProfileAssume.assumeFeatureEnabled(AUTHORIZATION);
     }

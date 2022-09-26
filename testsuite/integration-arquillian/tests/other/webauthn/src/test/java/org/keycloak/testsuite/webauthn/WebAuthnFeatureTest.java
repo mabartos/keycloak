@@ -18,7 +18,7 @@
 
 package org.keycloak.testsuite.webauthn;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.AuthenticatorSpi;
 import org.keycloak.authentication.authenticators.browser.WebAuthnAuthenticatorFactory;
 import org.keycloak.common.Profile;

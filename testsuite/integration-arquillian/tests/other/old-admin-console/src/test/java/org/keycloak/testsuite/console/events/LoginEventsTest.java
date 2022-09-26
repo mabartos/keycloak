@@ -1,8 +1,8 @@
 package org.keycloak.testsuite.console.events;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.admin.Users;
 import org.keycloak.testsuite.console.AbstractConsoleTest;
@@ -14,7 +14,7 @@ import org.openqa.selenium.WebElement;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.representations.idm.CredentialRepresentation.PASSWORD;
 
 /**
@@ -27,7 +27,7 @@ public class LoginEventsTest extends AbstractConsoleTest {
     @Page
     private Config configPage;
 
-    @Before
+    @BeforeEach
     public void beforeLoginEventsTest() {
         RealmRepresentation realm = testRealmResource().toRepresentation();
 

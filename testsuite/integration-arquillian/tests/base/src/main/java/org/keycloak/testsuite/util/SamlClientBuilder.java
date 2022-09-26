@@ -43,7 +43,7 @@ import java.util.function.Function;
 import javax.ws.rs.core.Response.Status;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.hamcrest.Matcher;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.w3c.dom.Document;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.keycloak.testsuite.util.saml.SamlDocumentStepBuilder.saml2Object2String;
@@ -128,7 +128,7 @@ public class SamlClientBuilder {
 
     public SamlClientBuilder assertResponse(Matcher<? super CloseableHttpResponse> matcher) {
         steps.add((client, currentURI, currentResponse, context) -> {
-            Assert.assertThat(currentResponse, matcher);
+            Assertions.assertThat(currentResponse, matcher);
             return null;
         });
         return this;
@@ -259,8 +259,8 @@ public class SamlClientBuilder {
         return
           doNotFollowRedirects()
           .addStep((client, currentURI, currentResponse, context) -> {
-            Assert.assertThat(currentResponse, Matchers.statusCodeIsHC(Status.FOUND));
-            Assert.assertThat("Location header not found", currentResponse.getFirstHeader("Location"), notNullValue());
+            Assertions.assertThat(currentResponse, Matchers.statusCodeIsHC(Status.FOUND));
+            Assertions.assertThat("Location header not found", currentResponse.getFirstHeader("Location"), notNullValue());
             return new HttpGet(currentResponse.getFirstHeader("Location").getValue());
           });
     }

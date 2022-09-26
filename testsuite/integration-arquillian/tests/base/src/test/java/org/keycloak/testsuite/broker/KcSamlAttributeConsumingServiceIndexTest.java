@@ -11,8 +11,8 @@ import org.keycloak.testsuite.util.SamlClient.Binding;
 import org.keycloak.testsuite.util.SamlClientBuilder;
 import java.io.Closeable;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
@@ -49,7 +49,7 @@ public final class KcSamlAttributeConsumingServiceIndexTest extends AbstractBrok
 
                         // Find the AuthnRequest AttributeConsumingServiceIndex attribute
                         Node attrNode = document.getDocumentElement().getAttributes().getNamedItem("AttributeConsumingServiceIndex");
-                        Assert.assertEquals("Unexpected AttributeConsumingServiceIndex attribute value", null, attrNode);
+                        Assertions.assertEquals("Unexpected AttributeConsumingServiceIndex attribute value", null, attrNode);
                     }
                     catch (Exception ex)
                     {
@@ -84,7 +84,7 @@ public final class KcSamlAttributeConsumingServiceIndexTest extends AbstractBrok
 
                         // Find the AuthnRequest AttributeConsumingServiceIndex attribute
                         String attrValue = document.getDocumentElement().getAttributes().getNamedItem("AttributeConsumingServiceIndex").getNodeValue();
-                        Assert.assertEquals("Unexpected AttributeConsumingServiceIndex attribute value", "15", attrValue);
+                        Assertions.assertEquals("Unexpected AttributeConsumingServiceIndex attribute value", "15", attrValue);
                     }
                     catch (Exception ex)
                     {

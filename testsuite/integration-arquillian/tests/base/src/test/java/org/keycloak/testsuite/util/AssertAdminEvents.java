@@ -22,6 +22,9 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.rules.TestRule;
 import org.junit.runners.model.Statement;
 import org.keycloak.common.util.ObjectUtil;
@@ -46,10 +49,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
  */
-public class AssertAdminEvents implements TestRule {
+public class AssertAdminEvents implements BeforeAllCallback {
 
     private AbstractKeycloakTest context;
 
@@ -58,28 +63,20 @@ public class AssertAdminEvents implements TestRule {
     }
 
     @Override
-    public Statement apply(final Statement base, org.junit.runner.Description description) {
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                // TODO: Ideally clear the queue just before testClass rather then before each method
-                clear();
-                base.evaluate();
-                // TODO Test should fail if there are leftover events
-            }
-        };
+    public void beforeAll(ExtensionContext extensionContext) throws Exception {
+        clear();
     }
 
     public AdminEventRepresentation poll() {
         AdminEventRepresentation event = fetchNextEvent();
-        Assert.assertNotNull("Admin event expected", event);
+        Assertions.assertNotNull(event, "Admin event expected");
 
         return event;
     }
 
     public void assertEmpty() {
         AdminEventRepresentation event = fetchNextEvent();
-        Assert.assertNull("Empty admin event queue expected, but there is " + event, event);
+        Assertions.assertNull(event, "Empty admin event queue expected, but there is " + event);
     }
 
     // Clears both "classic" and admin events for now
@@ -117,7 +114,6 @@ public class AssertAdminEvents implements TestRule {
                 .representation(representation)
                 .assertEvent();
     }
-
 
 
     public class ExpectedAdminEvent {
@@ -187,12 +183,12 @@ public class AssertAdminEvents implements TestRule {
         }
 
         public AdminEventRepresentation assertEvent(AdminEventRepresentation actual) {
-            Assert.assertEquals(expected.getRealmId(), actual.getRealmId());
-            Assert.assertThat(actual.getResourcePath(), resourcePath);
-            Assert.assertEquals(expected.getResourceType(), actual.getResourceType());
-            Assert.assertEquals(expected.getOperationType(), actual.getOperationType());
+            Assertions.assertEquals(expected.getRealmId(), actual.getRealmId());
+            assertThat(actual.getResourcePath(), resourcePath);
+            Assertions.assertEquals(expected.getResourceType(), actual.getResourceType());
+            Assertions.assertEquals(expected.getOperationType(), actual.getOperationType());
 
-            Assert.assertTrue(ObjectUtil.isEqualOrBothNull(expected.getError(), actual.getError()));
+            Assertions.assertTrue(ObjectUtil.isEqualOrBothNull(expected.getError(), actual.getError()));
 
             // AuthDetails
             AuthDetailsRepresentation expectedAuth = expected.getAuthDetails();
@@ -201,16 +197,16 @@ public class AssertAdminEvents implements TestRule {
             }
 
             AuthDetailsRepresentation actualAuth = actual.getAuthDetails();
-            Assert.assertEquals(expectedAuth.getRealmId(), actualAuth.getRealmId());
-            Assert.assertEquals(expectedAuth.getUserId(), actualAuth.getUserId());
+            Assertions.assertEquals(expectedAuth.getRealmId(), actualAuth.getRealmId());
+            Assertions.assertEquals(expectedAuth.getUserId(), actualAuth.getUserId());
             if (expectedAuth.getClientId() != null) {
-                Assert.assertEquals(expectedAuth.getClientId(), actualAuth.getClientId());
+                Assertions.assertEquals(expectedAuth.getClientId(), actualAuth.getClientId());
             }
 
             // Representation comparison
             if (expectedRep != null) {
                 if (actual.getRepresentation() == null) {
-                    Assert.fail("Expected representation " + expectedRep + " but no representation was available on actual event");
+                    Assertions.fail("Expected representation " + expectedRep + " but no representation was available on actual event");
                 } else {
                     try {
 
@@ -229,7 +225,7 @@ public class AssertAdminEvents implements TestRule {
                             for (RoleRepresentation role : actualRoles) {
                                 actualRolesMap.put(role.getId(), role.getName());
                             }
-                            Assert.assertEquals(expectedRolesMap, actualRolesMap);
+                            Assertions.assertEquals(expectedRolesMap, actualRolesMap);
 
                         } else if (expectedRep instanceof Map) {
                             Object actualRep = JsonSerialization.readValue(actual.getRepresentation(), Map.class);
@@ -242,7 +238,7 @@ public class AssertAdminEvents implements TestRule {
                                 Object expectedValue = entry.getValue();
                                 if (expectedValue != null) {
                                     Object actualValue = actualRepMap.get(entry.getKey());
-                                    Assert.assertEquals("Map item with key '" + entry.getKey() + "' not equal.", expectedValue, actualValue);
+                                    Assertions.assertEquals("Map item with key '" + entry.getKey() + "' not equal.", expectedValue, actualValue);
                                 }
                             }
                         } else {
@@ -254,7 +250,7 @@ public class AssertAdminEvents implements TestRule {
                                     Object expectedValue = Reflections.invokeMethod(method, expectedRep);
                                     if (expectedValue != null) {
                                         Object actualValue = Reflections.invokeMethod(method, actualRep);
-                                        Assert.assertEquals("Property method '" + method.getName() + "' of representation not equal.", expectedValue, actualValue);
+                                        Assertions.assertEquals("Property method '" + method.getName() + "' of representation not equal.", expectedValue, actualValue);
                                     }
                                 }
                             }

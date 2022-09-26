@@ -17,9 +17,9 @@
 
 package org.keycloak.testsuite.federation.ldap;
 
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+
+import org.junit.jupiter.api.Test;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
@@ -67,7 +67,7 @@ public class LDAPProvidersFullNameMapperTest extends AbstractLDAPTest {
             appRealm.getClientByClientId("test-app").setDirectAccessGrantsEnabled(true);
 
             // assert that user "fullnameUser" is not in local DB
-            Assert.assertNull(session.users().getUserByUsername(appRealm, "fullname"));
+            Assertions.assertNull(session.users().getUserByUsername(appRealm, "fullname"));
 
             // Add the user with some fullName into LDAP directly. Ensure that fullName is saved into "cn" attribute in LDAP (currently mapped to model firstName)
             ComponentModel ldapModel = LDAPTestUtils.getLdapProviderModel(appRealm);

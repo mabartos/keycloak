@@ -22,9 +22,9 @@ import java.util.Collections;
 
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
@@ -44,7 +44,7 @@ import org.keycloak.testsuite.pages.OAuthGrantPage;
 import org.keycloak.testsuite.util.ClientManager;
 import org.keycloak.testsuite.util.OAuthClient;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
 
 /**
@@ -54,8 +54,7 @@ import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
  */
 public class OAuth2OnlyTest extends AbstractTestRealmKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -99,7 +98,7 @@ public class OAuth2OnlyTest extends AbstractTestRealmKeycloakTest {
         testApp.setRedirectUris(Collections.singletonList(redirectUri));
     }
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         ClientManager.realm(adminClient.realm("test")).clientId("test-app").directAccessGrant(true);
         /*
@@ -127,20 +126,20 @@ public class OAuth2OnlyTest extends AbstractTestRealmKeycloakTest {
         OAuthClient.AccessTokenResponse response = oauth.doAccessTokenRequest(code, "password");
 
         // IDToken is not there
-        Assert.assertEquals(200, response.getStatusCode());
-        Assert.assertNull(response.getIdToken());
-        Assert.assertNotNull(response.getRefreshToken());
+        Assertions.assertEquals(200, response.getStatusCode());
+        Assertions.assertNull(response.getIdToken());
+        Assertions.assertNotNull(response.getRefreshToken());
 
         AccessToken token = oauth.verifyToken(response.getAccessToken());
-        Assert.assertEquals(token.getSubject(), loginEvent.getUserId());
+        Assertions.assertEquals(token.getSubject(), loginEvent.getUserId());
 
         // Refresh and assert idToken still not present
         response = oauth.doRefreshTokenRequest(response.getRefreshToken(), "password");
-        Assert.assertEquals(200, response.getStatusCode());
-        Assert.assertNull(response.getIdToken());
+        Assertions.assertEquals(200, response.getStatusCode());
+        Assertions.assertNull(response.getIdToken());
 
         token = oauth.verifyToken(response.getAccessToken());
-        Assert.assertEquals(token.getSubject(), loginEvent.getUserId());
+        Assertions.assertEquals(token.getSubject(), loginEvent.getUserId());
     }
 
 
@@ -152,11 +151,11 @@ public class OAuth2OnlyTest extends AbstractTestRealmKeycloakTest {
         assertEquals(200, response.getStatusCode());
 
         // idToken not present
-        Assert.assertNull(response.getIdToken());
+        Assertions.assertNull(response.getIdToken());
 
-        Assert.assertNotNull(response.getRefreshToken());
+        Assertions.assertNotNull(response.getRefreshToken());
         AccessToken accessToken = oauth.verifyToken(response.getAccessToken());
-        Assert.assertEquals(accessToken.getPreferredUsername(), "test-user@localhost");
+        Assertions.assertEquals(accessToken.getPreferredUsername(), "test-user@localhost");
 
     }
 
@@ -182,7 +181,7 @@ public class OAuth2OnlyTest extends AbstractTestRealmKeycloakTest {
 
         driver.navigate().to(loginFormUrl);
         errorPage.assertCurrent();
-        Assert.assertEquals("Invalid parameter: redirect_uri", errorPage.getError());
+        Assertions.assertEquals("Invalid parameter: redirect_uri", errorPage.getError());
         events.expectLogin()
                 .error(Errors.INVALID_REDIRECT_URI)
                 .client("more-uris-client")
@@ -209,10 +208,10 @@ public class OAuth2OnlyTest extends AbstractTestRealmKeycloakTest {
         events.expectLogin().assertEvent();
 
         OAuthClient.AuthorizationEndpointResponse response = new OAuthClient.AuthorizationEndpointResponse(oauth);
-        Assert.assertNull(response.getError());
-        Assert.assertNull(response.getCode());
-        Assert.assertNull(response.getIdToken());
-        Assert.assertNotNull(response.getAccessToken());
+        Assertions.assertNull(response.getError());
+        Assertions.assertNull(response.getCode());
+        Assertions.assertNull(response.getIdToken());
+        Assertions.assertNotNull(response.getAccessToken());
     }
 
 }

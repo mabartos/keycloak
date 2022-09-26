@@ -18,9 +18,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.logging.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.ClientPoliciesPoliciesResource;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -67,8 +67,8 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 
 /**
@@ -102,10 +102,9 @@ public class ClientSecretRotationTest extends AbstractRestServiceTest {
     private static final int DEFAULT_REMAIN_EXPIRATION_PERIOD = Long.valueOf(
             TimeUnit.MINUTES.toSeconds(30)).intValue();
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
 
-    @After
+
+    @AfterEach
     public void after() {
         try {
             revertToBuiltinProfiles();

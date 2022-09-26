@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.model;
 
-import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.RoleModel;
@@ -31,8 +31,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.keycloak.testsuite.AbstractTestRealmKeycloakTest;
 import org.keycloak.testsuite.Assert;
@@ -55,7 +55,7 @@ public class CacheTest extends AbstractTestRealmKeycloakTest {
 
 	 @Test
 	    public void testStaleCache() throws Exception {
-            Assume.assumeTrue("Realm cache disabled.", isRealmCacheEnabled());
+            Assumptions.assumeTrue("Realm cache disabled.", isRealmCacheEnabled());
 		 testingClient.server().run(session -> {
 		 	String appId = null;
 	        {
@@ -93,9 +93,9 @@ public class CacheTest extends AbstractTestRealmKeycloakTest {
 	        
 	       
 	            realm = session.realms().getRealmByName("test");
-	            Assert.assertEquals(200, realm.getAccessCodeLifespanLogin());
+	            Assertions.assertEquals(200, realm.getAccessCodeLifespanLogin());
 	            testApp = session.clients().getClientById(realm, appId);
-	            Assert.assertFalse(testApp.isEnabled());
+	            Assertions.assertFalse(testApp.isEnabled());
 	        
 	        }
 		 });
@@ -146,10 +146,10 @@ public class CacheTest extends AbstractTestRealmKeycloakTest {
         
             Set<RoleModel> roles = user.getRoleMappingsStream().collect(Collectors.toSet());
             for (RoleModel role : roles) {
-                Assert.assertNotNull(role.getContainer());
+                Assertions.assertNotNull(role.getContainer());
             }
         
-            Assert.assertEquals(roles.size(), grantedRolesCount - 1);
+            Assertions.assertEquals(roles.size(), grantedRolesCount - 1);
         });
 
     }

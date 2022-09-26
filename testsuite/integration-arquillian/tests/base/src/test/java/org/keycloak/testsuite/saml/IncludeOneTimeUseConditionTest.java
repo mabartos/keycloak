@@ -17,7 +17,7 @@
 package org.keycloak.testsuite.saml;
 
 import com.google.common.collect.Collections2;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientsResource;
 import org.keycloak.dom.saml.v2.assertion.ConditionAbstractType;
@@ -37,7 +37,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 
 /**
  * KEYCLOAK-4360

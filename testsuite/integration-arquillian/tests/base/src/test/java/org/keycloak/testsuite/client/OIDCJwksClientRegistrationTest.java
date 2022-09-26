@@ -35,8 +35,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.adapters.authentication.JWTClientCredentialsProvider;
 import org.keycloak.client.registration.Auth;
@@ -80,7 +80,7 @@ public class OIDCJwksClientRegistrationTest extends AbstractClientRegistrationTe
         testRealms.get(0).setPublicKey(PUBLIC_KEY);
     }
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         super.before();
 
@@ -112,9 +112,9 @@ public class OIDCJwksClientRegistrationTest extends AbstractClientRegistrationTe
         clientRep.setJwks(keySet);
 
         OIDCClientRepresentation response = reg.oidc().create(clientRep);
-        Assert.assertEquals(OIDCLoginProtocol.PRIVATE_KEY_JWT, response.getTokenEndpointAuthMethod());
-        Assert.assertNull(response.getClientSecret());
-        Assert.assertNull(response.getClientSecretExpiresAt());
+        Assertions.assertEquals(OIDCLoginProtocol.PRIVATE_KEY_JWT, response.getTokenEndpointAuthMethod());
+        Assertions.assertNull(response.getClientSecret());
+        Assertions.assertNull(response.getClientSecretExpiresAt());
 
         // Tries to authenticate client with privateKey JWT
         assertAuthenticateClientSuccess(generatedKeys, response, KEEP_GENERATED_KID);
@@ -209,7 +209,7 @@ public class OIDCJwksClientRegistrationTest extends AbstractClientRegistrationTe
         // Assert item in publicKey cache for client1
         String expectedCacheKey = PublicKeyStorageUtils.getClientModelCacheKey(
                 adminClient.realm(REALM_NAME).toRepresentation().getId(), response.getClientId());
-        Assert.assertTrue(testingClient.testing().cache(InfinispanConnectionProvider.KEYS_CACHE_NAME).contains(expectedCacheKey));
+        Assertions.assertTrue(testingClient.testing().cache(InfinispanConnectionProvider.KEYS_CACHE_NAME).contains(expectedCacheKey));
 
         // Assert it's not possible to authenticate as client2 with the same "kid" like client1
         assertAuthenticateClientError(generatedKeys, clientRep2, "a1");
@@ -230,7 +230,7 @@ public class OIDCJwksClientRegistrationTest extends AbstractClientRegistrationTe
         // Assert item in publicKey cache for client1
         String expectedCacheKey = PublicKeyStorageUtils.getClientModelCacheKey(
                 adminClient.realm(REALM_NAME).toRepresentation().getId(), response.getClientId());
-        Assert.assertTrue(testingClient.testing().cache(InfinispanConnectionProvider.KEYS_CACHE_NAME).contains(expectedCacheKey));
+        Assertions.assertTrue(testingClient.testing().cache(InfinispanConnectionProvider.KEYS_CACHE_NAME).contains(expectedCacheKey));
 
 
 
@@ -241,7 +241,7 @@ public class OIDCJwksClientRegistrationTest extends AbstractClientRegistrationTe
                 .oidc().update(response);
 
         // Assert item not any longer for client1
-        Assert.assertFalse(testingClient.testing().cache(InfinispanConnectionProvider.KEYS_CACHE_NAME).contains(expectedCacheKey));
+        Assertions.assertFalse(testingClient.testing().cache(InfinispanConnectionProvider.KEYS_CACHE_NAME).contains(expectedCacheKey));
 
         // Assert it's not possible to authenticate as client1
         assertAuthenticateClientError(generatedKeys, response, "a1");
@@ -262,10 +262,10 @@ public class OIDCJwksClientRegistrationTest extends AbstractClientRegistrationTe
         clientRep.setJwksUri(TestApplicationResourceUrls.clientJwksUri());
 
         OIDCClientRepresentation response = reg.oidc().create(clientRep);
-        Assert.assertEquals(OIDCLoginProtocol.PRIVATE_KEY_JWT, response.getTokenEndpointAuthMethod());
-        Assert.assertNull(response.getClientSecret());
-        Assert.assertNull(response.getClientSecretExpiresAt());
-        Assert.assertEquals(response.getJwksUri(), TestApplicationResourceUrls.clientJwksUri());
+        Assertions.assertEquals(OIDCLoginProtocol.PRIVATE_KEY_JWT, response.getTokenEndpointAuthMethod());
+        Assertions.assertNull(response.getClientSecret());
+        Assertions.assertNull(response.getClientSecretExpiresAt());
+        Assertions.assertEquals(response.getJwksUri(), TestApplicationResourceUrls.clientJwksUri());
 
         // Tries to authenticate client with privateKey JWT
         assertAuthenticateClientSuccess(generatedKeys, response, KEEP_GENERATED_KID);
@@ -287,10 +287,10 @@ public class OIDCJwksClientRegistrationTest extends AbstractClientRegistrationTe
         clientRep.setJwksUri(TestApplicationResourceUrls.clientJwksUri());
 
         OIDCClientRepresentation response = reg.oidc().create(clientRep);
-        Assert.assertEquals(OIDCLoginProtocol.PRIVATE_KEY_JWT, response.getTokenEndpointAuthMethod());
-        Assert.assertNull(response.getClientSecret());
-        Assert.assertNull(response.getClientSecretExpiresAt());
-        Assert.assertEquals(response.getJwksUri(), TestApplicationResourceUrls.clientJwksUri());
+        Assertions.assertEquals(OIDCLoginProtocol.PRIVATE_KEY_JWT, response.getTokenEndpointAuthMethod());
+        Assertions.assertNull(response.getClientSecret());
+        Assertions.assertNull(response.getClientSecretExpiresAt());
+        Assertions.assertEquals(response.getJwksUri(), TestApplicationResourceUrls.clientJwksUri());
 
         // Tries to authenticate client with privateKey JWT
         assertAuthenticateClientSuccess(generatedKeys, response, KEEP_GENERATED_KID);
@@ -314,18 +314,18 @@ public class OIDCJwksClientRegistrationTest extends AbstractClientRegistrationTe
         KeyPair keyPair = getKeyPairFromGeneratedPems(generatedKeys);
         String signedJwt = getClientSignedJWT(response.getClientId(), keyPair, kid);
         OAuthClient.AccessTokenResponse accessTokenResponse = doClientCredentialsGrantRequest(signedJwt);
-        Assert.assertEquals(200, accessTokenResponse.getStatusCode());
+        Assertions.assertEquals(200, accessTokenResponse.getStatusCode());
         AccessToken accessToken = oauth.verifyToken(accessTokenResponse.getAccessToken());
-        Assert.assertEquals(response.getClientId(), accessToken.getIssuedFor());
+        Assertions.assertEquals(response.getClientId(), accessToken.getIssuedFor());
     }
 
     private void assertAuthenticateClientError(Map<String, String> generatedKeys, OIDCClientRepresentation response, String kid) throws Exception {
         KeyPair keyPair = getKeyPairFromGeneratedPems(generatedKeys);
         String signedJwt = getClientSignedJWT(response.getClientId(), keyPair, kid);
         OAuthClient.AccessTokenResponse accessTokenResponse = doClientCredentialsGrantRequest(signedJwt);
-        Assert.assertEquals(400, accessTokenResponse.getStatusCode());
-        Assert.assertNull(accessTokenResponse.getAccessToken());
-        Assert.assertNotNull(accessTokenResponse.getError());
+        Assertions.assertEquals(400, accessTokenResponse.getStatusCode());
+        Assertions.assertNull(accessTokenResponse.getAccessToken());
+        Assertions.assertNotNull(accessTokenResponse.getError());
     }
 
     private KeyPair getKeyPairFromGeneratedPems(Map<String, String> generatedKeys) {

@@ -25,7 +25,7 @@ import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.authenticators.browser.OTPFormAuthenticatorFactory;
 import org.keycloak.authentication.authenticators.directgrant.ValidatePassword;
 import org.keycloak.authentication.authenticators.directgrant.ValidateUsername;
@@ -37,7 +37,7 @@ import org.keycloak.testsuite.util.FlowUtil;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.openqa.selenium.WebDriver;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test of custom configurations of DirectGrant flow (Resource Owner Password Credentials Grant)
@@ -52,8 +52,7 @@ public class DirectGrantFlowTest extends AbstractTestRealmKeycloakTest {
     @Drone
     protected WebDriver driver;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Override
     public void configureTestRealm(RealmRepresentation testRealm) {

@@ -16,8 +16,8 @@
  */
 package org.keycloak.testsuite.account;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.common.Profile.Feature.ACCOUNT_API;
 import static org.keycloak.testsuite.util.OAuthClient.APP_ROOT;
 
@@ -27,10 +27,11 @@ import java.util.List;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.broker.provider.util.SimpleHttp;
 import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.representations.account.SessionRepresentation;
@@ -47,12 +48,12 @@ import javax.ws.rs.core.UriBuilder;
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
+@ExtendWith(AssertEvents.class)
 public abstract class AbstractRestServiceTest extends AbstractTestRealmKeycloakTest {
 
     @Rule
     public TokenUtil tokenUtil = new TokenUtil();
 
-    @Rule
     public AssertEvents events = new AssertEvents(this);
 
     protected CloseableHttpClient httpClient;
@@ -65,12 +66,12 @@ public abstract class AbstractRestServiceTest extends AbstractTestRealmKeycloakT
 
     protected String apiVersion;
 
-    @Before
+    @BeforeEach
     public void before() {
         httpClient = HttpClientBuilder.create().build();
     }
 
-    @After
+    @AfterEach
     public void after() {
         try {
             httpClient.close();

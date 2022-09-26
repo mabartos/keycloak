@@ -19,9 +19,9 @@ package org.keycloak.testsuite.federation.storage;
 import org.jboss.arquillian.container.test.api.ContainerController;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.component.ComponentModel;
@@ -62,8 +62,8 @@ public class BrokenUserStorageTest extends AbstractTestRealmKeycloakTest {
     private void loginSuccessAndLogout(String username, String password) {
         loginPage.open();
         loginPage.login(username, password);
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
         oauth.openLogout();
     }
 
@@ -101,16 +101,16 @@ public class BrokenUserStorageTest extends AbstractTestRealmKeycloakTest {
                 found = rep;
             }
         }
-        Assert.assertNotNull(found);
+        Assertions.assertNotNull(found);
 
         master.components().component(found.getId()).remove();
 
         List<ComponentRepresentation> components2 = master.components().query(masterId, UserStorageProvider.class.getName());
-        Assert.assertEquals(components.size() - 1, components2.size());
+        Assertions.assertEquals(components.size() - 1, components2.size());
 
     }
 
-    @After
+    @AfterEach
     public void resetSystemProperty() {
         testingClient.server().run(session -> {
             System.getProperties().remove(RealmAdapter.COMPONENT_PROVIDER_EXISTS_DISABLED);

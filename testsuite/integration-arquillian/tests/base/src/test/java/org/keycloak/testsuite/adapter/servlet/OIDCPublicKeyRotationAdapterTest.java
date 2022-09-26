@@ -33,9 +33,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.common.util.MultivaluedHashMap;
@@ -63,14 +63,14 @@ import org.keycloak.testsuite.utils.arquillian.ContainerConstants;
 import org.keycloak.testsuite.util.URLAssert;
 import org.openqa.selenium.By;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static org.keycloak.testsuite.auth.page.AuthRealm.DEMO;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWithLoginUrlOf;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
 
 /**
@@ -110,7 +110,7 @@ public class OIDCPublicKeyRotationAdapterTest extends AbstractServletsAdapterTes
     }
 
 
-    @Before
+    @BeforeEach
     public void beforeRotationAdapterTest() {
         // Delete all cookies from token-min-ttl page to be sure we are logged out
         tokenMinTTLPage.navigateTo();
@@ -134,8 +134,8 @@ public class OIDCPublicKeyRotationAdapterTest extends AbstractServletsAdapterTes
         assertTrue(testRealmLoginPage.form().isUsernamePresent());
         assertCurrentUrlStartsWithLoginUrlOf(testRealmPage);
         testRealmLoginPage.form().login("bburke@redhat.com", "password");
-        URLAssert.assertCurrentUrlStartsWith(tokenMinTTLPage.getInjectedUrl().toString());
-        Assert.assertNull(tokenMinTTLPage.getAccessToken());
+        URLAssertions.assertCurrentUrlStartsWith(tokenMinTTLPage.getInjectedUrl().toString());
+        Assertions.assertNull(tokenMinTTLPage.getAccessToken());
 
         ApiUtil.findUserByUsernameId(adminClient.realm("demo"), "bburke@redhat.com").logout();
 
@@ -200,7 +200,7 @@ public class OIDCPublicKeyRotationAdapterTest extends AbstractServletsAdapterTes
 
         // Send REST request to customer-db app. I should be successfully authenticated
         int status = invokeRESTEndpoint(accessTokenString);
-        Assert.assertEquals(200, status);
+        Assertions.assertEquals(200, status);
 
         // Re-generate realm public key and remove the old key
         String oldActiveKeyProviderId = getActiveKeyProvider();
@@ -209,14 +209,14 @@ public class OIDCPublicKeyRotationAdapterTest extends AbstractServletsAdapterTes
 
         // Send REST request to the customer-db app. Should be still succcessfully authenticated as the JWKPublicKeyLocator cache is still valid
         status = invokeRESTEndpoint(accessTokenString);
-        Assert.assertEquals(200, status);
+        Assertions.assertEquals(200, status);
 
         // TimeOffset to 900 on the REST app side. Token is still valid (1200) but JWKPublicKeyLocator should try to download new key (public-key-cache-ttl=600)
         setAdapterAndServerTimeOffset(900, customerDb.toString() + "/unsecured/foo");
 
         // Send REST request. New request to the publicKey cache should be sent, and key is no longer returned as token contains the old kid
         status = invokeRESTEndpoint(accessTokenString);
-        Assert.assertEquals(401, status);
+        Assertions.assertEquals(401, status);
 
         // Revert public keys change and time offset
         resetKeycloakDeploymentForAdapter(customerDb.toString() + "/unsecured/foo");
@@ -249,7 +249,7 @@ public class OIDCPublicKeyRotationAdapterTest extends AbstractServletsAdapterTes
 
         // Send REST request to customer-db app. It should be successfully authenticated even that token is signed by the old key
         int status = invokeRESTEndpoint(accessTokenString);
-        Assert.assertEquals(200, status);
+        Assertions.assertEquals(200, status);
 
         // Remove the old realm key now
         adminClient.realm(DEMO).components().component(oldActiveKeyProviderId).remove();
@@ -261,11 +261,11 @@ public class OIDCPublicKeyRotationAdapterTest extends AbstractServletsAdapterTes
         demoRealm.setNotBefore(Time.currentTime() - 1);
         adminClient.realm(DEMO).update(demoRealm);
         GlobalRequestResult result = adminClient.realm(DEMO).pushRevocation();
-        Assert.assertTrue(result.getSuccessRequests().contains(customerDBUrlNoTrailSlash));
+        Assertions.assertTrue(result.getSuccessRequests().contains(customerDBUrlNoTrailSlash));
 
         // Send REST request. New request to the publicKey cache should be sent, and key is no longer returned as token contains the old kid
         status = invokeRESTEndpoint(accessTokenString);
-        Assert.assertEquals(401, status);
+        Assertions.assertEquals(401, status);
 
         // Revert public keys change and time offset
         resetKeycloakDeploymentForAdapter(customerDBUnsecuredUrl);
@@ -283,7 +283,7 @@ public class OIDCPublicKeyRotationAdapterTest extends AbstractServletsAdapterTes
         assertCurrentUrlEquals(tokenMinTTLPage);
 
         AccessToken token = tokenMinTTLPage.getAccessToken();
-        Assert.assertEquals("bburke@redhat.com", token.getPreferredUsername());
+        Assertions.assertEquals("bburke@redhat.com", token.getPreferredUsername());
     }
 
 
@@ -329,7 +329,7 @@ public class OIDCPublicKeyRotationAdapterTest extends AbstractServletsAdapterTes
                 HttpEntity entity = response.getEntity();
                 try (InputStream is = entity.getContent()) {
                     String body = StreamUtil.readString(is, Charset.forName("UTF-8"));
-                    Assert.assertTrue(body.contains("Stian Thorgersen") && body.contains("Bill Burke"));
+                    Assertions.assertTrue(body.contains("Stian Thorgersen") && body.contains("Bill Burke"));
                     return status;
                 }
             } catch (IOException e) {

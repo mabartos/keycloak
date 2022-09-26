@@ -3,9 +3,9 @@ package org.keycloak.testsuite.admin;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.TokenVerifier;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.broker.provider.util.SimpleHttp;
@@ -20,19 +20,19 @@ import org.keycloak.testsuite.util.TokenSignatureUtil;
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class AdminSignatureAlgorithmTest extends AbstractKeycloakTest {
 
     private CloseableHttpClient client;
 
-    @Before
+    @BeforeEach
     public void before() {
         client = HttpClientBuilder.create().build();
     }
 
-    @After
+    @AfterEach
     public void after() {
         try {
             client.close();

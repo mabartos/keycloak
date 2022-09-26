@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.console.authentication;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.Assert;
 import org.keycloak.testsuite.auth.page.login.Registration;
@@ -58,7 +58,7 @@ public class RequiredActionsTest extends AbstractConsoleTest {
         termsAndConditionsPage.setAuthRealm("test");
     }
 
-    @Before
+    @BeforeEach
     public void beforeRequiredActionsTest() {
         requiredActionsPage.navigateTo();
     }
@@ -75,26 +75,26 @@ public class RequiredActionsTest extends AbstractConsoleTest {
 
         registerTestUser();
 
-        Assert.assertTrue(termsAndConditionsPage.isCurrent());
+        Assertions.assertTrue(termsAndConditionsPage.isCurrent());
     }
 
     @Test
     public void defaultCheckboxUncheckableWhenEnabledIsFalse() {
         requiredActionsPage.setTermsAndConditionEnabled(false);
-        Assert.assertFalse(requiredActionsPage.getTermsAndConditionEnabled());
+        Assertions.assertFalse(requiredActionsPage.getTermsAndConditionEnabled());
         requiredActionsPage.setTermsAndConditionDefaultAction(true);
-        Assert.assertFalse(requiredActionsPage.getTermsAndConditionDefaultAction());
+        Assertions.assertFalse(requiredActionsPage.getTermsAndConditionDefaultAction());
     }
 
     @Test
     public void defaultCheckboxUncheckedWhenEnabledBecomesFalse() {
         requiredActionsPage.setTermsAndConditionEnabled(true);
-        Assert.assertTrue(requiredActionsPage.getTermsAndConditionEnabled());
+        Assertions.assertTrue(requiredActionsPage.getTermsAndConditionEnabled());
         requiredActionsPage.setTermsAndConditionDefaultAction(true);
-        Assert.assertTrue(requiredActionsPage.getTermsAndConditionDefaultAction());
+        Assertions.assertTrue(requiredActionsPage.getTermsAndConditionDefaultAction());
         requiredActionsPage.setTermsAndConditionEnabled(false);
-        Assert.assertFalse(requiredActionsPage.getTermsAndConditionEnabled());
-        Assert.assertFalse(requiredActionsPage.getTermsAndConditionDefaultAction());
+        Assertions.assertFalse(requiredActionsPage.getTermsAndConditionEnabled());
+        Assertions.assertFalse(requiredActionsPage.getTermsAndConditionDefaultAction());
         assertAlertSuccess();
     }
 
@@ -102,24 +102,24 @@ public class RequiredActionsTest extends AbstractConsoleTest {
     public void defaultCheckboxKeepsValueWhenEnabledIsToggled() {
         requiredActionsPage.setTermsAndConditionEnabled(true);
         requiredActionsPage.setTermsAndConditionDefaultAction(false);
-        Assert.assertTrue(requiredActionsPage.getTermsAndConditionEnabled());
-        Assert.assertFalse(requiredActionsPage.getTermsAndConditionDefaultAction());
+        Assertions.assertTrue(requiredActionsPage.getTermsAndConditionEnabled());
+        Assertions.assertFalse(requiredActionsPage.getTermsAndConditionDefaultAction());
         requiredActionsPage.setTermsAndConditionEnabled(false);
-        Assert.assertFalse(requiredActionsPage.getTermsAndConditionEnabled());
-        Assert.assertFalse(requiredActionsPage.getTermsAndConditionDefaultAction());
+        Assertions.assertFalse(requiredActionsPage.getTermsAndConditionEnabled());
+        Assertions.assertFalse(requiredActionsPage.getTermsAndConditionDefaultAction());
         requiredActionsPage.setTermsAndConditionEnabled(true);
-        Assert.assertTrue(requiredActionsPage.getTermsAndConditionEnabled());
-        Assert.assertFalse(requiredActionsPage.getTermsAndConditionDefaultAction());
+        Assertions.assertTrue(requiredActionsPage.getTermsAndConditionEnabled());
+        Assertions.assertFalse(requiredActionsPage.getTermsAndConditionDefaultAction());
 
         requiredActionsPage.setTermsAndConditionDefaultAction(true);
-        Assert.assertTrue(requiredActionsPage.getTermsAndConditionEnabled());
-        Assert.assertTrue(requiredActionsPage.getTermsAndConditionDefaultAction());
+        Assertions.assertTrue(requiredActionsPage.getTermsAndConditionEnabled());
+        Assertions.assertTrue(requiredActionsPage.getTermsAndConditionDefaultAction());
         requiredActionsPage.setTermsAndConditionEnabled(false);
-        Assert.assertFalse(requiredActionsPage.getTermsAndConditionEnabled());
-        Assert.assertFalse(requiredActionsPage.getTermsAndConditionDefaultAction());
+        Assertions.assertFalse(requiredActionsPage.getTermsAndConditionEnabled());
+        Assertions.assertFalse(requiredActionsPage.getTermsAndConditionDefaultAction());
         requiredActionsPage.setTermsAndConditionEnabled(true);
-        Assert.assertTrue(requiredActionsPage.getTermsAndConditionEnabled());
-        Assert.assertTrue(requiredActionsPage.getTermsAndConditionDefaultAction());
+        Assertions.assertTrue(requiredActionsPage.getTermsAndConditionEnabled());
+        Assertions.assertTrue(requiredActionsPage.getTermsAndConditionDefaultAction());
 
         assertAlertSuccess();
     }
@@ -135,7 +135,7 @@ public class RequiredActionsTest extends AbstractConsoleTest {
 
         registerTestUser();
 
-        Assert.assertTrue(UIUtils.getTextFromElement(driver.findElement(By.id("kc-page-title"))).equals("Mobile Authenticator Setup"));
+        Assertions.assertTrue(UIUtils.getTextFromElement(driver.findElement(By.id("kc-page-title"))).equals("Mobile Authenticator Setup"));
     }
 
     private void allowTestRealmUserRegistration() {

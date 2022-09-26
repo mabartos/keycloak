@@ -17,7 +17,7 @@
  */
 package org.keycloak.testsuite.model;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.ClientScopeModel;
 import org.keycloak.models.KeycloakSession;

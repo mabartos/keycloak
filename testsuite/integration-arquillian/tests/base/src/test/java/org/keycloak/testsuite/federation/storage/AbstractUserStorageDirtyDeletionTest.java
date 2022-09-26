@@ -1,8 +1,8 @@
 package org.keycloak.testsuite.federation.storage;
 
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.GroupResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.common.Profile.Feature;
@@ -26,9 +26,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.keycloak.storage.UserStorageProviderModel.IMPORT_ENABLED;
 
 /**
@@ -44,7 +44,7 @@ public abstract class AbstractUserStorageDirtyDeletionTest extends AbstractConcu
 
     private List<Creator<UserResource>> createdUsers;
 
-    @BeforeClass
+    @BeforeAll
     public static void checkNotMapStorage() {
         ProfileAssume.assumeFeatureDisabled(Feature.MAP_STORAGE);
     }
@@ -92,7 +92,7 @@ public abstract class AbstractUserStorageDirtyDeletionTest extends AbstractConcu
           .collect(Collectors.toList());
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         getCleanup().addCleanup(Creator.create(testRealm(), getFederationProvider()));
 

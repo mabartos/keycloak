@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.broker;
 
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.util.PemUtils;
 import org.keycloak.dom.saml.v2.protocol.AuthnRequestType;
 import org.keycloak.saml.RandomSecret;

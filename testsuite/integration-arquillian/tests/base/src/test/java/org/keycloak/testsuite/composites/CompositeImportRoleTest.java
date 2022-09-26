@@ -17,8 +17,8 @@
 package org.keycloak.testsuite.composites;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -57,18 +57,18 @@ public class CompositeImportRoleTest extends AbstractCompositeKeycloakTest {
         String code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
         AccessTokenResponse response = oauth.doAccessTokenRequest(code, "password");
 
-        Assert.assertEquals(200, response.getStatusCode());
+        Assertions.assertEquals(200, response.getStatusCode());
 
-        Assert.assertEquals("Bearer", response.getTokenType());
+        Assertions.assertEquals("Bearer", response.getTokenType());
 
         AccessToken token = oauth.verifyToken(response.getAccessToken());
 
-        Assert.assertEquals(getUserId("APP_COMPOSITE_USER"), token.getSubject());
+        Assertions.assertEquals(getUserId("APP_COMPOSITE_USER"), token.getSubject());
 
-        Assert.assertEquals(1, token.getResourceAccess("APP_ROLE_APPLICATION").getRoles().size());
-        Assert.assertEquals(1, token.getRealmAccess().getRoles().size());
-        Assert.assertTrue(token.getResourceAccess("APP_ROLE_APPLICATION").isUserInRole("APP_ROLE_1"));
-        Assert.assertTrue(token.getRealmAccess().isUserInRole("REALM_ROLE_1"));
+        Assertions.assertEquals(1, token.getResourceAccess("APP_ROLE_APPLICATION").getRoles().size());
+        Assertions.assertEquals(1, token.getRealmAccess().getRoles().size());
+        Assertions.assertTrue(token.getResourceAccess("APP_ROLE_APPLICATION").isUserInRole("APP_ROLE_1"));
+        Assertions.assertTrue(token.getRealmAccess().isUserInRole("REALM_ROLE_1"));
     }
 
 
@@ -81,16 +81,16 @@ public class CompositeImportRoleTest extends AbstractCompositeKeycloakTest {
         String code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
         AccessTokenResponse response = oauth.doAccessTokenRequest(code, "password");
 
-        Assert.assertEquals(200, response.getStatusCode());
+        Assertions.assertEquals(200, response.getStatusCode());
 
-        Assert.assertEquals("Bearer", response.getTokenType());
+        Assertions.assertEquals("Bearer", response.getTokenType());
 
         AccessToken token = oauth.verifyToken(response.getAccessToken());
 
-        Assert.assertEquals(getUserId("REALM_APP_COMPOSITE_USER"), token.getSubject());
+        Assertions.assertEquals(getUserId("REALM_APP_COMPOSITE_USER"), token.getSubject());
 
-        Assert.assertEquals(1, token.getResourceAccess("APP_ROLE_APPLICATION").getRoles().size());
-        Assert.assertTrue(token.getResourceAccess("APP_ROLE_APPLICATION").isUserInRole("APP_ROLE_1"));
+        Assertions.assertEquals(1, token.getResourceAccess("APP_ROLE_APPLICATION").getRoles().size());
+        Assertions.assertTrue(token.getResourceAccess("APP_ROLE_APPLICATION").isUserInRole("APP_ROLE_1"));
     }
 
 
@@ -104,17 +104,17 @@ public class CompositeImportRoleTest extends AbstractCompositeKeycloakTest {
         String code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
         AccessTokenResponse response = oauth.doAccessTokenRequest(code, "password");
 
-        Assert.assertEquals(200, response.getStatusCode());
+        Assertions.assertEquals(200, response.getStatusCode());
 
-        Assert.assertEquals("Bearer", response.getTokenType());
+        Assertions.assertEquals("Bearer", response.getTokenType());
 
         AccessToken token = oauth.verifyToken(response.getAccessToken());
 
-        Assert.assertEquals(getUserId("REALM_COMPOSITE_1_USER"), token.getSubject());
+        Assertions.assertEquals(getUserId("REALM_COMPOSITE_1_USER"), token.getSubject());
 
-        Assert.assertEquals(2, token.getRealmAccess().getRoles().size());
-        Assert.assertTrue(token.getRealmAccess().isUserInRole("REALM_COMPOSITE_1"));
-        Assert.assertTrue(token.getRealmAccess().isUserInRole("REALM_ROLE_1"));
+        Assertions.assertEquals(2, token.getRealmAccess().getRoles().size());
+        Assertions.assertTrue(token.getRealmAccess().isUserInRole("REALM_COMPOSITE_1"));
+        Assertions.assertTrue(token.getRealmAccess().isUserInRole("REALM_ROLE_1"));
     }
 
     @Test
@@ -126,16 +126,16 @@ public class CompositeImportRoleTest extends AbstractCompositeKeycloakTest {
         String code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
         AccessTokenResponse response = oauth.doAccessTokenRequest(code, "password");
 
-        Assert.assertEquals(200, response.getStatusCode());
+        Assertions.assertEquals(200, response.getStatusCode());
 
-        Assert.assertEquals("Bearer", response.getTokenType());
+        Assertions.assertEquals("Bearer", response.getTokenType());
 
         AccessToken token = oauth.verifyToken(response.getAccessToken());
 
-        Assert.assertEquals(getUserId("REALM_COMPOSITE_1_USER"), token.getSubject());
+        Assertions.assertEquals(getUserId("REALM_COMPOSITE_1_USER"), token.getSubject());
 
-        Assert.assertEquals(1, token.getRealmAccess().getRoles().size());
-        Assert.assertTrue(token.getRealmAccess().isUserInRole("REALM_ROLE_1"));
+        Assertions.assertEquals(1, token.getRealmAccess().getRoles().size());
+        Assertions.assertTrue(token.getRealmAccess().isUserInRole("REALM_ROLE_1"));
     }
 
     @Test
@@ -147,16 +147,16 @@ public class CompositeImportRoleTest extends AbstractCompositeKeycloakTest {
         String code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
         AccessTokenResponse response = oauth.doAccessTokenRequest(code, "password");
 
-        Assert.assertEquals(200, response.getStatusCode());
+        Assertions.assertEquals(200, response.getStatusCode());
 
-        Assert.assertEquals("Bearer", response.getTokenType());
+        Assertions.assertEquals("Bearer", response.getTokenType());
 
         AccessToken token = oauth.verifyToken(response.getAccessToken());
 
-        Assert.assertEquals(getUserId("REALM_ROLE_1_USER"), token.getSubject());
+        Assertions.assertEquals(getUserId("REALM_ROLE_1_USER"), token.getSubject());
 
-        Assert.assertEquals(1, token.getRealmAccess().getRoles().size());
-        Assert.assertTrue(token.getRealmAccess().isUserInRole("REALM_ROLE_1"));
+        Assertions.assertEquals(1, token.getRealmAccess().getRoles().size());
+        Assertions.assertTrue(token.getRealmAccess().isUserInRole("REALM_ROLE_1"));
     }
 
 }

@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.jboss.arquillian.container.test.api.ContainerController;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.connections.infinispan.InfinispanConnectionProvider;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.Assert;
@@ -46,7 +46,7 @@ public class ConcurrentLoginClusterTest extends ConcurrentLoginTest {
     }
 
 
-    @Before
+    @BeforeEach
     @Override
     public void beforeTest() {
         // Start backend nodes
@@ -55,7 +55,7 @@ public class ConcurrentLoginClusterTest extends ConcurrentLoginTest {
             if (!controller.isStarted(node.getQualifier())) {
                 log.info("Starting backend node: " + node);
                 controller.start(node.getQualifier());
-                Assert.assertTrue(controller.isStarted(node.getQualifier()));
+                Assertions.assertTrue(controller.isStarted(node.getQualifier()));
             }
         }
 

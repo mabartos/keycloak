@@ -17,13 +17,13 @@
 package org.keycloak.testsuite.authz;
 
 import static org.hamcrest.CoreMatchers.hasItem;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.testsuite.AssertEvents.isUUID;
 
 import javax.ws.rs.core.Response;
@@ -45,10 +45,10 @@ import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.ContainerController;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jetbrains.annotations.NotNull;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.AuthorizationResource;
@@ -124,8 +124,7 @@ public class EntitlementAPITest extends AbstractAuthzTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Override
     public void addTestRealms(List<RealmRepresentation> testRealms) {
@@ -172,13 +171,13 @@ public class EntitlementAPITest extends AbstractAuthzTest {
         testingClient.testApp().oidcClientEndpoints().setSectorIdentifierRedirectUris(Arrays.asList("http://localhost/resource-server-test", "http://localhost/test-client"));
     }
 
-    @Before
+    @BeforeEach
     public void configureAuthorization() throws Exception {
         configureAuthorization(RESOURCE_SERVER_TEST);
         configureAuthorization(PAIRWISE_RESOURCE_SERVER_TEST);
     }
 
-    @After
+    @AfterEach
     public void removeAuthorization() throws Exception {
         removeAuthorization(RESOURCE_SERVER_TEST);
         removeAuthorization(PAIRWISE_RESOURCE_SERVER_TEST);

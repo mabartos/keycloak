@@ -20,10 +20,11 @@ package org.keycloak.testsuite.forms;
 
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.common.Profile;
 import org.keycloak.models.UserManager;
@@ -51,7 +52,7 @@ import org.keycloak.testsuite.pages.LogoutConfirmPage;
 import org.keycloak.testsuite.pages.PasswordPage;
 import org.keycloak.testsuite.pages.RegisterPage;
 import org.keycloak.testsuite.util.FlowUtil;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.MailUtils;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.keycloak.testsuite.util.URLUtils;
@@ -65,8 +66,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;;
 
 /**
  * Test for the various alternatives of reset-credentials flow or browser flow (non-default setup of the  flows)
@@ -74,12 +75,10 @@ import static org.junit.Assert.assertThat;
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
  * @author <a href="mailto:jlieskov@redhat.com">Jan Lieskovsky</a>
  */
+@ExtendWith(GreenMailExtension.class)
 public class ResetCredentialsAlternativeFlowsTest extends AbstractTestRealmKeycloakTest {
 
     private String userId;
-
-    @Rule
-    public GreenMailRule greenMail = new GreenMailRule();
 
     @Page
     protected LoginPage loginPage;
@@ -123,7 +122,7 @@ public class ResetCredentialsAlternativeFlowsTest extends AbstractTestRealmKeycl
     public void configureTestRealm(RealmRepresentation testRealm) {
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         log.info("Adding login-test user");
         UserRepresentation user = UserBuilder.create()
@@ -236,7 +235,7 @@ public class ResetCredentialsAlternativeFlowsTest extends AbstractTestRealmKeycl
             loginUsernameOnlyPage.open();
             loginUsernameOnlyPage.login("login-test");
 
-            Assert.assertTrue(passwordPage.isCurrent());
+            Assertions.assertTrue(passwordPage.isCurrent());
 
             // Click "Forget password"
             passwordPage.clickResetPassword();
@@ -259,8 +258,8 @@ public class ResetCredentialsAlternativeFlowsTest extends AbstractTestRealmKeycl
             updatePasswordPage.changePassword("resetPassword", "resetPassword");
 
             // Assert user authenticated
-            Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-            Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+            Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+            Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
         } finally {
             revertFlows();
         }
@@ -272,14 +271,14 @@ public class ResetCredentialsAlternativeFlowsTest extends AbstractTestRealmKeycl
         loginUsernameOnlyPage.open();
         loginUsernameOnlyPage.login(username);
 
-        Assert.assertTrue(passwordPage.isCurrent());
+        Assertions.assertTrue(passwordPage.isCurrent());
 
         // Click "Forget password"
         passwordPage.clickResetPassword();
 
         // Assert switched to the "reset-credentials" flow, but button "back" not available
         resetPasswordPage.assertCurrent();
-        Assert.assertTrue(URLUtils.currentUrlMatches("/login-actions/reset-credentials"));
+        Assertions.assertTrue(URLUtils.currentUrlMatches("/login-actions/reset-credentials"));
     }
 
 
@@ -363,7 +362,7 @@ public class ResetCredentialsAlternativeFlowsTest extends AbstractTestRealmKeycl
             OAuthClient.AccessTokenResponse response = oauth.doAccessTokenRequest(code, "password");
 
             accountTotpPage.open();
-            Assert.assertTrue(accountTotpPage.isCurrent());
+            Assertions.assertTrue(accountTotpPage.isCurrent());
             String customOtpLabel = "my-original-otp-label";
             accountTotpPage.configure(totp.generateTOTP(accountTotpPage.getTotpSecret()), customOtpLabel);
 
@@ -375,12 +374,12 @@ public class ResetCredentialsAlternativeFlowsTest extends AbstractTestRealmKeycl
             loginPage.resetPassword();
 
             // Should be on reset password page now. Provide email of the user & click Submit button
-            Assert.assertTrue(resetPasswordPage.isCurrent());
+            Assertions.assertTrue(resetPasswordPage.isCurrent());
             resetPasswordPage.changePassword("login@test.com");
 
             // Since 'Send Reset Email' & 'Reset Password' authenticators got removed above,
             // the next action should be 'Reset OTP' -- verify that
-            Assert.assertTrue(totpPage.isCurrent());
+            Assertions.assertTrue(totpPage.isCurrent());
 
             // Provide updated form of the OTP label, to be used within 'Reset OTP' (next) step
             customOtpLabel = "my-reset-otp-label";
@@ -390,11 +389,11 @@ public class ResetCredentialsAlternativeFlowsTest extends AbstractTestRealmKeycl
 
             // Open OTP Authenticator account page
             accountTotpPage.open();
-            Assert.assertTrue(accountTotpPage.isCurrent());
+            Assertions.assertTrue(accountTotpPage.isCurrent());
 
             // Verify OTP authenticator with requested label was created
             String pageSource = driver.getPageSource();
-            Assert.assertTrue(pageSource.contains(customOtpLabel));
+            Assertions.assertTrue(pageSource.contains(customOtpLabel));
 
         // Undo setup changes performed within the test
         } finally {
@@ -429,16 +428,16 @@ public class ResetCredentialsAlternativeFlowsTest extends AbstractTestRealmKeycl
             loginPage.open();
             loginPage.login("login@test.com", "password");
             accountTotpPage.open();
-            Assert.assertTrue(accountTotpPage.isCurrent());
+            Assertions.assertTrue(accountTotpPage.isCurrent());
 
             String pageSource = driver.getPageSource();
             // Check the One-time code label is followed by asterisk character (since always required)
             final String oneTimeCodeLabelFollowedByAsterisk = "(?s)<label for=\"totp\"((?!</span>).)+((?=<span class=\"required\">\\*).)*";
-            Assert.assertTrue(Pattern.compile(oneTimeCodeLabelFollowedByAsterisk).matcher(pageSource).find());
+            Assertions.assertTrue(Pattern.compile(oneTimeCodeLabelFollowedByAsterisk).matcher(pageSource).find());
 
             // Check the Device Name label is not followed by asterisk character (since optional if no OTP credential defined yet)
             final String asteriskPrecededByDeviceNameLabel = "(?s)((?<=<label for=\"userLabel\").)+.*<span class=\"required\">\\s+\\*";
-            Assert.assertFalse(Pattern.compile(asteriskPrecededByDeviceNameLabel).matcher(pageSource).find());
+            Assertions.assertFalse(Pattern.compile(asteriskPrecededByDeviceNameLabel).matcher(pageSource).find());
 
             // Create OTP credential with empty label
             final String emptyOtpLabel = "";
@@ -465,28 +464,28 @@ public class ResetCredentialsAlternativeFlowsTest extends AbstractTestRealmKeycl
             registerPage.assertCurrent();
 
             registerPage.register("Bruce", "Wilson", "bwilson@keycloak.org", "bwilson", "password", "password");
-            Assert.assertTrue(totpPage.isCurrent());
+            Assertions.assertTrue(totpPage.isCurrent());
             pageSource = driver.getPageSource();
 
             // Check the One-time code label is required
-            Assert.assertTrue(Pattern.compile(oneTimeCodeLabelFollowedByAsterisk).matcher(pageSource).find());
+            Assertions.assertTrue(Pattern.compile(oneTimeCodeLabelFollowedByAsterisk).matcher(pageSource).find());
             // Check the Device Name label is optional
-            Assert.assertFalse(Pattern.compile(asteriskPrecededByDeviceNameLabel).matcher(pageSource).find());
+            Assertions.assertFalse(Pattern.compile(asteriskPrecededByDeviceNameLabel).matcher(pageSource).find());
 
             // Create OTP credential with empty label
             totpPage.configure(totp.generateTOTP(accountTotpPage.getTotpSecret()), emptyOtpLabel);
 
-            Assert.assertNull(totpPage.getAlertError());
-            Assert.assertNull(totpPage.getInputCodeError());
-            Assert.assertNull(totpPage.getInputLabelError());
+            Assertions.assertNull(totpPage.getAlertError());
+            Assertions.assertNull(totpPage.getInputCodeError());
+            Assertions.assertNull(totpPage.getInputLabelError());
 
             // Assert user authenticated
             appPage.assertCurrent();
-            Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-            Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+            Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+            Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
             accountTotpPage.open();
-            Assert.assertTrue(accountTotpPage.isCurrent());
+            Assertions.assertTrue(accountTotpPage.isCurrent());
 
             // Check if OTP credential with empty label was created successfully
             assertThat(driver.findElements(By.className("provider")).stream()
@@ -504,45 +503,45 @@ public class ResetCredentialsAlternativeFlowsTest extends AbstractTestRealmKeycl
             loginPage.resetPassword();
 
             // Should be on reset password page now. Provide email of previously registered user & click Submit button
-            Assert.assertTrue(resetPasswordPage.isCurrent());
+            Assertions.assertTrue(resetPasswordPage.isCurrent());
             resetPasswordPage.changePassword("bwilson@keycloak.org");
 
             pageSource = driver.getPageSource();
 
             // Check the One-time code label is required
-            Assert.assertTrue(Pattern.compile(oneTimeCodeLabelFollowedByAsterisk).matcher(pageSource).find());
+            Assertions.assertTrue(Pattern.compile(oneTimeCodeLabelFollowedByAsterisk).matcher(pageSource).find());
 
             // Check the Device Name label is required (since one OTP credential already defined)
             final String deviceNameLabelFollowedByAsterisk = "(?s)<label for=\"userLabel\"((?!</span>).)+((?=<span class=\"required\">\\*).)*";
-            Assert.assertTrue(Pattern.compile(deviceNameLabelFollowedByAsterisk).matcher(pageSource).find());
+            Assertions.assertTrue(Pattern.compile(deviceNameLabelFollowedByAsterisk).matcher(pageSource).find());
 
             // Try to create another OTP credential with empty label again. This
             // should fail with error since OTP label is required in this case already
             final String deviceNameLabelRequiredErrorMessage = "Please specify device name.";
             totpPage.configure(totp.generateTOTP(accountTotpPage.getTotpSecret()), emptyOtpLabel);
-            Assert.assertTrue(totpPage.getInputLabelError().equals(deviceNameLabelRequiredErrorMessage));
+            Assertions.assertTrue(totpPage.getInputLabelError().equals(deviceNameLabelRequiredErrorMessage));
 
             // Create 2nd OTP credential with valid (non-empty) Device Name label. This should pass
             final String secondOtpLabel = "My 2nd OTP device";
             totpPage.configure(totp.generateTOTP(accountTotpPage.getTotpSecret()), secondOtpLabel);
 
-            Assert.assertNull(totpPage.getAlertError());
-            Assert.assertNull(totpPage.getInputCodeError());
-            Assert.assertNull(totpPage.getInputLabelError());
+            Assertions.assertNull(totpPage.getAlertError());
+            Assertions.assertNull(totpPage.getInputCodeError());
+            Assertions.assertNull(totpPage.getInputLabelError());
 
             // Assert user authenticated
             appPage.assertCurrent();
-            Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-            Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+            Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+            Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
             accountTotpPage.open();
-            Assert.assertTrue(accountTotpPage.isCurrent());
+            Assertions.assertTrue(accountTotpPage.isCurrent());
 
             // Get the updated Account TOTP page source after both the OTP credentials were created
             pageSource = driver.getPageSource();
 
             // Verify 2nd OTP credential was successfully created too
-            Assert.assertTrue(pageSource.contains(secondOtpLabel));
+            Assertions.assertTrue(pageSource.contains(secondOtpLabel));
 
             // Remove both OTP credentials
             accountTotpPage.removeTotp();

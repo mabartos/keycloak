@@ -11,7 +11,7 @@ import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.models.IdentityProviderModel;
@@ -53,10 +53,10 @@ public class KcOidcBrokerLoginHintTest extends AbstractBrokerTest {
 
         waitForPage(driver, "sign in to", true);
 
-        Assert.assertTrue("Driver should be on the provider realm page right now",
+        Assertions.assertTrue("Driver should be on the provider realm page right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName() + "/"));
 
-        Assert.assertTrue("User identifiant should be fullfilled",
+        Assertions.assertTrue("User identifiant should be fullfilled",
                 loginPage.getUsername().equalsIgnoreCase(USER_EMAIL));
         
         log.debug("Logging in");
@@ -65,7 +65,7 @@ public class KcOidcBrokerLoginHintTest extends AbstractBrokerTest {
         waitForPage(driver, "update account information", false);
 
         updateAccountInformationPage.assertCurrent();
-        Assert.assertTrue("We must be on correct realm right now",
+        Assertions.assertTrue("We must be on correct realm right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.consumerRealmName() + "/"));
 
         log.debug("Updating info on updateAccount page");
@@ -74,7 +74,7 @@ public class KcOidcBrokerLoginHintTest extends AbstractBrokerTest {
         UsersResource consumerUsers = adminClient.realm(bc.consumerRealmName()).users();
 
         int userCount = consumerUsers.count();
-        Assert.assertTrue("There must be at least one user", userCount > 0);
+        Assertions.assertTrue("There must be at least one user", userCount > 0);
 
         List<UserRepresentation> users = consumerUsers.search("", 0, userCount);
 
@@ -86,7 +86,7 @@ public class KcOidcBrokerLoginHintTest extends AbstractBrokerTest {
             }
         }
 
-        Assert.assertTrue("There must be user " + bc.getUserLogin() + " in realm " + bc.consumerRealmName(),
+        Assertions.assertTrue("There must be user " + bc.getUserLogin() + " in realm " + bc.consumerRealmName(),
                 isUserFound);
     }
 

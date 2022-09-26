@@ -17,8 +17,8 @@
 package org.keycloak.testsuite.console.themes;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.auth.page.login.TermsAndConditions;
@@ -76,10 +76,10 @@ public class TermsAndConditionsThemeTest extends AbstractConsoleTest {
         testRealmAdminConsolePage.navigateTo();
         testRealmLoginPage.form().login(HOMER, HOMER_PASS);
 
-        Assert.assertTrue(termsAndConditionsPage.isCurrent());
-        Assert.assertTrue(termsAndConditionsPage.getText().contains("See QA for more information."));
-        Assert.assertEquals("Yes", termsAndConditionsPage.getAcceptButtonText());
-        Assert.assertEquals("No", termsAndConditionsPage.getDeclineButtonText());
+        Assertions.assertTrue(termsAndConditionsPage.isCurrent());
+        Assertions.assertTrue(termsAndConditionsPage.getText().contains("See QA for more information."));
+        Assertions.assertEquals("Yes", termsAndConditionsPage.getAcceptButtonText());
+        Assertions.assertEquals("No", termsAndConditionsPage.getDeclineButtonText());
     }
     
 }

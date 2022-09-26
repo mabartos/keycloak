@@ -7,7 +7,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.common.Profile;
 import org.keycloak.events.Details;
@@ -40,8 +40,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlDoesntStartWith;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlDoesntStartWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.pause;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
@@ -57,8 +57,7 @@ import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
 @DisableFeature(value = Profile.Feature.ACCOUNT2, skipRestart = true) // TODO remove this (KEYCLOAK-16228)
 public class OfflineServletsAdapterTest extends AbstractServletsAdapterTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
     @Page
     protected OfflineToken offlineTokenPage;
     @Page

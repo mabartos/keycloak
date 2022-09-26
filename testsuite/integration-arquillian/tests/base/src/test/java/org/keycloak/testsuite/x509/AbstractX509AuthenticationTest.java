@@ -21,12 +21,13 @@ package org.keycloak.testsuite.x509;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.logging.Logger;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.Rule;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.AuthenticationManagementResource;
 import org.keycloak.authentication.AuthenticationFlow;
@@ -87,6 +88,8 @@ import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
  * @version $Revision: 1 $
  * @since 10/28/2016
  */
+@ExtendWith(AssertAdminEvents.class)
+@ExtendWith(AssertEvents.class)
 public abstract class AbstractX509AuthenticationTest extends AbstractTestRealmKeycloakTest {
 
     public static final String EMPTY_CRL_PATH = "empty.crl";
@@ -117,10 +120,7 @@ public abstract class AbstractX509AuthenticationTest extends AbstractTestRealmKe
 
     private static SetSystemProperty phantomjsCliArgs;
 
-    @Rule
     public AssertEvents events = new AssertEvents(this);
-
-    @Rule
     public AssertAdminEvents assertAdminEvents = new AssertAdminEvents(this);
 
     @Page
@@ -141,18 +141,18 @@ public abstract class AbstractX509AuthenticationTest extends AbstractTestRealmKe
         return true;
     }
 
-    @Before
+    @BeforeEach
     public void validateConfiguration() {
-        Assume.assumeTrue(AUTH_SERVER_SSL_REQUIRED);
+        Assumptions.assumeTrue(AUTH_SERVER_SSL_REQUIRED);
     }
 
 
-    @BeforeClass
+    @BeforeAll
     public static void onBeforeTestClass() {
         configurePhantomJS("/ca.crt", "/client.crt", "/client.key", "password");
     }
 
-    @AfterClass
+    @AfterAll
     public static void onAfterTestClass() {
         phantomjsCliArgs.revert();
     }
@@ -203,35 +203,35 @@ public abstract class AbstractX509AuthenticationTest extends AbstractTestRealmKe
         return authServerHome;
     }
 
-    @Before
+    @BeforeEach
     public void configureFlows() {
         authMgmtResource = adminClient.realms().realm(REALM_NAME).flows();
         this.realmId = adminClient.realm(REALM_NAME).toRepresentation().getId();
 
         AuthenticationFlowRepresentation browserFlow = copyBrowserFlow();
-        Assert.assertNotNull(browserFlow);
+        Assertions.assertNotNull(browserFlow);
 
         AuthenticationFlowRepresentation directGrantFlow = createDirectGrantFlow();
-        Assert.assertNotNull(directGrantFlow);
+        Assertions.assertNotNull(directGrantFlow);
 
         setBrowserFlow(browserFlow);
-        Assert.assertEquals(testRealm().toRepresentation().getBrowserFlow(), browserFlow.getAlias());
+        Assertions.assertEquals(testRealm().toRepresentation().getBrowserFlow(), browserFlow.getAlias());
 
         setDirectGrantFlow(directGrantFlow);
-        Assert.assertEquals(testRealm().toRepresentation().getDirectGrantFlow(), directGrantFlow.getAlias());
-        Assert.assertEquals(0, directGrantFlow.getAuthenticationExecutions().size());
+        Assertions.assertEquals(testRealm().toRepresentation().getDirectGrantFlow(), directGrantFlow.getAlias());
+        Assertions.assertEquals(0, directGrantFlow.getAuthenticationExecutions().size());
 
         // Add X509 cert authenticator to the direct grant flow
         directGrantExecution = addAssertExecution(directGrantFlow, ValidateX509CertificateUsernameFactory.PROVIDER_ID, REQUIRED);
-        Assert.assertNotNull(directGrantExecution);
+        Assertions.assertNotNull(directGrantExecution);
 
         directGrantFlow = authMgmtResource.getFlow(directGrantFlow.getId());
-        Assert.assertNotNull(directGrantFlow.getAuthenticationExecutions());
-        Assert.assertEquals(1, directGrantFlow.getAuthenticationExecutions().size());
+        Assertions.assertNotNull(directGrantFlow.getAuthenticationExecutions());
+        Assertions.assertEquals(1, directGrantFlow.getAuthenticationExecutions().size());
 
         // Add X509 authenticator to the browser flow
         browserExecution = addAssertExecution(browserFlow, X509ClientCertificateAuthenticatorFactory.PROVIDER_ID, ALTERNATIVE);
-        Assert.assertNotNull(browserExecution);
+        Assertions.assertNotNull(browserExecution);
 
         // Raise the priority of the authenticator to position it right before
         // the Username/password authentication
@@ -261,7 +261,7 @@ public abstract class AbstractX509AuthenticationTest extends AbstractTestRealmKe
         // TODO the following statement asserts, the actual value is null?
         //assertAdminEvents.assertEvent(REALM_NAME, OperationType.CREATE, AssertAdminEvents.isExpectedPrefixFollowedByUuid(AdminEventPaths.authMgmtBasePath() + "/executions"), rep);
         try {
-            Assert.assertEquals("added execution", 201, response.getStatus());
+            Assertions.assertEquals("added execution", 201, response.getStatus());
         } finally {
             response.close();
         }
@@ -337,7 +337,7 @@ public abstract class AbstractX509AuthenticationTest extends AbstractTestRealmKe
         Response response = authMgmtResource.copy(existingFlow, params);
         assertAdminEvents.assertEvent(realmId, OperationType.CREATE, Encode.decode(AdminEventPaths.authCopyFlowPath(existingFlow)), params, ResourceType.AUTH_FLOW);
         try {
-            Assert.assertEquals("Copy flow", 201, response.getStatus());
+            Assertions.assertEquals("Copy flow", 201, response.getStatus());
         } finally {
             response.close();
         }
@@ -393,7 +393,7 @@ public abstract class AbstractX509AuthenticationTest extends AbstractTestRealmKe
     protected String createConfig(String executionId, AuthenticatorConfigRepresentation cfg) {
         Response resp = authMgmtResource.newExecutionConfig(executionId, cfg);
         try {
-            Assert.assertEquals(201, resp.getStatus());
+            Assertions.assertEquals(201, resp.getStatus());
         }
         finally {
             resp.close();
@@ -485,7 +485,7 @@ public abstract class AbstractX509AuthenticationTest extends AbstractTestRealmKe
 
     protected void setUserEnabled(String userName, boolean enabled) {
         UserRepresentation user = findUser(userName);
-        Assert.assertNotNull(user);
+        Assertions.assertNotNull(user);
 
         user.setEnabled(enabled);
 
@@ -524,17 +524,17 @@ public abstract class AbstractX509AuthenticationTest extends AbstractTestRealmKe
 
         AuthenticatorConfigRepresentation cfg = newConfig("x509-browser-config", config.getConfig());
         String cfgId = createConfig(browserExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         loginConfirmationPage.open();
 
-        Assert.assertTrue(loginConfirmationPage.getSubjectDistinguishedNameText().startsWith("EMAILADDRESS=test-user@localhost"));
-        Assert.assertEquals(username, loginConfirmationPage.getUsernameText());
+        Assertions.assertTrue(loginConfirmationPage.getSubjectDistinguishedNameText().startsWith("EMAILADDRESS=test-user@localhost"));
+        Assertions.assertEquals(username, loginConfirmationPage.getUsernameText());
 
         loginConfirmationPage.confirm();
 
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         AssertEvents.ExpectedEvent expectedEvent = events.expectLogin()
                 .user(userId)

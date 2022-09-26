@@ -43,11 +43,11 @@ import javax.security.auth.login.LoginException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.junit.AfterClass;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.jaas.AbstractKeycloakLoginModule;
 import org.keycloak.adapters.jaas.BearerTokenLoginModule;
@@ -90,10 +90,10 @@ public class LoginModulesTest extends AbstractKeycloakTest {
     }
 
     private static void enabled() {
-        Assume.assumeTrue(AUTH_SERVER_SSL_REQUIRED);
+        Assumptions.assumeTrue(AUTH_SERVER_SSL_REQUIRED);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void createTemporaryFiles() throws Exception {
         enabled();
 
@@ -101,7 +101,7 @@ public class LoginModulesTest extends AbstractKeycloakTest {
         copyContentAndReplaceAuthServerAddress(new File(BEARER_CONFIG), BEARER_CONFIG_FILE);
     }
 
-    @AfterClass
+    @AfterAll
     public static void removeTemporaryFiles() {
         DIRECT_GRANT_CONFIG_FILE.deleteOnExit();
         BEARER_CONFIG_FILE.deleteOnExit();
@@ -117,7 +117,7 @@ public class LoginModulesTest extends AbstractKeycloakTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void generateAudienceClientScope() {
         if (ApiUtil.findClientScopeByName(adminClient.realm("demo"), "customer-db-audience-required") != null) {
             return;
@@ -139,7 +139,7 @@ public class LoginModulesTest extends AbstractKeycloakTest {
 
         try {
             loginContext.login();
-            Assert.fail("Not expected to successfully login");
+            Assertions.fail("Not expected to successfully login");
         } catch (LoginException le) {
             // Ignore
         }
@@ -155,12 +155,12 @@ public class LoginModulesTest extends AbstractKeycloakTest {
 
         // Assert principals in subject
         KeycloakPrincipal principal = subject.getPrincipals(KeycloakPrincipal.class).iterator().next();
-        Assert.assertEquals("bburke@redhat.com", principal.getKeycloakSecurityContext().getToken().getPreferredUsername());
+        Assertions.assertEquals("bburke@redhat.com", principal.getKeycloakSecurityContext().getToken().getPreferredUsername());
         assertToken(principal.getKeycloakSecurityContext().getTokenString(), true);
 
         Set<RolePrincipal> roles = subject.getPrincipals(RolePrincipal.class);
-        Assert.assertEquals(1, roles.size());
-        Assert.assertEquals("user", roles.iterator().next().getName());
+        Assertions.assertEquals(1, roles.size());
+        Assertions.assertEquals("user", roles.iterator().next().getName());
 
         // Logout and assert token not valid anymore
         loginContext.logout();
@@ -183,7 +183,7 @@ public class LoginModulesTest extends AbstractKeycloakTest {
         // Login should fail due insufficient audience in the token
         try {
             bearerCtx.login();
-            Assert.fail("Not expected to successfully login");
+            Assertions.fail("Not expected to successfully login");
         } catch (LoginException le) {
             // Ignore
         }
@@ -211,12 +211,12 @@ public class LoginModulesTest extends AbstractKeycloakTest {
         Subject subject = bearerCtx.getSubject();
 
         KeycloakPrincipal principal = subject.getPrincipals(KeycloakPrincipal.class).iterator().next();
-        Assert.assertEquals("bburke@redhat.com", principal.getKeycloakSecurityContext().getToken().getPreferredUsername());
+        Assertions.assertEquals("bburke@redhat.com", principal.getKeycloakSecurityContext().getToken().getPreferredUsername());
         assertToken(principal.getKeycloakSecurityContext().getTokenString(), true);
 
         Set<RolePrincipal> roles = subject.getPrincipals(RolePrincipal.class);
-        Assert.assertEquals(1, roles.size());
-        Assert.assertEquals("user", roles.iterator().next().getName());
+        Assertions.assertEquals(1, roles.size());
+        Assertions.assertEquals("user", roles.iterator().next().getName());
 
         // Logout
         bearerCtx.logout();
@@ -239,7 +239,7 @@ public class LoginModulesTest extends AbstractKeycloakTest {
         String introspectionResponse = oauth.introspectAccessTokenWithClientCredential("customer-portal", "password", accessToken);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(introspectionResponse);
-        Assert.assertEquals(expectActive, jsonNode.get("active").asBoolean());
+        Assertions.assertEquals(expectActive, jsonNode.get("active").asBoolean());
     }
 
 

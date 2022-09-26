@@ -16,10 +16,10 @@
  */
 package org.keycloak.testsuite.admin.client.authorization;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.common.Profile.Feature.AUTHORIZATION;
 
 import javax.security.cert.X509Certificate;
@@ -40,10 +40,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.AuthorizationContext;
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.OAuth2Constants;
@@ -98,7 +98,7 @@ public class PolicyEnforcerTest extends AbstractKeycloakTest {
     private static final String RESOURCE_SERVER_CLIENT_ID = "resource-server-test";
     private static final String REALM_NAME = "authz-test";
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
         ProfileAssume.assumeFeatureEnabled(AUTHORIZATION);
     }
@@ -134,7 +134,7 @@ public class PolicyEnforcerTest extends AbstractKeycloakTest {
                 .build());
     }
 
-    @Before
+    @BeforeEach
     public void onBefore() {
         initAuthorizationSettings(getClientResource(RESOURCE_SERVER_CLIENT_ID));
     }
@@ -216,7 +216,7 @@ public class PolicyEnforcerTest extends AbstractKeycloakTest {
 
             @Override
             public String apply(String s) {
-                Assert.assertTrue(resolved.compareAndSet(false, true));
+                Assertions.assertTrue(resolved.compareAndSet(false, true));
                 return "value-" + s;
             }
         });

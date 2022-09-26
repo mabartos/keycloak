@@ -1,15 +1,14 @@
 package org.keycloak.testsuite.util;
 
-import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
-import static org.keycloak.testsuite.arquillian.AuthServerTestEnricher.getHttpAuthServerContextRoot;
-import static org.keycloak.testsuite.util.ServerURLs.removeDefaultPorts;
-
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.keycloak.testsuite.arquillian.undertow.lb.SimpleUndertowLoadBalancer;
 
-public class ReverseProxy implements TestRule {
+import static org.keycloak.testsuite.arquillian.AuthServerTestEnricher.getHttpAuthServerContextRoot;
+import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
+import static org.keycloak.testsuite.util.ServerURLs.removeDefaultPorts;
+
+public class ReverseProxy implements BeforeAllCallback {
 
     public static String DEFAULT_PROXY_HOST = "proxy.kc.127.0.0.1.nip.io";
     public static final int DEFAULT_HTTP_PORT = 8666;
@@ -30,21 +29,15 @@ public class ReverseProxy implements TestRule {
     }
 
     @Override
-    public Statement apply(Statement base, Description description) {
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                try {
-                    proxy.start();
-                    proxy.enableAllBackendNodes();
-                    base.evaluate();
-                } catch (Throwable throwable) {
-                    throw new RuntimeException(throwable);
-                } finally {
-                    proxy.stop();
-                }
-            }
-        };
+    public void beforeAll(ExtensionContext extensionContext) throws Exception {
+        try {
+            proxy.start();
+            proxy.enableAllBackendNodes();
+        } catch (Throwable throwable) {
+            throw new RuntimeException(throwable);
+        } finally {
+            proxy.stop();
+        }
     }
 
     public String getUrl() {

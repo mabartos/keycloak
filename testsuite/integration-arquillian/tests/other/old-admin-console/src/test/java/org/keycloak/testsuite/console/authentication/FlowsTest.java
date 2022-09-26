@@ -22,8 +22,8 @@
 package org.keycloak.testsuite.console.authentication;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.AuthenticationFlowRepresentation;
 import org.keycloak.testsuite.console.AbstractConsoleTest;
 import org.keycloak.testsuite.console.page.authentication.flows.CreateExecution;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -59,7 +59,7 @@ public class FlowsTest extends AbstractConsoleTest {
     @Page
     private CreateExecution createExecutionPage;
     
-    @Before
+    @BeforeEach
     public void beforeFlowsTest() {
         flowsPage.navigateTo();
     }

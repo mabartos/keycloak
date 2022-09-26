@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.crossdc;
 
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.common.util.Retry;
@@ -49,7 +49,7 @@ public class BruteForceCrossDCTest extends AbstractAdminCrossDCTest {
 
     private static final String REALM_NAME = "brute-force-test";
 
-    @Before
+    @BeforeEach
     public void beforeTest() {
         log.debug("--DC: creating test realm");
         try {
@@ -162,8 +162,8 @@ public class BruteForceCrossDCTest extends AbstractAdminCrossDCTest {
         Retry.execute(() -> {
             int dc0CacheSize = getTestingClientForStartedNodeInDc(0).testing().cache(InfinispanConnectionProvider.LOGIN_FAILURE_CACHE_NAME).size();
             int dc1CacheSize = getTestingClientForStartedNodeInDc(1).testing().cache(InfinispanConnectionProvider.LOGIN_FAILURE_CACHE_NAME).size();
-            Assert.assertEquals(0, dc0CacheSize);
-            Assert.assertEquals(0, dc1CacheSize);
+            Assertions.assertEquals(0, dc0CacheSize);
+            Assertions.assertEquals(0, dc1CacheSize);
         }, 50, 50);
 
     }
@@ -218,9 +218,9 @@ public class BruteForceCrossDCTest extends AbstractAdminCrossDCTest {
 
             log.infof("After concurrent update entry1: dc0User1=%d, dc1user1=%d", dc0user1, dc1user1);
 
-            // TODO: The number of failures should be ideally exactly 21 in both DCs. Once we improve cross-dc, then improve this test and rather check for "Assert.assertEquals(dc0user1, 21)" and "Assert.assertEquals(dc1user1, 21)"
-            Assert.assertThat(dc0user1, Matchers.greaterThan(11));
-            Assert.assertThat(dc1user1, Matchers.greaterThan(11));
+            // TODO: The number of failures should be ideally exactly 21 in both DCs. Once we improve cross-dc, then improve this test and rather check for "Assertions.assertEquals(dc0user1, 21)" and "Assertions.assertEquals(dc1user1, 21)"
+            Assertions.assertThat(dc0user1, Matchers.greaterThan(11));
+            Assertions.assertThat(dc1user1, Matchers.greaterThan(11));
         }, 50, 50);
     }
 
@@ -237,13 +237,13 @@ public class BruteForceCrossDCTest extends AbstractAdminCrossDCTest {
 
             log.infof("%s: dc0User1=%d, dc0user2=%d, dc1user1=%d, dc1user2=%d, dc0CacheSize=%d, dc1CacheSize=%d", prefixMessage, dc0user1, dc0user2, dc1user1, dc1user2, dc0CacheSize, dc1CacheSize);
 
-            Assert.assertEquals(expectedUser1, dc0user1);
-            Assert.assertEquals(expectedUser2, dc0user2);
-            Assert.assertEquals(expectedUser1, dc1user1);
-            Assert.assertEquals(expectedUser2, dc1user2);
+            Assertions.assertEquals(expectedUser1, dc0user1);
+            Assertions.assertEquals(expectedUser2, dc0user2);
+            Assertions.assertEquals(expectedUser1, dc1user1);
+            Assertions.assertEquals(expectedUser2, dc1user2);
 
-            Assert.assertEquals(expectedCacheSize, dc0CacheSize);
-            Assert.assertEquals(expectedCacheSize, dc1CacheSize);
+            Assertions.assertEquals(expectedCacheSize, dc0CacheSize);
+            Assertions.assertEquals(expectedCacheSize, dc1CacheSize);
         }, 50, 50);
     }
 
@@ -256,8 +256,8 @@ public class BruteForceCrossDCTest extends AbstractAdminCrossDCTest {
 
         for (int i=0 ; i<count ; i++) {
             OAuthClient.AccessTokenResponse response = oauth.doGrantAccessTokenRequest("password", username, "bad-password");
-            Assert.assertNull(response.getAccessToken());
-            Assert.assertNotNull(response.getError());
+            Assertions.assertNull(response.getAccessToken());
+            Assertions.assertNotNull(response.getError());
         }
 
     }

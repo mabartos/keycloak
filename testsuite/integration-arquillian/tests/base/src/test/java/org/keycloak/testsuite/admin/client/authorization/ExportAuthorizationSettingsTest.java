@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.representations.idm.ClientRepresentation;
@@ -51,7 +51,7 @@ public class ExportAuthorizationSettingsTest extends AbstractAuthorizationTest {
 
         //get Default Resource
         List<ResourceRepresentation> resources = authorizationResource.resources().findByName("Default Resource");
-        Assert.assertTrue(resources.size() == 1);
+        Assertions.assertTrue(resources.size() == 1);
         ResourceRepresentation resource = resources.get(0);
        
         //get Default Policy
@@ -64,7 +64,7 @@ public class ExportAuthorizationSettingsTest extends AbstractAuthorizationTest {
         permission.addResource(resource.getId());
         Response create = authorizationResource.permissions().resource().create(permission);
         try {
-            Assert.assertEquals(Status.CREATED, create.getStatusInfo());
+            Assertions.assertEquals(Status.CREATED, create.getStatusInfo());
         } finally {
             create.close();
         }
@@ -77,11 +77,11 @@ public class ExportAuthorizationSettingsTest extends AbstractAuthorizationTest {
         for (PolicyRepresentation p : exportSettings.getPolicies()) {
             if (p.getName().equals(permissionName)) {
                 found = true;
-                Assert.assertEquals("[\"Default Resource\"]", p.getConfig().get("resources"));
-                Assert.assertEquals("[\"Default Policy\"]", p.getConfig().get("applyPolicies"));
+                Assertions.assertEquals("[\"Default Resource\"]", p.getConfig().get("resources"));
+                Assertions.assertEquals("[\"Default Policy\"]", p.getConfig().get("applyPolicies"));
             }
         }
-        Assert.assertTrue("Permission \"role-based-permission\" was not found.", found);
+        Assertions.assertTrue("Permission \"role-based-permission\" was not found.", found);
     }
     
     //KEYCLOAK-4340
@@ -101,7 +101,7 @@ public class ExportAuthorizationSettingsTest extends AbstractAuthorizationTest {
         policy.setConfig(config);
         Response create = authorizationResource.policies().create(policy);
         try {
-            Assert.assertEquals(Status.CREATED, create.getStatusInfo());
+            Assertions.assertEquals(Status.CREATED, create.getStatusInfo());
         } finally {
             create.close();
         }
@@ -139,7 +139,7 @@ public class ExportAuthorizationSettingsTest extends AbstractAuthorizationTest {
         config.put("roles", "[{\"id\":\"" + role1.getId() +"\"},{\"id\":\"" + role2.getId() +"\"}]");
         policy.setConfig(config);
         try (Response create = authorizationResource.policies().create(policy)) {
-            Assert.assertEquals(Status.CREATED, create.getStatusInfo());
+            Assertions.assertEquals(Status.CREATED, create.getStatusInfo());
         }
         
         //export authorization settings
@@ -149,18 +149,18 @@ public class ExportAuthorizationSettingsTest extends AbstractAuthorizationTest {
         for (PolicyRepresentation p : exportSettings.getPolicies()) {
             if (p.getName().equals("role-based-policy")) {
                 found = true;
-                Assert.assertTrue(p.getConfig().get("roles").contains("test-client-1/client-role") && 
+                Assertions.assertTrue(p.getConfig().get("roles").contains("test-client-1/client-role") &&
                         p.getConfig().get("roles").contains("test-client-2/client-role"));
             }
         }
         if (!found) {
-            Assert.fail("Policy \"role-based-policy\" was not found in exported settings.");
+            Assertions.fail("Policy \"role-based-policy\" was not found in exported settings.");
         }
     }
     
     private ClientRepresentation getClientByClientId(String clientId) {
         List<ClientRepresentation> findByClientId = testRealmResource().clients().findByClientId(clientId);
-        Assert.assertTrue(findByClientId.size() == 1);
+        Assertions.assertTrue(findByClientId.size() == 1);
         return findByClientId.get(0);
     }
 }

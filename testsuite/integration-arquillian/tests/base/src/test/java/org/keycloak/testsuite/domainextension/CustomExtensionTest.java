@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.domainextension;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractKeycloakTest;
@@ -46,7 +46,7 @@ public class CustomExtensionTest extends AbstractKeycloakTest {
         testRealms.add(foo);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void checkNotMapStorage() {
         ProfileAssume.assumeFeatureDisabled(Profile.Feature.MAP_STORAGE);
     }
@@ -83,9 +83,9 @@ public class CustomExtensionTest extends AbstractKeycloakTest {
             names.add(comp.getName());
         }
 
-        Assert.assertEquals(expectedNames.length, names.size());
+        Assertions.assertEquals(expectedNames.length, names.size());
         for (String expectedName : expectedNames) {
-            Assert.assertTrue(names.contains(expectedName));
+            Assertions.assertTrue(names.contains(expectedName));
         }
     }
 }

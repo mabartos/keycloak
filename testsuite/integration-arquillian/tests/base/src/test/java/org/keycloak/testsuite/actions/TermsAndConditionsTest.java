@@ -18,10 +18,10 @@ package org.keycloak.testsuite.actions;
 
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.requiredactions.TermsAndConditions;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
@@ -40,18 +40,17 @@ import org.keycloak.testsuite.util.UserBuilder;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
 public class TermsAndConditionsTest extends AbstractTestRealmKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+
 
     @Page
     protected AppPage appPage;
@@ -66,7 +65,7 @@ public class TermsAndConditionsTest extends AbstractTestRealmKeycloakTest {
     public void configureTestRealm(RealmRepresentation testRealm) {
     }
 
-    @Before
+    @BeforeEach
     public void addTermsAndConditionRequiredAction() {
         UserRepresentation user = ActionUtil.findUserWithAdminClient(adminClient, "test-user@localhost");
         UserBuilder.edit(user).requiredAction(TermsAndConditions.PROVIDER_ID);
@@ -83,13 +82,13 @@ public class TermsAndConditionsTest extends AbstractTestRealmKeycloakTest {
 
         loginPage.login("test-user@localhost", "password");
 
-        Assert.assertTrue(termsPage.isCurrent());
+        Assertions.assertTrue(termsPage.isCurrent());
 
         termsPage.acceptTerms();
 
         events.expectRequiredAction(EventType.CUSTOM_REQUIRED_ACTION).removeDetail(Details.REDIRECT_URI).detail(Details.CUSTOM_REQUIRED_ACTION, TermsAndConditions.PROVIDER_ID).assertEvent();
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         events.expectLogin().assertEvent();
 
@@ -117,7 +116,7 @@ public class TermsAndConditionsTest extends AbstractTestRealmKeycloakTest {
 
         loginPage.login("test-user@localhost", "password");
 
-        Assert.assertTrue(termsPage.isCurrent());
+        Assertions.assertTrue(termsPage.isCurrent());
 
         termsPage.declineTerms();
 

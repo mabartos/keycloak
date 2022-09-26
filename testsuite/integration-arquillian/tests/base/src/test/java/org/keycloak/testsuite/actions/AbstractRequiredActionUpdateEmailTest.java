@@ -16,13 +16,13 @@
  */
 package org.keycloak.testsuite.actions;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -51,7 +51,7 @@ public abstract class AbstractRequiredActionUpdateEmailTest extends AbstractTest
 	@Page
 	protected AppPage appPage;
 
-	@Before
+	@BeforeEach
 	public void beforeTest() {
 		ApiUtil.removeUserByUsername(testRealm(), "test-user@localhost");
 		UserRepresentation user = UserBuilder.create().enabled(true)
@@ -106,9 +106,9 @@ public abstract class AbstractRequiredActionUpdateEmailTest extends AbstractTest
 		updateEmailPage.assertCurrent();
 
 		// assert that form holds submitted values during validation error
-		Assert.assertEquals("", updateEmailPage.getEmail());
+		Assertions.assertEquals("", updateEmailPage.getEmail());
 
-		Assert.assertEquals("Please specify email.", updateEmailPage.getEmailInputError());
+		Assertions.assertEquals("Please specify email.", updateEmailPage.getEmailInputError());
 
 		events.assertEmpty();
 	}
@@ -126,9 +126,9 @@ public abstract class AbstractRequiredActionUpdateEmailTest extends AbstractTest
 		updateEmailPage.assertCurrent();
 
 		// assert that form holds submitted values during validation error
-		Assert.assertEquals("test-user@localhost", updateEmailPage.getEmail());
+		Assertions.assertEquals("test-user@localhost", updateEmailPage.getEmail());
 
-		Assert.assertEquals("Email already exists.", updateEmailPage.getEmailInputError());
+		Assertions.assertEquals("Email already exists.", updateEmailPage.getEmailInputError());
 
 		events.assertEmpty();
 	}
@@ -146,9 +146,9 @@ public abstract class AbstractRequiredActionUpdateEmailTest extends AbstractTest
 		updateEmailPage.assertCurrent();
 
 		// assert that form holds submitted values during validation error
-		Assert.assertEquals("invalid", updateEmailPage.getEmail());
+		Assertions.assertEquals("invalid", updateEmailPage.getEmail());
 
-		Assert.assertEquals("Invalid email address.", updateEmailPage.getEmailInputError());
+		Assertions.assertEquals("Invalid email address.", updateEmailPage.getEmailInputError());
 
 		events.assertEmpty();
 	}

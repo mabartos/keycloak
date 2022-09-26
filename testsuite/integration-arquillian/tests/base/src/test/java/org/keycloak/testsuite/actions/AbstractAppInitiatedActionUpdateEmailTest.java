@@ -17,9 +17,9 @@
 package org.keycloak.testsuite.actions;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -44,7 +44,7 @@ public abstract class AbstractAppInitiatedActionUpdateEmailTest extends Abstract
 	public void configureTestRealm(RealmRepresentation testRealm) {
 	}
 
-	@Before
+	@BeforeEach
 	public void beforeTest() {
 		ApiUtil.removeUserByUsername(testRealm(), "test-user@localhost");
 		UserRepresentation user = UserBuilder.create().enabled(true).username("test-user@localhost")
@@ -76,7 +76,7 @@ public abstract class AbstractAppInitiatedActionUpdateEmailTest extends Abstract
 
 		// assert nothing was updated in persistent store
 		UserRepresentation user = ActionUtil.findUserWithAdminClient(adminClient, "test-user@localhost");
-		Assert.assertEquals("test-user@localhost", user.getEmail());
+		Assertions.assertEquals("test-user@localhost", user.getEmail());
 	}
 
 	@Test
@@ -89,10 +89,10 @@ public abstract class AbstractAppInitiatedActionUpdateEmailTest extends Abstract
 		emailUpdatePage.changeEmail("john-doh@localhost");
 		emailUpdatePage.assertCurrent();
 
-		Assert.assertEquals("Email already exists.", emailUpdatePage.getEmailError());
+		Assertions.assertEquals("Email already exists.", emailUpdatePage.getEmailError());
 
 		UserRepresentation user = ActionUtil.findUserWithAdminClient(adminClient, "test-user@localhost");
-		Assert.assertEquals("test-user@localhost", user.getEmail());
+		Assertions.assertEquals("test-user@localhost", user.getEmail());
 	}
 
 	@Test
@@ -105,10 +105,10 @@ public abstract class AbstractAppInitiatedActionUpdateEmailTest extends Abstract
 		emailUpdatePage.changeEmail("invalidemail");
 		emailUpdatePage.assertCurrent();
 
-		Assert.assertEquals("Invalid email address.", emailUpdatePage.getEmailError());
+		Assertions.assertEquals("Invalid email address.", emailUpdatePage.getEmailError());
 
 		UserRepresentation user = ActionUtil.findUserWithAdminClient(adminClient, "test-user@localhost");
-		Assert.assertEquals("test-user@localhost", user.getEmail());
+		Assertions.assertEquals("test-user@localhost", user.getEmail());
 	}
 
 	@Test
@@ -121,10 +121,10 @@ public abstract class AbstractAppInitiatedActionUpdateEmailTest extends Abstract
 		emailUpdatePage.changeEmail("");
 		emailUpdatePage.assertCurrent();
 
-		Assert.assertEquals("Please specify email.", emailUpdatePage.getEmailError());
+		Assertions.assertEquals("Please specify email.", emailUpdatePage.getEmailError());
 
 		UserRepresentation user = ActionUtil.findUserWithAdminClient(adminClient, "test-user@localhost");
-		Assert.assertEquals("test-user@localhost", user.getEmail());
+		Assertions.assertEquals("test-user@localhost", user.getEmail());
 	}
 
 }

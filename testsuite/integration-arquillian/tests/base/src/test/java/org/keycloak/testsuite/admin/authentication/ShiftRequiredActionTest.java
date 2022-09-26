@@ -21,8 +21,8 @@ import java.util.List;
 
 import javax.ws.rs.NotFoundException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.events.admin.ResourceType;
 import org.keycloak.representations.idm.RequiredActionProviderRepresentation;
@@ -45,7 +45,7 @@ public class ShiftRequiredActionTest extends AbstractAuthenticationTest {
         // Not possible to raisePriority of not-existent required action
         try {
             authMgmtResource.raisePriority("not-existent");
-            Assert.fail("Not expected to raise priority of not existent required action");
+            Assertions.fail("Not expected to raise priority of not existent required action");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -59,13 +59,13 @@ public class ShiftRequiredActionTest extends AbstractAuthenticationTest {
         RequiredActionProviderRepresentation last2 = actions2.get(actions.size() - 1);
         RequiredActionProviderRepresentation oneButLast2 = actions2.get(actions.size() - 2);
 
-        Assert.assertEquals("Required action shifted up - N", last.getAlias(), oneButLast2.getAlias());
-        Assert.assertEquals("Required action up - N-1", oneButLast.getAlias(), last2.getAlias());
+        Assertions.assertEquals("Required action shifted up - N", last.getAlias(), oneButLast2.getAlias());
+        Assertions.assertEquals("Required action up - N-1", oneButLast.getAlias(), last2.getAlias());
 
         // Not possible to lowerPriority of not-existent required action
         try {
             authMgmtResource.lowerRequiredActionPriority("not-existent");
-            Assert.fail("Not expected to raise priority of not existent required action");
+            Assertions.fail("Not expected to raise priority of not existent required action");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -79,7 +79,7 @@ public class ShiftRequiredActionTest extends AbstractAuthenticationTest {
         last2 = actions2.get(actions.size() - 1);
         oneButLast2 = actions2.get(actions.size() - 2);
 
-        Assert.assertEquals("Required action shifted down - N", last.getAlias(), last2.getAlias());
-        Assert.assertEquals("Required action shifted down - N-1", oneButLast.getAlias(), oneButLast2.getAlias());
+        Assertions.assertEquals("Required action shifted down - N", last.getAlias(), last2.getAlias());
+        Assertions.assertEquals("Required action shifted down - N-1", oneButLast.getAlias(), oneButLast2.getAlias());
     }
 }

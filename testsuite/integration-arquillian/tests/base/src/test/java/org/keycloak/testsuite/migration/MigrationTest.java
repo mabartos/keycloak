@@ -16,8 +16,8 @@
  */
 package org.keycloak.testsuite.migration;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.arquillian.annotation.AuthServerContainerExclude;
@@ -41,7 +41,7 @@ public class MigrationTest extends AbstractMigrationTest {
         log.info("Adding no test realms for migration test. Test realm should be migrated from previous version.");
     }
 
-    @Before
+    @BeforeEach
     public void beforeMigrationTest() {
         migrationRealm = adminClient.realms().realm(MIGRATION);
         migrationRealm2 = adminClient.realms().realm(MIGRATION2);

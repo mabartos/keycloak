@@ -17,7 +17,7 @@
 package org.keycloak.testsuite;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -77,7 +77,7 @@ public abstract class AbstractAuthTest extends AbstractKeycloakTest {
         testRealmPage.setAuthRealm(TEST);
     }
 
-    @Before
+    @BeforeEach
     public void beforeAuthTest() {
         testRealmLoginPage.setAuthRealm(testRealmPage);
         testRealmAccountPage.setAuthRealm(testRealmPage);

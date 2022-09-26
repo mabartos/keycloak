@@ -24,10 +24,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.ClassRule;
+import org.junit.jupiter.api.Assertions;
+
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.GroupModel;
@@ -148,13 +148,13 @@ public class LDAPSyncTest extends AbstractLDAPTest {
             LDAPTestAsserts.assertUserImported(userProvider, testRealm, "user5", "User5FN", "User5LN", "user5@email.org", "125");
 
             // Assert lastSync time updated
-            Assert.assertTrue(ctx.getLdapModel().getLastSync() > 0);
+            Assertions.assertTrue(ctx.getLdapModel().getLastSync() > 0);
             ((LegacyRealmModel) testRealm).getUserStorageProvidersStream().forEachOrdered(persistentFedModel -> {
                 if (LDAPStorageProviderFactory.PROVIDER_NAME.equals(persistentFedModel.getProviderId())) {
-                    Assert.assertTrue(persistentFedModel.getLastSync() > 0);
+                    Assertions.assertTrue(persistentFedModel.getLastSync() > 0);
                 } else {
                     // Dummy provider has still 0
-                    Assert.assertEquals(0, persistentFedModel.getLastSync());
+                    Assertions.assertEquals(0, persistentFedModel.getLastSync());
                 }
             });
         });
@@ -178,7 +178,7 @@ public class LDAPSyncTest extends AbstractLDAPTest {
 
             // Assert still old users in local provider
             LDAPTestAsserts.assertUserImported(userProvider, testRealm, "user5", "User5FN", "User5LN", "user5@email.org", "125");
-            Assert.assertNull(userProvider.getUserByUsername(testRealm, "user6"));
+            Assertions.assertNull(userProvider.getUserByUsername(testRealm, "user6"));
 
             // Trigger partial sync
             KeycloakSessionFactory sessionFactory = session.getKeycloakSessionFactory();
@@ -214,7 +214,7 @@ public class LDAPSyncTest extends AbstractLDAPTest {
 
             // Assert syncing from LDAP fails due to duplicated username
             SynchronizationResult result = new UserStorageSyncManager().syncAllUsers(session.getKeycloakSessionFactory(), ctx.getRealm().getId(), ctx.getLdapModel());
-            Assert.assertEquals(1, result.getFailed());
+            Assertions.assertEquals(1, result.getFailed());
 
             // Remove "user7" from LDAP
             LDAPObject duplicatedLdapUser = ctx.getLdapProvider().loadLDAPUserByUsername(ctx.getRealm(), "user7");
@@ -229,8 +229,8 @@ public class LDAPSyncTest extends AbstractLDAPTest {
 
             // Assert syncing from LDAP fails due to duplicated email
             SynchronizationResult result = new UserStorageSyncManager().syncAllUsers(session.getKeycloakSessionFactory(), ctx.getRealm().getId(), ctx.getLdapModel());
-            Assert.assertEquals(1, result.getFailed());
-            Assert.assertNull(UserStoragePrivateUtil.userLocalStorage(session).getUserByUsername(ctx.getRealm(), "user7-something"));
+            Assertions.assertEquals(1, result.getFailed());
+            Assertions.assertNull(UserStoragePrivateUtil.userLocalStorage(session).getUserByUsername(ctx.getRealm(), "user7-something"));
 
             // Update LDAP user to avoid duplicated email
             LDAPObject duplicatedLdapUser = ctx.getLdapProvider().loadLDAPUserByUsername(ctx.getRealm(), "user7-something");
@@ -239,7 +239,7 @@ public class LDAPSyncTest extends AbstractLDAPTest {
 
             // Assert user successfully synced now
             result = new UserStorageSyncManager().syncAllUsers(session.getKeycloakSessionFactory(), ctx.getRealm().getId(), ctx.getLdapModel());
-            Assert.assertEquals(0, result.getFailed());
+            Assertions.assertEquals(0, result.getFailed());
         });
 
         // Assert user was imported. Use another transaction for that
@@ -259,7 +259,7 @@ public class LDAPSyncTest extends AbstractLDAPTest {
             // Add user to LDAP
             LDAPTestUtils.addLDAPUser(ctx.getLdapProvider(), ctx.getRealm(), "beckybecks", "Becky", "Becks", "becky-becks@email.org", null, "123");
             SynchronizationResult syncResult = new UserStorageSyncManager().syncAllUsers(sessionFactory, ctx.getRealm().getId(), ctx.getLdapModel());
-            Assert.assertEquals(0, syncResult.getFailed());
+            Assertions.assertEquals(0, syncResult.getFailed());
         });
 
         testingClient.server().run(session -> {
@@ -281,7 +281,7 @@ public class LDAPSyncTest extends AbstractLDAPTest {
             // Trigger partial sync
             KeycloakSessionFactory sessionFactory = session.getKeycloakSessionFactory();
             SynchronizationResult syncResult = usersSyncManager.syncChangedUsers(sessionFactory, testRealm.getId(), ctx.getLdapModel());
-            Assert.assertEquals(0, syncResult.getFailed());
+            Assertions.assertEquals(0, syncResult.getFailed());
         });
 
         testingClient.server().run(session -> {
@@ -293,9 +293,9 @@ public class LDAPSyncTest extends AbstractLDAPTest {
             UserModel updatedLocalUser = userProvider.getUserByUsername(testRealm, "beckyupdated");
             LDAPObject ldapUser = ctx.getLdapProvider().loadLDAPUserByUsername(testRealm, "beckyupdated");
             // Assert old user 'beckybecks' does not exists locally
-            Assert.assertNull(userProvider.getUserByUsername(testRealm, "beckybecks"));
+            Assertions.assertNull(userProvider.getUserByUsername(testRealm, "beckybecks"));
             // Assert UUID didn't change
-            Assert.assertEquals(updatedLocalUser.getAttributeStream(LDAPConstants.LDAP_ID).findFirst().get(),ldapUser.getUuid());
+            Assertions.assertEquals(updatedLocalUser.getAttributeStream(LDAPConstants.LDAP_ID).findFirst().get(),ldapUser.getUuid());
         });
     }
 
@@ -330,7 +330,7 @@ public class LDAPSyncTest extends AbstractLDAPTest {
 
             KeycloakSessionFactory sessionFactory = session.getKeycloakSessionFactory();
             SynchronizationResult syncResult = new UserStorageSyncManager().syncAllUsers(sessionFactory, ctx.getRealm().getId(), ctx.getLdapModel());
-            Assert.assertEquals(0, syncResult.getFailed());
+            Assertions.assertEquals(0, syncResult.getFailed());
 
         });
 
@@ -341,7 +341,7 @@ public class LDAPSyncTest extends AbstractLDAPTest {
             LDAPTestAsserts.assertUserImported(session.users(), ctx.getRealm(), "user1", "User1FN", "User1LN", "user1@email.org", "121");
             LDAPTestAsserts.assertUserImported(session.users(), ctx.getRealm(), "user2", "User2FN", "User2LN", "user2@email.org", "122");
             UserModel user1 = session.users().getUserByUsername(ctx.getRealm(), "user1");
-            Assert.assertEquals("user1", user1.getFirstAttribute(LDAPConstants.LDAP_ID));
+            Assertions.assertEquals("user1", user1.getFirstAttribute(LDAPConstants.LDAP_ID));
         });
 
         // Revert config changes
@@ -391,8 +391,8 @@ public class LDAPSyncTest extends AbstractLDAPTest {
 
             KeycloakSessionFactory sessionFactory = session.getKeycloakSessionFactory();
             SynchronizationResult syncResult = new UserStorageSyncManager().syncAllUsers(sessionFactory, ctx.getRealm().getId(), ctx.getLdapModel());
-            Assert.assertEquals(1, syncResult.getAdded());
-            Assert.assertTrue(syncResult.getFailed() > 0);
+            Assertions.assertEquals(1, syncResult.getAdded());
+            Assertions.assertTrue(syncResult.getFailed() > 0);
         });
 
         // Revert config changes
@@ -420,9 +420,9 @@ public class LDAPSyncTest extends AbstractLDAPTest {
 
         try {
             SynchronizationResultRepresentation syncResultRep = adminClient.realm(TEST_REALM_NAME).userStorage().syncUsers( ldapModelId, null);
-            Assert.fail("Should throw 400");
+            Assertions.fail("Should throw 400");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof BadRequestException);
+            Assertions.assertTrue(e instanceof BadRequestException);
         }
     }
 
@@ -433,9 +433,9 @@ public class LDAPSyncTest extends AbstractLDAPTest {
 
         try {
             SynchronizationResultRepresentation syncResultRep = adminClient.realm(TEST_REALM_NAME).userStorage().syncUsers( ldapModelId, "wrong action");
-            Assert.fail("Should throw 400");
+            Assertions.fail("Should throw 400");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof BadRequestException);
+            Assertions.assertTrue(e instanceof BadRequestException);
         }
     }
 
@@ -467,7 +467,7 @@ public class LDAPSyncTest extends AbstractLDAPTest {
             GroupModel kcGroup1 = KeycloakModelUtils.findGroupByPath(appRealm, "/group1");
             String descriptionAttrName = LDAPTestUtils.getGroupDescriptionLDAPAttrName(ctx.getLdapProvider());
 
-            Assert.assertEquals("group1 - description", kcGroup1.getFirstAttribute(descriptionAttrName));
+            Assertions.assertEquals("group1 - description", kcGroup1.getFirstAttribute(descriptionAttrName));
         });
 
         testingClient.server().run(session -> {
@@ -489,7 +489,7 @@ public class LDAPSyncTest extends AbstractLDAPTest {
 
             // sync to Keycloak should pass without an error
             SynchronizationResult syncResult = new GroupLDAPStorageMapperFactory().create(session, mapperModel).syncDataFromFederationProviderToKeycloak(appRealm);
-            Assert.assertThat(syncResult.getFailed(), Matchers.is(0));
+            Assertions.assertThat(syncResult.getFailed(), Matchers.is(0));
         });
 
         testingClient.server().run(session -> {
@@ -500,7 +500,7 @@ public class LDAPSyncTest extends AbstractLDAPTest {
             GroupModel kcGroup5 = KeycloakModelUtils.findGroupByPath(appRealm, "/group5");
             String descriptionAttrName = LDAPTestUtils.getGroupDescriptionLDAPAttrName(ctx.getLdapProvider());
 
-            Assert.assertEquals("group5 - description", kcGroup5.getFirstAttribute(descriptionAttrName));
+            Assertions.assertEquals("group5 - description", kcGroup5.getFirstAttribute(descriptionAttrName));
         });
     }
 
@@ -578,7 +578,7 @@ public class LDAPSyncTest extends AbstractLDAPTest {
 
             KeycloakSessionFactory sessionFactory = session.getKeycloakSessionFactory();
             SynchronizationResult syncResult = new UserStorageSyncManager().syncAllUsers(sessionFactory, ctx.getRealm().getId(), ctx.getLdapModel());
-            Assert.assertEquals(2, syncResult.getAdded());
+            Assertions.assertEquals(2, syncResult.getAdded());
         });
 
         testingClient.server().run(session -> {
@@ -586,15 +586,15 @@ public class LDAPSyncTest extends AbstractLDAPTest {
             RealmModel appRealm = ctx.getRealm();
 
             GroupModel user8Group = KeycloakModelUtils.findGroupByPath(appRealm, "/user8group");
-            Assert.assertNotNull(user8Group);
+            Assertions.assertNotNull(user8Group);
             UserModel user8 = session.users().getUserByUsername(appRealm, "user8");
-            Assert.assertNotNull(user8);
+            Assertions.assertNotNull(user8);
             UserModel user8Bis = session.users().getUserByUsername(appRealm, "user8bis");
-            Assert.assertNotNull(user8Bis);
-            Assert.assertTrue("User user8 contains the group", user8.getGroupsStream().collect(Collectors.toSet()).contains(user8Group));
-            Assert.assertFalse("User user8bis does not contain the group", user8Bis.getGroupsStream().collect(Collectors.toSet()).contains(user8Group));
+            Assertions.assertNotNull(user8Bis);
+            Assertions.assertTrue("User user8 contains the group", user8.getGroupsStream().collect(Collectors.toSet()).contains(user8Group));
+            Assertions.assertFalse("User user8bis does not contain the group", user8Bis.getGroupsStream().collect(Collectors.toSet()).contains(user8Group));
             List<String> members = session.users().getGroupMembersStream(appRealm, user8Group).map(u -> u.getUsername()).collect(Collectors.toList());
-            Assert.assertEquals("Group contains only user8", members, Collections.singletonList("user8"));
+            Assertions.assertEquals("Group contains only user8", members, Collections.singletonList("user8"));
         });
 
         // revert changes

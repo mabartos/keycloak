@@ -10,7 +10,7 @@ import org.keycloak.testsuite.arquillian.ContainerInfo;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  *

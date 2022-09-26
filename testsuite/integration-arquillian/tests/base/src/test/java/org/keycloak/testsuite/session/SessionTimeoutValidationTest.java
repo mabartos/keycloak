@@ -17,10 +17,10 @@
 
 package org.keycloak.testsuite.session;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserManager;
@@ -39,7 +39,7 @@ public class SessionTimeoutValidationTest extends AbstractTestRealmKeycloakTest 
     }
 
     
-    @Before
+    @BeforeEach
     public  void before() {
         testingClient.server().run( session -> {
             RealmModel realm = session.realms().getRealmByName("test");
@@ -48,7 +48,7 @@ public class SessionTimeoutValidationTest extends AbstractTestRealmKeycloakTest 
     }
     
 
-    @After
+    @AfterEach
     public void after() {
         testingClient.server().run( session -> {
             RealmModel realm = session.realms().getRealmByName("test");
@@ -79,11 +79,11 @@ public class SessionTimeoutValidationTest extends AbstractTestRealmKeycloakTest 
                                                  );
 
         realm.setSsoSessionIdleTimeout(Integer.MAX_VALUE);
-        Assert.assertTrue("Session validataion with large SsoSessionIdleTimeout failed",
+        Assertions.assertTrue("Session validataion with large SsoSessionIdleTimeout failed",
                           AuthenticationManager.isSessionValid(realm, userSessionModel));
         
         realm.setSsoSessionMaxLifespan(Integer.MAX_VALUE);
-        Assert.assertTrue("Session validataion with large SsoSessionMaxLifespan failed",
+        Assertions.assertTrue("Session validataion with large SsoSessionMaxLifespan failed",
                           AuthenticationManager.isSessionValid(realm, userSessionModel));
         
         realm.setSsoSessionIdleTimeout(ssoSessionIdleTimeoutOrig);

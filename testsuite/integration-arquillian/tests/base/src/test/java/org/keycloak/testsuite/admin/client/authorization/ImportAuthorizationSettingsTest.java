@@ -17,12 +17,12 @@
 
 package org.keycloak.testsuite.admin.client.authorization;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.representations.idm.ClientRepresentation;
@@ -37,7 +37,7 @@ import org.keycloak.util.JsonSerialization;
  */
 public class ImportAuthorizationSettingsTest extends AbstractAuthorizationTest {
 
-    @Before
+    @BeforeEach
     public void createRole() {
         ClientResource clientResource = getClientResource();
 

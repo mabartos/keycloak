@@ -17,7 +17,7 @@
  */
 package org.keycloak.testsuite.rar;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.common.Profile;
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 /**
@@ -51,8 +51,7 @@ import static org.junit.Assert.assertNotNull;
 @EnableFeature(value = Profile.Feature.DYNAMIC_SCOPES, skipRestart = true)
 public abstract class AbstractRARParserTest extends AbstractTestRealmKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     protected static String userId;
 
@@ -71,7 +70,7 @@ public abstract class AbstractRARParserTest extends AbstractTestRealmKeycloakTes
                 .user(user);
     }
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         ClientManager.realm(adminClient.realm("test")).clientId("test-app").directAccessGrant(true);
         oauth.clientId("test-app");

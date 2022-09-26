@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.model;
 
 import org.jboss.logging.Logger;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.ClientProvider;
 import org.keycloak.models.KeycloakSession;
@@ -162,7 +162,7 @@ public class ConcurrentTransactionsTest extends AbstractTestRealmKeycloakTest {
                 }
 
                 if (exceptionHolder.get() != null) {
-                    Assert.fail("Some thread thrown an exception. See the log for the details");
+                    Assertions.fail("Some thread thrown an exception. See the log for the details");
                 }
 
                 logger.info("after thread join");
@@ -178,8 +178,8 @@ public class ConcurrentTransactionsTest extends AbstractTestRealmKeycloakTest {
                 logger.info("SECRET FROM DB : " + clientFromDB.getSecret());
                 logger.info("SECRET FROM CACHE : " + clientFromCache.getSecret());
 
-                Assert.assertEquals("new", clientFromDB.getSecret());
-                Assert.assertEquals("new", clientFromCache.getSecret());
+                Assertions.assertEquals("new", clientFromDB.getSecret());
+                Assertions.assertEquals("new", clientFromCache.getSecret());
 
                 session2.sessions().removeUserSessions(realm);
 
@@ -264,7 +264,7 @@ public class ConcurrentTransactionsTest extends AbstractTestRealmKeycloakTest {
 
                 logger.info("removeUserAttribute: after thread join");
                 if (reference.get() != null) {
-                    Assert.fail("Exception happened in some of threads. Details: " + reference.get().getMessage());
+                    Assertions.fail("Exception happened in some of threads. Details: " + reference.get().getMessage());
                 }
             });
         } finally {
@@ -288,8 +288,8 @@ public class ConcurrentTransactionsTest extends AbstractTestRealmKeycloakTest {
             um.removeUser(realm, realmUser2);
         }
 
-        Assert.assertTrue(currentSession.realms().removeRealm(realm.getId()));
-        Assert.assertThat(currentSession.realms().getRealm(realm.getId()), is(nullValue()));
+        Assertions.assertTrue(currentSession.realms().removeRealm(realm.getId()));
+        Assertions.assertThat(currentSession.realms().getRealm(realm.getId()), is(nullValue()));
     }
 
     @Override

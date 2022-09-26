@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.oidc.flows;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.events.Details;
 import org.keycloak.protocol.oidc.utils.OIDCResponseType;
 import org.keycloak.representations.IDToken;
@@ -36,7 +36,7 @@ import java.util.List;
  */
 public class OIDCHybridResponseTypeCodeTokenTest extends AbstractOIDCResponseTypeTest  {
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         clientManagerBuilder().standardFlow(true).implicitFlow(true);
 
@@ -52,10 +52,10 @@ public class OIDCHybridResponseTypeCodeTokenTest extends AbstractOIDCResponseTyp
 
 
     protected List<IDToken> testAuthzResponseAndRetrieveIDTokens(OAuthClient.AuthorizationEndpointResponse authzResponse, EventRepresentation loginEvent) {
-        Assert.assertEquals(OIDCResponseType.CODE + " " + OIDCResponseType.TOKEN, loginEvent.getDetails().get(Details.RESPONSE_TYPE));
+        Assertions.assertEquals(OIDCResponseType.CODE + " " + OIDCResponseType.TOKEN, loginEvent.getDetails().get(Details.RESPONSE_TYPE));
 
-        Assert.assertNotNull(authzResponse.getAccessToken());
-        Assert.assertNull(authzResponse.getIdToken());
+        Assertions.assertNotNull(authzResponse.getAccessToken());
+        Assertions.assertNull(authzResponse.getIdToken());
 
         // IDToken exchanged for the code
         OAuthClient.AccessTokenResponse authzResponse2 = sendTokenRequestAndGetResponse(loginEvent);
@@ -65,10 +65,10 @@ public class OIDCHybridResponseTypeCodeTokenTest extends AbstractOIDCResponseTyp
         assertValidAccessTokenHash(idToken2.getAccessTokenHash(), authzResponse2.getAccessToken());
 
         // Validate if token_type is present
-        Assert.assertNotNull(authzResponse.getTokenType());
+        Assertions.assertNotNull(authzResponse.getTokenType());
 
         // Validate if expires_in is present
-        Assert.assertNotNull(authzResponse.getExpiresIn());
+        Assertions.assertNotNull(authzResponse.getExpiresIn());
 
         return Collections.singletonList(idToken2);
     }

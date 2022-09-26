@@ -68,11 +68,11 @@
             <version>${jetty94.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
+         <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <scope>test</scope>
+            </dependency>
         <dependency>
             <groupId>org.keycloak.testsuite</groupId>
             <artifactId>integration-arquillian-servers-app-server-jetty-common</artifactId>

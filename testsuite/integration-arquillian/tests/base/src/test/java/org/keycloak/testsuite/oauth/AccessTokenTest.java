@@ -27,10 +27,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientScopeResource;
@@ -101,11 +101,11 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItemInArray;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.Assert.assertExpiration;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 import static org.keycloak.testsuite.admin.ApiUtil.findClientByClientId;
@@ -120,8 +120,7 @@ import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
  */
 public class AccessTokenTest extends AbstractKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
 
     @Override
@@ -129,7 +128,7 @@ public class AccessTokenTest extends AbstractKeycloakTest {
         super.beforeAbstractKeycloakTest();
     }
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         ClientManager.realm(adminClient.realm("test")).clientId("test-app").directAccessGrant(true);
         /*
@@ -188,8 +187,8 @@ public class AccessTokenTest extends AbstractKeycloakTest {
 
         assertEquals(200, response.getStatusCode());
 
-        Assert.assertThat(response.getExpiresIn(), allOf(greaterThanOrEqualTo(250), lessThanOrEqualTo(300)));
-        Assert.assertThat(response.getRefreshExpiresIn(), allOf(greaterThanOrEqualTo(1750), lessThanOrEqualTo(1800)));
+        Assertions.assertThat(response.getExpiresIn(), allOf(greaterThanOrEqualTo(250), lessThanOrEqualTo(300)));
+        Assertions.assertThat(response.getRefreshExpiresIn(), allOf(greaterThanOrEqualTo(1750), lessThanOrEqualTo(1800)));
 
         assertEquals("Bearer", response.getTokenType());
 
@@ -393,7 +392,7 @@ public class AccessTokenTest extends AbstractKeycloakTest {
             setTimeOffset(2);
 
             OAuthClient.AccessTokenResponse response = oauth.doAccessTokenRequest(code, "password");
-            Assert.assertEquals(400, response.getStatusCode());
+            Assertions.assertEquals(400, response.getStatusCode());
         } finally {
             getTestingClient().testing().revertTestingInfinispanTimeService();
             resetTimeOffset();
@@ -423,7 +422,7 @@ public class AccessTokenTest extends AbstractKeycloakTest {
 
         String code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
         OAuthClient.AccessTokenResponse response = oauth.doAccessTokenRequest(code, "password");
-        Assert.assertEquals(200, response.getStatusCode());
+        Assertions.assertEquals(200, response.getStatusCode());
         String accessToken = response.getAccessToken();
 
         Client jaxrsClient = AdminClientUtil.createResteasyClient();
@@ -436,14 +435,14 @@ public class AccessTokenTest extends AbstractKeycloakTest {
             String introspectionResponse = oauth.introspectAccessTokenWithClientCredential("test-app", "password", accessToken);
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(introspectionResponse);
-            Assert.assertEquals(true, jsonNode.get("active").asBoolean());
-            Assert.assertEquals("test-user@localhost", jsonNode.get("email").asText());
+            Assertions.assertEquals(true, jsonNode.get("active").asBoolean());
+            Assertions.assertEquals("test-user@localhost", jsonNode.get("email").asText());
 
             events.clear();
 
             // Repeating attempt to exchange code should be refused and invalidate previous clientSession
             response = oauth.doAccessTokenRequest(code, "password");
-            Assert.assertEquals(400, response.getStatusCode());
+            Assertions.assertEquals(400, response.getStatusCode());
 
             AssertEvents.ExpectedEvent expectedEvent = events.expectCodeToToken(codeId, codeId);
             expectedEvent.error("invalid_code")
@@ -462,8 +461,8 @@ public class AccessTokenTest extends AbstractKeycloakTest {
             introspectionResponse = oauth.introspectAccessTokenWithClientCredential("test-app", "password", accessToken);
             objectMapper = new ObjectMapper();
             jsonNode = objectMapper.readTree(introspectionResponse);
-            Assert.assertEquals(false, jsonNode.get("active").asBoolean());
-            Assert.assertNull(jsonNode.get("email"));
+            Assertions.assertEquals(false, jsonNode.get("active").asBoolean());
+            Assertions.assertNull(jsonNode.get("email"));
 
             events.clear();
 
@@ -493,10 +492,10 @@ public class AccessTokenTest extends AbstractKeycloakTest {
 
         OAuthClient.AccessTokenResponse response = oauth.doAccessTokenRequest(code, "password");
 
-        Assert.assertEquals(200, response.getStatusCode());
+        Assertions.assertEquals(200, response.getStatusCode());
 
         AccessToken token = oauth.verifyToken(response.getAccessToken());
-        Assert.assertEquals(1, token.getRealmAccess().getRoles().size());
+        Assertions.assertEquals(1, token.getRealmAccess().getRoles().size());
         assertTrue(token.getRealmAccess().isUserInRole("user"));
 
         events.clear();
@@ -514,7 +513,7 @@ public class AccessTokenTest extends AbstractKeycloakTest {
         String code = ActionURIUtils.parseQueryParamsFromActionURI(actionURI).get("code");
 
         OAuthClient.AccessTokenResponse response = oauth.doAccessTokenRequest(code, "password");
-        Assert.assertEquals(400, response.getStatusCode());
+        Assertions.assertEquals(400, response.getStatusCode());
 
         EventRepresentation event = events.poll();
         assertNull(event.getDetails().get(Details.CODE_ID));
@@ -839,8 +838,8 @@ public class AccessTokenTest extends AbstractKeycloakTest {
             assertEquals("coded", accessToken.getOtherClaims().get("hard"));
 
             // check zero scope for client scope
-            Assert.assertFalse(accessToken.getRealmAccess().getRoles().contains(realmRole.getName()));
-            Assert.assertFalse(accessToken.getRealmAccess().getRoles().contains(realmRole2.getName()));
+            Assertions.assertFalse(accessToken.getRealmAccess().getRoles().contains(realmRole.getName()));
+            Assertions.assertFalse(accessToken.getRealmAccess().getRoles().contains(realmRole2.getName()));
 
 
             response.close();
@@ -865,7 +864,7 @@ public class AccessTokenTest extends AbstractKeycloakTest {
             // check single role in scope for client scope
             assertNotNull(accessToken.getRealmAccess());
             assertTrue(accessToken.getRealmAccess().getRoles().contains(realmRole.getName()));
-            Assert.assertFalse(accessToken.getRealmAccess().getRoles().contains(realmRole2.getName()));
+            Assertions.assertFalse(accessToken.getRealmAccess().getRoles().contains(realmRole2.getName()));
 
 
             response.close();
@@ -914,8 +913,8 @@ public class AccessTokenTest extends AbstractKeycloakTest {
             org.keycloak.representations.AccessTokenResponse tokenResponse = response.readEntity(org.keycloak.representations.AccessTokenResponse.class);
 
             AccessToken accessToken = getAccessToken(tokenResponse);
-            Assert.assertFalse(accessToken.getRealmAccess().getRoles().contains(realmRole.getName()));
-            Assert.assertFalse(accessToken.getRealmAccess().getRoles().contains(realmRole2.getName()));
+            Assertions.assertFalse(accessToken.getRealmAccess().getRoles().contains(realmRole.getName()));
+            Assertions.assertFalse(accessToken.getRealmAccess().getRoles().contains(realmRole2.getName()));
 
 
             response.close();
@@ -938,8 +937,8 @@ public class AccessTokenTest extends AbstractKeycloakTest {
             org.keycloak.representations.AccessTokenResponse tokenResponse = response.readEntity(org.keycloak.representations.AccessTokenResponse.class);
 
             AccessToken accessToken = getAccessToken(tokenResponse);
-            Assert.assertFalse(accessToken.getRealmAccess().getRoles().contains(realmRole.getName()));
-            Assert.assertFalse(accessToken.getRealmAccess().getRoles().contains(realmRole2.getName()));
+            Assertions.assertFalse(accessToken.getRealmAccess().getRoles().contains(realmRole.getName()));
+            Assertions.assertFalse(accessToken.getRealmAccess().getRoles().contains(realmRole2.getName()));
             assertNull(accessToken.getOtherClaims().get("hard"));
 
             IDToken idToken = getIdToken(tokenResponse);
@@ -1012,7 +1011,7 @@ public class AccessTokenTest extends AbstractKeycloakTest {
             post.setEntity(formEntity);
 
             OAuthClient.AccessTokenResponse response = new OAuthClient.AccessTokenResponse(client.execute(post));
-            Assert.assertEquals(200, response.getStatusCode());
+            Assertions.assertEquals(200, response.getStatusCode());
             AccessToken token = oauth.verifyToken(response.getAccessToken());
             events.expectCodeToToken(codeId, sessionId).client("sample-public-client").assertEvent();
         }
@@ -1333,7 +1332,7 @@ public class AccessTokenTest extends AbstractKeycloakTest {
 
         String encodedSignature = token.split("\\.",3)[2];
         byte[] signature = Base64Url.decode(encodedSignature);
-        Assert.assertEquals(expectedLength, signature.length);
+        Assertions.assertEquals(expectedLength, signature.length);
         oauth.idTokenHint(response.getIdToken()).openLogout();
     }
 

@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.ContainerController;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.GroupResource;
 import org.keycloak.admin.client.resource.GroupsResource;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -62,7 +62,7 @@ public class GroupSearchTest extends AbstractGroupTest {
     GroupRepresentation parentGroup;
     GroupRepresentation childGroup;
 
-    @Before
+    @BeforeEach
     public void init() {
         group1 = new GroupRepresentation();
         group2 = new GroupRepresentation();

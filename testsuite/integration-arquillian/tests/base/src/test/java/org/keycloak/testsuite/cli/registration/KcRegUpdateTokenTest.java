@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.cli.registration;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.client.registration.cli.config.ConfigData;
 import org.keycloak.client.registration.cli.config.FileConfigHandler;
 import org.keycloak.client.registration.cli.config.RealmConfigData;
@@ -34,7 +34,7 @@ public class KcRegUpdateTokenTest extends AbstractRegCliTest {
             // read current registration access token
             ConfigData data = ConfigUtil.loadConfig();
             RealmConfigData rdata = data.getRealmConfigData(serverUrl, "test");
-            Assert.assertNull("realm info set", rdata);
+            Assertions.assertNull("realm info set", rdata);
 
             // update registration access token
             exe = execute("update-token --config '" + configFile.getName() + "' reg-cli-secret-direct  --server " + serverUrl + " --realm test --user user1 --password userpass");
@@ -44,10 +44,10 @@ public class KcRegUpdateTokenTest extends AbstractRegCliTest {
             // read current registration token
             data = ConfigUtil.loadConfig();
             rdata = data.getRealmConfigData(serverUrl, "test");
-            Assert.assertEquals("current session realm unchanged", "master", data.getRealm());
-            Assert.assertNotNull("realm info set", rdata);
-            Assert.assertNull("on the fly login was transient", rdata.getToken());
-            Assert.assertNotNull("client info has registration access token", rdata.getClients().get("reg-cli-secret-direct"));
+            Assertions.assertEquals("current session realm unchanged", "master", data.getRealm());
+            Assertions.assertNotNull("realm info set", rdata);
+            Assertions.assertNull("on the fly login was transient", rdata.getToken());
+            Assertions.assertNotNull("client info has registration access token", rdata.getClients().get("reg-cli-secret-direct"));
 
             // use --no-config and on-the-fly auth
             exe = execute("update-token reg-cli-secret-direct --no-config --server " + serverUrl + " --realm test --user user1 --password userpass");
@@ -62,7 +62,7 @@ public class KcRegUpdateTokenTest extends AbstractRegCliTest {
             assertExitCodeAndStdErrSize(exe, 0, 0);
 
             ClientRepresentation client = JsonSerialization.readValue(exe.stdout(), ClientRepresentation.class);
-            Assert.assertEquals("client representation returned", "reg-cli-secret-direct", client.getClientId());
+            Assertions.assertEquals("client representation returned", "reg-cli-secret-direct", client.getClientId());
         }
     }
 }

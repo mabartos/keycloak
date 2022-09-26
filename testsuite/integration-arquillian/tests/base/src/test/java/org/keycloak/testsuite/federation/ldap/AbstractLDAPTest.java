@@ -37,7 +37,7 @@ import org.keycloak.testsuite.pages.LoginPasswordUpdatePage;
 import org.keycloak.testsuite.pages.OAuthGrantPage;
 import org.keycloak.testsuite.pages.RegisterPage;
 import org.keycloak.testsuite.util.LDAPRule;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
@@ -48,8 +48,7 @@ public abstract class AbstractLDAPTest extends AbstractTestRealmKeycloakTest {
 
     protected static String ldapModelId;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -89,7 +88,7 @@ public abstract class AbstractLDAPTest extends AbstractTestRealmKeycloakTest {
         afterImportTestRealm();
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void checkNotMapStorage() {
         ProfileAssume.assumeFeatureDisabled(Feature.MAP_STORAGE);
     }

@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.admin.client;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientScopesResource;
 import org.keycloak.admin.client.resource.ProtocolMappersResource;
@@ -64,10 +64,10 @@ import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.testsuite.Assert.assertNames;
 
 /**
@@ -82,11 +82,11 @@ public class ClientScopeTest extends AbstractClientTest {
 
         ErrorRepresentation error;
         try (Response response = clientScopes().create(scopeRep)) {
-            Assert.assertEquals(400, response.getStatus());
+            Assertions.assertEquals(400, response.getStatus());
             error = response.readEntity(ErrorRepresentation.class);
         }
 
-        Assert.assertEquals("Unexpected name \"マルチバイト\" for ClientScope", error.getErrorMessage());
+        Assertions.assertEquals("Unexpected name \"マルチバイト\" for ClientScope", error.getErrorMessage());
     }
 
     @Test
@@ -97,7 +97,7 @@ public class ClientScopeTest extends AbstractClientTest {
         String scope1Id = createClientScope(scopeRep);
         // Assert created
         scopeRep = clientScopes().get(scope1Id).toRepresentation();
-        Assert.assertEquals("scope1", scopeRep.getName());
+        Assertions.assertEquals("scope1", scopeRep.getName());
 
         // Test updating
         scopeRep.setName("マルチバイト");
@@ -106,10 +106,10 @@ public class ClientScopeTest extends AbstractClientTest {
         } catch (ClientErrorException e) {
             ErrorRepresentation error;
             try (Response response = e.getResponse()) {
-                Assert.assertEquals(400, response.getStatus());
+                Assertions.assertEquals(400, response.getStatus());
                 error = response.readEntity(ErrorRepresentation.class);
             }
-            Assert.assertEquals("Unexpected name \"マルチバイト\" for ClientScope", error.getErrorMessage());
+            Assertions.assertEquals("Unexpected name \"マルチバイト\" for ClientScope", error.getErrorMessage());
         }
 
         removeClientScope(scope1Id);
@@ -127,7 +127,7 @@ public class ClientScopeTest extends AbstractClientTest {
         assertEquals(409, response.getStatus());
 
         ErrorRepresentation error = response.readEntity(ErrorRepresentation.class);
-        Assert.assertEquals("Client Scope scope1 already exists", error.getErrorMessage());
+        Assertions.assertEquals("Client Scope scope1 already exists", error.getErrorMessage());
 
         // Cleanup
         removeClientScope(scopeId);
@@ -171,7 +171,7 @@ public class ClientScopeTest extends AbstractClientTest {
         removeClientScope(scope1Id);
 
         clientScopes = clientScopes().findAll();
-        Assert.assertFalse(getClientScopeNames(clientScopes).contains("scope1"));
+        Assertions.assertFalse(getClientScopeNames(clientScopes).contains("scope1"));
         assertTrue(getClientScopeNames(clientScopes).contains("scope2"));
 
 
@@ -179,8 +179,8 @@ public class ClientScopeTest extends AbstractClientTest {
         removeClientScope(scope2Id);
 
         clientScopes = clientScopes().findAll();
-        Assert.assertFalse(getClientScopeNames(clientScopes).contains("scope1"));
-        Assert.assertFalse(getClientScopeNames(clientScopes).contains("scope2"));
+        Assertions.assertFalse(getClientScopeNames(clientScopes).contains("scope1"));
+        Assertions.assertFalse(getClientScopeNames(clientScopes).contains("scope2"));
     }
 
 
@@ -200,11 +200,11 @@ public class ClientScopeTest extends AbstractClientTest {
 
         // Assert created attributes
         scopeRep = clientScopes().get(scope1Id).toRepresentation();
-        Assert.assertEquals("scope1", scopeRep.getName());
-        Assert.assertEquals("scope1-desc", scopeRep.getDescription());
-        Assert.assertEquals("someAttrValue", scopeRep.getAttributes().get("someAttr"));
+        Assertions.assertEquals("scope1", scopeRep.getName());
+        Assertions.assertEquals("scope1-desc", scopeRep.getDescription());
+        Assertions.assertEquals("someAttrValue", scopeRep.getAttributes().get("someAttr"));
         assertTrue(ObjectUtil.isBlank(scopeRep.getAttributes().get("emptyAttr")));
-        Assert.assertEquals(OIDCLoginProtocol.LOGIN_PROTOCOL, scopeRep.getProtocol());
+        Assertions.assertEquals(OIDCLoginProtocol.LOGIN_PROTOCOL, scopeRep.getProtocol());
 
 
         // Test updating
@@ -221,11 +221,11 @@ public class ClientScopeTest extends AbstractClientTest {
 
         // Assert updated attributes
         scopeRep = clientScopes().get(scope1Id).toRepresentation();
-        Assert.assertEquals("scope1-updated", scopeRep.getName());
-        Assert.assertEquals("scope1-desc-updated", scopeRep.getDescription());
-        Assert.assertEquals(SamlProtocol.LOGIN_PROTOCOL, scopeRep.getProtocol());
-        Assert.assertEquals("someAttrValue", scopeRep.getAttributes().get("someAttr"));
-        Assert.assertEquals("someValue", scopeRep.getAttributes().get("emptyAttr"));
+        Assertions.assertEquals("scope1-updated", scopeRep.getName());
+        Assertions.assertEquals("scope1-desc-updated", scopeRep.getDescription());
+        Assertions.assertEquals(SamlProtocol.LOGIN_PROTOCOL, scopeRep.getProtocol());
+        Assertions.assertEquals("someAttrValue", scopeRep.getAttributes().get("someAttr"));
+        Assertions.assertEquals("someValue", scopeRep.getAttributes().get("emptyAttr"));
 
         // Remove scope1
         clientScopes().get(scope1Id).remove();
@@ -415,8 +415,8 @@ public class ClientScopeTest extends AbstractClientTest {
         assertAdminEvents.assertEvent(getRealmId(), OperationType.CREATE, AdminEventPaths.clientScopeRoleMappingsRealmLevelPath(scopeId), Collections.singletonList(roleRep), ResourceType.REALM_SCOPE_MAPPING);
 
         List<RoleRepresentation> roleReps = clientScopes().get(scopeId).getScopeMappings().realmLevel().listAll();
-        Assert.assertEquals(1, roleReps.size());
-        Assert.assertEquals("foo-role", roleReps.get(0).getName());
+        Assertions.assertEquals(1, roleReps.size());
+        Assertions.assertEquals("foo-role", roleReps.get(0).getName());
 
         // Remove realm role
         testRealmResource().roles().deleteRole("foo-role");
@@ -424,7 +424,7 @@ public class ClientScopeTest extends AbstractClientTest {
 
         // Get scope mappings
         roleReps = clientScopes().get(scopeId).getScopeMappings().realmLevel().listAll();
-        Assert.assertEquals(0, roleReps.size());
+        Assertions.assertEquals(0, roleReps.size());
 
         // Cleanup
         removeClientScope(scopeId);
@@ -490,8 +490,8 @@ public class ClientScopeTest extends AbstractClientTest {
         List<String> realmDefaultScopes = getClientScopeNames(testRealmResource().getDefaultDefaultClientScopes());
         List<String> realmOptionalScopes = getClientScopeNames(testRealmResource().getDefaultOptionalClientScopes());
         assertTrue(realmDefaultScopes.contains("scope-def"));
-        Assert.assertFalse(realmOptionalScopes .contains("scope-def"));
-        Assert.assertFalse(realmDefaultScopes.contains("scope-opt"));
+        Assertions.assertFalse(realmOptionalScopes .contains("scope-def"));
+        Assertions.assertFalse(realmDefaultScopes.contains("scope-opt"));
         assertTrue(realmOptionalScopes .contains("scope-opt"));
 
         // create client. Ensure that it has scope-def and scope-opt scopes assigned
@@ -504,8 +504,8 @@ public class ClientScopeTest extends AbstractClientTest {
         List<String> clientDefaultScopes = getClientScopeNames(testRealmResource().clients().get(clientUuid).getDefaultClientScopes());
         List<String> clientOptionalScopes = getClientScopeNames(testRealmResource().clients().get(clientUuid).getOptionalClientScopes());
         assertTrue(clientDefaultScopes.contains("scope-def"));
-        Assert.assertFalse(clientOptionalScopes .contains("scope-def"));
-        Assert.assertFalse(clientDefaultScopes.contains("scope-opt"));
+        Assertions.assertFalse(clientOptionalScopes .contains("scope-def"));
+        Assertions.assertFalse(clientDefaultScopes.contains("scope-opt"));
         assertTrue(clientOptionalScopes .contains("scope-opt"));
 
         // Unassign scope-def and scope-opt from realm
@@ -516,10 +516,10 @@ public class ClientScopeTest extends AbstractClientTest {
 
         realmDefaultScopes = getClientScopeNames(testRealmResource().getDefaultDefaultClientScopes());
         realmOptionalScopes = getClientScopeNames(testRealmResource().getDefaultOptionalClientScopes());
-        Assert.assertFalse(realmDefaultScopes.contains("scope-def"));
-        Assert.assertFalse(realmOptionalScopes .contains("scope-def"));
-        Assert.assertFalse(realmDefaultScopes.contains("scope-opt"));
-        Assert.assertFalse(realmOptionalScopes .contains("scope-opt"));
+        Assertions.assertFalse(realmDefaultScopes.contains("scope-def"));
+        Assertions.assertFalse(realmOptionalScopes .contains("scope-def"));
+        Assertions.assertFalse(realmDefaultScopes.contains("scope-opt"));
+        Assertions.assertFalse(realmOptionalScopes .contains("scope-opt"));
 
         // Create another client. Check it doesn't have scope-def and scope-opt scopes assigned
         clientRep = new ClientRepresentation();
@@ -530,10 +530,10 @@ public class ClientScopeTest extends AbstractClientTest {
 
         clientDefaultScopes = getClientScopeNames(testRealmResource().clients().get(clientUuid).getDefaultClientScopes());
         clientOptionalScopes = getClientScopeNames(testRealmResource().clients().get(clientUuid).getOptionalClientScopes());
-        Assert.assertFalse(clientDefaultScopes.contains("scope-def"));
-        Assert.assertFalse(clientOptionalScopes .contains("scope-def"));
-        Assert.assertFalse(clientDefaultScopes.contains("scope-opt"));
-        Assert.assertFalse(clientOptionalScopes .contains("scope-opt"));
+        Assertions.assertFalse(clientDefaultScopes.contains("scope-def"));
+        Assertions.assertFalse(clientOptionalScopes .contains("scope-def"));
+        Assertions.assertFalse(clientDefaultScopes.contains("scope-opt"));
+        Assertions.assertFalse(clientOptionalScopes .contains("scope-opt"));
     }
 
     // KEYCLOAK-9999
@@ -806,7 +806,7 @@ public class ClientScopeTest extends AbstractClientTest {
 
         try {
             clientScopes().get(scopeDefId).update(scopeRep);
-            Assert.fail("This update should fail");
+            Assertions.fail("This update should fail");
         } catch (ClientErrorException ex) {
             assertThat(ex.getResponse(), Matchers.statusCodeIs(Status.BAD_REQUEST));
         }
@@ -834,7 +834,7 @@ public class ClientScopeTest extends AbstractClientTest {
         try {
             ClientResource clientResource = testRealmResource().clients().get(clientUuid);
             clientResource.addDefaultClientScope(optionalClientScopeId);
-            Assert.fail("A Dynamic Scope shouldn't not be assigned as a default scope to a client");
+            Assertions.fail("A Dynamic Scope shouldn't not be assigned as a default scope to a client");
         } catch (ClientErrorException ex) {
             assertThat(ex.getResponse(), Matchers.statusCodeIs(Status.BAD_REQUEST));
         }
@@ -843,12 +843,12 @@ public class ClientScopeTest extends AbstractClientTest {
 
     private void handleExpectedCreateFailure(ClientScopeRepresentation scopeRep, int expectedErrorCode, String expectedErrorMessage) {
         try(Response resp = clientScopes().create(scopeRep)) {
-            Assert.assertEquals(expectedErrorCode, resp.getStatus());
+            Assertions.assertEquals(expectedErrorCode, resp.getStatus());
             String respBody = resp.readEntity(String.class);
             Map<String, String> responseJson = null;
             try {
                 responseJson = JsonSerialization.readValue(respBody, Map.class);
-                Assert.assertEquals(expectedErrorMessage, responseJson.get("errorMessage"));
+                Assertions.assertEquals(expectedErrorMessage, responseJson.get("errorMessage"));
             } catch (IOException e) {
                 fail("Failed to extract the errorMessage from a CreateScope Response");
             }
@@ -861,7 +861,7 @@ public class ClientScopeTest extends AbstractClientTest {
 
     private String createClientScope(ClientScopeRepresentation clientScopeRep) {
         Response resp = clientScopes().create(clientScopeRep);
-        Assert.assertEquals(201, resp.getStatus());
+        Assertions.assertEquals(201, resp.getStatus());
         resp.close();
         String clientScopeId = ApiUtil.getCreatedId(resp);
         getCleanup().addClientScopeId(clientScopeId);

@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.console.realm;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.testsuite.console.AbstractConsoleTest;
 import org.keycloak.testsuite.console.page.realm.RealmSettings;
 import org.keycloak.testsuite.console.page.realm.RealmSettings.RealmTabs;
@@ -19,7 +19,7 @@ public abstract class AbstractRealmTest extends AbstractConsoleTest {
         return realmSettingsPage.tabs();
     }
     
-    @Before
+    @BeforeEach
     public void beforeRealmTest() {
 //        configure().realmSettings();
     }

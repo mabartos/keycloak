@@ -1,8 +1,8 @@
 package org.keycloak.testsuite.broker;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -11,7 +11,7 @@ import org.keycloak.services.util.CookieHelper;
 import org.keycloak.testsuite.AssertEvents;
 import org.keycloak.testsuite.util.OAuthClient;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.admin.ApiUtil.createUserWithAdminClient;
 import static org.keycloak.testsuite.admin.ApiUtil.resetUserPassword;
 import static org.keycloak.testsuite.broker.BrokerTestConstants.REALM_CONS_NAME;
@@ -22,15 +22,14 @@ import static org.keycloak.testsuite.broker.BrokerTestTools.getProviderRoot;
 
 public class KcOidcBrokerLogoutTest extends AbstractBaseBrokerTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+
 
     @Override
     protected BrokerConfiguration getBrokerConfiguration() {
         return KcOidcBrokerConfiguration.INSTANCE;
     }
 
-    @Before
+    @BeforeEach
     public void createUser() {
         log.debug("creating user for realm " + bc.providerRealmName());
 
@@ -46,7 +45,7 @@ public class KcOidcBrokerLogoutTest extends AbstractBaseBrokerTest {
         resetUserPassword(realmResource.users().get(userId), bc.getUserPassword(), false);
     }
 
-    @Before
+    @BeforeEach
     public void addIdentityProviderToProviderRealm() {
         log.debug("adding identity provider to realm " + bc.consumerRealmName());
 
@@ -54,7 +53,7 @@ public class KcOidcBrokerLogoutTest extends AbstractBaseBrokerTest {
         realm.identityProviders().create(bc.setUpIdentityProvider()).close();
     }
 
-    @Before
+    @BeforeEach
     public void addClients() {
         addClientsToProviderAndConsumer();
     }

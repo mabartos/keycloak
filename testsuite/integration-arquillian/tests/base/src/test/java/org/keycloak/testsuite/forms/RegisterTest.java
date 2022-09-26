@@ -18,10 +18,11 @@ package org.keycloak.testsuite.forms;
 
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Assume;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.authentication.AuthenticationFlow;
 import org.keycloak.authentication.authenticators.browser.CookieAuthenticatorFactory;
 import org.keycloak.authentication.forms.RegistrationPassword;
@@ -46,7 +47,7 @@ import org.keycloak.testsuite.pages.RegisterPage;
 import org.keycloak.testsuite.pages.VerifyEmailPage;
 import org.keycloak.testsuite.updaters.RealmAttributeUpdater;
 import org.keycloak.testsuite.util.FlowUtil;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.MailUtils;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.keycloak.testsuite.util.UserBuilder;
@@ -60,16 +61,16 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.jgroups.util.Util.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  * @author Stan Silvert ssilvert@redhat.com (C) 2016 Red Hat Inc.
  */
+@ExtendWith(GreenMailExtension.class)
 public class RegisterTest extends AbstractTestRealmKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -85,9 +86,6 @@ public class RegisterTest extends AbstractTestRealmKeycloakTest {
 
     @Page
     protected AccountUpdateProfilePage accountPage;
-
-    @Rule
-    public GreenMailRule greenMail = new GreenMailRule();
 
     @Override
     public void configureTestRealm(RealmRepresentation testRealm) {
@@ -179,7 +177,7 @@ public class RegisterTest extends AbstractTestRealmKeycloakTest {
 
     @Test
     public void registerUpperCaseEmailWithChangedEmailAsUsername() throws IOException {
-        Assume.assumeTrue("See https://github.com/keycloak/keycloak/issues/10245", isUserCacheEnabled());
+        Assumptions.assumeTrue("See https://github.com/keycloak/keycloak/issues/10245", isUserCacheEnabled());
 
         String userId = registerUpperCaseAndGetUserId(false);
         assertThat(userId, notNullValue());
@@ -371,10 +369,10 @@ public class RegisterTest extends AbstractTestRealmKeycloakTest {
         events.expectLogin().detail("username", username.toLowerCase()).user(userId).assertEvent();
 
         UserRepresentation user = getUser(userId);
-        Assert.assertNotNull(user);
-        Assert.assertNotNull(user.getCreatedTimestamp());
+        Assertions.assertNotNull(user);
+        Assertions.assertNotNull(user.getCreatedTimestamp());
         // test that timestamp is current with 10s tollerance
-        Assert.assertTrue((System.currentTimeMillis() - user.getCreatedTimestamp()) < 10000);
+        Assertions.assertTrue((System.currentTimeMillis() - user.getCreatedTimestamp()) < 10000);
         assertUserBasicRegisterAttributes(userId, username, email, "firstName", "lastName");
     }
 
@@ -491,7 +489,7 @@ public class RegisterTest extends AbstractTestRealmKeycloakTest {
         assertTrue(accountPage.isCurrent());
 
         UserRepresentation user = getUser(userId);
-        Assert.assertNotNull(user);
+        Assertions.assertNotNull(user);
         assertEquals("Äǜṳǚǘǖ", user.getFirstName());
         assertEquals("Öṏṏ", user.getLastName());
 
@@ -603,10 +601,10 @@ public class RegisterTest extends AbstractTestRealmKeycloakTest {
             events.expectLogin().detail("username", "registerusersuccesse@email").user(userId).assertEvent();
 
             UserRepresentation user = getUser(userId);
-            Assert.assertNotNull(user);
-            Assert.assertNotNull(user.getCreatedTimestamp());
+            Assertions.assertNotNull(user);
+            Assertions.assertNotNull(user.getCreatedTimestamp());
             // test that timestamp is current with 10s tollerance
-            Assert.assertTrue((System.currentTimeMillis() - user.getCreatedTimestamp()) < 10000);
+            Assertions.assertTrue((System.currentTimeMillis() - user.getCreatedTimestamp()) < 10000);
         }
     }
 

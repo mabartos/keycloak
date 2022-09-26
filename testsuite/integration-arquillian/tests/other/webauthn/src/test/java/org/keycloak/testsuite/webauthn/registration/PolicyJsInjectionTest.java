@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.webauthn.registration;
 
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.testsuite.webauthn.AbstractWebAuthnVirtualTest;
 import org.keycloak.testsuite.webauthn.pages.WebAuthnAuthenticatorsList;

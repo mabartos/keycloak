@@ -17,9 +17,10 @@
 package org.keycloak.testsuite.sessionlimits;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.authentication.authenticators.browser.UsernamePasswordFormFactory;
 import org.keycloak.authentication.authenticators.sessionlimits.UserSessionLimitsAuthenticatorFactory;
 import org.keycloak.events.Details;
@@ -39,17 +40,18 @@ import org.keycloak.testsuite.admin.ApiUtil;
 import org.keycloak.testsuite.pages.LoginPage;
 import org.keycloak.testsuite.pages.LoginPasswordResetPage;
 import org.keycloak.testsuite.pages.LoginPasswordUpdatePage;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.MailUtils;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.keycloak.testsuite.pages.ErrorPage;
 import javax.mail.internet.MimeMessage;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.sessionlimits.UserSessionLimitsUtil.assertSessionCount;
 import static org.keycloak.testsuite.sessionlimits.UserSessionLimitsUtil.configureSessionLimits;
 import static org.keycloak.testsuite.sessionlimits.UserSessionLimitsUtil.ERROR_TO_DISPLAY;
 
+@ExtendWith(GreenMailExtension.class)
 public class UserSessionLimitsTest extends AbstractTestRealmKeycloakTest {
     private String realmName = "test";
     private String username = "test-user@localhost";
@@ -59,7 +61,7 @@ public class UserSessionLimitsTest extends AbstractTestRealmKeycloakTest {
         findTestApp(testRealm).setDirectAccessGrantsEnabled(true);
     }
 
-    @Before
+    @BeforeEach
     public void setupFlows() {
         // Do this just once per class
         if (testContext.isInitialized()) {
@@ -91,11 +93,7 @@ public class UserSessionLimitsTest extends AbstractTestRealmKeycloakTest {
         realm.addAuthenticatorExecution(execution);
     }
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
-
-    @Rule
-    public GreenMailRule greenMail = new GreenMailRule();
+    
 
     @Page
     protected LoginPage loginPage;

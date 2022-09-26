@@ -2,9 +2,9 @@ package org.keycloak.testsuite.springboot;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.common.Profile;
@@ -29,7 +29,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.pause;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 
@@ -92,12 +92,12 @@ public class SessionSpringBootTest extends AbstractSpringBootTest {
         assertThat(sessionPage.getCounter(), is(equalTo(1)));
     }
 
-    @Before
+    @BeforeEach
     public void addUserCorrect2() {
         addUser(USER_LOGIN_CORRECT_2, USER_EMAIL_CORRECT_2, USER_PASSWORD_CORRECT_2, CORRECT_ROLE);
     }
 
-    @After
+    @AfterEach
     public void removeUserCorrect2() {
         UserRepresentation userRep = ApiUtil.findUserByUsername(realmsResouce().realm(REALM_NAME), USER_LOGIN_CORRECT_2);
         if (userRep != null) {
@@ -152,7 +152,7 @@ public class SessionSpringBootTest extends AbstractSpringBootTest {
         driver2.navigate().to(logoutUrl);
 
         waitForPageToLoad();
-        Assert.assertThat(true, is(secondBrowserLogoutConfirmPage.isCurrent(driver2)));
+        Assertions.assertThat(true, is(secondBrowserLogoutConfirmPage.isCurrent(driver2)));
         secondBrowserLogoutConfirmPage.confirmLogout(driver2);
         waitForPageToLoad();
         secondBrowserInfoPage.assertCurrent();

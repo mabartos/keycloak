@@ -18,10 +18,10 @@
 package org.keycloak.testsuite.session;
 
 import org.infinispan.Cache;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.common.util.Retry;
 import org.keycloak.common.util.Time;
@@ -52,12 +52,12 @@ public class LastSessionRefreshUnitTest extends AbstractKeycloakTest {
 
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void checkNotMapStorage() {
         ProfileAssume.assumeFeatureDisabled(Profile.Feature.MAP_STORAGE);
     }
 
-    @After
+    @AfterEach
     public void cleanupPeriodicTask() {
         // Cleanup unneeded periodic task, which was added during this test
         testingClient.server().run((session -> {
@@ -88,25 +88,25 @@ public class LastSessionRefreshUnitTest extends AbstractKeycloakTest {
             for (int i=0 ; i<8 ; i++){
                 customStore.putLastSessionRefresh(session, "session-" + i, "master", lastSessionRefresh);
             }
-            Assert.assertEquals(0, counter.get());
+            Assertions.assertEquals(0, counter.get());
 
             // Add 2 other items. Message sent now due the maxCount is 10
             for (int i=8 ; i<10 ; i++){
                 customStore.putLastSessionRefresh(session, "session-" + i, "master", lastSessionRefresh);
             }
-            Assert.assertEquals(1, counter.get());
+            Assertions.assertEquals(1, counter.get());
 
             // Add 5 items. No additional message
             for (int i=10 ; i<15 ; i++){
                 customStore.putLastSessionRefresh(session, "session-" + i, "master", lastSessionRefresh);
             }
-            Assert.assertEquals(1, counter.get());
+            Assertions.assertEquals(1, counter.get());
 
             // Add 20 items. 2 additional messages
             for (int i=15 ; i<35 ; i++){
                 customStore.putLastSessionRefresh(session, "session-" + i, "master", lastSessionRefresh);
             }
-            Assert.assertEquals(3, counter.get());
+            Assertions.assertEquals(3, counter.get());
 
         }
 
@@ -132,17 +132,17 @@ public class LastSessionRefreshUnitTest extends AbstractKeycloakTest {
                 } catch (InterruptedException ie) {
                     throw new RuntimeException();
                 }
-                Assert.assertEquals(0, counter.get());
+                Assertions.assertEquals(0, counter.get());
 
                 // Short timer interval 10 ms. 1 message due the interval is executed and lastRun was in the past due to Time.setOffset
                 CrossDCLastSessionRefreshStore customStore2 = createStoreInstance(session, 10, 10);
                 Time.setOffset(200);
 
                 Retry.execute(() -> {
-                    Assert.assertEquals(1, counter.get());
+                    Assertions.assertEquals(1, counter.get());
                 }, 100, 10);
 
-                Assert.assertEquals(1, counter.get());
+                Assertions.assertEquals(1, counter.get());
 
                 // Another sleep won't send message. lastRun was updated
                 try {
@@ -150,7 +150,7 @@ public class LastSessionRefreshUnitTest extends AbstractKeycloakTest {
                 } catch (InterruptedException ie) {
                     throw new RuntimeException();
                 }
-                Assert.assertEquals(1, counter.get());
+                Assertions.assertEquals(1, counter.get());
             } finally {
                 Time.setOffset(0);
             }

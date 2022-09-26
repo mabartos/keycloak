@@ -22,10 +22,10 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.util.PhantomJSBrowser;
 import org.openqa.selenium.WebDriver;
@@ -42,22 +42,22 @@ public class X509BrowserLoginIssuerDnTest extends AbstractX509AuthenticationTest
     @PhantomJSBrowser
     private WebDriver phantomJS;
 
-    @Before
+    @BeforeEach
     public void replaceTheDefaultDriver() {
         replaceDefaultWebDriver(phantomJS);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void checkAssumption() {
         try {
             CertificateFactory.getInstance("X.509", "SUN");
         }
         catch (CertificateException | NoSuchProviderException e) {
-            Assume.assumeNoException("Test assumes the SUN security provider", e);
+            Assumptions.assumeNoException("Test assumes the SUN security provider", e);
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void onBeforeTestClass() {
         configurePhantomJS("/ca.crt", "/certs/clients/test-user-san@localhost.cert.pem",
                            "/certs/clients/test-user@localhost.key.pem", "password");

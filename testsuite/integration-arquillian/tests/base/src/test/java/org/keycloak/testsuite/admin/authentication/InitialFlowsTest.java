@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.admin.authentication;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.AuthenticationExecutionExportRepresentation;
 import org.keycloak.representations.idm.AuthenticationExecutionInfoRepresentation;
 import org.keycloak.representations.idm.AuthenticationFlowRepresentation;
@@ -70,7 +70,7 @@ public class InitialFlowsTest extends AbstractAuthenticationTest {
     }
 
     private void compare(List<FlowExecutions> expected, List<FlowExecutions> actual) {
-        //Assert.assertEquals("Flow count", expected.size(), actual.size());
+        //Assertions.assertEquals("Flow count", expected.size(), actual.size());
         Iterator<FlowExecutions> it1 = expected.iterator();
         Iterator<FlowExecutions> it2 = actual.iterator();
         while (it1.hasNext()) {
@@ -84,7 +84,7 @@ public class InitialFlowsTest extends AbstractAuthenticationTest {
 
 
     private void compareExecutionsInfo(List<AuthenticationExecutionInfoRepresentation> expected, List<AuthenticationExecutionInfoRepresentation> actual) {
-        Assert.assertEquals("Executions count", expected.size(), actual.size());
+        Assertions.assertEquals("Executions count", expected.size(), actual.size());
         Iterator<AuthenticationExecutionInfoRepresentation> it1 = expected.iterator();
         Iterator<AuthenticationExecutionInfoRepresentation> it2 = actual.iterator();
         while (it1.hasNext()) {
@@ -107,8 +107,8 @@ public class InitialFlowsTest extends AbstractAuthenticationTest {
         if (cfg1 == null && cfg2 == null) {
             return;
         }
-        Assert.assertEquals("Execution configuration alias", cfg1.getAlias(), cfg2.getAlias());
-        Assert.assertEquals("Execution configuration params", cfg1.getConfig(), cfg2.getConfig());
+        Assertions.assertEquals("Execution configuration alias", cfg1.getAlias(), cfg2.getAlias());
+        Assertions.assertEquals("Execution configuration params", cfg1.getConfig(), cfg2.getConfig());
     }
 
     private List<FlowExecutions> orderAlphabetically(List<FlowExecutions> result) {

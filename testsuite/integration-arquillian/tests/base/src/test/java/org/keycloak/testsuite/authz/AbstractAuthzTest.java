@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.authz;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.common.Profile;
 import org.keycloak.jose.jws.JWSInput;
 import org.keycloak.jose.jws.JWSInputException;
@@ -16,7 +16,7 @@ import static org.keycloak.common.Profile.Feature.AUTHORIZATION;
  */
 public abstract class AbstractAuthzTest extends AbstractKeycloakTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
         ProfileAssume.assumeFeatureEnabled(AUTHORIZATION);
     }

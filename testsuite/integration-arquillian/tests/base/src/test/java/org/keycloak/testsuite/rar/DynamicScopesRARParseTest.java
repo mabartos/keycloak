@@ -17,9 +17,9 @@
  */
 package org.keycloak.testsuite.rar;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.common.Profile;
 import org.keycloak.models.ClientScopeModel;
@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author <a href="mailto:dgozalob@redhat.com">Daniel Gozalo</a>
@@ -66,7 +66,7 @@ public class DynamicScopesRARParseTest extends AbstractRARParserTest {
                 authorizationRequestHolders.stream().map(authorizationRequestHolder -> authorizationRequestHolder.getAuthorizationDetails().getScopeNameFromCustomData())
                         .collect(Collectors.toSet()));
 
-        Assert.assertTrue(authorizationRequestHolders.stream()
+        Assertions.assertTrue(authorizationRequestHolders.stream()
                 .map(AuthorizationRequestContextHolder.AuthorizationRequestHolder::getAuthorizationDetails)
                 .allMatch(rep -> rep.getType().equalsIgnoreCase(AuthorizationDetailsJSONRepresentation.STATIC_SCOPE_RAR_TYPE)));
     }
@@ -102,7 +102,7 @@ public class DynamicScopesRARParseTest extends AbstractRARParserTest {
                 authorizationRequestHolders.stream().map(authorizationRequestHolder -> authorizationRequestHolder.getAuthorizationDetails().getScopeNameFromCustomData())
                         .collect(Collectors.toSet()));
 
-        Assert.assertTrue(authorizationRequestHolders.stream()
+        Assertions.assertTrue(authorizationRequestHolders.stream()
                 .map(AuthorizationRequestContextHolder.AuthorizationRequestHolder::getAuthorizationDetails)
                 .allMatch(rep -> rep.getType().equalsIgnoreCase(AuthorizationDetailsJSONRepresentation.STATIC_SCOPE_RAR_TYPE)));
 
@@ -136,7 +136,7 @@ public class DynamicScopesRARParseTest extends AbstractRARParserTest {
 
         assertEquals(defScopes.size(), authorizationRequestHolders.size() - 1);
 
-        Assert.assertFalse(authorizationRequestHolders.stream()
+        Assertions.assertFalse(authorizationRequestHolders.stream()
                 .map(AuthorizationRequestContextHolder.AuthorizationRequestHolder::getAuthorizationDetails)
                 .allMatch(rep -> rep.getType().equalsIgnoreCase(AuthorizationDetailsJSONRepresentation.STATIC_SCOPE_RAR_TYPE)));
 
@@ -144,10 +144,10 @@ public class DynamicScopesRARParseTest extends AbstractRARParserTest {
                 .filter(authorizationRequestHolder -> authorizationRequestHolder.getAuthorizationDetails().getType().equalsIgnoreCase(AuthorizationDetailsJSONRepresentation.DYNAMIC_SCOPE_RAR_TYPE))
                 .findAny();
 
-        Assert.assertTrue(authorizationRequestContextHolderOpt.isPresent());
+        Assertions.assertTrue(authorizationRequestContextHolderOpt.isPresent());
         AuthorizationRequestContextHolder.AuthorizationRequestHolder authorizationRequestHolder = authorizationRequestContextHolderOpt.get();
-        Assert.assertTrue(authorizationRequestHolder.getAuthorizationDetails().getScopeNameFromCustomData().equalsIgnoreCase("dynamic-scope:param"));
-        Assert.assertTrue(authorizationRequestHolder.getAuthorizationDetails().getCustomData().get("scope_parameter").equals("param"));
+        Assertions.assertTrue(authorizationRequestHolder.getAuthorizationDetails().getScopeNameFromCustomData().equalsIgnoreCase("dynamic-scope:param"));
+        Assertions.assertTrue(authorizationRequestHolder.getAuthorizationDetails().getCustomData().get("scope_parameter").equals("param"));
 
         testApp.removeOptionalClientScope(scopeId);
     }

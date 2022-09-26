@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.admin.authentication;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.AuthenticationFlow;
 import org.keycloak.authentication.authenticators.browser.UsernameFormFactory;
 import org.keycloak.authentication.authenticators.browser.WebAuthnAuthenticatorFactory;
@@ -57,7 +57,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         Response response = authMgmtResource.copy("browser", params);
         assertAdminEvents.assertEvent(testRealmId, OperationType.CREATE, AdminEventPaths.authCopyFlowPath("browser"), params, ResourceType.AUTH_FLOW);
         try {
-            Assert.assertEquals("Copy flow", 201, response.getStatus());
+            Assertions.assertEquals("Copy flow", 201, response.getStatus());
         } finally {
             response.close();
         }
@@ -97,7 +97,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
 
         AuthenticatorConfigRepresentation updated = authMgmtResource.getAuthenticatorConfig(authConfigRep.getId());
 
-        Assert.assertThat(updated.getConfig().values(), hasItems("test-updated", "skip"));
+        Assertions.assertThat(updated.getConfig().values(), hasItems("test-updated", "skip"));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         params.put("provider", "idp-review-profile");
         try {
             authMgmtResource.addExecution("browser", params);
-            Assert.fail("add execution to built-in flow should fail");
+            Assertions.fail("add execution to built-in flow should fail");
         } catch (BadRequestException expected) {
             // Expected
         }
@@ -116,7 +116,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         // try add execution to not-existent flow
         try {
             authMgmtResource.addExecution("not-existent", params);
-            Assert.fail("add execution to not-existent flow should fail");
+            Assertions.fail("add execution to not-existent flow should fail");
         } catch (BadRequestException expected) {
             // Expected
         }
@@ -126,7 +126,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         Response response = authMgmtResource.copy("browser", params);
         assertAdminEvents.assertEvent(testRealmId, OperationType.CREATE, AdminEventPaths.authCopyFlowPath("browser"), params, ResourceType.AUTH_FLOW);
         try {
-            Assert.assertEquals("Copy flow", 201, response.getStatus());
+            Assertions.assertEquals("Copy flow", 201, response.getStatus());
         } finally {
             response.close();
         }
@@ -135,7 +135,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         params.put("provider", "test-execution");
         try {
             authMgmtResource.addExecution("CopyOfBrowser", params);
-            Assert.fail("add execution with inexistent provider should fail");
+            Assertions.fail("add execution with inexistent provider should fail");
         } catch(BadRequestException expected) {
             // Expected
         }
@@ -148,7 +148,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         // check execution was added
         List<AuthenticationExecutionInfoRepresentation> executionReps = authMgmtResource.getExecutions("Copy-of-browser");
         AuthenticationExecutionInfoRepresentation exec = findExecutionByProvider("idp-review-profile", executionReps);
-        Assert.assertNotNull("idp-review-profile added", exec);
+        Assertions.assertNotNull("idp-review-profile added", exec);
 
         // we'll need auth-cookie later
         AuthenticationExecutionInfoRepresentation authCookieExec = findExecutionByProvider("auth-cookie", executionReps);
@@ -162,7 +162,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         // check execution was removed
         executionReps = authMgmtResource.getExecutions("Copy-of-browser");
         exec = findExecutionByProvider("idp-review-profile", executionReps);
-        Assert.assertNull("idp-review-profile removed", exec);
+        Assertions.assertNull("idp-review-profile removed", exec);
 
         // now add the execution again using a different method and representation
 
@@ -178,7 +178,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         // Should fail - missing parent flow
         response = authMgmtResource.addExecution(rep);
         try {
-            Assert.assertEquals("added execution missing parent flow", 400, response.getStatus());
+            Assertions.assertEquals("added execution missing parent flow", 400, response.getStatus());
         } finally {
             response.close();
         }
@@ -187,7 +187,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         rep.setParentFlow("not-existent-id");
         response = authMgmtResource.addExecution(rep);
         try {
-            Assert.assertEquals("added execution missing parent flow", 400, response.getStatus());
+            Assertions.assertEquals("added execution missing parent flow", 400, response.getStatus());
         } finally {
             response.close();
         }
@@ -197,7 +197,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         rep.setParentFlow(browserFlow.getId());
         response = authMgmtResource.addExecution(rep);
         try {
-            Assert.assertEquals("added execution to builtin flow", 400, response.getStatus());
+            Assertions.assertEquals("added execution to builtin flow", 400, response.getStatus());
         } finally {
             response.close();
         }
@@ -211,7 +211,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         response = authMgmtResource.addExecution(rep);
         assertAdminEvents.assertEvent(testRealmId, OperationType.CREATE, AssertAdminEvents.isExpectedPrefixFollowedByUuid(AdminEventPaths.authMgmtBasePath() + "/executions"), rep, ResourceType.AUTH_EXECUTION);
         try {
-            Assert.assertEquals("added execution", 201, response.getStatus());
+            Assertions.assertEquals("added execution", 201, response.getStatus());
         } finally {
             response.close();
         }
@@ -219,7 +219,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         // check execution was added
         List<AuthenticationExecutionInfoRepresentation> executions = authMgmtResource.getExecutions("Copy-of-browser");
         exec = findExecutionByProvider("auth-cookie", executions);
-        Assert.assertNotNull("auth-cookie added", exec);
+        Assertions.assertNotNull("auth-cookie added", exec);
 
         // Note: there is no checking in addExecution if requirement is one of requirementChoices
         // Thus we can have OPTIONAL which is neither ALTERNATIVE, nor DISABLED
@@ -233,7 +233,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         List<AuthenticationExecutionInfoRepresentation> executionReps = authMgmtResource.getExecutions("browser");
         AuthenticationExecutionInfoRepresentation exec = findExecutionByProvider("auth-cookie", executionReps);
 
-        Assert.assertEquals("auth-cookie set to ALTERNATIVE", ALTERNATIVE, exec.getRequirement());
+        Assertions.assertEquals("auth-cookie set to ALTERNATIVE", ALTERNATIVE, exec.getRequirement());
 
         // switch from DISABLED to ALTERNATIVE
         exec.setRequirement(DISABLED);
@@ -263,7 +263,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         // Check executions of not-existent flow - SHOULD FAIL
         try {
             authMgmtResource.getExecutions("not-existent");
-            Assert.fail("Not expected to find executions");
+            Assertions.fail("Not expected to find executions");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -271,12 +271,12 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         // Check existent executions
         List<AuthenticationExecutionInfoRepresentation> executions = authMgmtResource.getExecutions("new-client-flow");
         AuthenticationExecutionInfoRepresentation executionRep = findExecutionByProvider(ClientIdAndSecretAuthenticator.PROVIDER_ID, executions);
-        Assert.assertNotNull(executionRep);
+        Assertions.assertNotNull(executionRep);
 
         // Update execution with not-existent flow - SHOULD FAIL
         try {
             authMgmtResource.updateExecutions("not-existent", executionRep);
-            Assert.fail("Not expected to update execution with not-existent flow");
+            Assertions.fail("Not expected to update execution with not-existent flow");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -286,7 +286,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         executionRep2.setId("not-existent");
         try {
             authMgmtResource.updateExecutions("new-client-flow", executionRep2);
-            Assert.fail("Not expected to update not-existent execution");
+            Assertions.fail("Not expected to update not-existent execution");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -298,12 +298,12 @@ public class ExecutionTest extends AbstractAuthenticationTest {
 
         // Check updated
         executionRep = findExecutionByProvider(ClientIdAndSecretAuthenticator.PROVIDER_ID, authMgmtResource.getExecutions("new-client-flow"));
-        Assert.assertEquals(ALTERNATIVE, executionRep.getRequirement());
+        Assertions.assertEquals(ALTERNATIVE, executionRep.getRequirement());
 
         // Remove execution with not-existent ID
         try {
             authMgmtResource.removeExecution("not-existent");
-            Assert.fail("Didn't expect to find execution");
+            Assertions.fail("Didn't expect to find execution");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -325,7 +325,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         params.put("newName", newBrowserFlow);
         try (Response response = authMgmtResource.copy("browser", params)) {
             assertAdminEvents.assertEvent(testRealmId, OperationType.CREATE, AdminEventPaths.authCopyFlowPath("browser"), params, ResourceType.AUTH_FLOW);
-            Assert.assertEquals("Copy flow", 201, response.getStatus());
+            Assertions.assertEquals("Copy flow", 201, response.getStatus());
         }
 
         addExecutionCheckReq(newBrowserFlow, UsernameFormFactory.PROVIDER_ID, params, REQUIRED);
@@ -333,7 +333,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         addExecutionCheckReq(newBrowserFlow, NoCookieFlowRedirectAuthenticatorFactory.PROVIDER_ID, params, REQUIRED);
 
         AuthenticationFlowRepresentation rep = findFlowByAlias(newBrowserFlow, authMgmtResource.getFlows());
-        Assert.assertNotNull(rep);
+        Assertions.assertNotNull(rep);
         authMgmtResource.deleteFlow(rep.getId());
         assertAdminEvents.assertEvent(testRealmId, OperationType.DELETE, AdminEventPaths.authFlowPath(rep.getId()), ResourceType.AUTH_FLOW);
     }
@@ -346,8 +346,8 @@ public class ExecutionTest extends AbstractAuthenticationTest {
         List<AuthenticationExecutionInfoRepresentation> executionReps = authMgmtResource.getExecutions(flow);
         AuthenticationExecutionInfoRepresentation exec = findExecutionByProvider(providerID, executionReps);
 
-        Assert.assertNotNull(exec);
-        Assert.assertEquals(expectedRequirement, exec.getRequirement());
+        Assertions.assertNotNull(exec);
+        Assertions.assertEquals(expectedRequirement, exec.getRequirement());
 
         authMgmtResource.removeExecution(exec.getId());
         assertAdminEvents.assertEvent(testRealmId, OperationType.DELETE, AdminEventPaths.authExecutionPath(exec.getId()), ResourceType.AUTH_EXECUTION);

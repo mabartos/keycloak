@@ -20,10 +20,10 @@ package org.keycloak.testsuite.x509;
 
 import com.google.common.base.Charsets;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.authenticators.x509.X509AuthenticatorConfigModel;
 import org.keycloak.common.util.PemUtils;
 import org.keycloak.representations.idm.AuthenticatorConfigRepresentation;
@@ -32,7 +32,7 @@ import org.keycloak.testsuite.util.OAuthClient;
 import javax.ws.rs.core.Response;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.authentication.authenticators.x509.X509AuthenticatorConfigModel.IdentityMapperType.USERNAME_EMAIL;
 import static org.keycloak.authentication.authenticators.x509.X509AuthenticatorConfigModel.MappingSourceType.SUBJECTDN_EMAIL;
 
@@ -68,7 +68,7 @@ public class X509OCSPResponderTest extends AbstractX509AuthenticationTest {
     @PhantomJSBrowser
     private WebDriver phantomJS;
 
-    @Before
+    @BeforeEach
     public void replaceTheDefaultDriver() {
         replaceDefaultWebDriver(phantomJS);
     }
@@ -82,7 +82,7 @@ public class X509OCSPResponderTest extends AbstractX509AuthenticationTest {
                         .setUserIdentityMapperType(USERNAME_EMAIL);
         AuthenticatorConfigRepresentation cfg = newConfig("x509-directgrant-config", config.getConfig());
         String cfgId = createConfig(directGrantExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         oauth.clientId("resource-owner");
         OAuthClient.AccessTokenResponse response = oauth.doGrantAccessTokenRequest("secret", "", "", null);
@@ -90,7 +90,7 @@ public class X509OCSPResponderTest extends AbstractX509AuthenticationTest {
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatusCode());
         assertEquals("invalid_request", response.getError());
 
-        Assert.assertThat(response.getErrorDescription(), containsString("Certificate's been revoked."));
+        Assertions.assertThat(response.getErrorDescription(), containsString("Certificate's been revoked."));
     }
 
     @Test
@@ -103,7 +103,7 @@ public class X509OCSPResponderTest extends AbstractX509AuthenticationTest {
                         .setUserIdentityMapperType(USERNAME_EMAIL);
         AuthenticatorConfigRepresentation cfg = newConfig("x509-directgrant-config", config.getConfig());
         String cfgId = createConfig(directGrantExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         String keyStorePath = Paths.get(System.getProperty("client.certificate.keystore"))
                 .getParent().resolve("client-ca.jks").toString();
@@ -120,7 +120,7 @@ public class X509OCSPResponderTest extends AbstractX509AuthenticationTest {
             assertEquals("invalid_request", response.getError());
 
             // the ocsp signer cert is issued by the same CA but no OCSP-Signing extension so error
-            Assert.assertThat(response.getErrorDescription(), containsString("Responder's certificate not valid for signing OCSP responses"));
+            Assertions.assertThat(response.getErrorDescription(), containsString("Responder's certificate not valid for signing OCSP responses"));
         } finally {
             oauth.httpClient(previous);
         }
@@ -136,7 +136,7 @@ public class X509OCSPResponderTest extends AbstractX509AuthenticationTest {
                         .setUserIdentityMapperType(USERNAME_EMAIL);
         AuthenticatorConfigRepresentation cfg = newConfig("x509-directgrant-config", config.getConfig());
         String cfgId = createConfig(directGrantExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         String keyStorePath = Paths.get(System.getProperty("client.certificate.keystore"))
                 .getParent().resolve("test-user-cert-intermediary-ca.jks").toString();
@@ -170,7 +170,7 @@ public class X509OCSPResponderTest extends AbstractX509AuthenticationTest {
                         .setUserIdentityMapperType(USERNAME_EMAIL);
         AuthenticatorConfigRepresentation cfg = newConfig("x509-directgrant-config", config.getConfig());
         String cfgId = createConfig(directGrantExecution.getId(), cfg);
-        Assert.assertNotNull(cfgId);
+        Assertions.assertNotNull(cfgId);
 
         String keyStorePath = Paths.get(System.getProperty("client.certificate.keystore"))
                 .getParent().resolve("client-ca.jks").toString();
@@ -190,7 +190,7 @@ public class X509OCSPResponderTest extends AbstractX509AuthenticationTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void startOCSPResponder() throws Exception {
         ocspResponder = Undertow.builder().addHttpListener(OCSP_RESPONDER_PORT, OCSP_RESPONDER_HOST)
                 .setHandler(new BlockingHandler(
@@ -200,7 +200,7 @@ public class X509OCSPResponderTest extends AbstractX509AuthenticationTest {
         ocspResponder.start();
     }
 
-    @After
+    @AfterEach
     public void stopOCSPResponder() {
         ocspResponder.stop();
     }

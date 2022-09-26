@@ -3,8 +3,8 @@ package org.keycloak.testsuite.broker;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.IdentityProviderResource;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
@@ -32,7 +32,7 @@ public class ExternalKeycloakRoleToRoleMapperTest extends AbstractRoleMapperTest
         return new KcOidcBrokerConfiguration();
     }
 
-    @Before
+    @BeforeEach
     public void setupRealm() {
         super.addClients();
         realm = adminClient.realm(bc.consumerRealmName());

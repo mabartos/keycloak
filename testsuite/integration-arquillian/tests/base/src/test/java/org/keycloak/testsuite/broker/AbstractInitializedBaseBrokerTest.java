@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.broker;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import org.keycloak.admin.client.resource.AuthenticationManagementResource;
 import org.keycloak.admin.client.resource.IdentityProviderResource;
@@ -37,7 +37,7 @@ public abstract class AbstractInitializedBaseBrokerTest extends AbstractBaseBrok
     protected IdentityProviderResource identityProviderResource;
 
     @Override
-    @Before
+    @BeforeEach
     public void beforeBrokerTest() {
         super.beforeBrokerTest();
         log.debug("creating user for realm " + bc.providerRealmName());

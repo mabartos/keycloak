@@ -17,10 +17,10 @@
 
 package org.keycloak.testsuite.federation.ldap;
 
-import org.junit.Assert;
-import org.junit.ClassRule;
+import org.junit.jupiter.api.Assertions;
+
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.component.ComponentModel;
@@ -108,7 +108,7 @@ public class LDAPNoMSADTest extends AbstractLDAPTest {
             ldapProvider.getLdapIdentityStore().update(john2);
 
             // Assert DN was changed
-            Assert.assertEquals("sn=Doe2", john2.getDn().getFirstRdn().toString());
+            Assertions.assertEquals("sn=Doe2", john2.getDn().getFirstRdn().toString());
 
             // Remove "sn" mapper
             snMapper = appRealm.getComponentsStream(ctx.getLdapModel().getId(), LDAPStorageMapper.class.getName())
@@ -116,7 +116,7 @@ public class LDAPNoMSADTest extends AbstractLDAPTest {
                     .findFirst()
                     .orElse(null);
 
-            Assert.assertNotNull(snMapper);
+            Assertions.assertNotNull(snMapper);
             appRealm.removeComponent(snMapper);
         });
 
@@ -127,7 +127,7 @@ public class LDAPNoMSADTest extends AbstractLDAPTest {
             RealmModel appRealm = ctx.getRealm();
 
             UserModel johnkeycloak2 = session.users().getUserByUsername(appRealm, "johnkeycloak2");
-            Assert.assertNotNull(johnkeycloak2);
+            Assertions.assertNotNull(johnkeycloak2);
 
             johnkeycloak2.setFirstName("foo2");
             johnkeycloak2.setLastName("foo");
@@ -157,7 +157,7 @@ public class LDAPNoMSADTest extends AbstractLDAPTest {
 
             // Assert DN was changed
             String rdnAttrName = ldapProvider.getLdapIdentityStore().getConfig().getRdnLdapAttribute();
-            Assert.assertEquals(rdnAttrName + "=johnkeycloak3+sn=Doe3", john2.getDn().getFirstRdn().toString());
+            Assertions.assertEquals(rdnAttrName + "=johnkeycloak3+sn=Doe3", john2.getDn().getFirstRdn().toString());
         });
 
         // Update some user attributes not mapped to DN. DN won't be changed
@@ -170,7 +170,7 @@ public class LDAPNoMSADTest extends AbstractLDAPTest {
         user.update(userRep);
 
         userRep = user.toRepresentation();
-        Assert.assertEquals("newemail@email.cz", userRep.getEmail());
+        Assertions.assertEquals("newemail@email.cz", userRep.getEmail());
         assertFirstRDNEndsWith(userRep, "johnkeycloak3", "Doe3");
 
         // Update some user attributes mapped to DN. DN will be changed
@@ -180,7 +180,7 @@ public class LDAPNoMSADTest extends AbstractLDAPTest {
         userRep = user.toRepresentation();
 
         // ApacheDS bug causes that attribute, which was added to DN, is lowercased. Works for other LDAPs (RHDS, OpenLDAP)
-        Assert.assertThat("Doe3Changed", equalToIgnoringCase(userRep.getLastName()));
+        Assertions.assertThat("Doe3Changed", equalToIgnoringCase(userRep.getLastName()));
         assertFirstRDNEndsWith(userRep, "johnkeycloak3", "Doe3Changed");
 
         // Remove user
@@ -193,10 +193,10 @@ public class LDAPNoMSADTest extends AbstractLDAPTest {
 
         // Order is not guaranteed and can be dependent on LDAP server, so can't test simple string
         List<String> rdnKeys = firstRDN.getAllKeys();
-        Assert.assertEquals(2, rdnKeys.size());
-        Assert.assertEquals(expectedLastNameInDN, firstRDN.getAttrValue("sn"));
+        Assertions.assertEquals(2, rdnKeys.size());
+        Assertions.assertEquals(expectedLastNameInDN, firstRDN.getAttrValue("sn"));
         rdnKeys.remove("sn");
-        Assert.assertEquals(expectedUsernameInDN, firstRDN.getAttrValue(rdnKeys.get(0)));
+        Assertions.assertEquals(expectedUsernameInDN, firstRDN.getAttrValue(rdnKeys.get(0)));
     }
 
 

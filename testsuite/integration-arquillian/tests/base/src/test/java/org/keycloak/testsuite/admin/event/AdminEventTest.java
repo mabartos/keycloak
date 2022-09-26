@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.admin.event;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.representations.idm.AdminEventRepresentation;
@@ -39,7 +39,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.keycloak.testsuite.auth.page.AuthRealm.MASTER;
 
 /**
@@ -51,7 +51,7 @@ public class AdminEventTest extends AbstractEventTest {
 
     private String masterRealmId;
 
-    @Before
+    @BeforeEach
     public void initConfig() {
         enableEvents();
         testRealmResource().clearAdminEvents();

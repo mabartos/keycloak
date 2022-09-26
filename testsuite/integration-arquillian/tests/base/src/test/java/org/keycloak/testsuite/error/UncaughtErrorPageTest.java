@@ -10,8 +10,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.broker.provider.util.SimpleHttp;
 import org.keycloak.common.util.StreamUtil;
@@ -38,9 +38,9 @@ import java.util.Objects;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.utils.MediaType.APPLICATION_JSON;
 
 public class UncaughtErrorPageTest extends AbstractKeycloakTest {
@@ -76,7 +76,7 @@ public class UncaughtErrorPageTest extends AbstractKeycloakTest {
         InputStream is = (InputStream) response.getEntity();
         String responseString = StreamUtil.readString(is, Charset.forName("UTF-8"));
 
-        Assert.assertTrue(responseString.contains("An internal server error has occurred"));
+        Assertions.assertTrue(responseString.contains("An internal server error has occurred"));
     }
 
     @Test

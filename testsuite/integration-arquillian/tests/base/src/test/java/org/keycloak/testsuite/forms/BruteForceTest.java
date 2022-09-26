@@ -18,11 +18,12 @@ package org.keycloak.testsuite.forms;
 
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
@@ -43,7 +44,7 @@ import org.keycloak.testsuite.pages.LoginPasswordResetPage;
 import org.keycloak.testsuite.pages.LoginPasswordUpdatePage;
 import org.keycloak.testsuite.pages.LoginTotpPage;
 import org.keycloak.testsuite.pages.RegisterPage;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.MailUtils;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.keycloak.testsuite.util.RealmRepUtil;
@@ -51,29 +52,25 @@ import org.keycloak.testsuite.util.UserBuilder;
 
 import javax.mail.internet.MimeMessage;
 import java.net.MalformedURLException;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  * @author Stan Silvert ssilvert@redhat.com (C) 2016 Red Hat Inc.
  */
+@ExtendWith(GreenMailExtension.class)
 public class BruteForceTest extends AbstractTestRealmKeycloakTest {
 
     private static String userId;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
-
-    @Rule
-    public GreenMailRule greenMail = new GreenMailRule();
+    
 
     @Page
     protected AppPage appPage;
@@ -118,7 +115,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         testRealm.getUsers().add(UserBuilder.create().username("user2").email("user2@localhost").password("password").build());
     }
 
-    @Before
+    @BeforeEach
     public void config() {
         try {
             clearUserFailures();
@@ -137,7 +134,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
 
     }
 
-    @After
+    @AfterEach
     public void slowItDown() throws Exception {
         try {
             clearUserFailures();
@@ -158,7 +155,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         Thread.sleep(100);
     }
 
-    @Before
+    @BeforeEach
     public void before() throws MalformedURLException {
         totp = new TimeBasedOTP();
     }
@@ -186,33 +183,33 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         {
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("password", totpSecret);
-            Assert.assertNotNull(response.getAccessToken());
-            Assert.assertNull(response.getError());
+            Assertions.assertNotNull(response.getAccessToken());
+            Assertions.assertNull(response.getError());
             events.clear();
         }
         {
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("invalid", totpSecret);
-            Assert.assertNull(response.getAccessToken());
-            Assert.assertEquals(response.getError(), "invalid_grant");
-            Assert.assertEquals(response.getErrorDescription(), "Invalid user credentials");
+            Assertions.assertNull(response.getAccessToken());
+            Assertions.assertEquals(response.getError(), "invalid_grant");
+            Assertions.assertEquals(response.getErrorDescription(), "Invalid user credentials");
             events.clear();
         }
         {
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("invalid", totpSecret);
-            Assert.assertNull(response.getAccessToken());
-            Assert.assertEquals(response.getError(), "invalid_grant");
-            Assert.assertEquals(response.getErrorDescription(), "Invalid user credentials");
+            Assertions.assertNull(response.getAccessToken());
+            Assertions.assertEquals(response.getError(), "invalid_grant");
+            Assertions.assertEquals(response.getErrorDescription(), "Invalid user credentials");
             events.clear();
         }
         {
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("password", totpSecret);
-            Assert.assertNull(response.getAccessToken());
-            Assert.assertNotNull(response.getError());
-            Assert.assertEquals("invalid_grant", response.getError());
-            Assert.assertEquals("Invalid user credentials", response.getErrorDescription());
+            Assertions.assertNull(response.getAccessToken());
+            Assertions.assertNotNull(response.getError());
+            Assertions.assertEquals("invalid_grant", response.getError());
+            Assertions.assertEquals("Invalid user credentials", response.getErrorDescription());
             assertUserDisabledEvent();
             events.clear();
         }
@@ -220,8 +217,8 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         {
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("password", totpSecret);
-            Assert.assertNotNull(response.getAccessToken());
-            Assert.assertNull(response.getError());
+            Assertions.assertNotNull(response.getAccessToken());
+            Assertions.assertNull(response.getError());
             events.clear();
         }
 
@@ -232,31 +229,31 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         {
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("password", totpSecret);
-            Assert.assertNotNull(response.getAccessToken());
-            Assert.assertNull(response.getError());
+            Assertions.assertNotNull(response.getAccessToken());
+            Assertions.assertNull(response.getError());
             events.clear();
         }
         {
             OAuthClient.AccessTokenResponse response = getTestToken("password", "shite");
-            Assert.assertNull(response.getAccessToken());
-            Assert.assertEquals(response.getError(), "invalid_grant");
-            Assert.assertEquals(response.getErrorDescription(), "Invalid user credentials");
+            Assertions.assertNull(response.getAccessToken());
+            Assertions.assertEquals(response.getError(), "invalid_grant");
+            Assertions.assertEquals(response.getErrorDescription(), "Invalid user credentials");
             events.clear();
         }
         {
             OAuthClient.AccessTokenResponse response = getTestToken("password", "shite");
-            Assert.assertNull(response.getAccessToken());
-            Assert.assertEquals(response.getError(), "invalid_grant");
-            Assert.assertEquals(response.getErrorDescription(), "Invalid user credentials");
+            Assertions.assertNull(response.getAccessToken());
+            Assertions.assertEquals(response.getError(), "invalid_grant");
+            Assertions.assertEquals(response.getErrorDescription(), "Invalid user credentials");
             events.clear();
         }
         {
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("password", totpSecret);
             assertTokenNull(response);
-            Assert.assertNotNull(response.getError());
-            Assert.assertEquals(response.getError(), "invalid_grant");
-            Assert.assertEquals("Invalid user credentials", response.getErrorDescription());
+            Assertions.assertNotNull(response.getError());
+            Assertions.assertEquals(response.getError(), "invalid_grant");
+            Assertions.assertEquals("Invalid user credentials", response.getErrorDescription());
             assertUserDisabledEvent();
             events.clear();
         }
@@ -264,15 +261,15 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         {
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("password", totpSecret);
-            Assert.assertNotNull(response.getAccessToken());
-            Assert.assertNull(response.getError());
+            Assertions.assertNotNull(response.getAccessToken());
+            Assertions.assertNull(response.getError());
             events.clear();
         }
 
     }
 
     public void assertTokenNull(OAuthClient.AccessTokenResponse response) {
-        Assert.assertNull(response.getAccessToken());
+        Assertions.assertNull(response.getAccessToken());
     }
 
     @Test
@@ -280,31 +277,31 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         {
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("password", totpSecret);
-            Assert.assertNotNull(response.getAccessToken());
-            Assert.assertNull(response.getError());
+            Assertions.assertNotNull(response.getAccessToken());
+            Assertions.assertNull(response.getError());
             events.clear();
         }
         {
             OAuthClient.AccessTokenResponse response = getTestToken("password", null);
-            Assert.assertNull(response.getAccessToken());
-            Assert.assertEquals(response.getError(), "invalid_grant");
-            Assert.assertEquals(response.getErrorDescription(), "Invalid user credentials");
+            Assertions.assertNull(response.getAccessToken());
+            Assertions.assertEquals(response.getError(), "invalid_grant");
+            Assertions.assertEquals(response.getErrorDescription(), "Invalid user credentials");
             events.clear();
         }
         {
             OAuthClient.AccessTokenResponse response = getTestToken("password", null);
-            Assert.assertNull(response.getAccessToken());
-            Assert.assertEquals(response.getError(), "invalid_grant");
-            Assert.assertEquals(response.getErrorDescription(), "Invalid user credentials");
+            Assertions.assertNull(response.getAccessToken());
+            Assertions.assertEquals(response.getError(), "invalid_grant");
+            Assertions.assertEquals(response.getErrorDescription(), "Invalid user credentials");
             events.clear();
         }
         {
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("password", totpSecret);
             assertTokenNull(response);
-            Assert.assertNotNull(response.getError());
-            Assert.assertEquals(response.getError(), "invalid_grant");
-            Assert.assertEquals("Invalid user credentials", response.getErrorDescription());
+            Assertions.assertNotNull(response.getError());
+            Assertions.assertEquals(response.getError(), "invalid_grant");
+            Assertions.assertEquals("Invalid user credentials", response.getErrorDescription());
             assertUserDisabledEvent();
             events.clear();
         }
@@ -312,8 +309,8 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         {
             String totpSecret = totp.generateTOTP("totpSecret");
             OAuthClient.AccessTokenResponse response = getTestToken("password", totpSecret);
-            Assert.assertNotNull(response.getAccessToken());
-            Assert.assertNull(response.getError());
+            Assertions.assertNotNull(response.getAccessToken());
+            Assertions.assertNull(response.getError());
             events.clear();
         }
 
@@ -328,9 +325,9 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
             updateUser(user);
 
             OAuthClient.AccessTokenResponse response = getTestToken("invalid", "invalid");
-            Assert.assertNull(response.getAccessToken());
-            Assert.assertEquals(response.getError(), "invalid_grant");
-            Assert.assertEquals(response.getErrorDescription(), "Account disabled");
+            Assertions.assertNull(response.getAccessToken());
+            Assertions.assertEquals(response.getError(), "invalid_grant");
+            Assertions.assertEquals(response.getErrorDescription(), "Account disabled");
             events.clear();
 
             assertUserNumberOfFailures(user.getId(), 0);
@@ -535,17 +532,17 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
     public void testFailureCountResetWithPasswordGrantType() throws Exception {
         String totpSecret = totp.generateTOTP("totpSecret");
         OAuthClient.AccessTokenResponse response = getTestToken("invalid", totpSecret);
-        Assert.assertNull(response.getAccessToken());
-        Assert.assertEquals(response.getError(), "invalid_grant");
-        Assert.assertEquals(response.getErrorDescription(), "Invalid user credentials");
+        Assertions.assertNull(response.getAccessToken());
+        Assertions.assertEquals(response.getError(), "invalid_grant");
+        Assertions.assertEquals(response.getErrorDescription(), "Invalid user credentials");
 
         UserRepresentation user = adminClient.realm("test").users().search("test-user@localhost", 0, 1).get(0);
         Map<String, Object> userAttackInfo = adminClient.realm("test").attackDetection().bruteForceUserStatus(user.getId());
         assertThat((Integer) userAttackInfo.get("numFailures"), is(1));
 
         response = getTestToken("password", totpSecret);
-        Assert.assertNotNull(response.getAccessToken());
-        Assert.assertNull(response.getError());
+        Assertions.assertNotNull(response.getAccessToken());
+        Assertions.assertNull(response.getError());
         events.clear();
 
         userAttackInfo = adminClient.realm("test").attackDetection().bruteForceUserStatus(user.getId());
@@ -599,7 +596,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         userRepresentation = testRealm().users().get(userId).toRepresentation();
         assertTrue(userRepresentation.isEnabled());
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         String code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
         String idTokenHint = oauth.doAccessTokenRequest(code, "password").getIdToken();
@@ -622,7 +619,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
 
         loginPage.assertCurrent();
         String src = driver.getPageSource();
-        Assert.assertEquals("Invalid username or password.", loginPage.getInputError());
+        Assertions.assertEquals("Invalid username or password.", loginPage.getInputError());
         ExpectedEvent event = events.expectLogin()
                 .session((String) null)
                 .error(Errors.USER_TEMPORARILY_DISABLED)
@@ -643,7 +640,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         loginPage.login(username, "password");
 
         loginPage.assertCurrent();
-        Assert.assertEquals("Invalid username or password.", loginPage.getInputError());
+        Assertions.assertEquals("Invalid username or password.", loginPage.getInputError());
         ExpectedEvent event = events.expectLogin()
             .session((String) null)
             .error(Errors.USER_DISABLED)
@@ -668,7 +665,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         String totpSecret = totp.generateTOTP("totpSecret");
         loginTotpPage.login(totpSecret);
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         events.expectLogin().assertEvent();
 
@@ -688,7 +685,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
 
         loginTotpPage.login("123456");
         loginTotpPage.assertCurrent();
-        Assert.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
+        Assertions.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
         events.clear();
     }
 
@@ -698,7 +695,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         String totpSecret = totp.generateTOTP("totpSecret");
         loginTotpPage.login(totpSecret);
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         events.expectLogin().assertEvent();
         String code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
@@ -714,7 +711,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         loginTotpPage.login(totpSecret);
 
         loginTotpPage.assertCurrent();
-        Assert.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
+        Assertions.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
 
         events.clear();
     }
@@ -725,7 +722,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         loginTotpPage.login("123456");
 
         loginTotpPage.assertCurrent();
-        Assert.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
+        Assertions.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
         events.clear();
     }
 
@@ -735,7 +732,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
         loginTotpPage.login(null);
 
         loginTotpPage.assertCurrent();
-        Assert.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
+        Assertions.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
         events.clear();
     }
 
@@ -747,7 +744,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
 
         loginTotpPage.login(null);
         loginTotpPage.assertCurrent();
-        Assert.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
+        Assertions.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
 
         events.clear();
     }
@@ -762,7 +759,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
 
         loginPage.assertCurrent();
 
-        Assert.assertEquals("Invalid username or password.", loginPage.getInputError());
+        Assertions.assertEquals("Invalid username or password.", loginPage.getInputError());
 
         events.clear();
     }
@@ -773,7 +770,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
 
         loginPage.assertCurrent();
 
-        Assert.assertEquals("Invalid username or password.", loginPage.getInputError());
+        Assertions.assertEquals("Invalid username or password.", loginPage.getInputError());
         events.clear();
     }
 
@@ -784,7 +781,7 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
 
         registerPage.register("user", "name", username + "@localhost", username, "password", "password");
 
-        Assert.assertNull(registerPage.getInstruction());
+        Assertions.assertNull(registerPage.getInstruction());
 
         events.clear();
     }
@@ -809,17 +806,17 @@ public class BruteForceTest extends AbstractTestRealmKeycloakTest {
     private void sendInvalidPasswordPasswordGrant() throws Exception {
         String totpSecret = totp.generateTOTP("totpSecret");
         OAuthClient.AccessTokenResponse response = getTestToken("invalid", totpSecret);
-        Assert.assertNull(response.getAccessToken());
-        Assert.assertEquals(response.getError(), "invalid_grant");
-        Assert.assertEquals(response.getErrorDescription(), "Invalid user credentials");
+        Assertions.assertNull(response.getAccessToken());
+        Assertions.assertEquals(response.getError(), "invalid_grant");
+        Assertions.assertEquals(response.getErrorDescription(), "Invalid user credentials");
         events.clear();
     }
 
     private void lockUserWithPasswordGrant() throws Exception {
         String totpSecret = totp.generateTOTP("totpSecret");
         OAuthClient.AccessTokenResponse response = getTestToken("password", totpSecret);
-        Assert.assertNotNull(response.getAccessToken());
-        Assert.assertNull(response.getError());
+        Assertions.assertNotNull(response.getAccessToken());
+        Assertions.assertNull(response.getError());
         events.clear();
 
         for (int i = 0; i < failureFactor; ++i) {

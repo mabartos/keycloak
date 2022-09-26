@@ -2,8 +2,8 @@ package org.keycloak.testsuite.javascript;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -38,7 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_HOST;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_HOST2;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
 
@@ -90,12 +90,12 @@ public abstract class AbstractJavascriptTest extends AbstractAuthTest {
         unauthorizedUser = UserBuilder.create().username("unauthorized").password(USER_PASSWORD).build();
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void enabledOnlyWithSSL() {
         ContainerAssume.assumeAuthServerSSL();
     }
 
-    @Before
+    @BeforeEach
     public void beforeJavascriptTest() {
         jsExecutor = (JavascriptExecutor) jsDriver;
     }
@@ -178,8 +178,8 @@ public abstract class AbstractJavascriptTest extends AbstractAuthTest {
         waitForPageToLoad();
         Options ops = driver1.manage();
         Cookie cookie = ops.getCookieNamed("KEYCLOAK_LOCALE");
-        Assert.assertNotNull(cookie);
-        Assert.assertEquals(locale, cookie.getValue());
+        Assertions.assertNotNull(cookie);
+        Assertions.assertEquals(locale, cookie.getValue());
     }
     
     public JavascriptStateValidator assertLocaleIsSet(String locale) {
@@ -190,7 +190,7 @@ public abstract class AbstractJavascriptTest extends AbstractAuthTest {
         if (output instanceof WebElement) {
             waitUntilElement((WebElement) output).text().contains(value);
         } else {
-            Assert.assertThat((String) output, containsString(value));
+            Assertions.assertThat((String) output, containsString(value));
         }
     }
 
@@ -203,7 +203,7 @@ public abstract class AbstractJavascriptTest extends AbstractAuthTest {
     }
 
     public ResponseValidator assertResponseStatus(long status) {
-        return output -> Assert.assertThat(output, hasEntry("status", status));
+        return output -> Assertions.assertThat(output, hasEntry("status", status));
     }
 
     public JavascriptStateValidator assertOutputContains(String text) {
@@ -219,8 +219,8 @@ public abstract class AbstractJavascriptTest extends AbstractAuthTest {
     }
 
     public void assertErrorResponse(String expectedError, WebDriver drv, Object output, WebElement evt) {
-        Assert.assertNotNull("Empty error response", output);
-        Assert.assertTrue("Invalid error response type", output instanceof Map);
+        Assertions.assertNotNull("Empty error response", output);
+        Assertions.assertTrue("Invalid error response type", output instanceof Map);
         assertThat((Map<String, String>) output, anyOf(hasEntry("error", expectedError), hasEntry("error_description", expectedError)));
     }
 

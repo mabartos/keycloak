@@ -1,9 +1,9 @@
 package org.keycloak.testsuite.broker;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.Assert;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
 import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
 
@@ -22,7 +22,7 @@ public class KcSamlBrokerLoginHintWithOptionEnabledTest extends AbstractSamlLogi
         addLoginHintOnSocialButton(fishyLoginHint);
         loginPage.clickSocial(bc.getIDPAlias());
         waitForPage(driver, "sign in to", true);
-        Assert.assertTrue("Driver should be on the provider realm page right now",
+        Assertions.assertTrue("Driver should be on the provider realm page right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + bc.providerRealmName() + "/"));
         log.debug("Logging in");
 

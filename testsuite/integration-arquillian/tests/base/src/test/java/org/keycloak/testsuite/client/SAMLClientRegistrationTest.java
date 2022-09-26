@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.client;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientsResource;
 import org.keycloak.client.registration.Auth;
 import org.keycloak.client.registration.ClientRegistrationException;
@@ -42,9 +42,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
 
 /**
@@ -63,7 +63,7 @@ public class SAMLClientRegistrationTest extends AbstractClientRegistrationTest {
         samlApp.setDirectAccessGrantsEnabled(true);
     }
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         super.before();
 
@@ -89,13 +89,13 @@ public class SAMLClientRegistrationTest extends AbstractClientRegistrationTest {
         assertThat(response.getAttributes().get("saml_single_logout_service_url_redirect"), is("https://LoadBalancer-9.siroe.com:3443/federation/SPSloRedirect/metaAlias/sp"));
         assertThat(response.getAttributes().get(SamlConfigAttributes.SAML_ARTIFACT_BINDING_IDENTIFIER), is(ArtifactBindingUtils.computeArtifactBindingIdentifierString("loadbalancer-9.siroe.com")));
 
-        Assert.assertNotNull(response.getProtocolMappers());
-        Assert.assertEquals(1,response.getProtocolMappers().size());
+        Assertions.assertNotNull(response.getProtocolMappers());
+        Assertions.assertEquals(1,response.getProtocolMappers().size());
         ProtocolMapperRepresentation mapper = response.getProtocolMappers().get(0);
-        Assert.assertEquals("saml-user-attribute-mapper",mapper.getProtocolMapper());
-        Assert.assertEquals("urn:oid:2.5.4.42",mapper.getConfig().get(AttributeStatementHelper.SAML_ATTRIBUTE_NAME));
-        Assert.assertEquals("givenName",mapper.getConfig().get(AttributeStatementHelper.FRIENDLY_NAME));
-        Assert.assertEquals(AttributeStatementHelper.URI_REFERENCE,mapper.getConfig().get(AttributeStatementHelper.SAML_ATTRIBUTE_NAMEFORMAT));
+        Assertions.assertEquals("saml-user-attribute-mapper",mapper.getProtocolMapper());
+        Assertions.assertEquals("urn:oid:2.5.4.42",mapper.getConfig().get(AttributeStatementHelper.SAML_ATTRIBUTE_NAME));
+        Assertions.assertEquals("givenName",mapper.getConfig().get(AttributeStatementHelper.FRIENDLY_NAME));
+        Assertions.assertEquals(AttributeStatementHelper.URI_REFERENCE,mapper.getConfig().get(AttributeStatementHelper.SAML_ATTRIBUTE_NAMEFORMAT));
     }
 
     @Test
@@ -119,10 +119,10 @@ public class SAMLClientRegistrationTest extends AbstractClientRegistrationTest {
     private void assertCreateFail(String entityDescriptor, int expectedStatusCode, String expectedErrorContains) {
         try {
             reg.saml().create(entityDescriptor);
-            Assert.fail("Not expected to successfully register client");
+            Assertions.fail("Not expected to successfully register client");
         } catch (ClientRegistrationException expected) {
             HttpErrorException httpEx = (HttpErrorException) expected.getCause();
-            Assert.assertEquals(expectedStatusCode, httpEx.getStatusLine().getStatusCode());
+            Assertions.assertEquals(expectedStatusCode, httpEx.getStatusLine().getStatusCode());
             if (expectedErrorContains != null) {
                 assertTrue("Error response doesn't contain expected text", httpEx.getErrorResponse().contains(expectedErrorContains));
             }

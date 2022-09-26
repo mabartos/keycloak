@@ -18,10 +18,10 @@
 package org.keycloak.testsuite.forms;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.ClientsResource;
 import org.keycloak.authentication.authenticators.browser.UsernamePasswordFormFactory;
@@ -59,7 +59,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.keycloak.testsuite.util.AdminClientUtil;
 
 /**
@@ -74,8 +74,7 @@ public class FlowOverrideTest extends AbstractTestRealmKeycloakTest {
     public static final String TEST_APP_HTTP_CHALLENGE = "http-challenge-client";
     public static final String TEST_APP_HTTP_CHALLENGE_OTP = "http-challenge-otp-client";
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -92,7 +91,7 @@ public class FlowOverrideTest extends AbstractTestRealmKeycloakTest {
     public void configureTestRealm(RealmRepresentation testRealm) {
     }
 
-    @Before
+    @BeforeEach
     public void setupFlows() {
         SerializableApplicationData serializedApplicationData = new SerializableApplicationData(oauth.APP_AUTH_ROOT, oauth.APP_ROOT + "/admin", oauth.APP_AUTH_ROOT + "/*");
 
@@ -248,7 +247,7 @@ public class FlowOverrideTest extends AbstractTestRealmKeycloakTest {
 
         driver.navigate().to(loginFormUrl);
 
-        Assert.assertEquals("PushTheButton", driver.getTitle());
+        Assertions.assertEquals("PushTheButton", driver.getTitle());
 
         // Push the button. I am redirected to username+password form
         driver.findElement(By.name("submit1")).click();
@@ -552,7 +551,7 @@ public class FlowOverrideTest extends AbstractTestRealmKeycloakTest {
         List<ClientRepresentation> query = clients.findByClientId(TEST_APP_DIRECT_OVERRIDE);
         ClientRepresentation clientRep = query.get(0);
         String directGrantFlowId = clientRep.getAuthenticationFlowBindingOverrides().get(AuthenticationFlowBindings.DIRECT_GRANT_BINDING);
-        Assert.assertNotNull(directGrantFlowId);
+        Assertions.assertNotNull(directGrantFlowId);
         clientRep.getAuthenticationFlowBindingOverrides().put(AuthenticationFlowBindings.DIRECT_GRANT_BINDING, "");
         clients.get(clientRep.getId()).update(clientRep);
         testDirectGrantNoOverride(TEST_APP_DIRECT_OVERRIDE);
@@ -563,7 +562,7 @@ public class FlowOverrideTest extends AbstractTestRealmKeycloakTest {
         query = clients.findByClientId(TEST_APP_FLOW);
         clientRep = query.get(0);
         String browserFlowId = clientRep.getAuthenticationFlowBindingOverrides().get(AuthenticationFlowBindings.BROWSER_BINDING);
-        Assert.assertNotNull(browserFlowId);
+        Assertions.assertNotNull(browserFlowId);
         clientRep.getAuthenticationFlowBindingOverrides().put(AuthenticationFlowBindings.BROWSER_BINDING, "");
         clients.get(clientRep.getId()).update(clientRep);
         testNoOverrideBrowser(TEST_APP_FLOW);
@@ -583,13 +582,13 @@ public class FlowOverrideTest extends AbstractTestRealmKeycloakTest {
         clientRep.getAuthenticationFlowBindingOverrides().put(AuthenticationFlowBindings.BROWSER_BINDING, "bad-id");
         try {
             clients.get(clientRep.getId()).update(clientRep);
-            Assert.fail();
+            Assertions.fail();
         } catch (Exception e) {
 
         }
         query = clients.findByClientId(TEST_APP_FLOW);
         clientRep = query.get(0);
-        Assert.assertEquals(browserFlowId, clientRep.getAuthenticationFlowBindingOverrides().get(AuthenticationFlowBindings.BROWSER_BINDING));
+        Assertions.assertEquals(browserFlowId, clientRep.getAuthenticationFlowBindingOverrides().get(AuthenticationFlowBindings.BROWSER_BINDING));
 
     }
 

@@ -16,8 +16,8 @@
  */
 package org.keycloak.testsuite.authz;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authorization.AuthorizationProvider;
 import org.keycloak.authorization.Decision.Effect;
 import org.keycloak.authorization.attribute.Attributes;
@@ -146,7 +146,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
         PolicyProvider provider = authorization.getProvider(policy.getType());
         DefaultEvaluation evaluation = createEvaluation(session, authorization, resourceServer, policy);
         provider.evaluate(evaluation);
-        Assert.assertEquals(Effect.PERMIT, evaluation.getEffect());
+        Assertions.assertEquals(Effect.PERMIT, evaluation.getEffect());
 
         // lets now override the context to use a time that exceeds the time that was set in the policy.
         long contextTime = System.currentTimeMillis() + 5400000;
@@ -154,7 +154,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
         attributes.put("kc.time.date_time", Arrays.asList(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(contextTime))));
         evaluation = createEvaluation(session, authorization, null, resourceServer, policy, attributes);
         provider.evaluate(evaluation);
-        Assert.assertEquals(Effect.DENY, evaluation.getEffect());
+        Assertions.assertEquals(Effect.DENY, evaluation.getEffect());
     }
 
     @Test
@@ -180,7 +180,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertNull(evaluation.getEffect());
+        Assertions.assertNull(evaluation.getEffect());
 
         policyRepresentation = new JSPolicyRepresentation();
         policyRepresentation.setId(KeycloakModelUtils.generateId());
@@ -193,7 +193,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertEquals(Effect.PERMIT, evaluation.getEffect());
+        Assertions.assertEquals(Effect.PERMIT, evaluation.getEffect());
 
         policyRepresentation = new JSPolicyRepresentation();
         policyRepresentation.setName("allow-user-in-group-path-a-policy");
@@ -205,7 +205,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertEquals(Effect.PERMIT, evaluation.getEffect());
+        Assertions.assertEquals(Effect.PERMIT, evaluation.getEffect());
 
         policyRepresentation = new JSPolicyRepresentation();
         policyRepresentation.setName("allow-user-in-group-path-b-policy");
@@ -217,7 +217,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertNull(evaluation.getEffect());
+        Assertions.assertNull(evaluation.getEffect());
 
         policyRepresentation = new JSPolicyRepresentation();
         policyRepresentation.setName("allow-user-in-group-path-e-policy");
@@ -229,7 +229,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertEquals(Effect.PERMIT, evaluation.getEffect());
+        Assertions.assertEquals(Effect.PERMIT, evaluation.getEffect());
 
         policyRepresentation = new JSPolicyRepresentation();
         policyRepresentation.setName("allow-alice-in-group-path-a-policy");
@@ -241,7 +241,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertEquals(Effect.PERMIT, evaluation.getEffect());
+        Assertions.assertEquals(Effect.PERMIT, evaluation.getEffect());
 
         policyRepresentation = new JSPolicyRepresentation();
         policyRepresentation.setName("allow-alice-in-group-path-a-no-parent-policy.js");
@@ -253,7 +253,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertNull(evaluation.getEffect());
+        Assertions.assertNull(evaluation.getEffect());
 
         policyRepresentation = new JSPolicyRepresentation();
         policyRepresentation.setName("allow-alice-in-group-path-e-policy.js");
@@ -265,7 +265,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertNull(evaluation.getEffect());
+        Assertions.assertNull(evaluation.getEffect());
 
         policyRepresentation = new JSPolicyRepresentation();
         policyRepresentation.setName("allow-alice-in-group-name-e-policy.js");
@@ -277,7 +277,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertNull(evaluation.getEffect());
+        Assertions.assertNull(evaluation.getEffect());
     }
 
     @Test
@@ -303,7 +303,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertEquals(Effect.PERMIT, evaluation.getEffect());
+        Assertions.assertEquals(Effect.PERMIT, evaluation.getEffect());
 
         policyRepresentation = new JSPolicyRepresentation();
         policyRepresentation.setId(null);
@@ -316,7 +316,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertNull(evaluation.getEffect());
+        Assertions.assertNull(evaluation.getEffect());
     }
 
     @Test
@@ -342,7 +342,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertEquals(Effect.PERMIT, evaluation.getEffect());
+        Assertions.assertEquals(Effect.PERMIT, evaluation.getEffect());
 
         policyRepresentation = new JSPolicyRepresentation();
         policyRepresentation.setName("allow-trinity-in-client-role-b-policy");
@@ -354,7 +354,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertNull(evaluation.getEffect());
+        Assertions.assertNull(evaluation.getEffect());
     }
 
     @Test
@@ -380,7 +380,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertEquals(Effect.PERMIT, evaluation.getEffect());
+        Assertions.assertEquals(Effect.PERMIT, evaluation.getEffect());
 
         policyRepresentation = new JSPolicyRepresentation();
         policyRepresentation.setType("script-scripts/allow-child-group-in-role-policy.js");
@@ -393,7 +393,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertNull(evaluation.getEffect());
+        Assertions.assertNull(evaluation.getEffect());
     }
 
     @Test
@@ -419,7 +419,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertEquals(Effect.PERMIT, evaluation.getEffect());
+        Assertions.assertEquals(Effect.PERMIT, evaluation.getEffect());
     }
 
     @Test
@@ -445,7 +445,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertEquals(Effect.PERMIT, evaluation.getEffect());
+        Assertions.assertEquals(Effect.PERMIT, evaluation.getEffect());
     }
 
     @Test
@@ -471,7 +471,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertEquals(Effect.PERMIT, evaluation.getEffect());
+        Assertions.assertEquals(Effect.PERMIT, evaluation.getEffect());
     }
 
     @Test
@@ -503,7 +503,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertEquals(Effect.PERMIT, evaluation.getEffect());
+        Assertions.assertEquals(Effect.PERMIT, evaluation.getEffect());
     }
 
     @Test
@@ -533,7 +533,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         provider.evaluate(evaluation);
 
-        Assert.assertEquals(Effect.PERMIT, evaluation.getEffect());
+        Assertions.assertEquals(Effect.PERMIT, evaluation.getEffect());
     }
 
     @Test
@@ -573,7 +573,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
 
         try {
             evaluator.evaluate(resourceServer, null);
-            Assert.fail("Instances should be marked as read-only");
+            Assertions.fail("Instances should be marked as read-only");
         } catch (Exception ignore) {
         }
     }
@@ -622,7 +622,7 @@ public class PolicyEvaluationTest extends AbstractAuthzTest {
         PermissionEvaluator evaluator = authorization.evaluators().from(Arrays.asList(new ResourcePermission(resource, Arrays.asList(readScope, writeScope), resourceServer)), createEvaluationContext(session, Collections.emptyMap()));
         Collection<Permission> permissions = evaluator.evaluate(resourceServer, null);
 
-        Assert.assertEquals(0, permissions.size());
+        Assertions.assertEquals(0, permissions.size());
     }
 
     private static DefaultEvaluation createEvaluation(KeycloakSession session, AuthorizationProvider authorization, ResourceServer resourceServer, Policy policy) {

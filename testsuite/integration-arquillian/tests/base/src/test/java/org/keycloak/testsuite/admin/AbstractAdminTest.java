@@ -17,8 +17,9 @@
 
 package org.keycloak.testsuite.admin;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.events.log.JBossLoggingEventListenerProviderFactory;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -42,13 +43,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
  *
  * @author Stan Silvert ssilvert@redhat.com (C) 2016 Red Hat Inc.
  */
+@ExtendWith(AssertAdminEvents.class)
 public abstract class AbstractAdminTest extends AbstractTestRealmKeycloakTest {
     protected static final String REALM_NAME = "admin-client-test";
 
     protected RealmResource realm;
     protected String realmId;
 
-    @Rule
     public AssertAdminEvents assertAdminEvents = new AssertAdminEvents(this);
 
     @Override
@@ -80,7 +81,7 @@ public abstract class AbstractAdminTest extends AbstractTestRealmKeycloakTest {
         testRealms.add(adminRealmRep);
     }
 
-    @Before
+    @BeforeEach
     public void setRealm() {
         realm = adminClient.realm(REALM_NAME);
         realmId = realm.toRepresentation().getId();

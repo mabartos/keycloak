@@ -16,8 +16,8 @@
  */
 package org.keycloak.testsuite.client;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.client.registration.Auth;
 import org.keycloak.client.registration.ClientRegistrationException;
 import org.keycloak.client.registration.HttpErrorException;
@@ -25,9 +25,9 @@ import org.keycloak.common.enums.SslRequired;
 import org.keycloak.representations.adapters.config.AdapterConfig;
 import org.keycloak.representations.idm.ClientRepresentation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
 
 /**
@@ -39,7 +39,7 @@ public class AdapterInstallationConfigTest extends AbstractClientRegistrationTes
     private ClientRepresentation client2;
     private ClientRepresentation clientPublic;
 
-    @Before
+    @BeforeEach
     @Override
     public void before() throws Exception {
         super.before();

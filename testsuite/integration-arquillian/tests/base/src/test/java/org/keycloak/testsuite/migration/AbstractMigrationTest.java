@@ -90,12 +90,12 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.models.AccountRoles.MANAGE_ACCOUNT;
 import static org.keycloak.models.AccountRoles.MANAGE_ACCOUNT_LINKS;
 import static org.keycloak.models.AccountRoles.VIEW_GROUPS;
@@ -395,7 +395,7 @@ public abstract class AbstractMigrationTest extends AbstractKeycloakTest {
         assertNull(scopes.getRealmMappings());
         assertEquals(1, scopes.getClientMappings().size());
         assertEquals(2, scopes.getClientMappings().get(ACCOUNT_MANAGEMENT_CLIENT_ID).getMappings().size());
-        Assert.assertNames(scopes.getClientMappings().get(ACCOUNT_MANAGEMENT_CLIENT_ID).getMappings(), MANAGE_ACCOUNT, VIEW_GROUPS);
+        Assertions.assertNames(scopes.getClientMappings().get(ACCOUNT_MANAGEMENT_CLIENT_ID).getMappings(), MANAGE_ACCOUNT, VIEW_GROUPS);
         List<ProtocolMapperRepresentation> mappers = clientResource.getProtocolMappers().getMappers();
         assertEquals(1, mappers.size());
         assertEquals("oidc-audience-resolve-mapper", mappers.get(0).getProtocolMapper());
@@ -447,11 +447,11 @@ public abstract class AbstractMigrationTest extends AbstractKeycloakTest {
 
     private void testAuthenticationExecution(AuthenticationExecutionInfoRepresentation execution, Boolean expectedAuthenticationFlow, String expectedProviderId,
                                              AuthenticationExecutionModel.Requirement expectedRequirement, int expectedLevel, int expectedIndex) {
-        Assert.assertEquals(execution.getAuthenticationFlow(), expectedAuthenticationFlow);
-        Assert.assertEquals(execution.getProviderId(), expectedProviderId);
-        Assert.assertEquals(execution.getRequirement(), expectedRequirement.toString());
-        Assert.assertEquals(execution.getLevel(), expectedLevel);
-        Assert.assertEquals(execution.getIndex(), expectedIndex);
+        Assertions.assertEquals(execution.getAuthenticationFlow(), expectedAuthenticationFlow);
+        Assertions.assertEquals(execution.getProviderId(), expectedProviderId);
+        Assertions.assertEquals(execution.getRequirement(), expectedRequirement.toString());
+        Assertions.assertEquals(execution.getLevel(), expectedLevel);
+        Assertions.assertEquals(execution.getIndex(), expectedIndex);
     }
 
     private void testDecisionStrategySetOnResourceServer() {
@@ -477,12 +477,12 @@ public abstract class AbstractMigrationTest extends AbstractKeycloakTest {
         ClientRepresentation cli = realm.clients().findByClientId(Constants.ADMIN_CLI_CLIENT_ID).get(0);
         ClientRepresentation console = realm.clients().findByClientId(Constants.ADMIN_CONSOLE_CLIENT_ID).get(0);
         MappingsRepresentation scopeMappings = realm.clients().get(console.getId()).getScopeMappings().getAll();
-        Assert.assertNull(scopeMappings.getClientMappings());
-        Assert.assertNull(scopeMappings.getRealmMappings());
+        Assertions.assertNull(scopeMappings.getClientMappings());
+        Assertions.assertNull(scopeMappings.getRealmMappings());
 
         scopeMappings = realm.clients().get(cli.getId()).getScopeMappings().getAll();
-        Assert.assertNull(scopeMappings.getClientMappings());
-        Assert.assertNull(scopeMappings.getRealmMappings());
+        Assertions.assertNull(scopeMappings.getClientMappings());
+        Assertions.assertNull(scopeMappings.getRealmMappings());
     }
 
     protected void testDockerAuthenticationFlow(RealmResource... realms) {
@@ -704,7 +704,7 @@ public abstract class AbstractMigrationTest extends AbstractKeycloakTest {
     protected void testOfflineTokenLogin() throws Exception {
         log.info("test login with old offline token");
         String oldOfflineToken = suiteContext.getMigrationContext().loadOfflineToken();
-        Assert.assertNotNull(oldOfflineToken);
+        Assertions.assertNotNull(oldOfflineToken);
 
         oauth.realm(MIGRATION);
         oauth.clientId("migration-test-client");
@@ -714,7 +714,7 @@ public abstract class AbstractMigrationTest extends AbstractKeycloakTest {
             String errorMessage = String.format("Error when refreshing offline token. Error: %s, Error details: %s, offline token from previous version: %s",
             response.getError(), response.getErrorDescription(), oldOfflineToken);
             log.error(errorMessage);
-            Assert.fail(errorMessage);
+            Assertions.fail(errorMessage);
         }
 
         AccessToken accessToken = oauth.verifyToken(response.getAccessToken());
@@ -763,7 +763,7 @@ public abstract class AbstractMigrationTest extends AbstractKeycloakTest {
         }).findFirst().isPresent();
 
         if (!found) {
-            Assert.fail("Offline_access not found as optional scope of client migration-test-client");
+            Assertions.fail("Offline_access not found as optional scope of client migration-test-client");
         }
 
     }
@@ -778,10 +778,10 @@ public abstract class AbstractMigrationTest extends AbstractKeycloakTest {
                 .collect(Collectors.toSet());
 
         if (!defaultClientScopeNames.contains(OIDCLoginProtocolFactory.ROLES_SCOPE)) {
-            Assert.fail("Client scope 'roles' not found as default scope of client migration-test-client");
+            Assertions.fail("Client scope 'roles' not found as default scope of client migration-test-client");
         }
         if (!defaultClientScopeNames.contains(OIDCLoginProtocolFactory.WEB_ORIGINS_SCOPE)) {
-            Assert.fail("Client scope 'web-origins' not found as default scope of client migration-test-client");
+            Assertions.fail("Client scope 'web-origins' not found as default scope of client migration-test-client");
         }
 
     }
@@ -799,7 +799,7 @@ public abstract class AbstractMigrationTest extends AbstractKeycloakTest {
                 .collect(Collectors.toSet());
 
         if (!defaultClientScopeNames.contains(OIDCLoginProtocolFactory.MICROPROFILE_JWT_SCOPE)) {
-            Assert.fail("Client scope 'microprofile-jwt' not found as optional scope of client migration-test-client");
+            Assertions.fail("Client scope 'microprofile-jwt' not found as optional scope of client migration-test-client");
         }
     }
 
@@ -837,19 +837,19 @@ public abstract class AbstractMigrationTest extends AbstractKeycloakTest {
             // Try invalid password first
             OAuthClient.AccessTokenResponse response = oauth.doGrantAccessTokenRequest("secret",
                     "migration-test-user", "password", otp);
-            Assert.assertNull(response.getAccessToken());
-            Assert.assertNotNull(response.getError());
+            Assertions.assertNull(response.getAccessToken());
+            Assertions.assertNotNull(response.getError());
 
             // Try invalid OTP then
             response = oauth.doGrantAccessTokenRequest("secret",
                     "migration-test-user", "password2", "invalid");
-            Assert.assertNull(response.getAccessToken());
-            Assert.assertNotNull(response.getError());
+            Assertions.assertNull(response.getAccessToken());
+            Assertions.assertNotNull(response.getError());
 
             // Try successful login now
             response = oauth.doGrantAccessTokenRequest("secret",
                     "migration-test-user", "password2", otp);
-            Assert.assertNull(response.getError());
+            Assertions.assertNull(response.getError());
             AccessToken accessToken = oauth.verifyToken(response.getAccessToken());
             assertEquals("migration-test-user", accessToken.getPreferredUsername());
         } catch (Exception e) {
@@ -884,19 +884,19 @@ public abstract class AbstractMigrationTest extends AbstractKeycloakTest {
             throw new AssertionError("Not found subflow with displayName '" + expectedOTPSubflowAlias + "' in the flow " + topFlowAlias);
         }
 
-        Assert.assertEquals(AuthenticationExecutionModel.Requirement.CONDITIONAL.toString(), subflowExecution.getRequirement());
+        Assertions.assertEquals(AuthenticationExecutionModel.Requirement.CONDITIONAL.toString(), subflowExecution.getRequirement());
 
         AuthenticationExecutionInfoRepresentation childEx1 = authExecutions.get(counter + 1);
-        Assert.assertEquals("Condition - user configured", childEx1.getDisplayName());
-        Assert.assertEquals(AuthenticationExecutionModel.Requirement.REQUIRED.toString(), childEx1.getRequirement());
-        Assert.assertEquals(0, childEx1.getIndex());
-        Assert.assertEquals(subflowExecution.getLevel() + 1, childEx1.getLevel());
+        Assertions.assertEquals("Condition - user configured", childEx1.getDisplayName());
+        Assertions.assertEquals(AuthenticationExecutionModel.Requirement.REQUIRED.toString(), childEx1.getRequirement());
+        Assertions.assertEquals(0, childEx1.getIndex());
+        Assertions.assertEquals(subflowExecution.getLevel() + 1, childEx1.getLevel());
 
         AuthenticationExecutionInfoRepresentation childEx2 = authExecutions.get(counter + 2);
-        Assert.assertEquals(expectedOTPExecutionDisplayName, childEx2.getDisplayName());
-        Assert.assertEquals(AuthenticationExecutionModel.Requirement.REQUIRED.toString(), childEx2.getRequirement());
-        Assert.assertEquals(1, childEx2.getIndex());
-        Assert.assertEquals(subflowExecution.getLevel() + 1, childEx2.getLevel());
+        Assertions.assertEquals(expectedOTPExecutionDisplayName, childEx2.getDisplayName());
+        Assertions.assertEquals(AuthenticationExecutionModel.Requirement.REQUIRED.toString(), childEx2.getRequirement());
+        Assertions.assertEquals(1, childEx2.getIndex());
+        Assertions.assertEquals(subflowExecution.getLevel() + 1, childEx2.getLevel());
     }
 
     protected void testUserLocaleActionAdded(RealmResource realm) {
@@ -992,7 +992,7 @@ public abstract class AbstractMigrationTest extends AbstractKeycloakTest {
 
     protected void testAlwaysDisplayInConsole() {
         for(ClientRepresentation clientRep : masterRealm.clients().findAll()) {
-            Assert.assertFalse(clientRep.isAlwaysDisplayInConsole());
+            Assertions.assertFalse(clientRep.isAlwaysDisplayInConsole());
         }
     }
 

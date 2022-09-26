@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.forms;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.ClientScopeRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -11,7 +11,7 @@ import org.keycloak.testsuite.pages.LoginPage;
 
 import java.util.HashMap;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ThemeSelectorTest extends AbstractTestRealmKeycloakTest {
 

@@ -18,10 +18,10 @@
 package org.keycloak.testsuite.admin;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -52,10 +52,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.AbstractTestRealmKeycloakTest.TEST_REALM_NAME;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 import static org.keycloak.testsuite.admin.ApiUtil.createUserWithAdminClient;
@@ -169,8 +169,7 @@ public class ConsentsTest extends AbstractKeycloakTest {
         return IDP_OIDC_ALIAS;
     }
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected LoginPage accountLoginPage;
@@ -195,7 +194,7 @@ public class ConsentsTest extends AbstractKeycloakTest {
         testRealms.add(realmRepresentation);
     }
 
-    @Before
+    @BeforeEach
     public void createUser() {
         log.debug("creating user for realm " + providerRealmName());
 
@@ -213,7 +212,7 @@ public class ConsentsTest extends AbstractKeycloakTest {
         resetUserPassword(realmResource.users().get(userId), getUserPassword(), false);
     }
 
-    @Before
+    @BeforeEach
     public void addIdentityProviderToProviderRealm() {
         log.debug("adding identity provider to realm " + consumerRealmName());
 
@@ -221,7 +220,7 @@ public class ConsentsTest extends AbstractKeycloakTest {
         realm.identityProviders().create(setUpIdentityProvider());
     }
 
-    @Before
+    @BeforeEach
     public void addClients() {
         List<ClientRepresentation> clients = createProviderClients();
         if (clients != null) {
@@ -260,7 +259,7 @@ public class ConsentsTest extends AbstractKeycloakTest {
         }
     }
 
-    @After
+    @AfterEach
     public void cleanUser() {
         String userId = adminClient.realm(providerRealmName()).users().search(getUserLogin()).get(0).getId();
         adminClient.realm(providerRealmName()).users().delete(userId);
@@ -277,7 +276,7 @@ public class ConsentsTest extends AbstractKeycloakTest {
             log.debug("Not on provider realm page, url: " + driver.getCurrentUrl());
         }
 
-        Assert.assertTrue("Driver should be on the provider realm page right now",
+        Assertions.assertTrue("Driver should be on the provider realm page right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + providerRealmName() + "/"));
 
         log.debug("Logging in");
@@ -285,14 +284,14 @@ public class ConsentsTest extends AbstractKeycloakTest {
 
         waitForPage("grant access");
 
-        Assert.assertTrue(consentPage.isCurrent());
+        Assertions.assertTrue(consentPage.isCurrent());
         consentPage.confirm();
 
-        Assert.assertTrue("We must be on correct realm right now",
+        Assertions.assertTrue("We must be on correct realm right now",
                 driver.getCurrentUrl().contains("/auth/realms/" + consumerRealmName() + "/"));
 
         UsersResource consumerUsers = adminClient.realm(consumerRealmName()).users();
-        Assert.assertTrue("There must be at least one user", consumerUsers.count() > 0);
+        Assertions.assertTrue("There must be at least one user", consumerUsers.count() > 0);
 
         List<UserRepresentation> users = consumerUsers.search("", 0, 5);
 
@@ -304,40 +303,40 @@ public class ConsentsTest extends AbstractKeycloakTest {
             }
         }
 
-        Assert.assertNotNull("There must be user " + getUserLogin() + " in realm " + consumerRealmName(),
+        Assertions.assertNotNull("There must be user " + getUserLogin() + " in realm " + consumerRealmName(),
                 foundUser);
 
         // get user with the same username from provider realm
         RealmResource providerRealm = adminClient.realm(providerRealmName());
         users = providerRealm.users().search(null, foundUser.getFirstName(), foundUser.getLastName(), null, 0, 1);
-        Assert.assertEquals("Same user should be in provider realm", 1, users.size());
+        Assertions.assertEquals("Same user should be in provider realm", 1, users.size());
 
         String userId = users.get(0).getId();
         UserResource userResource = providerRealm.users().get(userId);
 
         // list consents
         List<Map<String, Object>> consents = userResource.getConsents();
-        Assert.assertEquals("There should be one consent", 1, consents.size());
+        Assertions.assertEquals("There should be one consent", 1, consents.size());
 
         Map<String, Object> consent = consents.get(0);
-        Assert.assertEquals("Consent should be given to " + CLIENT_ID, CLIENT_ID, consent.get("clientId"));
+        Assertions.assertEquals("Consent should be given to " + CLIENT_ID, CLIENT_ID, consent.get("clientId"));
 
         // list sessions. Single client should be in user session
         List<UserSessionRepresentation> sessions = userResource.getUserSessions();
-        Assert.assertEquals("There should be one active session", 1, sessions.size());
-        Assert.assertEquals("There should be one client in user session", 1, sessions.get(0).getClients().size());
+        Assertions.assertEquals("There should be one active session", 1, sessions.size());
+        Assertions.assertEquals("There should be one client in user session", 1, sessions.get(0).getClients().size());
 
         // revoke consent
         userResource.revokeConsent(CLIENT_ID);
 
         // list consents
         consents = userResource.getConsents();
-        Assert.assertEquals("There should be no consents", 0, consents.size());
+        Assertions.assertEquals("There should be no consents", 0, consents.size());
 
         // list sessions
         sessions = userResource.getUserSessions();
-        Assert.assertEquals("There should be one active session", 1, sessions.size());
-        Assert.assertEquals("There should be no client in user session", 0, sessions.get(0).getClients().size());
+        Assertions.assertEquals("There should be one active session", 1, sessions.size());
+        Assertions.assertEquals("There should be no client in user session", 0, sessions.get(0).getClients().size());
     }
 
     /**
@@ -376,7 +375,7 @@ public class ConsentsTest extends AbstractKeycloakTest {
 
         waitForPage("grant access");
         log.debug("Grant consent for offline_access");
-        Assert.assertTrue(consentPage.isCurrent());
+        Assertions.assertTrue(consentPage.isCurrent());
         consentPage.confirm();
 
         waitForPage("keycloak account console");
@@ -440,8 +439,8 @@ public class ConsentsTest extends AbstractKeycloakTest {
         AuthorizationEndpointResponse response = oauth.doLogin("test-user@localhost", "password");
         AccessTokenResponse accessTokenResponse = oauth.doAccessTokenRequest(response.getCode(), "password");
 
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         EventRepresentation loginEvent = events.expectLogin().detail(Details.USERNAME, "test-user@localhost").assertEvent();
         String sessionId = loginEvent.getSessionId();
@@ -456,8 +455,8 @@ public class ConsentsTest extends AbstractKeycloakTest {
             // try to refresh the token
             // this fails as client no longer has requested consent from user
             AccessTokenResponse refreshTokenResponse = oauth.doRefreshTokenRequest(accessTokenResponse.getRefreshToken(), "password");
-            Assert.assertEquals(OAuthErrorException.INVALID_SCOPE, refreshTokenResponse.getError());
-            Assert.assertEquals("Client no longer has requested consent from user", refreshTokenResponse.getErrorDescription());
+            Assertions.assertEquals(OAuthErrorException.INVALID_SCOPE, refreshTokenResponse.getError());
+            Assertions.assertEquals("Client no longer has requested consent from user", refreshTokenResponse.getErrorDescription());
 
             events.expectRefresh(accessTokenResponse.getRefreshToken(), sessionId).clearDetails().error(Errors.INVALID_TOKEN).assertEvent();
         } finally {

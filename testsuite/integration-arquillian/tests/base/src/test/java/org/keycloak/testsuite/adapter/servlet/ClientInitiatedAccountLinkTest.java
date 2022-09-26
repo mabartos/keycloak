@@ -21,9 +21,9 @@ import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.common.Profile;
@@ -153,7 +153,7 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
         return servletDeployment(ClientApp.DEPLOYMENT_NAME, ClientInitiatedAccountLinkServlet.class, ServletTestUtils.class);
     }
     
-    @Before
+    @BeforeEach
     public void addIdpUser() {
         RealmResource realm = adminClient.realms().realm(PARENT_IDP);
         UserRepresentation user = new UserRepresentation();
@@ -165,7 +165,7 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
 
     private String childUserId = null;
 
-    @Before
+    @BeforeEach
     public void addChildUser() {
         RealmResource realm = adminClient.realms().realm(CHILD_IDP);
         UserRepresentation user = new UserRepresentation();
@@ -193,7 +193,7 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
 
     }
 
-    @Before
+    @BeforeEach
     public void createBroker() {
         createParentChild();
     }
@@ -209,7 +209,7 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
 
         RealmResource realm = adminClient.realms().realm(CHILD_IDP);
         List<FederatedIdentityRepresentation> links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertTrue(links.isEmpty());
+        Assertions.assertTrue(links.isEmpty());
 
         ClientRepresentation client = adminClient.realms().realm(CHILD_IDP).clients().findByClientId("client-linking").get(0);
 
@@ -230,10 +230,10 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
         // test not logged in
 
         navigateTo(linkUrl);
-        Assert.assertTrue(loginPage.isCurrent(CHILD_IDP));
+        Assertions.assertTrue(loginPage.isCurrent(CHILD_IDP));
         loginPage.login("child", "password");
 
-        Assert.assertTrue(driver.getCurrentUrl().contains("link_error=not_logged_in"));
+        Assertions.assertTrue(driver.getCurrentUrl().contains("link_error=not_logged_in"));
 
         logoutAll();
 
@@ -241,16 +241,16 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
 
 
         navigateTo(helloUrl);
-        Assert.assertTrue(loginPage.isCurrent(CHILD_IDP));
+        Assertions.assertTrue(loginPage.isCurrent(CHILD_IDP));
         loginPage.login("child", "password");
-        Assert.assertTrue(driver.getCurrentUrl().startsWith(helloUrl));
-        Assert.assertTrue(driver.getPageSource().contains("Unknown request:"));
+        Assertions.assertTrue(driver.getCurrentUrl().startsWith(helloUrl));
+        Assertions.assertTrue(driver.getPageSource().contains("Unknown request:"));
 
         // now test CSRF with bad hash.
 
         navigateTo(linkUrl);
 
-        Assert.assertTrue(driver.getPageSource().contains("We are sorry..."));
+        Assertions.assertTrue(driver.getPageSource().contains("We are sorry..."));
 
         logoutAll();
 
@@ -270,10 +270,10 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
         clientResource.getScopeMappings().realmLevel().add(roles);
 
         navigateTo(helloUrl);
-        Assert.assertTrue(loginPage.isCurrent(CHILD_IDP));
+        Assertions.assertTrue(loginPage.isCurrent(CHILD_IDP));
         loginPage.login("child", "password");
-        Assert.assertTrue(driver.getCurrentUrl().startsWith(helloUrl));
-        Assert.assertTrue(driver.getPageSource().contains("Unknown request:"));
+        Assertions.assertTrue(driver.getCurrentUrl().startsWith(helloUrl));
+        Assertions.assertTrue(driver.getPageSource().contains("Unknown request:"));
 
 
         UriBuilder linkBuilder = UriBuilder.fromUri(appPage.getInjectedUrl().toString())
@@ -285,14 +285,14 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
 
         navigateTo(clientLinkUrl);
 
-        Assert.assertTrue(driver.getCurrentUrl().contains("error=not_allowed"));
+        Assertions.assertTrue(driver.getCurrentUrl().contains("error=not_allowed"));
 
         logoutAll();
 
         // add MANAGE_ACCOUNT_LINKS scope should pass.
 
         links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertTrue(links.isEmpty());
+        Assertions.assertTrue(links.isEmpty());
 
 
         roles = new LinkedList<>();
@@ -300,37 +300,37 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
         clientResource.getScopeMappings().clientLevel(accountId).add(roles);
 
         navigateTo(clientLinkUrl);
-        Assert.assertTrue(loginPage.isCurrent(CHILD_IDP));
+        Assertions.assertTrue(loginPage.isCurrent(CHILD_IDP));
         loginPage.login("child", "password");
-        Assert.assertTrue(loginPage.isCurrent(PARENT_IDP));
+        Assertions.assertTrue(loginPage.isCurrent(PARENT_IDP));
         loginPage.login(PARENT_USERNAME, "password");
 
-        Assert.assertTrue(driver.getCurrentUrl().startsWith(linkBuilder.toTemplate()));
-        Assert.assertTrue(driver.getPageSource().contains("Account Linked"));
+        Assertions.assertTrue(driver.getCurrentUrl().startsWith(linkBuilder.toTemplate()));
+        Assertions.assertTrue(driver.getPageSource().contains("Account Linked"));
 
         links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertFalse(links.isEmpty());
+        Assertions.assertFalse(links.isEmpty());
 
         realm.users().get(childUserId).removeFederatedIdentity(PARENT_IDP);
         links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertTrue(links.isEmpty());
+        Assertions.assertTrue(links.isEmpty());
 
         clientResource.getScopeMappings().clientLevel(accountId).remove(roles);
 
         logoutAll();
 
         navigateTo(clientLinkUrl);
-        Assert.assertTrue(loginPage.isCurrent(CHILD_IDP));
+        Assertions.assertTrue(loginPage.isCurrent(CHILD_IDP));
         loginPage.login("child", "password");
 
-        Assert.assertTrue(driver.getCurrentUrl().contains("link_error=not_allowed"));
+        Assertions.assertTrue(driver.getCurrentUrl().contains("link_error=not_allowed"));
 
         logoutAll();
 
         // add MANAGE_ACCOUNT scope should pass
 
         links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertTrue(links.isEmpty());
+        Assertions.assertTrue(links.isEmpty());
 
 
         roles = new LinkedList<>();
@@ -338,30 +338,30 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
         clientResource.getScopeMappings().clientLevel(accountId).add(roles);
 
         navigateTo(clientLinkUrl);
-        Assert.assertTrue(loginPage.isCurrent(CHILD_IDP));
+        Assertions.assertTrue(loginPage.isCurrent(CHILD_IDP));
         loginPage.login("child", "password");
-        Assert.assertTrue(loginPage.isCurrent(PARENT_IDP));
+        Assertions.assertTrue(loginPage.isCurrent(PARENT_IDP));
         loginPage.login(PARENT_USERNAME, "password");
 
-        Assert.assertTrue(driver.getCurrentUrl().startsWith(linkBuilder.toTemplate()));
-        Assert.assertTrue(driver.getPageSource().contains("Account Linked"));
+        Assertions.assertTrue(driver.getCurrentUrl().startsWith(linkBuilder.toTemplate()));
+        Assertions.assertTrue(driver.getPageSource().contains("Account Linked"));
 
         links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertFalse(links.isEmpty());
+        Assertions.assertFalse(links.isEmpty());
 
         realm.users().get(childUserId).removeFederatedIdentity(PARENT_IDP);
         links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertTrue(links.isEmpty());
+        Assertions.assertTrue(links.isEmpty());
 
         clientResource.getScopeMappings().clientLevel(accountId).remove(roles);
 
         logoutAll();
 
         navigateTo(clientLinkUrl);
-        Assert.assertTrue(loginPage.isCurrent(CHILD_IDP));
+        Assertions.assertTrue(loginPage.isCurrent(CHILD_IDP));
         loginPage.login("child", "password");
 
-        Assert.assertTrue(driver.getCurrentUrl().contains("link_error=not_allowed"));
+        Assertions.assertTrue(driver.getCurrentUrl().contains("link_error=not_allowed"));
 
         logoutAll();
 
@@ -373,7 +373,7 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
         clientResource.update(client);
 
         links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertTrue(links.isEmpty());
+        Assertions.assertTrue(links.isEmpty());
 
         logoutAll();
     }
@@ -390,7 +390,7 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
     public void testAccountLink() throws Exception {
         RealmResource realm = adminClient.realms().realm(CHILD_IDP);
         List<FederatedIdentityRepresentation> links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertTrue(links.isEmpty());
+        Assertions.assertTrue(links.isEmpty());
 
         UriBuilder linkBuilder = UriBuilder.fromUri(appPage.getInjectedUrl().toString())
                 .path("link");
@@ -399,29 +399,29 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
                 .queryParam("provider", PARENT_IDP).build().toString();
         System.out.println("linkUrl: " + linkUrl);
         navigateTo(linkUrl);
-        Assert.assertTrue(loginPage.isCurrent(CHILD_IDP));
-        Assert.assertTrue(driver.getPageSource().contains(PARENT_IDP));
+        Assertions.assertTrue(loginPage.isCurrent(CHILD_IDP));
+        Assertions.assertTrue(driver.getPageSource().contains(PARENT_IDP));
         loginPage.login("child", "password");
-        Assert.assertTrue(loginPage.isCurrent(PARENT_IDP));
+        Assertions.assertTrue(loginPage.isCurrent(PARENT_IDP));
         loginPage.login(PARENT_USERNAME, "password");
         System.out.println("After linking: " + driver.getCurrentUrl());
         System.out.println(driver.getPageSource());
-        Assert.assertTrue(driver.getCurrentUrl().startsWith(linkBuilder.toTemplate()));
-        Assert.assertTrue(driver.getPageSource().contains("Account Linked"));
+        Assertions.assertTrue(driver.getCurrentUrl().startsWith(linkBuilder.toTemplate()));
+        Assertions.assertTrue(driver.getPageSource().contains("Account Linked"));
 
         OAuthClient.AccessTokenResponse response = oauth.doGrantAccessTokenRequest(CHILD_IDP, "child", "password", null, "client-linking", "password");
-        Assert.assertNotNull(response.getAccessToken());
-        Assert.assertNull(response.getError());
+        Assertions.assertNotNull(response.getAccessToken());
+        Assertions.assertNull(response.getError());
         Client httpClient = AdminClientUtil.createResteasyClient();
         String firstToken = getToken(response, httpClient);
-        Assert.assertNotNull(firstToken);
+        Assertions.assertNotNull(firstToken);
 
 
         navigateTo(linkUrl);
-        Assert.assertTrue(driver.getPageSource().contains("Account Linked"));
+        Assertions.assertTrue(driver.getPageSource().contains("Account Linked"));
         String nextToken = getToken(response, httpClient);
-        Assert.assertNotNull(nextToken);
-        Assert.assertNotEquals(firstToken, nextToken);
+        Assertions.assertNotNull(nextToken);
+        Assertions.assertNotEquals(firstToken, nextToken);
 
 
 
@@ -429,11 +429,11 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
 
 
         links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertFalse(links.isEmpty());
+        Assertions.assertFalse(links.isEmpty());
 
         realm.users().get(childUserId).removeFederatedIdentity(PARENT_IDP);
         links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertTrue(links.isEmpty());
+        Assertions.assertTrue(links.isEmpty());
 
         logoutAll();
 
@@ -475,7 +475,7 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
         try {
 
             List<FederatedIdentityRepresentation> links = realm.users().get(childUserId).getFederatedIdentity();
-            Assert.assertTrue(links.isEmpty());
+            Assertions.assertTrue(links.isEmpty());
 
             UriBuilder linkBuilder = UriBuilder.fromUri(appPage.getInjectedUrl().toString())
                     .path("link");
@@ -483,33 +483,33 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
                     .queryParam("realm", CHILD_IDP)
                     .queryParam("provider", PARENT_IDP).build().toString();
             navigateTo(linkUrl);
-            Assert.assertTrue(loginPage.isCurrent(CHILD_IDP));
+            Assertions.assertTrue(loginPage.isCurrent(CHILD_IDP));
 
             // should not be on login page.  This is what we are testing
-            Assert.assertFalse(driver.getPageSource().contains(PARENT_IDP));
+            Assertions.assertFalse(driver.getPageSource().contains(PARENT_IDP));
 
             // now test that we can still link.
             loginPage.login("child", "password");
-            Assert.assertTrue(loginPage.isCurrent(PARENT_IDP));
+            Assertions.assertTrue(loginPage.isCurrent(PARENT_IDP));
             loginPage.login(PARENT_USERNAME, "password");
             System.out.println("After linking: " + driver.getCurrentUrl());
             System.out.println(driver.getPageSource());
-            Assert.assertTrue(driver.getCurrentUrl().startsWith(linkBuilder.toTemplate()));
-            Assert.assertTrue(driver.getPageSource().contains("Account Linked"));
+            Assertions.assertTrue(driver.getCurrentUrl().startsWith(linkBuilder.toTemplate()));
+            Assertions.assertTrue(driver.getPageSource().contains("Account Linked"));
 
             links = realm.users().get(childUserId).getFederatedIdentity();
-            Assert.assertFalse(links.isEmpty());
+            Assertions.assertFalse(links.isEmpty());
 
             realm.users().get(childUserId).removeFederatedIdentity(PARENT_IDP);
             links = realm.users().get(childUserId).getFederatedIdentity();
-            Assert.assertTrue(links.isEmpty());
+            Assertions.assertTrue(links.isEmpty());
 
             logoutAll();
 
             System.out.println("testing link-only attack");
 
             navigateTo(linkUrl);
-            Assert.assertTrue(loginPage.isCurrent(CHILD_IDP));
+            Assertions.assertTrue(loginPage.isCurrent(CHILD_IDP));
 
             System.out.println("login page uri is: " + driver.getCurrentUrl());
 
@@ -536,7 +536,7 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
 
             navigateTo(uri);
 
-            Assert.assertTrue(driver.getPageSource().contains("Could not send authentication request to identity provider."));
+            Assertions.assertTrue(driver.getPageSource().contains("Could not send authentication request to identity provider."));
 
 
 
@@ -557,13 +557,13 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
     public void testAccountLinkingExpired() throws Exception {
         RealmResource realm = adminClient.realms().realm(CHILD_IDP);
         List<FederatedIdentityRepresentation> links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertTrue(links.isEmpty());
+        Assertions.assertTrue(links.isEmpty());
 
         // Login to account mgmt first
         profilePage.open(CHILD_IDP);
         WaitUtils.waitForPageToLoad();
 
-        Assert.assertTrue(loginPage.isCurrent(CHILD_IDP));
+        Assertions.assertTrue(loginPage.isCurrent(CHILD_IDP));
         loginPage.login("child", "password");
         profilePage.assertCurrent();
 
@@ -575,7 +575,7 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
                 .queryParam("provider", PARENT_IDP).build().toString();
         navigateTo(linkUrl);
 
-        Assert.assertTrue(loginPage.isCurrent(PARENT_IDP));
+        Assertions.assertTrue(loginPage.isCurrent(PARENT_IDP));
 
         // Logout "child" userSession in the meantime (for example through admin request)
         realm.logoutAll();
@@ -585,10 +585,10 @@ public class ClientInitiatedAccountLinkTest extends AbstractServletsAdapterTest 
 
         // Test I was not automatically linked
         links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertTrue(links.isEmpty());
+        Assertions.assertTrue(links.isEmpty());
 
         errorPage.assertCurrent();
-        Assert.assertEquals("Requested broker account linking, but current session is no longer valid.", errorPage.getError());
+        Assertions.assertEquals("Requested broker account linking, but current session is no longer valid.", errorPage.getError());
 
         logoutAll();
     }

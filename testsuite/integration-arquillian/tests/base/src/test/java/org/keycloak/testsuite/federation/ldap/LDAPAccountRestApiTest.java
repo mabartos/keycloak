@@ -25,13 +25,13 @@ import java.util.List;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.broker.provider.util.SimpleHttp;
 import org.keycloak.common.Profile;
@@ -52,9 +52,9 @@ import org.keycloak.testsuite.util.TokenUtil;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
@@ -70,14 +70,14 @@ public class LDAPAccountRestApiTest extends AbstractLDAPTest {
 
     protected CloseableHttpClient httpClient;
 
-    @Before
+    @BeforeEach
     public void before() {
         // don't run this test when map storage is enabled, as map storage doesn't support the legacy style federation
         ProfileAssume.assumeFeatureDisabled(Profile.Feature.MAP_STORAGE);
         httpClient = HttpClientBuilder.create().build();
     }
 
-    @After
+    @AfterEach
     public void after() {
         try {
             httpClient.close();
@@ -120,9 +120,9 @@ public class LDAPAccountRestApiTest extends AbstractLDAPTest {
 
         List<String> origLdapId = new ArrayList<>(user.getAttributes().get(LDAPConstants.LDAP_ID));
         List<String> origLdapEntryDn = new ArrayList<>(user.getAttributes().get(LDAPConstants.LDAP_ENTRY_DN));
-        Assert.assertEquals(1, origLdapId.size());
-        Assert.assertEquals(1, origLdapEntryDn.size());
-        Assert.assertThat(user.getAttributes().keySet(), not(contains(KerberosFederationProvider.KERBEROS_PRINCIPAL)));
+        Assertions.assertEquals(1, origLdapId.size());
+        Assertions.assertEquals(1, origLdapEntryDn.size());
+        Assertions.assertThat(user.getAttributes().keySet(), not(contains(KerberosFederationProvider.KERBEROS_PRINCIPAL)));
 
         // Trying to add KERBEROS_PRINCIPAL should fail (Adding attribute, which was not yet present)
         user.setFirstName("JohnUpdated");
@@ -180,15 +180,15 @@ public class LDAPAccountRestApiTest extends AbstractLDAPTest {
         List<AccountCredentialResource.CredentialContainer> credentials = getCredentials();
 
         AccountCredentialResource.CredentialContainer password = credentials.get(0);
-        Assert.assertEquals(PasswordCredentialModel.TYPE, password.getType());
-        Assert.assertEquals(1, password.getUserCredentialMetadatas().size());
+        Assertions.assertEquals(PasswordCredentialModel.TYPE, password.getType());
+        Assertions.assertEquals(1, password.getUserCredentialMetadatas().size());
         CredentialRepresentation userPassword = password.getUserCredentialMetadatas().get(0).getCredential();
 
         // Password won't have createdDate and any metadata set
-        Assert.assertEquals(PasswordCredentialModel.TYPE, userPassword.getType());
-        Assert.assertEquals(userPassword.getCreatedDate(), new Long(-1L));
-        Assert.assertNull(userPassword.getCredentialData());
-        Assert.assertNull(userPassword.getSecretData());
+        Assertions.assertEquals(PasswordCredentialModel.TYPE, userPassword.getType());
+        Assertions.assertEquals(userPassword.getCreatedDate(), new Long(-1L));
+        Assertions.assertNull(userPassword.getCredentialData());
+        Assertions.assertNull(userPassword.getSecretData());
     }
 
 

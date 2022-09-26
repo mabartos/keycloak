@@ -16,8 +16,8 @@
  */
 package org.keycloak.testsuite.account.custom;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.AuthenticationExecutionModel.Requirement;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.testsuite.admin.ApiUtil;
@@ -26,7 +26,7 @@ import java.util.Arrays;
 
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.util.OAuthClient.APP_ROOT;
 
 /**
@@ -35,7 +35,7 @@ import static org.keycloak.testsuite.util.OAuthClient.APP_ROOT;
  */
 public class CustomAuthFlowCookieTest extends AbstractCustomAccountManagementTest {
 
-    @Before
+    @BeforeEach
     @Override
     public void beforeTest() {
         super.beforeTest();

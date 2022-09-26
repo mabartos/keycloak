@@ -16,10 +16,10 @@
  */
 package org.keycloak.testsuite.console.authorization;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.authorization.ScopeRepresentation;
 import org.keycloak.testsuite.console.page.clients.authorization.resource.Resource;
 import org.keycloak.testsuite.console.page.clients.authorization.scope.Scope;

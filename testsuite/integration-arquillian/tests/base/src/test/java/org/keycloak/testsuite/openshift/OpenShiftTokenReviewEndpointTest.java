@@ -26,9 +26,9 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -71,11 +71,11 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.common.Profile.Feature.OPENSHIFT_INTEGRATION;
 import static org.keycloak.testsuite.util.ServerURLs.getAuthServerContextRoot;
 import static org.keycloak.utils.MediaType.APPLICATION_JSON;
@@ -85,8 +85,7 @@ public class OpenShiftTokenReviewEndpointTest extends AbstractTestRealmKeycloakT
 
     private static boolean flowConfigured;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Override
     public void configureTestRealm(RealmRepresentation testRealm) {
@@ -124,7 +123,7 @@ public class OpenShiftTokenReviewEndpointTest extends AbstractTestRealmKeycloakT
                         .build());
     }
 
-    @Before
+    @BeforeEach
     public void enablePassthroughAuthenticator() {
         if (!flowConfigured) {
             HashMap<String, String> data = new HashMap<>();

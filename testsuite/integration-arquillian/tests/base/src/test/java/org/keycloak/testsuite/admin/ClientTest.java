@@ -25,19 +25,19 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.models.Constants.defaultClients;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ProtocolMappersResource;
@@ -91,7 +91,7 @@ public class ClientTest extends AbstractAdminTest {
 
     @Test
     public void getClients() {
-        Assert.assertNames(realm.clients().findAll(), "account", "account-console", "realm-management", "security-admin-console", "broker", Constants.ADMIN_CLI_CLIENT_ID);
+        Assertions.assertNames(realm.clients().findAll(), "account", "account-console", "realm-management", "security-admin-console", "broker", Constants.ADMIN_CLI_CLIENT_ID);
     }
 
     private ClientRepresentation createClient() {
@@ -141,7 +141,7 @@ public class ClientTest extends AbstractAdminTest {
         ClientResource client = realm.clients().get(id);
         assertNotNull(client);
         assertNotNull(client.toRepresentation().getSecret());
-        Assert.assertNames(realm.clients().findAll(), "account", "account-console", "realm-management", "security-admin-console", "broker", "my-app", Constants.ADMIN_CLI_CLIENT_ID);
+        Assertions.assertNames(realm.clients().findAll(), "account", "account-console", "realm-management", "security-admin-console", "broker", "my-app", Constants.ADMIN_CLI_CLIENT_ID);
     }
 
     @Test
@@ -151,7 +151,7 @@ public class ClientTest extends AbstractAdminTest {
         ClientResource client = realm.clients().get(id);
         assertNotNull(client);
         assertNull(client.toRepresentation().getSecret());
-        Assert.assertNames(realm.clients().findAll(), "account", "account-console", "realm-management", "security-admin-console", "broker", "my-app", Constants.ADMIN_CLI_CLIENT_ID);
+        Assertions.assertNames(realm.clients().findAll(), "account", "account-console", "realm-management", "security-admin-console", "broker", "my-app", Constants.ADMIN_CLI_CLIENT_ID);
     }
 
     @Test
@@ -614,18 +614,18 @@ public class ClientTest extends AbstractAdminTest {
         scopesResource.clientLevel(accountMgmtId).add(Collections.singletonList(viewAccountRoleRep));
         assertAdminEvents.assertEvent(realmId, OperationType.CREATE, AdminEventPaths.clientScopeMappingsClientLevelPath(id, accountMgmtId), Collections.singletonList(viewAccountRoleRep), ResourceType.CLIENT_SCOPE_MAPPING);
 
-        Assert.assertNames(scopesResource.realmLevel().listAll(), "realm-composite");
-        Assert.assertNames(scopesResource.realmLevel().listEffective(), "realm-composite", "realm-child");
-        Assert.assertNames(scopesResource.realmLevel().listAvailable(), "realm-child", "offline_access",
+        Assertions.assertNames(scopesResource.realmLevel().listAll(), "realm-composite");
+        Assertions.assertNames(scopesResource.realmLevel().listEffective(), "realm-composite", "realm-child");
+        Assertions.assertNames(scopesResource.realmLevel().listAvailable(), "realm-child", "offline_access",
                 Constants.AUTHZ_UMA_AUTHORIZATION, Constants.DEFAULT_ROLES_ROLE_PREFIX + "-" + REALM_NAME);
 
-        Assert.assertNames(scopesResource.clientLevel(accountMgmtId).listAll(), AccountRoles.VIEW_PROFILE);
-        Assert.assertNames(scopesResource.clientLevel(accountMgmtId).listEffective(), AccountRoles.VIEW_PROFILE);
+        Assertions.assertNames(scopesResource.clientLevel(accountMgmtId).listAll(), AccountRoles.VIEW_PROFILE);
+        Assertions.assertNames(scopesResource.clientLevel(accountMgmtId).listEffective(), AccountRoles.VIEW_PROFILE);
 
-        Assert.assertNames(scopesResource.clientLevel(accountMgmtId).listAvailable(), AccountRoles.MANAGE_ACCOUNT, AccountRoles.MANAGE_ACCOUNT_LINKS, AccountRoles.VIEW_APPLICATIONS, AccountRoles.VIEW_CONSENT, AccountRoles.MANAGE_CONSENT, AccountRoles.DELETE_ACCOUNT, AccountRoles.VIEW_GROUPS);
+        Assertions.assertNames(scopesResource.clientLevel(accountMgmtId).listAvailable(), AccountRoles.MANAGE_ACCOUNT, AccountRoles.MANAGE_ACCOUNT_LINKS, AccountRoles.VIEW_APPLICATIONS, AccountRoles.VIEW_CONSENT, AccountRoles.MANAGE_CONSENT, AccountRoles.DELETE_ACCOUNT, AccountRoles.VIEW_GROUPS);
 
-        Assert.assertNames(scopesResource.getAll().getRealmMappings(), "realm-composite");
-        Assert.assertNames(scopesResource.getAll().getClientMappings().get(Constants.ACCOUNT_MANAGEMENT_CLIENT_ID).getMappings(), AccountRoles.VIEW_PROFILE);
+        Assertions.assertNames(scopesResource.getAll().getRealmMappings(), "realm-composite");
+        Assertions.assertNames(scopesResource.getAll().getClientMappings().get(Constants.ACCOUNT_MANAGEMENT_CLIENT_ID).getMappings(), AccountRoles.VIEW_PROFILE);
 
         scopesResource.realmLevel().remove(Collections.singletonList(roleRep1));
         assertAdminEvents.assertEvent(realmId, OperationType.DELETE, AdminEventPaths.clientScopeMappingsRealmLevelPath(id), Collections.singletonList(roleRep1), ResourceType.REALM_SCOPE_MAPPING);
@@ -633,14 +633,14 @@ public class ClientTest extends AbstractAdminTest {
         scopesResource.clientLevel(accountMgmtId).remove(Collections.singletonList(viewAccountRoleRep));
         assertAdminEvents.assertEvent(realmId, OperationType.DELETE, AdminEventPaths.clientScopeMappingsClientLevelPath(id, accountMgmtId), Collections.singletonList(viewAccountRoleRep), ResourceType.CLIENT_SCOPE_MAPPING);
 
-        Assert.assertNames(scopesResource.realmLevel().listAll());
-        Assert.assertNames(scopesResource.realmLevel().listEffective());
-        Assert.assertNames(scopesResource.realmLevel().listAvailable(), "offline_access", Constants.AUTHZ_UMA_AUTHORIZATION, "realm-composite", "realm-child", Constants.DEFAULT_ROLES_ROLE_PREFIX + "-" + REALM_NAME);
-        Assert.assertNames(scopesResource.clientLevel(accountMgmtId).listAll());
+        Assertions.assertNames(scopesResource.realmLevel().listAll());
+        Assertions.assertNames(scopesResource.realmLevel().listEffective());
+        Assertions.assertNames(scopesResource.realmLevel().listAvailable(), "offline_access", Constants.AUTHZ_UMA_AUTHORIZATION, "realm-composite", "realm-child", Constants.DEFAULT_ROLES_ROLE_PREFIX + "-" + REALM_NAME);
+        Assertions.assertNames(scopesResource.clientLevel(accountMgmtId).listAll());
 
-        Assert.assertNames(scopesResource.clientLevel(accountMgmtId).listAvailable(), AccountRoles.VIEW_PROFILE, AccountRoles.MANAGE_ACCOUNT, AccountRoles.MANAGE_ACCOUNT_LINKS, AccountRoles.VIEW_APPLICATIONS, AccountRoles.VIEW_CONSENT, AccountRoles.MANAGE_CONSENT, AccountRoles.DELETE_ACCOUNT, AccountRoles.VIEW_GROUPS);
+        Assertions.assertNames(scopesResource.clientLevel(accountMgmtId).listAvailable(), AccountRoles.VIEW_PROFILE, AccountRoles.MANAGE_ACCOUNT, AccountRoles.MANAGE_ACCOUNT_LINKS, AccountRoles.VIEW_APPLICATIONS, AccountRoles.VIEW_CONSENT, AccountRoles.MANAGE_CONSENT, AccountRoles.DELETE_ACCOUNT, AccountRoles.VIEW_GROUPS);
 
-        Assert.assertNames(scopesResource.clientLevel(accountMgmtId).listEffective());
+        Assertions.assertNames(scopesResource.clientLevel(accountMgmtId).listEffective());
     }
 
     /**
@@ -680,14 +680,14 @@ public class ClientTest extends AbstractAdminTest {
                         .toRepresentation()));
 
         // check state before making the direct assignments
-        Assert.assertNames(scopesResource.realmLevel().listAll(), "realm-composite");
-        Assert.assertNames(scopesResource.realmLevel().listAvailable(), "realm-child", "offline_access",
+        Assertions.assertNames(scopesResource.realmLevel().listAll(), "realm-composite");
+        Assertions.assertNames(scopesResource.realmLevel().listAvailable(), "realm-child", "offline_access",
                 Constants.AUTHZ_UMA_AUTHORIZATION, Constants.DEFAULT_ROLES_ROLE_PREFIX + "-" + REALM_NAME);
-        Assert.assertNames(scopesResource.realmLevel().listEffective(), "realm-composite", "realm-child");
+        Assertions.assertNames(scopesResource.realmLevel().listEffective(), "realm-composite", "realm-child");
 
-        Assert.assertNames(scopesResource.clientLevel(roleContainerClientUuid).listAll(), "client-composite");
-        Assert.assertNames(scopesResource.clientLevel(roleContainerClientUuid).listAvailable(), "client-child");
-        Assert.assertNames(scopesResource.clientLevel(roleContainerClientUuid).listEffective(), "client-composite",
+        Assertions.assertNames(scopesResource.clientLevel(roleContainerClientUuid).listAll(), "client-composite");
+        Assertions.assertNames(scopesResource.clientLevel(roleContainerClientUuid).listAvailable(), "client-child");
+        Assertions.assertNames(scopesResource.clientLevel(roleContainerClientUuid).listEffective(), "client-composite",
                 "client-child");
 
         // Make direct assignments for roles which are already indirectly assigned
@@ -697,16 +697,16 @@ public class ClientTest extends AbstractAdminTest {
                         realm.clients().get(roleContainerClientUuid).roles().get("client-child").toRepresentation()));
 
         // List realm roles
-        Assert.assertNames(scopesResource.realmLevel().listAll(), "realm-composite", "realm-child");
-        Assert.assertNames(scopesResource.realmLevel().listAvailable(), "offline_access",
+        Assertions.assertNames(scopesResource.realmLevel().listAll(), "realm-composite", "realm-child");
+        Assertions.assertNames(scopesResource.realmLevel().listAvailable(), "offline_access",
                 Constants.AUTHZ_UMA_AUTHORIZATION, Constants.DEFAULT_ROLES_ROLE_PREFIX + "-" + REALM_NAME);
-        Assert.assertNames(scopesResource.realmLevel().listEffective(), "realm-composite", "realm-child");
+        Assertions.assertNames(scopesResource.realmLevel().listEffective(), "realm-composite", "realm-child");
 
         // List client roles
-        Assert.assertNames(scopesResource.clientLevel(roleContainerClientUuid).listAll(), "client-composite",
+        Assertions.assertNames(scopesResource.clientLevel(roleContainerClientUuid).listAll(), "client-composite",
                 "client-child");
-        Assert.assertNames(scopesResource.clientLevel(roleContainerClientUuid).listAvailable());
-        Assert.assertNames(scopesResource.clientLevel(roleContainerClientUuid).listEffective(), "client-composite",
+        Assertions.assertNames(scopesResource.clientLevel(roleContainerClientUuid).listAvailable());
+        Assertions.assertNames(scopesResource.clientLevel(roleContainerClientUuid).listEffective(), "client-composite",
                 "client-child");
     }
 
@@ -744,20 +744,20 @@ public class ClientTest extends AbstractAdminTest {
         assertAdminEvents.assertEvent(realmId, OperationType.CREATE, AdminEventPaths.clientScopeMappingsClientLevelPath(idA, idB), Collections.singletonList(clientBRoleRep), ResourceType.CLIENT_SCOPE_MAPPING);
 
         // assert the roles are there
-        Assert.assertNames(scopesResource.realmLevel().listAll(), realmRoleRep.getName());
-        Assert.assertNames(scopesResource.clientLevel(idB).listAll(), clientBRoleRep.getName());
+        Assertions.assertNames(scopesResource.realmLevel().listAll(), realmRoleRep.getName());
+        Assertions.assertNames(scopesResource.clientLevel(idB).listAll(), clientBRoleRep.getName());
 
         // delete realm role and check everything is refreshed ok
         realm.roles().deleteRole(realmRoleRep.getName());
         assertAdminEvents.assertEvent(realmId, OperationType.DELETE, AdminEventPaths.roleResourcePath(realmRoleRep.getName()), ResourceType.REALM_ROLE);
-        Assert.assertNames(scopesResource.realmLevel().listAll());
-        Assert.assertNames(scopesResource.clientLevel(idB).listAll(), clientBRoleRep.getName());
+        Assertions.assertNames(scopesResource.realmLevel().listAll());
+        Assertions.assertNames(scopesResource.clientLevel(idB).listAll(), clientBRoleRep.getName());
 
         // delete client role and check everything is refreshed ok
         realm.clients().get(idB).roles().deleteRole(clientBRoleRep.getName());
         assertAdminEvents.assertEvent(realmId, OperationType.DELETE, AdminEventPaths.clientRoleResourcePath(idB, clientBRoleRep.getName()), ResourceType.CLIENT_ROLE);
-        Assert.assertNames(scopesResource.realmLevel().listAll());
-        Assert.assertNames(scopesResource.clientLevel(idB).listAll());
+        Assertions.assertNames(scopesResource.realmLevel().listAll());
+        Assertions.assertNames(scopesResource.clientLevel(idB).listAll());
     }
 
     public void protocolMappersTest(String clientDbId, ProtocolMappersResource mappersResource) {
@@ -857,21 +857,21 @@ public class ClientTest extends AbstractAdminTest {
     }
 
     public static void assertClient(ClientRepresentation client, ClientRepresentation storedClient) {
-        if (client.getClientId() != null) Assert.assertEquals(client.getClientId(), storedClient.getClientId());
-        if (client.getName() != null) Assert.assertEquals(client.getName(), storedClient.getName());
-        if (client.isEnabled() != null) Assert.assertEquals(client.isEnabled(), storedClient.isEnabled());
-        if (client.isAlwaysDisplayInConsole() != null) Assert.assertEquals(client.isAlwaysDisplayInConsole(), storedClient.isAlwaysDisplayInConsole());
-        if (client.isBearerOnly() != null) Assert.assertEquals(client.isBearerOnly(), storedClient.isBearerOnly());
-        if (client.isPublicClient() != null) Assert.assertEquals(client.isPublicClient(), storedClient.isPublicClient());
-        if (client.isFullScopeAllowed() != null) Assert.assertEquals(client.isFullScopeAllowed(), storedClient.isFullScopeAllowed());
-        if (client.getRootUrl() != null) Assert.assertEquals(client.getRootUrl(), storedClient.getRootUrl());
-        if (client.getAdminUrl() != null) Assert.assertEquals(client.getAdminUrl(), storedClient.getAdminUrl());
-        if (client.getBaseUrl() != null) Assert.assertEquals(client.getBaseUrl(), storedClient.getBaseUrl());
-        if (client.isSurrogateAuthRequired() != null) Assert.assertEquals(client.isSurrogateAuthRequired(), storedClient.isSurrogateAuthRequired());
-        if (client.getClientAuthenticatorType() != null) Assert.assertEquals(client.getClientAuthenticatorType(), storedClient.getClientAuthenticatorType());
+        if (client.getClientId() != null) Assertions.assertEquals(client.getClientId(), storedClient.getClientId());
+        if (client.getName() != null) Assertions.assertEquals(client.getName(), storedClient.getName());
+        if (client.isEnabled() != null) Assertions.assertEquals(client.isEnabled(), storedClient.isEnabled());
+        if (client.isAlwaysDisplayInConsole() != null) Assertions.assertEquals(client.isAlwaysDisplayInConsole(), storedClient.isAlwaysDisplayInConsole());
+        if (client.isBearerOnly() != null) Assertions.assertEquals(client.isBearerOnly(), storedClient.isBearerOnly());
+        if (client.isPublicClient() != null) Assertions.assertEquals(client.isPublicClient(), storedClient.isPublicClient());
+        if (client.isFullScopeAllowed() != null) Assertions.assertEquals(client.isFullScopeAllowed(), storedClient.isFullScopeAllowed());
+        if (client.getRootUrl() != null) Assertions.assertEquals(client.getRootUrl(), storedClient.getRootUrl());
+        if (client.getAdminUrl() != null) Assertions.assertEquals(client.getAdminUrl(), storedClient.getAdminUrl());
+        if (client.getBaseUrl() != null) Assertions.assertEquals(client.getBaseUrl(), storedClient.getBaseUrl());
+        if (client.isSurrogateAuthRequired() != null) Assertions.assertEquals(client.isSurrogateAuthRequired(), storedClient.isSurrogateAuthRequired());
+        if (client.getClientAuthenticatorType() != null) Assertions.assertEquals(client.getClientAuthenticatorType(), storedClient.getClientAuthenticatorType());
 
         if (client.getNotBefore() != null) {
-            Assert.assertEquals(client.getNotBefore(), storedClient.getNotBefore());
+            Assertions.assertEquals(client.getNotBefore(), storedClient.getNotBefore());
         }
         if (client.getDefaultRoles() != null) {
             Set<String> set = new HashSet<String>();
@@ -883,7 +883,7 @@ public class ClientTest extends AbstractAdminTest {
                 storedSet.add(val);
             }
 
-            Assert.assertEquals(set, storedSet);
+            Assertions.assertEquals(set, storedSet);
         }
 
         List<String> redirectUris = client.getRedirectUris();
@@ -897,7 +897,7 @@ public class ClientTest extends AbstractAdminTest {
                 storedSet.add(val);
             }
 
-            Assert.assertEquals(set, storedSet);
+            Assertions.assertEquals(set, storedSet);
         }
 
         List<String> webOrigins = client.getWebOrigins();
@@ -911,7 +911,7 @@ public class ClientTest extends AbstractAdminTest {
                 storedSet.add(val);
             }
 
-            Assert.assertEquals(set, storedSet);
+            Assertions.assertEquals(set, storedSet);
         }
 
         List<ProtocolMapperRepresentation> protocolMappers = client.getProtocolMappers();
@@ -923,7 +923,7 @@ public class ClientTest extends AbstractAdminTest {
                     .map(ProtocolMapperRepresentation::getName)
                     .collect(Collectors.toSet());
 
-            Assert.assertEquals(set, storedSet);
+            Assertions.assertEquals(set, storedSet);
         }
     }
 

@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.admin.authentication;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.events.admin.ResourceType;
 import org.keycloak.representations.idm.AuthenticationFlowRepresentation;
@@ -53,7 +53,7 @@ public class RegistrationFlowTest extends AbstractAuthenticationTest {
         data2.put("provider", "registration-profile-action");
         try {
             authMgmtResource.addExecution("registration2", data2);
-            Assert.fail("Not expected to add execution of type 'registration-profile-action' under top flow");
+            Assertions.fail("Not expected to add execution of type 'registration-profile-action' under top flow");
         } catch (BadRequestException bre) {
         }
 

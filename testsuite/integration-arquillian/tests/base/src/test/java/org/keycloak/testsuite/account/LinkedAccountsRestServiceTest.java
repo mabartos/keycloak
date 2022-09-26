@@ -19,10 +19,10 @@ package org.keycloak.testsuite.account;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.broker.provider.util.SimpleHttp;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractTestRealmKeycloakTest;
@@ -42,10 +42,10 @@ import org.keycloak.representations.idm.FederatedIdentityRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.util.IdentityProviderBuilder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.models.Constants.ACCOUNT_CONSOLE_CLIENT_ID;
 
 import org.junit.FixMethodOrder;
@@ -62,17 +62,16 @@ public class LinkedAccountsRestServiceTest extends AbstractTestRealmKeycloakTest
     @Rule
     public TokenUtil tokenUtil = new TokenUtil();
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+
 
     private CloseableHttpClient client;
 
-    @Before
+    @BeforeEach
     public void before() {
         client = HttpClientBuilder.create().build();
     }
 
-    @After
+    @AfterEach
     public void after() {
         try {
             client.close();

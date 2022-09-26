@@ -16,15 +16,15 @@
  */
 package org.keycloak.testsuite.authz;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ClientsResource;
@@ -85,7 +85,7 @@ public class RegexPolicyTest extends AbstractAuthzTest {
             .build());
     }
 
-    @Before
+    @BeforeEach
     public void configureAuthorization() throws Exception {
         createResource("Resource A");
         createResource("Resource B");

@@ -24,10 +24,10 @@ import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jetbrains.annotations.Nullable;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.adapter.AbstractExampleAdapterTest;
@@ -51,11 +51,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static junit.framework.TestCase.assertNotNull;
-import org.junit.Assume;
+import org.junit.jupiter.api.Assumptions;
 import org.keycloak.testsuite.util.DroneUtils;
 
 import static org.keycloak.testsuite.utils.io.IOUtil.loadRealm;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
 
@@ -114,14 +114,14 @@ public class CorsExampleAdapterTest extends AbstractExampleAdapterTest {
                 loadRealm(new File(TEST_APPS_HOME_DIR + "/cors/cors-realm.json")));
     }
 
-    @Before
+    @BeforeEach
     public void onBefore() {
         DroneUtils.addWebDriver(jsDriver);
         deployer.deploy(CorsDatabaseServiceTestApp.DEPLOYMENT_NAME);
         deployer.deploy(AngularCorsProductTestApp.DEPLOYMENT_NAME);
     }
 
-    @After
+    @AfterEach
     public void onAfter() {
         deployer.undeploy(CorsDatabaseServiceTestApp.DEPLOYMENT_NAME);
         deployer.undeploy(AngularCorsProductTestApp.DEPLOYMENT_NAME);

@@ -18,8 +18,8 @@
 
 package org.keycloak.testsuite.admin.client.authorization;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.common.constants.ServiceAccountConstants;
@@ -36,8 +36,8 @@ import org.keycloak.representations.idm.authorization.RolePolicyRepresentation;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
@@ -52,18 +52,18 @@ public class AuthorizationTest extends AbstractAuthorizationTest {
         RealmResource realm = realmsResouce().realm(getRealmId());
 
         UserRepresentation serviceAccount = realm.users().search(ServiceAccountConstants.SERVICE_ACCOUNT_USER_PREFIX + resourceServer.getClientId()).get(0);
-        Assert.assertNotNull(serviceAccount);
+        Assertions.assertNotNull(serviceAccount);
         List<RoleRepresentation> serviceAccountRoles = realm.users().get(serviceAccount.getId()).roles().clientLevel(resourceServer.getId()).listEffective();
-        Assert.assertTrue(serviceAccountRoles.stream().anyMatch(roleRepresentation -> "uma_protection".equals(roleRepresentation.getName())));
+        Assertions.assertTrue(serviceAccountRoles.stream().anyMatch(roleRepresentation -> "uma_protection".equals(roleRepresentation.getName())));
 
         enableAuthorizationServices(false);
         enableAuthorizationServices(true);
 
         serviceAccount = clientResource.getServiceAccountUser();
-        Assert.assertNotNull(serviceAccount);
+        Assertions.assertNotNull(serviceAccount);
         realm = realmsResouce().realm(getRealmId());
         serviceAccountRoles = realm.users().get(serviceAccount.getId()).roles().clientLevel(resourceServer.getId()).listEffective();
-        Assert.assertTrue(serviceAccountRoles.stream().anyMatch(roleRepresentation -> "uma_protection".equals(roleRepresentation.getName())));
+        Assertions.assertTrue(serviceAccountRoles.stream().anyMatch(roleRepresentation -> "uma_protection".equals(roleRepresentation.getName())));
 
         RolePolicyRepresentation policy = new RolePolicyRepresentation();
 
@@ -97,9 +97,9 @@ public class AuthorizationTest extends AbstractAuthorizationTest {
         assertEquals(2, defaultPolicies.size());
 
         serviceAccount = clientResource.getServiceAccountUser();
-        Assert.assertNotNull(serviceAccount);
+        Assertions.assertNotNull(serviceAccount);
         serviceAccountRoles = realm.users().get(serviceAccount.getId()).roles().clientLevel(resourceServer.getId()).listEffective();
-        Assert.assertTrue(serviceAccountRoles.stream().anyMatch(roleRepresentation -> "uma_protection".equals(roleRepresentation.getName())));
+        Assertions.assertTrue(serviceAccountRoles.stream().anyMatch(roleRepresentation -> "uma_protection".equals(roleRepresentation.getName())));
     }
 
     // KEYCLOAK-6321

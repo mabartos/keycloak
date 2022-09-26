@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.saml;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.dom.saml.v2.SAML2Object;
 import org.keycloak.dom.saml.v2.assertion.AuthnStatementType;
 import org.keycloak.dom.saml.v2.protocol.ResponseType;

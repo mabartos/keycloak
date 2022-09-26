@@ -46,9 +46,9 @@ import org.hamcrest.Matchers;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.logging.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -154,10 +154,10 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 import static org.keycloak.testsuite.admin.ApiUtil.findClientResourceByClientId;
 import static org.keycloak.testsuite.admin.ApiUtil.findUserByUsername;
@@ -485,7 +485,7 @@ public class ClientPoliciesTest extends AbstractClientPoliciesTest {
         // Add role to the client
         ClientResource clientResource = ApiUtil.findClientByClientId(adminClient.realm(REALM_NAME), clientId);
         ClientRepresentation clientRep = clientResource.toRepresentation();
-        Assert.assertEquals(ClientIdAndSecretAuthenticator.PROVIDER_ID, clientRep.getClientAuthenticatorType());
+        Assertions.assertEquals(ClientIdAndSecretAuthenticator.PROVIDER_ID, clientRep.getClientAuthenticatorType());
         clientResource.roles().create(RoleBuilder.create().name(roleAlphaName).build());
 
         // Not allowed to client authentication with clientIdAndSecret anymore. Client matches policy now
@@ -1310,15 +1310,15 @@ public class ClientPoliciesTest extends AbstractClientPoliciesTest {
 
         IDToken idToken = oauth.verifyIDToken(new OAuthClient.AuthorizationEndpointResponse(oauth).getIdToken());
         // confirm ID token as detached signature does not include authenticated user's claims
-        Assert.assertNull(idToken.getEmailVerified());
-        Assert.assertNull(idToken.getName());
-        Assert.assertNull(idToken.getPreferredUsername());
-        Assert.assertNull(idToken.getGivenName());
-        Assert.assertNull(idToken.getFamilyName());
-        Assert.assertNull(idToken.getEmail());
+        Assertions.assertNull(idToken.getEmailVerified());
+        Assertions.assertNull(idToken.getName());
+        Assertions.assertNull(idToken.getPreferredUsername());
+        Assertions.assertNull(idToken.getGivenName());
+        Assertions.assertNull(idToken.getFamilyName());
+        Assertions.assertNull(idToken.getEmail());
         assertEquals("LIVieviDie028f", idToken.getNonce());
         // confirm an access token not returned
-        Assert.assertNull(new OAuthClient.AuthorizationEndpointResponse(oauth).getAccessToken());
+        Assertions.assertNull(new OAuthClient.AuthorizationEndpointResponse(oauth).getAccessToken());
 
         OAuthClient.AccessTokenResponse res = oauth.doAccessTokenRequest(code, clientSecret);
         assertEquals(200, res.getStatusCode());
@@ -2292,7 +2292,7 @@ public class ClientPoliciesTest extends AbstractClientPoliciesTest {
 
     @Test
     public void testHolderOfKeyEnforceExecutor() throws Exception {
-        Assume.assumeTrue("This test must be executed with enabled TLS.", ServerURLs.AUTH_SERVER_SSL_REQUIRED);
+        Assumptions.assumeTrue("This test must be executed with enabled TLS.", ServerURLs.AUTH_SERVER_SSL_REQUIRED);
 
         // register profiles
         String json = (new ClientProfilesBuilder()).addProfile(
@@ -2317,7 +2317,7 @@ public class ClientPoliciesTest extends AbstractClientPoliciesTest {
 
         try (ClientAttributeUpdater cau = ClientAttributeUpdater.forClient(adminClient, REALM_NAME, TEST_CLIENT)) {
             ClientRepresentation clientRep = cau.getResource().toRepresentation();
-            Assert.assertNotNull(clientRep);
+            Assertions.assertNotNull(clientRep);
             OIDCAdvancedConfigWrapper.fromClientRepresentation(clientRep).setUseMtlsHoKToken(true);
             cau.update();
             checkMtlsFlow();
@@ -2684,7 +2684,7 @@ public class ClientPoliciesTest extends AbstractClientPoliciesTest {
         oauth.clientId(DEVICE_APP);
         OAuthClient.DeviceAuthorizationResponse response = oauth.doDeviceAuthorizationRequest(DEVICE_APP, "secret");
 
-        Assert.assertEquals(200, response.getStatusCode());
+        Assertions.assertEquals(200, response.getStatusCode());
         assertNotNull(response.getDeviceCode());
         assertNotNull(response.getUserCode());
         assertNotNull(response.getVerificationUri());
@@ -3137,7 +3137,7 @@ public class ClientPoliciesTest extends AbstractClientPoliciesTest {
     private void checkMtlsFlow() throws IOException {
         // Check login.
         OAuthClient.AuthorizationEndpointResponse loginResponse = oauth.doLogin(TEST_USER_NAME, TEST_USER_PASSWORD);
-        Assert.assertNull(loginResponse.getError());
+        Assertions.assertNull(loginResponse.getError());
 
         String code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
 
@@ -3166,9 +3166,9 @@ public class ClientPoliciesTest extends AbstractClientPoliciesTest {
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
-        Assert.assertNotNull(tokenResponse);
+        Assertions.assertNotNull(tokenResponse);
         TokenMetadataRepresentation tokenMetadataRepresentation = JsonSerialization.readValue(tokenResponse, TokenMetadataRepresentation.class);
-        Assert.assertTrue(tokenMetadataRepresentation.isActive());
+        Assertions.assertTrue(tokenMetadataRepresentation.isActive());
 
         // Check token revoke.
         CloseableHttpResponse tokenRevokeResponse;
@@ -3190,7 +3190,7 @@ public class ClientPoliciesTest extends AbstractClientPoliciesTest {
 
         // Check login.
         loginResponse = oauth.doLogin(TEST_USER_NAME, TEST_USER_PASSWORD);
-        Assert.assertNull(loginResponse.getError());
+        Assertions.assertNull(loginResponse.getError());
 
         code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
 
@@ -3208,7 +3208,7 @@ public class ClientPoliciesTest extends AbstractClientPoliciesTest {
         logoutConfirmPage.assertCurrent();
         logoutConfirmPage.confirmLogout();
         loginResponse = oauth.doLogin(TEST_USER_NAME, TEST_USER_PASSWORD);
-        Assert.assertNull(loginResponse.getError());
+        Assertions.assertNull(loginResponse.getError());
 
         code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
 
@@ -3349,7 +3349,7 @@ public class ClientPoliciesTest extends AbstractClientPoliciesTest {
         AccessToken token = oauth.verifyToken(res.getAccessToken());
         String userId = findUserByUsername(adminClient.realm(REALM_NAME), userName).getId();
         assertEquals(userId, token.getSubject());
-        Assert.assertNotEquals(userName, token.getSubject());
+        Assertions.assertNotEquals(userName, token.getSubject());
         assertEquals(sessionId, token.getSessionState());
         assertEquals(clientId, token.getIssuedFor());
 

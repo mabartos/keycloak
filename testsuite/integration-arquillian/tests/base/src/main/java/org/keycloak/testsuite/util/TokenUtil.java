@@ -16,16 +16,18 @@
  */
 package org.keycloak.testsuite.util;
 
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.rules.TestRule;
 import org.junit.runners.model.Statement;
 import org.keycloak.common.util.Time;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Created by st on 22/03/17.
  */
-public class TokenUtil implements TestRule {
+public class TokenUtil implements BeforeEachCallback {
 
     private final String username;
     private final String password;
@@ -98,4 +100,7 @@ public class TokenUtil implements TestRule {
         }
     }
 
+    @Override
+    public void beforeEach(ExtensionContext extensionContext) throws Exception {
+    }
 }

@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.ui.login;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.auth.page.login.Registration;
@@ -30,11 +30,11 @@ import org.keycloak.testsuite.auth.page.login.UpdatePassword;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWithLoginUrlOf;
 
 /**
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
@@ -71,7 +71,7 @@ public class LoginPageTest extends AbstractLoginTest {
         testRealmRep.setRegistrationAllowed(true);
     }
 
-    @Before
+    @BeforeEach
     public void beforeLoginTest() {
         deleteAllCookiesForTestRealm();
         testRealmAccountPage.navigateTo();

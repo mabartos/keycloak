@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.oidc.flows;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.events.Details;
 import org.keycloak.jose.jws.crypto.HashUtils;
 import org.keycloak.protocol.oidc.utils.OIDCResponseType;
@@ -37,7 +37,7 @@ import java.util.List;
  */
 public class OIDCImplicitResponseTypeIDTokenTokenTest extends AbstractOIDCResponseTypeTest {
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         clientManagerBuilder().standardFlow(false).implicitFlow(true);
 
@@ -53,9 +53,9 @@ public class OIDCImplicitResponseTypeIDTokenTokenTest extends AbstractOIDCRespon
 
 
     protected List<IDToken> testAuthzResponseAndRetrieveIDTokens(OAuthClient.AuthorizationEndpointResponse authzResponse, EventRepresentation loginEvent) {
-        Assert.assertEquals(OIDCResponseType.ID_TOKEN + " " + OIDCResponseType.TOKEN, loginEvent.getDetails().get(Details.RESPONSE_TYPE));
+        Assertions.assertEquals(OIDCResponseType.ID_TOKEN + " " + OIDCResponseType.TOKEN, loginEvent.getDetails().get(Details.RESPONSE_TYPE));
 
-        Assert.assertNotNull(authzResponse.getAccessToken());
+        Assertions.assertNotNull(authzResponse.getAccessToken());
         String idTokenStr = authzResponse.getIdToken();
         IDToken idToken = oauth.verifyIDToken(idTokenStr);
 
@@ -63,13 +63,13 @@ public class OIDCImplicitResponseTypeIDTokenTokenTest extends AbstractOIDCRespon
         assertValidAccessTokenHash(idToken.getAccessTokenHash(), authzResponse.getAccessToken());
 
         // Validate "c_hash"
-        Assert.assertNull(idToken.getCodeHash());
+        Assertions.assertNull(idToken.getCodeHash());
 
         // Validate if token_type is present
-        Assert.assertNotNull(authzResponse.getTokenType());
+        Assertions.assertNotNull(authzResponse.getTokenType());
 
         // Validate if expires_in is present
-        Assert.assertNotNull(authzResponse.getExpiresIn());
+        Assertions.assertNotNull(authzResponse.getExpiresIn());
 
         return Collections.singletonList(idToken);
     }

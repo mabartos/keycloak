@@ -18,14 +18,14 @@
 package org.keycloak.testsuite.console.authentication;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.console.AbstractConsoleTest;
 import org.keycloak.testsuite.console.page.authentication.PasswordPolicy;
 import org.keycloak.testsuite.console.page.users.UserCredentials;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.console.page.authentication.PasswordPolicy.Type.DIGITS;
 import static org.keycloak.testsuite.console.page.authentication.PasswordPolicy.Type.REGEX_PATTERN;
 
@@ -41,7 +41,7 @@ public class PasswordPolicyTest extends AbstractConsoleTest {
     @Page
     private UserCredentials testUserCredentialsPage;
 
-    @Before
+    @BeforeEach
     public void beforePasswordPolicyTest() {
         testUserCredentialsPage.setId(testUser.getId());
     }

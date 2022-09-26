@@ -40,7 +40,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.jboss.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.adapters.authentication.JWTClientSecretCredentialsProvider;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -81,8 +81,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @EnableFeature(value = Profile.Feature.CLIENT_SECRET_ROTATION)
 public class ClientAuthSecretSignedJWTTest extends AbstractKeycloakTest {
@@ -94,8 +94,7 @@ public class ClientAuthSecretSignedJWTTest extends AbstractKeycloakTest {
     private static final String OIDC = "openid-connect";
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Override
     public void beforeAbstractKeycloakTest() throws Exception {

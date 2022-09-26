@@ -18,9 +18,9 @@
 package org.keycloak.testsuite.model;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.authorization.AuthorizationProvider;
 import org.keycloak.authorization.model.ResourceServer;
@@ -72,11 +72,11 @@ public class ImportTest extends AbstractTestRealmKeycloakTest {
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("demo");
 
-            Assert.assertEquals(600, realm.getAccessCodeLifespanUserAction());
-            Assert.assertEquals(Constants.DEFAULT_ACCESS_TOKEN_LIFESPAN_FOR_IMPLICIT_FLOW_TIMEOUT, realm.getAccessTokenLifespanForImplicitFlow());
-            Assert.assertEquals(Constants.DEFAULT_OFFLINE_SESSION_IDLE_TIMEOUT, realm.getOfflineSessionIdleTimeout());
-            Assert.assertEquals(1, realm.getRequiredCredentialsStream().count());
-            Assert.assertEquals("password", realm.getRequiredCredentialsStream().findFirst().get().getType());
+            Assertions.assertEquals(600, realm.getAccessCodeLifespanUserAction());
+            Assertions.assertEquals(Constants.DEFAULT_ACCESS_TOKEN_LIFESPAN_FOR_IMPLICIT_FLOW_TIMEOUT, realm.getAccessTokenLifespanForImplicitFlow());
+            Assertions.assertEquals(Constants.DEFAULT_OFFLINE_SESSION_IDLE_TIMEOUT, realm.getOfflineSessionIdleTimeout());
+            Assertions.assertEquals(1, realm.getRequiredCredentialsStream().count());
+            Assertions.assertEquals("password", realm.getRequiredCredentialsStream().findFirst().get().getType());
         });
     }
 
@@ -142,7 +142,7 @@ public class ImportTest extends AbstractTestRealmKeycloakTest {
             AuthorizationProvider authz = session.getProvider(AuthorizationProvider.class);
             ClientModel client = realm.getClientByClientId("appserver");
             ResourceServer resourceServer = authz.getStoreFactory().getResourceServerStore().findByClient(client);
-            Assert.assertEquals("AFFIRMATIVE", resourceServer.getDecisionStrategy().name());
+            Assertions.assertEquals("AFFIRMATIVE", resourceServer.getDecisionStrategy().name());
         });
     }
 
@@ -165,9 +165,9 @@ public class ImportTest extends AbstractTestRealmKeycloakTest {
             UserProfileProvider provider = session.getProvider(UserProfileProvider.class);
             UPConfig config = UPConfigUtils.readConfig(new ByteArrayInputStream(provider.getConfiguration().getBytes()));
 
-            Assert.assertTrue(config.getAttributes().stream().map(UPAttribute::getName).anyMatch("email"::equals));
-            Assert.assertTrue(config.getAttributes().stream().map(UPAttribute::getName).anyMatch("test"::equals));
-            Assert.assertTrue(config.getAttributes().stream().map(UPAttribute::getSelector)
+            Assertions.assertTrue(config.getAttributes().stream().map(UPAttribute::getName).anyMatch("email"::equals));
+            Assertions.assertTrue(config.getAttributes().stream().map(UPAttribute::getName).anyMatch("test"::equals));
+            Assertions.assertTrue(config.getAttributes().stream().map(UPAttribute::getSelector)
                     .filter(Objects::nonNull)
                     .map(UPAttributeSelector::getScopes)
                     .filter(Objects::nonNull)

@@ -19,11 +19,10 @@ package org.keycloak.testsuite.admin;
 
 import org.hamcrest.Matchers;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -59,13 +58,12 @@ import org.keycloak.representations.idm.authorization.ResourceServerRepresentati
 import org.keycloak.representations.idm.authorization.ScopeRepresentation;
 import org.keycloak.services.resources.admin.AdminAuth.Resource;
 import org.keycloak.testsuite.AbstractKeycloakTest;
-import org.keycloak.testsuite.Assert;
 import org.keycloak.testsuite.ProfileAssume;
 import org.keycloak.testsuite.util.AdminClientUtil;
 import org.keycloak.testsuite.util.ClientBuilder;
 import org.keycloak.testsuite.util.CredentialBuilder;
 import org.keycloak.testsuite.util.FederatedIdentityBuilder;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.IdentityProviderBuilder;
 import org.keycloak.testsuite.util.RealmBuilder;
 import org.keycloak.testsuite.util.UserBuilder;
@@ -80,9 +78,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.services.resources.admin.AdminAuth.Resource.AUTHORIZATION;
 import static org.keycloak.services.resources.admin.AdminAuth.Resource.CLIENT;
 import static org.keycloak.testsuite.util.ServerURLs.getAuthServerContextRoot;
@@ -94,13 +92,12 @@ import org.keycloak.models.utils.KeycloakModelUtils;
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
+@ExtendWith(GreenMailExtension.class)
 public class PermissionsTest extends AbstractKeycloakTest {
 
     private static final String REALM_NAME = "permissions-test";
 
     private Map<String, Keycloak> clients = new HashMap<>();
-
-    @Rule public GreenMailRule greenMailRule = new GreenMailRule();
 
     // Remove all realms before first run
     @Override
@@ -144,7 +141,7 @@ public class PermissionsTest extends AbstractKeycloakTest {
     }
 
 
-    @Before
+    @BeforeEach
     public void beforeClazz() {
         if (testContext.isInitialized()) {
             return;
@@ -175,7 +172,7 @@ public class PermissionsTest extends AbstractKeycloakTest {
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void removeTestUsers() throws Exception {
         try (Keycloak adminClient = AdminClientUtil.createAdminClient()) {
             for (UserRepresentation u : adminClient.realm("master").users().search("permissions-test-master-", 0, 100)) {
@@ -254,26 +251,26 @@ public class PermissionsTest extends AbstractKeycloakTest {
         invoke((RealmResource realm) -> {
             clients.get("none").realms().findAll();
         }, clients.get("none"), false);
-        Assert.assertNames(clients.get("master-admin").realms().findAll(), "master", REALM_NAME, "realm2");
-        Assert.assertNames(clients.get(AdminRoles.REALM_ADMIN).realms().findAll(), REALM_NAME);
-        Assert.assertNames(clients.get("REALM2").realms().findAll(), "realm2");
+        Assertions.assertNames(clients.get("master-admin").realms().findAll(), "master", REALM_NAME, "realm2");
+        Assertions.assertNames(clients.get(AdminRoles.REALM_ADMIN).realms().findAll(), REALM_NAME);
+        Assertions.assertNames(clients.get("REALM2").realms().findAll(), "realm2");
 
         // Check realm only contains name if missing view realm permission
         List<RealmRepresentation> realms = clients.get(AdminRoles.VIEW_USERS).realms().findAll();
-        Assert.assertNames(realms, REALM_NAME);
+        Assertions.assertNames(realms, REALM_NAME);
         assertGettersEmpty(realms.get(0));
 
         realms = clients.get(AdminRoles.VIEW_REALM).realms().findAll();
-        Assert.assertNames(realms, REALM_NAME);
+        Assertions.assertNames(realms, REALM_NAME);
         assertNotNull(realms.get(0).getAccessTokenLifespan());
 
         // Check the same when access with users from 'master' realm
         realms = clients.get("master-" + AdminRoles.VIEW_USERS).realms().findAll();
-        Assert.assertNames(realms, REALM_NAME);
+        Assertions.assertNames(realms, REALM_NAME);
         assertGettersEmpty(realms.get(0));
 
         realms = clients.get("master-" + AdminRoles.VIEW_REALM).realms().findAll();
-        Assert.assertNames(realms, REALM_NAME);
+        Assertions.assertNames(realms, REALM_NAME);
         assertNotNull(realms.get(0).getAccessTokenLifespan());
 
         // Create realm
@@ -496,10 +493,10 @@ public class PermissionsTest extends AbstractKeycloakTest {
             }
         }, Resource.CLIENT, false, true);
         List<ClientRepresentation> l = clients.get(AdminRoles.QUERY_CLIENTS).realm(REALM_NAME).clients().findAll();
-        Assert.assertThat(l, Matchers.empty());
+        Assertions.assertThat(l, Matchers.empty());
 
         l = clients.get(AdminRoles.VIEW_CLIENTS).realm(REALM_NAME).clients().findAll();
-        Assert.assertThat(l, Matchers.not(Matchers.empty()));
+        Assertions.assertThat(l, Matchers.not(Matchers.empty()));
 
         ClientRepresentation client = l.get(0);
         invoke(new InvocationWithResponse() {

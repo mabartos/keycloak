@@ -17,10 +17,10 @@
 package org.keycloak.testsuite.forms;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.AuthenticationManagementResource;
 import org.keycloak.authentication.AuthenticationFlow;
@@ -62,8 +62,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.core.Response.Status;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.keycloak.testsuite.util.Matchers.statusCodeIs;
 
 /**
@@ -95,7 +95,7 @@ public class CustomFlowTest extends AbstractFlowTest {
         testApp.setDirectAccessGrantsEnabled(true);
     }
 
-    @Before
+    @BeforeEach
     public void configureFlows() {
         userId = findUser("login-test").getId();
 
@@ -182,8 +182,7 @@ public class CustomFlowTest extends AbstractFlowTest {
     }
 
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -218,7 +217,7 @@ public class CustomFlowTest extends AbstractFlowTest {
         Response response = authMgmtResource.copy("browser", params);
         String flowId = null;
         try {
-            Assert.assertThat("Copy flow", response, statusCodeIs(Response.Status.CREATED));
+            Assertions.assertThat("Copy flow", response, statusCodeIs(Response.Status.CREATED));
             AuthenticationFlowRepresentation newFlow = findFlowByAlias(flowAlias);
             flowId = newFlow.getId();
         } finally {
@@ -238,7 +237,7 @@ public class CustomFlowTest extends AbstractFlowTest {
             rep.setBrowserFlow(flowAlias);
             testRealm().update(rep);
             rep = testRealm().toRepresentation();
-            Assert.assertEquals(flowAlias, rep.getBrowserFlow());
+            Assertions.assertEquals(flowAlias, rep.getBrowserFlow());
         }
 
 
@@ -246,9 +245,9 @@ public class CustomFlowTest extends AbstractFlowTest {
          /* In the new flows, any required execution will render any optional flows unused.
         // test to make sure we aren't skipping anything
         loginPage.login("test-user@localhost", "bad-password");
-        Assert.assertTrue(loginPage.isCurrent());
+        Assertions.assertTrue(loginPage.isCurrent());
         loginPage.login("test-user@localhost", "password");*/
-        Assert.assertTrue(termsPage.isCurrent());
+        Assertions.assertTrue(termsPage.isCurrent());
 
         // Revert dummy flow
         rep.setBrowserFlow("dummy");
@@ -305,8 +304,8 @@ public class CustomFlowTest extends AbstractFlowTest {
 
         oauth.openLoginForm();
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         events.expectLogin().user(userId).detail(Details.USERNAME, "login-test").assertEvent();
     }

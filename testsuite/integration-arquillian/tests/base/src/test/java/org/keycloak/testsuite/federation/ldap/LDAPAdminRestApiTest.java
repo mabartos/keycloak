@@ -24,10 +24,10 @@ import java.util.List;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 
-import org.junit.Assert;
-import org.junit.ClassRule;
+import org.junit.jupiter.api.Assertions;
+
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.federation.kerberos.KerberosFederationProvider;
@@ -42,7 +42,7 @@ import org.keycloak.testsuite.util.UserBuilder;
 
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
@@ -126,9 +126,9 @@ public class LDAPAdminRestApiTest extends AbstractLDAPTest {
 
         List<String> origLdapId = new ArrayList<>(user.getAttributes().get(LDAPConstants.LDAP_ID));
         List<String> origLdapEntryDn = new ArrayList<>(user.getAttributes().get(LDAPConstants.LDAP_ENTRY_DN));
-        Assert.assertEquals(1, origLdapId.size());
-        Assert.assertEquals(1, origLdapEntryDn.size());
-        Assert.assertThat(user.getAttributes().keySet(), not(contains(KerberosFederationProvider.KERBEROS_PRINCIPAL)));
+        Assertions.assertEquals(1, origLdapId.size());
+        Assertions.assertEquals(1, origLdapEntryDn.size());
+        Assertions.assertThat(user.getAttributes().keySet(), not(contains(KerberosFederationProvider.KERBEROS_PRINCIPAL)));
 
         // Trying to add KERBEROS_PRINCIPAL should fail (Adding attribute, which was not yet present)
         user.setFirstName("JohnUpdated");
@@ -192,14 +192,14 @@ public class LDAPAdminRestApiTest extends AbstractLDAPTest {
 
     private void createUserExpectError(UserRepresentation user) {
         Response response = testRealm().users().create(user);
-        Assert.assertEquals(400, response.getStatus());
+        Assertions.assertEquals(400, response.getStatus());
         response.close();
     }
 
     private void updateUserExpectError(UserResource userRes, UserRepresentation user) {
         try {
             userRes.update(user);
-            Assert.fail("Not expected to successfully update user");
+            Assertions.fail("Not expected to successfully update user");
         } catch (BadRequestException e) {
             // Expected
         }

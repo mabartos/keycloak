@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.util;
 
 import org.jboss.logging.Logger;
-import org.junit.Assume;
+import org.junit.jupiter.api.Assumptions;
 import org.keycloak.testsuite.arquillian.AuthServerTestEnricher;
 
 import static org.keycloak.testsuite.arquillian.AppServerTestEnricher.APP_SERVER_SSL_REQUIRED;
@@ -29,39 +29,39 @@ public class ContainerAssume {
     private static final Logger log = Logger.getLogger(ContainerAssume.class);
 
     public static void assumeNotAuthServerUndertow() {
-        Assume.assumeFalse("Doesn't work on auth-server-undertow", 
+        Assumptions.assumeFalse("Doesn't work on auth-server-undertow", 
                 AuthServerTestEnricher.AUTH_SERVER_CONTAINER.equals(AuthServerTestEnricher.AUTH_SERVER_CONTAINER_DEFAULT));
     }
     public static void assumeAuthServerUndertow() {
-        Assume.assumeTrue("Only works on auth-server-undertow",
+        Assumptions.assumeTrue("Only works on auth-server-undertow",
                 AuthServerTestEnricher.AUTH_SERVER_CONTAINER.equals(AuthServerTestEnricher.AUTH_SERVER_CONTAINER_DEFAULT));
     }
 
     public static void assumeClusteredContainer() {
-        Assume.assumeTrue(
+        Assumptions.assumeTrue(
               String.format("Ignoring test since %s is set to false",
                     AuthServerTestEnricher.AUTH_SERVER_CLUSTER_PROPERTY), AuthServerTestEnricher.AUTH_SERVER_CLUSTER);
     }
 
     public static void assumeAuthServerSSL() {
-        Assume.assumeTrue("Only works with the SSL configured", AUTH_SERVER_SSL_REQUIRED);
+        Assumptions.assumeTrue("Only works with the SSL configured", AUTH_SERVER_SSL_REQUIRED);
     }
 
     public static void assumeAppServerSSL() {
-        Assume.assumeTrue("Only works with the SSL configured for app server", APP_SERVER_SSL_REQUIRED);
+        Assumptions.assumeTrue("Only works with the SSL configured for app server", APP_SERVER_SSL_REQUIRED);
     }
 
     public static void assumeNotAppServerSSL() {
-        Assume.assumeFalse("Only works with the SSL disabled for app server", APP_SERVER_SSL_REQUIRED);
+        Assumptions.assumeFalse("Only works with the SSL disabled for app server", APP_SERVER_SSL_REQUIRED);
     }
 
     public static void assumeNotAuthServerQuarkus() {
-        Assume.assumeFalse("Doesn't work on auth-server-quarkus",
+        Assumptions.assumeFalse("Doesn't work on auth-server-quarkus",
                 AuthServerTestEnricher.AUTH_SERVER_CONTAINER.equals("auth-server-quarkus"));
     }
 
     public static void assumeAuthServerQuarkus() {
-        Assume.assumeTrue("Only works on auth-server-quarkus",
+        Assumptions.assumeTrue("Only works on auth-server-quarkus",
                 AuthServerTestEnricher.AUTH_SERVER_CONTAINER.equals("auth-server-quarkus"));
     }
 }

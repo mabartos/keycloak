@@ -1,8 +1,8 @@
 package org.keycloak.testsuite.broker;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.models.UserModel;
@@ -14,8 +14,8 @@ import org.keycloak.testsuite.pages.PasswordPage;
 import org.keycloak.testsuite.pages.SelectAuthenticatorPage;
 import org.keycloak.testsuite.util.UserBuilder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
 
@@ -40,7 +40,7 @@ public class KcOidcFirstBrokerLoginNewAuthTest extends AbstractInitializedBaseBr
         return KcOidcBrokerConfiguration.INSTANCE;
     }
 
-    @Before
+    @BeforeEach
     public void disableReviewProfileBeforeTest() {
         updateExecutions(AbstractBrokerTest::disableUpdateProfileOnFirstLogin);
     }
@@ -57,11 +57,11 @@ public class KcOidcFirstBrokerLoginNewAuthTest extends AbstractInitializedBaseBr
         loginWithBrokerAndConfirmLinkAccount();
 
         // Assert on the page with password form
-        Assert.assertTrue(passwordPage.isCurrent("consumer"));
+        Assertions.assertTrue(passwordPage.isCurrent("consumer"));
 
         // Try bad password first
         passwordPage.login("bad-password");
-        Assert.assertEquals("Invalid password.", passwordPage.getPasswordError());
+        Assertions.assertEquals("Invalid password.", passwordPage.getPasswordError());
 
         // Try good password
         passwordPage.login("password");
@@ -87,7 +87,7 @@ public class KcOidcFirstBrokerLoginNewAuthTest extends AbstractInitializedBaseBr
         loginWithBrokerAndConfirmLinkAccount();
 
         // Login with password
-        Assert.assertTrue(passwordPage.isCurrent("consumer"));
+        Assertions.assertTrue(passwordPage.isCurrent("consumer"));
         passwordPage.login("password");
 
         // Assert on TOTP page. Login with TOTP
@@ -111,11 +111,11 @@ public class KcOidcFirstBrokerLoginNewAuthTest extends AbstractInitializedBaseBr
         loginWithBrokerAndConfirmLinkAccount();
 
         // Assert that user can't see credentials combobox. Password is the only available credentials.
-        Assert.assertTrue(passwordPage.isCurrent("consumer"));
+        Assertions.assertTrue(passwordPage.isCurrent("consumer"));
         passwordPage.assertTryAnotherWayLinkAvailability(false);
 
         // Login with password
-        Assert.assertTrue(passwordPage.isCurrent("consumer"));
+        Assertions.assertTrue(passwordPage.isCurrent("consumer"));
         passwordPage.login("password");
 
         assertUserAuthenticatedInConsumer(consumerRealmUserId);
@@ -137,18 +137,18 @@ public class KcOidcFirstBrokerLoginNewAuthTest extends AbstractInitializedBaseBr
         loginWithBrokerAndConfirmLinkAccount();
 
         // Assert that user can choose between Password and OTP as available credentials. Password should be selected by default.
-        Assert.assertTrue(passwordPage.isCurrent("consumer"));
+        Assertions.assertTrue(passwordPage.isCurrent("consumer"));
         passwordPage.assertTryAnotherWayLinkAvailability(true);
 
         // Just click "Try another way" to verify that both Password and OTP are available. But go back to Password then
         passwordPage.clickTryAnotherWayLink();
         selectAuthenticatorPage.assertCurrent();
-        Assert.assertNames(selectAuthenticatorPage.getAvailableLoginMethods(), SelectAuthenticatorPage.PASSWORD, SelectAuthenticatorPage.AUTHENTICATOR_APPLICATION);
+        Assertions.assertNames(selectAuthenticatorPage.getAvailableLoginMethods(), SelectAuthenticatorPage.PASSWORD, SelectAuthenticatorPage.AUTHENTICATOR_APPLICATION);
 
         selectAuthenticatorPage.selectLoginMethod(SelectAuthenticatorPage.PASSWORD);
 
         // Login with password
-        Assert.assertTrue(passwordPage.isCurrent("consumer"));
+        Assertions.assertTrue(passwordPage.isCurrent("consumer"));
         passwordPage.login("password");
 
         assertUserAuthenticatedInConsumer(consumerRealmUserId);
@@ -172,7 +172,7 @@ public class KcOidcFirstBrokerLoginNewAuthTest extends AbstractInitializedBaseBr
         loginWithBrokerAndConfirmLinkAccount();
 
         // Assert that user can see credentials combobox. Password and OTP are available credentials. Password should be selected.
-        Assert.assertTrue(passwordPage.isCurrent("consumer"));
+        Assertions.assertTrue(passwordPage.isCurrent("consumer"));
         passwordPage.assertTryAnotherWayLinkAvailability(true);
 
         // Click "Try another way", Select OTP and assert OTP form present

@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.adapter.servlet;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -41,7 +41,7 @@ public class InputServlet extends HttpServlet {
         String actionUrl = appBase + "/input-portal/secured/post";
 
         if (req.getRequestURI().endsWith("insecure")) {
-            if (System.getProperty("insecure.user.principal.unsupported") == null) Assert.assertNotNull(req.getUserPrincipal());
+            if (System.getProperty("insecure.user.principal.unsupported") == null) Assertions.assertNotNull(req.getUserPrincipal());
             resp.setContentType("text/html");
             PrintWriter pw = resp.getWriter();
             pw.printf("<html><head><title>Input Servlet</title></head><body>%s\n", "Insecure Page");

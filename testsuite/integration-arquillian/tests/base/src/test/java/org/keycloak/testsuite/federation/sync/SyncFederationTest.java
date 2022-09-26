@@ -18,9 +18,9 @@
 package org.keycloak.testsuite.federation.sync;
 
 import org.jboss.logging.Logger;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.KeycloakSessionFactory;
@@ -38,8 +38,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import org.junit.Assume;
-import org.junit.Before;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Test with Dummy providers
@@ -51,9 +51,9 @@ public class SyncFederationTest extends AbstractAuthTest {
 
     private static final Logger log = Logger.getLogger(SyncFederationTest.class);
 
-    @Before
+    @BeforeEach
     public void enabled() {
-        Assume.assumeTrue("RealmProvider is not 'jpa'", isJpaRealmProvider());
+        Assumptions.assumeTrue("RealmProvider is not 'jpa'", isJpaRealmProvider());
     }
 
     /**
@@ -121,14 +121,14 @@ public class SyncFederationTest extends AbstractAuthTest {
 
             // Assert that DummyUserFederationProviderFactory.syncChangedUsers was invoked at least 2 times (once periodically and once for us)
             int newChanged = dummyFedFactory.getChangedSyncCounter();
-            Assert.assertEquals(full, dummyFedFactory.getFullSyncCounter());
-            Assert.assertTrue("Assertion failed. newChanged=" + newChanged + ", changed=" + changed, newChanged > (changed + 1));
+            Assertions.assertEquals(full, dummyFedFactory.getFullSyncCounter());
+            Assertions.assertTrue("Assertion failed. newChanged=" + newChanged + ", changed=" + changed, newChanged > (changed + 1));
 
             // Assert that dummy provider won't be invoked anymore
             sleep(1800);
-            Assert.assertEquals(full, dummyFedFactory.getFullSyncCounter());
+            Assertions.assertEquals(full, dummyFedFactory.getFullSyncCounter());
             int newestChanged = dummyFedFactory.getChangedSyncCounter();
-            Assert.assertEquals("Assertion failed. newChanged=" + newChanged + ", newestChanged=" + newestChanged, newChanged, newestChanged);
+            Assertions.assertEquals("Assertion failed. newChanged=" + newChanged + ", newestChanged=" + newestChanged, newChanged, newestChanged);
         });
 
         // remove dummyProvider
@@ -198,9 +198,9 @@ public class SyncFederationTest extends AbstractAuthTest {
             int full = state.get("full");
             int changed = state.get("changed");
 
-            Assert.assertEquals(full, dummyFedFactory.getFullSyncCounter());
+            Assertions.assertEquals(full, dummyFedFactory.getFullSyncCounter());
             int newChanged = dummyFedFactory.getChangedSyncCounter();
-            Assert.assertEquals("Assertion failed. changed=" + changed + ", newChanged=" + newChanged, changed, newChanged);
+            Assertions.assertEquals("Assertion failed. changed=" + changed + ", newChanged=" + newChanged, changed, newChanged);
         });
 
         // Re-enable periodic sync for changed users
@@ -243,15 +243,15 @@ public class SyncFederationTest extends AbstractAuthTest {
 
             // Assert that DummyUserFederationProviderFactory.syncChangedUsers was invoked at least 1 time
             int newChanged = dummyFedFactory.getChangedSyncCounter();
-            Assert.assertEquals(full, dummyFedFactory.getFullSyncCounter());
+            Assertions.assertEquals(full, dummyFedFactory.getFullSyncCounter());
             log.info("Asserting. newChanged=" + newChanged + " > changed=" + changed);
-            Assert.assertTrue("Assertion failed. newChanged=" + newChanged + ", changed=" + changed, newChanged > (changed + 1));
+            Assertions.assertTrue("Assertion failed. newChanged=" + newChanged + ", changed=" + changed, newChanged > (changed + 1));
 
             // Assert that dummy provider won't be invoked anymore
             sleep(1800);
-            Assert.assertEquals(full, dummyFedFactory.getFullSyncCounter());
+            Assertions.assertEquals(full, dummyFedFactory.getFullSyncCounter());
             int newestChanged = dummyFedFactory.getChangedSyncCounter();
-            Assert.assertEquals("Assertion failed. newChanged=" + newChanged + ", newestChanged=" + newestChanged, newChanged, newestChanged);
+            Assertions.assertEquals("Assertion failed. newChanged=" + newChanged + ", newestChanged=" + newestChanged, newChanged, newestChanged);
         });
 
 
@@ -297,7 +297,7 @@ public class SyncFederationTest extends AbstractAuthTest {
             // Wait and then trigger sync manually. Assert it will be ignored
             sleep(1800);
             SynchronizationResult syncResult = usersSyncManager.syncChangedUsers(sessionFactory, appRealm.getId(), dummyModel);
-            Assert.assertTrue(syncResult.isIgnored());
+            Assertions.assertTrue(syncResult.isIgnored());
 
             // Cancel timer
             usersSyncManager.notifyToRefreshPeriodicSync(session, appRealm, dummyModel, true);

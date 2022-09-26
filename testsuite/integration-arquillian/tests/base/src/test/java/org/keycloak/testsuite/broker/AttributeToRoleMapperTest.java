@@ -5,7 +5,7 @@ import static org.keycloak.models.IdentityProviderMapperSyncMode.LEGACY;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.IdentityProviderResource;
 import org.keycloak.broker.saml.mappers.AttributeToRoleMapper;
 import org.keycloak.broker.saml.mappers.UserAttributeMapper;

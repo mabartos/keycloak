@@ -17,8 +17,8 @@
  */
 package org.keycloak.testsuite.admin.client.authorization;
 
-import org.junit.After;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ResourceScopeResource;
@@ -35,7 +35,7 @@ import org.keycloak.testsuite.util.UserBuilder;
 
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.common.Profile.Feature.AUTHORIZATION;
 
 import java.util.List;
@@ -47,7 +47,7 @@ public abstract class AbstractAuthorizationTest extends AbstractClientTest {
 
     protected static final String RESOURCE_SERVER_CLIENT_ID = "resource-server-test";
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
         ProfileAssume.assumeFeatureEnabled(AUTHORIZATION);
     }
@@ -69,7 +69,7 @@ public abstract class AbstractAuthorizationTest extends AbstractClientTest {
         super.addTestRealms(testRealms);
     }
 
-    @After
+    @AfterEach
     public void onAfterReenableAuthorization() {
         enableAuthorizationServices(false);
         enableAuthorizationServices(true);

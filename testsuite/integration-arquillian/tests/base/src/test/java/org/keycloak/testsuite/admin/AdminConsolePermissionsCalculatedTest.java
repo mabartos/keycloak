@@ -20,9 +20,9 @@ import org.keycloak.Config;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.broker.provider.util.SimpleHttp;
 import org.keycloak.representations.AccessTokenResponse;
@@ -35,8 +35,8 @@ import org.keycloak.testsuite.util.RealmBuilder;
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AdminConsolePermissionsCalculatedTest extends AbstractKeycloakTest {
 
@@ -44,12 +44,12 @@ public class AdminConsolePermissionsCalculatedTest extends AbstractKeycloakTest 
 
     private CloseableHttpClient client;
 
-    @Before
+    @BeforeEach
     public void before() {
         client = HttpClientBuilder.create().build();
     }
 
-    @After
+    @AfterEach
     public void after() {
         try {
             client.close();

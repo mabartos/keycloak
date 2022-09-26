@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.saml;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.protocol.saml.SamlProtocol;
 import org.keycloak.testsuite.admin.concurrency.AbstractConcurrencyTest;
 import org.keycloak.testsuite.updaters.ClientAttributeUpdater;
@@ -146,7 +146,7 @@ public class SamlRelayStateTest extends AbstractSamlTest {
     }
 
     @Test
-    @Ignore("KEYCLOAK-5179")
+    @Disabled("KEYCLOAK-5179")
     public void relayStateConcurrencyTest() throws Exception {
         ThreadLocal<UUID> tl = new ThreadLocal<>();
 

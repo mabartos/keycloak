@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.admin;
 
 import org.keycloak.admin.client.resource.ComponentResource;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ComponentsResource;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.common.util.MultivaluedHashMap;
@@ -39,7 +39,7 @@ import java.util.function.BiConsumer;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 
@@ -50,7 +50,7 @@ public class ComponentsTest extends AbstractAdminTest {
 
     private ComponentsResource components;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         components = adminClient.realm(REALM_NAME).components();
     }

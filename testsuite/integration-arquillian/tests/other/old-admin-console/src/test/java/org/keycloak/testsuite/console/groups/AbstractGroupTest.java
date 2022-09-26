@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.console.groups;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.admin.client.resource.GroupResource;
 import org.keycloak.admin.client.resource.GroupsResource;
 import org.keycloak.representations.idm.GroupRepresentation;
@@ -9,8 +9,8 @@ import org.keycloak.testsuite.console.AbstractConsoleTest;
 import org.keycloak.testsuite.console.page.groups.CreateGroup;
 import org.keycloak.testsuite.console.page.groups.Groups;
 
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 
 /**
  *
@@ -25,7 +25,7 @@ public abstract class AbstractGroupTest extends AbstractConsoleTest {
 
     protected GroupRepresentation newTestRealmGroup;
     
-    @Before
+    @BeforeEach
     public void beforeGroupTest() {
         newTestRealmGroup = new GroupRepresentation();
     }

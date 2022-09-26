@@ -18,9 +18,9 @@
 package org.keycloak.testsuite.ui.account2;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.utils.SessionTimeoutHelper;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.ui.account2.page.DeviceActivityPage;
@@ -29,7 +29,7 @@ import org.keycloak.testsuite.ui.account2.page.PersonalInfoPage;
 import java.util.List;
 
 import static org.keycloak.testsuite.util.UIUtils.refreshPageAndWaitForLoad;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWithLoginUrlOf;
 import static org.keycloak.testsuite.util.WaitUtils.pause;
 
 /**
@@ -55,7 +55,7 @@ public class SessionTest extends AbstractAccountTest {
         realm.setAccessTokenLifespan(10);
     }
 
-    @Before
+    @BeforeEach
     public void beforeSessionTest() {
         personalInfoPage.navigateTo();
         loginToAccount();

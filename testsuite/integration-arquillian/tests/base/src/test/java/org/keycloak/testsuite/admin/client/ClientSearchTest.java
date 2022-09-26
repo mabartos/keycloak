@@ -20,9 +20,9 @@ package org.keycloak.testsuite.admin.client;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jboss.arquillian.container.test.api.ContainerController;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.ClientProvider;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.testsuite.arquillian.AuthServerTestEnricher;
@@ -67,7 +67,7 @@ public class ClientSearchTest extends AbstractClientTest {
 
     private static final String SEARCHABLE_ATTRS_PROP = "keycloak.client.searchableAttributes";
 
-    @Before
+    @BeforeEach
     public void init() {
         ClientRepresentation client1 = createOidcClientRep(CLIENT1);
         ClientRepresentation client2 = createOidcClientRep(CLIENT2);
@@ -93,7 +93,7 @@ public class ClientSearchTest extends AbstractClientTest {
         client3Id = createClient(client3);
     }
 
-    @After
+    @AfterEach
     public void teardown() {
         removeClient(client1Id);
         removeClient(client2Id);

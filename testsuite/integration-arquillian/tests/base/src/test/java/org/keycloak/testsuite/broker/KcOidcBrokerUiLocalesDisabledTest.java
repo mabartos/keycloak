@@ -50,10 +50,10 @@ public class KcOidcBrokerUiLocalesDisabledTest extends AbstractBrokerTest {
 
         waitForPage(driver, "sign in to", true);
 
-        Assert.assertThat("Driver should be on the provider realm page right now",
+        Assertions.assertThat("Driver should be on the provider realm page right now",
                 driver.getCurrentUrl(), containsString("/auth/realms/" + bc.providerRealmName() + "/"));
 
-        Assert.assertThat(UI_LOCALES_PARAM + "=" + ENGLISH.toLanguageTag() + " should be part of the url",
+        Assertions.assertThat(UI_LOCALES_PARAM + "=" + ENGLISH.toLanguageTag() + " should be part of the url",
                 driver.getCurrentUrl(), not(containsString(UI_LOCALES_PARAM + "=" + ENGLISH.toLanguageTag())));
 
         loginPage.login(bc.getUserLogin(), bc.getUserPassword());
@@ -61,7 +61,7 @@ public class KcOidcBrokerUiLocalesDisabledTest extends AbstractBrokerTest {
 
         updateAccountInformationPage.assertCurrent();
 
-        Assert.assertThat("We must be on correct realm right now",
+        Assertions.assertThat("We must be on correct realm right now",
                 driver.getCurrentUrl(), containsString("/auth/realms/" + bc.consumerRealmName() + "/"));
 
         log.debug("Updating info on updateAccount page");
@@ -70,7 +70,7 @@ public class KcOidcBrokerUiLocalesDisabledTest extends AbstractBrokerTest {
         UsersResource consumerUsers = adminClient.realm(bc.consumerRealmName()).users();
 
         int userCount = consumerUsers.count();
-        Assert.assertTrue("There must be at least one user", userCount > 0);
+        Assertions.assertTrue("There must be at least one user", userCount > 0);
 
         List<UserRepresentation> users = consumerUsers.search("", 0, userCount);
 
@@ -82,7 +82,7 @@ public class KcOidcBrokerUiLocalesDisabledTest extends AbstractBrokerTest {
             }
         }
 
-        Assert.assertTrue("There must be user " + bc.getUserLogin() + " in realm " + bc.consumerRealmName(),
+        Assertions.assertTrue("There must be user " + bc.getUserLogin() + " in realm " + bc.consumerRealmName(),
                 isUserFound);
     }
 }

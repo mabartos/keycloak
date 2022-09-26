@@ -21,9 +21,9 @@ import java.util.Map;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.protocol.oidc.OIDCLoginProtocolService;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -42,8 +42,8 @@ import org.keycloak.testsuite.arquillian.annotation.AppServerContainer;
 import static org.keycloak.testsuite.arquillian.AuthServerTestEnricher.AUTH_SERVER_CONTAINER_DEFAULT;
 import static org.keycloak.testsuite.auth.page.AuthRealm.DEMO;
 import static org.keycloak.testsuite.utils.io.IOUtil.loadRealm;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWithLoginUrlOf;
 
 /**
  * Also tests relative URIs in the adapter and valid redirect uris.
@@ -54,7 +54,7 @@ import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLo
  * @author <a href="mailto:bburke@redhat.com">Bill Burke</a>
  */
 @AppServerContainer(AUTH_SERVER_CONTAINER_DEFAULT)
-@Ignore(value = "Need to resolve default relative scenario when running on non-undertow")
+@Disabled(value = "Need to resolve default relative scenario when running on non-undertow")
 public class UndertowRelaviteUriAdapterTest extends AbstractServletsAdapterTest {
     
     @Page
@@ -90,13 +90,13 @@ public class UndertowRelaviteUriAdapterTest extends AbstractServletsAdapterTest 
         testRealmLoginPage.form().login("bburke@redhat.com", "password");
         assertCurrentUrlEquals(customerPortal);
         String pageSource = driver.getPageSource();
-        Assert.assertTrue(pageSource.contains("Bill Burke") && pageSource.contains("Stian Thorgersen"));
+        Assertions.assertTrue(pageSource.contains("Bill Burke") && pageSource.contains("Stian Thorgersen"));
         
         // test SSO
         productPortal.navigateTo();
         assertCurrentUrlEquals(productPortal);
         pageSource = driver.getPageSource();
-        Assert.assertTrue(pageSource.contains("iPhone") && pageSource.contains("iPad"));
+        Assertions.assertTrue(pageSource.contains("iPhone") && pageSource.contains("iPad"));
         
         // View stats
         List<Map<String, String>> stats = adminClient.realm(DEMO).getClientSessionStats();
@@ -112,8 +112,8 @@ public class UndertowRelaviteUriAdapterTest extends AbstractServletsAdapterTest 
                     break;
             }
         }
-        Assert.assertEquals(1, Integer.parseInt(customerPortalStats.get("active")));
-        Assert.assertEquals(1, Integer.parseInt(productPortalStats.get("active")));
+        Assertions.assertEquals(1, Integer.parseInt(customerPortalStats.get("active")));
+        Assertions.assertEquals(1, Integer.parseInt(productPortalStats.get("active")));
         
         // test logout
         testRealmAccountPage.navigateTo();
@@ -131,16 +131,16 @@ public class UndertowRelaviteUriAdapterTest extends AbstractServletsAdapterTest 
         assertCurrentUrlStartsWithLoginUrlOf(testRealmPage);
         testRealmLoginPage.form().login("bburke@redhat.com", "password");
         assertCurrentUrlEquals(customerPortal);
-        Assert.assertTrue(driver.getPageSource().contains("Bill Burke"));
+        Assertions.assertTrue(driver.getPageSource().contains("Bill Burke"));
         
         
         productPortal.navigateTo();
         assertCurrentUrlEquals(productPortal);
-        Assert.assertTrue(driver.getPageSource().contains("iPhone"));
+        Assertions.assertTrue(driver.getPageSource().contains("iPhone"));
         
         // test logout
         driver.navigate().to(customerPortal.logout().toASCIIString());
-        Assert.assertTrue(driver.getPageSource().contains("servlet logout ok"));
+        Assertions.assertTrue(driver.getPageSource().contains("servlet logout ok"));
         
         customerPortal.navigateTo();
         assertCurrentUrlStartsWithLoginUrlOf(testRealmPage);

@@ -22,12 +22,12 @@
 package org.keycloak.testsuite.console.clients;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.testsuite.console.page.clients.clustering.ClientClustering;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.keycloak.testsuite.auth.page.login.Login.OIDC;
 
 /**
@@ -42,7 +42,7 @@ public class ClientClusteringTest extends AbstractClientTest {
     @Page
     private ClientClustering clientClusteringPage;
     
-    @Before
+    @BeforeEach
     public void before() {
         newClient = createClientRep(TEST_CLIENT_ID, OIDC);
         testRealmResource().clients().create(newClient).close();

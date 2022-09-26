@@ -18,14 +18,13 @@ package org.keycloak.testsuite.account;
 
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.enums.AccountRestApiVersion;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractTestRealmKeycloakTest;
-import org.keycloak.testsuite.AssertEvents;
 import org.keycloak.testsuite.util.TokenUtil;
 import org.keycloak.testsuite.util.WebDriverLogDumper;
 import org.openqa.selenium.JavascriptExecutor;
@@ -33,8 +32,8 @@ import org.openqa.selenium.JavascriptExecutor;
 import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
@@ -50,14 +49,14 @@ public class AccountRestServiceCorsTest extends AbstractTestRealmKeycloakTest {
     private CloseableHttpClient client;
     private JavascriptExecutor executor;
 
-    @Before
+    @BeforeEach
     public void before() {
         client = HttpClientBuilder.create().build();
         oauth.clientId("direct-grant");
         executor = (JavascriptExecutor) driver;
     }
 
-    @After
+    @AfterEach
     public void after() {
         try {
             client.close();
@@ -70,9 +69,6 @@ public class AccountRestServiceCorsTest extends AbstractTestRealmKeycloakTest {
     public void configureTestRealm(RealmRepresentation testRealm) {
         testRealm.setEditUsernameAllowed(false);
     }
-
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
 
     @Test
     public void testGetProfile() throws IOException, InterruptedException {

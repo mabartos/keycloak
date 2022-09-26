@@ -28,7 +28,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 /**
  *
@@ -107,7 +107,7 @@ public abstract class AbstractPage {
 
     public void assertCurrent() {
         String name = getClass().getSimpleName();
-        Assert.assertTrue("Expected " + name + " but was " + DroneUtils.getCurrentDriver().getTitle() + " (" + DroneUtils.getCurrentDriver().getCurrentUrl() + ")",
+        Assertions.assertTrue("Expected " + name + " but was " + DroneUtils.getCurrentDriver().getTitle() + " (" + DroneUtils.getCurrentDriver().getCurrentUrl() + ")",
                 isCurrent());
     }
 }

@@ -1,12 +1,12 @@
 package org.keycloak.testsuite.console.clients;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.testsuite.console.page.clients.credentials.SAMLClientCredentialsForm;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.auth.page.login.Login.SAML;
 
 /**
@@ -19,7 +19,7 @@ public class ClientSAMLKeysTest extends AbstractClientTest {
     @Page
     private SAMLClientCredentialsForm samlForm;
 
-    @Before
+    @BeforeEach
     public void before() {
         newClient = createClientRep("client-saml", SAML);
         createClient(newClient);

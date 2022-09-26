@@ -16,10 +16,10 @@
  */
 package org.keycloak.testsuite.account;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.keycloak.testsuite.forms.VerifyProfileTest.PERMISSIONS_ALL;
 import static org.keycloak.testsuite.forms.VerifyProfileTest.PERMISSIONS_ADMIN_EDITABLE;
 import static org.keycloak.testsuite.forms.VerifyProfileTest.PERMISSIONS_ADMIN_ONLY;
@@ -30,8 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.broker.provider.util.SimpleHttp;
 import org.keycloak.common.Profile;
 import org.keycloak.events.Details;
@@ -52,7 +52,7 @@ import org.keycloak.userprofile.UserProfileContext;
 public class AccountRestServiceWithUserProfileTest extends AccountRestServiceTest {
     
     @Override
-    @Before
+    @BeforeEach
     public void before() {
         super.before();
         enableDynamicUserProfile();

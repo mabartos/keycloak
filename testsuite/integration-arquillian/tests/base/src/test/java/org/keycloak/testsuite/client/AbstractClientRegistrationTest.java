@@ -16,8 +16,8 @@
  */
 package org.keycloak.testsuite.client;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.client.registration.Auth;
 import org.keycloak.client.registration.ClientRegistration;
 import org.keycloak.client.registration.ClientRegistrationException;
@@ -43,12 +43,12 @@ public abstract class AbstractClientRegistrationTest extends AbstractKeycloakTes
 
     ClientRegistration reg;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         reg = ClientRegistration.create().url(suiteContext.getAuthServerInfo().getContextRoot() + "/auth", "test").build();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         reg.close();
     }

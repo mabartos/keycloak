@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.webauthn;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.authentication.authenticators.browser.WebAuthnAuthenticatorFactory;
@@ -82,8 +82,7 @@ import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
  */
 public abstract class AbstractWebAuthnVirtualTest extends AbstractTestRealmKeycloakTest implements UseVirtualAuthenticators {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected LoginPage loginPage;
@@ -124,7 +123,7 @@ public abstract class AbstractWebAuthnVirtualTest extends AbstractTestRealmKeycl
 
     private VirtualAuthenticatorManager virtualAuthenticatorManager;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUpVirtualAuthenticator() {
         if (!isDriverFirefox(driver)) {
@@ -133,7 +132,7 @@ public abstract class AbstractWebAuthnVirtualTest extends AbstractTestRealmKeycl
         clearEventQueue();
     }
 
-    @After
+    @AfterEach
     @Override
     public void removeVirtualAuthenticator() {
         if (!isDriverFirefox(driver)) {

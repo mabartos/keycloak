@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.ui.account2;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.ui.account2.page.PersonalInfoPage;
@@ -28,8 +28,8 @@ import org.keycloak.testsuite.ui.account2.page.fragment.AbstractHeader;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
 
 /**
  * @author Vaclav Muzikar <vmuzikar@redhat.com>

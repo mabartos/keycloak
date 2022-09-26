@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.broker;
 
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.broker.saml.SAMLIdentityProviderConfig;
 import org.keycloak.dom.saml.v2.assertion.AssertionType;
 import org.keycloak.dom.saml.v2.assertion.AuthnStatementType;

@@ -22,8 +22,8 @@
 package org.keycloak.testsuite.console.authentication;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.console.AbstractConsoleTest;
 import org.keycloak.testsuite.console.page.authentication.otppolicy.OTPPolicy;
@@ -34,7 +34,7 @@ import org.keycloak.testsuite.util.WaitUtils;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
@@ -45,7 +45,7 @@ public class OTPPolicyTest extends AbstractConsoleTest {
     @Page
     private OTPPolicy otpPolicyPage;
     
-    @Before
+    @BeforeEach
     public void beforeOTPPolicyTest() {
         otpPolicyPage.navigateTo();
         WaitUtils.pause(1000); // wait for the form to fully render

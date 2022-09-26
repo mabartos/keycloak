@@ -41,8 +41,8 @@ import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.adapters.HttpClientBuilder;
@@ -73,7 +73,7 @@ import org.keycloak.testsuite.pages.AccountPasswordPage;
 import org.keycloak.testsuite.pages.LoginPage;
 import org.keycloak.testsuite.util.KerberosRule;
 import org.keycloak.testsuite.util.OAuthClient;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 
 /**
  * Contains just helper methods. No test methods.
@@ -89,8 +89,7 @@ public abstract class AbstractKerberosTest extends AbstractAuthTest {
     @Page
     protected LoginPage loginPage;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AccountPasswordPage changePasswordPage;
@@ -131,12 +130,12 @@ public abstract class AbstractKerberosTest extends AbstractAuthTest {
         return adminClient.realm("test");
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void checkNotMapStorage() {
         ProfileAssume.assumeFeatureDisabled(Feature.MAP_STORAGE);
     }
 
-    @Before
+    @BeforeEach
     @Override
     public void beforeAbstractKeycloakTest() throws Exception {
         super.beforeAbstractKeycloakTest();
@@ -158,7 +157,7 @@ public abstract class AbstractKerberosTest extends AbstractAuthTest {
         resp.close();
     }
 
-    @After
+    @AfterEach
     @Override
     public void afterAbstractKeycloakTest() throws Exception {
         cleanupApacheHttpClient();
@@ -185,7 +184,7 @@ public abstract class AbstractKerberosTest extends AbstractAuthTest {
     protected AccessToken assertSuccessfulSpnegoLogin(String clientId, String loginUsername, String expectedUsername, String password) throws Exception {
         oauth.clientId(clientId);
         Response spnegoResponse = spnegoLogin(loginUsername, password);
-        Assert.assertEquals(302, spnegoResponse.getStatus());
+        Assertions.assertEquals(302, spnegoResponse.getStatus());
 
         List<UserRepresentation> users = testRealmResource().users().search(expectedUsername, 0, 1);
         String userId = users.get(0).getId();
@@ -200,8 +199,8 @@ public abstract class AbstractKerberosTest extends AbstractAuthTest {
         OAuthClient.AccessTokenResponse tokenResponse = assertAuthenticationSuccess(codeUrl);
 
         AccessToken token = oauth.verifyToken(tokenResponse.getAccessToken());
-        Assert.assertEquals(userId, token.getSubject());
-        Assert.assertEquals(expectedUsername, token.getPreferredUsername());
+        Assertions.assertEquals(userId, token.getSubject());
+        Assertions.assertEquals(expectedUsername, token.getPreferredUsername());
 
         oauth.idTokenHint(tokenResponse.getIdToken());
 
@@ -274,7 +273,7 @@ public abstract class AbstractKerberosTest extends AbstractAuthTest {
                 realm.users().get(user.getId()).remove();
             }
         }
-        Assert.assertEquals(1, realm.users().search("", 0, -1).size());
+        Assertions.assertEquals(1, realm.users().search("", 0, -1).size());
     }
 
 
@@ -282,16 +281,16 @@ public abstract class AbstractKerberosTest extends AbstractAuthTest {
                               String expectedLastname, boolean updateProfileActionExpected) {
         try {
             UserRepresentation user = ApiUtil.findUserByUsername(testRealmResource(), expectedUsername);
-            Assert.assertNotNull(user);
-            Assert.assertEquals(expectedEmail, user.getEmail());
-            Assert.assertEquals(expectedFirstname, user.getFirstName());
-            Assert.assertEquals(expectedLastname, user.getLastName());
+            Assertions.assertNotNull(user);
+            Assertions.assertEquals(expectedEmail, user.getEmail());
+            Assertions.assertEquals(expectedFirstname, user.getFirstName());
+            Assertions.assertEquals(expectedLastname, user.getLastName());
 
             if (updateProfileActionExpected) {
-                Assert.assertEquals(UserModel.RequiredAction.UPDATE_PROFILE.toString(),
+                Assertions.assertEquals(UserModel.RequiredAction.UPDATE_PROFILE.toString(),
                         user.getRequiredActions().iterator().next());
             } else {
-                Assert.assertTrue(user.getRequiredActions().isEmpty());
+                Assertions.assertTrue(user.getRequiredActions().isEmpty());
             }
         } finally {
         }
@@ -309,10 +308,10 @@ public abstract class AbstractKerberosTest extends AbstractAuthTest {
                 state = pair.getValue();
             }
         }
-        Assert.assertNotNull(code);
-        Assert.assertNotNull(state);
+        Assertions.assertNotNull(code);
+        Assertions.assertNotNull(state);
         OAuthClient.AccessTokenResponse response = oauth.doAccessTokenRequest(code, "password");
-        Assert.assertNotNull(response.getAccessToken());
+        Assertions.assertNotNull(response.getAccessToken());
         events.clear();
         return response;
     }
@@ -334,7 +333,7 @@ public abstract class AbstractKerberosTest extends AbstractAuthTest {
     protected void updateUserStorageProvider(Consumer<ComponentRepresentation> updater) {
         String parentId = testRealmResource().toRepresentation().getId();
         List<ComponentRepresentation> reps = testRealmResource().components().query(parentId, UserStorageProvider.class.getName());
-        Assert.assertEquals(1, reps.size());
+        Assertions.assertEquals(1, reps.size());
         ComponentRepresentation kerberosProvider = reps.get(0);
 
         updater.accept(kerberosProvider);
@@ -355,7 +354,7 @@ public abstract class AbstractKerberosTest extends AbstractAuthTest {
                 .filter(e -> e.getProviderId().equals(SpnegoAuthenticatorFactory.PROVIDER_ID))
                 .findFirst();
 
-        Assert.assertTrue(kerberosAuthExecutionOpt.isPresent());
+        Assertions.assertTrue(kerberosAuthExecutionOpt.isPresent());
 
         AuthenticationExecutionInfoRepresentation kerberosAuthExecution = kerberosAuthExecutionOpt.get();
         String oldRequirementStr = kerberosAuthExecution.getRequirement();

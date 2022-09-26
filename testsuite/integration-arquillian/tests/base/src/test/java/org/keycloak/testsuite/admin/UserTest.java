@@ -21,10 +21,11 @@ import org.hamcrest.Matchers;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.After;
-import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.TokenVerifier;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.GroupResource;
@@ -76,7 +77,7 @@ import org.keycloak.testsuite.updaters.Creator;
 import org.keycloak.testsuite.util.AdminClientUtil;
 import org.keycloak.testsuite.util.AdminEventPaths;
 import org.keycloak.testsuite.util.ClientBuilder;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.GroupBuilder;
 import org.keycloak.testsuite.util.MailUtils;
 import org.keycloak.testsuite.util.OAuthClient;
@@ -110,23 +111,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.testsuite.Assert.assertNames;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
+@ExtendWith(GreenMailExtension.class)
 public class UserTest extends AbstractAdminTest {
-
-    @Rule
-    public GreenMailRule greenMail = new GreenMailRule();
 
     @Drone
     protected WebDriver driver;
@@ -149,7 +148,7 @@ public class UserTest extends AbstractAdminTest {
     @Page
     protected LoginPage loginPage;
 
-    @After
+    @AfterEach
     public void after() {
         realm.identityProviders().findAll()
                 .forEach(ip -> realm.identityProviders().get(ip.getAlias()).remove());
@@ -226,7 +225,7 @@ public class UserTest extends AbstractAdminTest {
 
         UserRepresentation userRep = realm.users().get(userId).toRepresentation();
 
-        Assert.assertFalse(userRep.getRequiredActions().contains(UserModel.RequiredAction.UPDATE_PASSWORD.name()));
+        Assertions.assertFalse(userRep.getRequiredActions().contains(UserModel.RequiredAction.UPDATE_PASSWORD.name()));
     }
 
     @Test
@@ -241,7 +240,7 @@ public class UserTest extends AbstractAdminTest {
 
             // Just to show how to retrieve underlying error message
             ErrorRepresentation error = response.readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("User exists with same username", error.getErrorMessage());
+            Assertions.assertEquals("User exists with same username", error.getErrorMessage());
         }
     }
 
@@ -258,7 +257,7 @@ public class UserTest extends AbstractAdminTest {
             assertAdminEvents.assertEmpty();
 
             ErrorRepresentation error = response.readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("User exists with same email", error.getErrorMessage());
+            Assertions.assertEquals("User exists with same email", error.getErrorMessage());
         }
     }
 
@@ -289,7 +288,7 @@ public class UserTest extends AbstractAdminTest {
         try (Response response = realm.users().create(user)) {
             assertEquals(409, response.getStatus());
             ErrorRepresentation error = response.readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("User exists with same email", error.getErrorMessage());
+            Assertions.assertEquals("User exists with same email", error.getErrorMessage());
             assertAdminEvents.assertEmpty();
         }
     }
@@ -340,8 +339,8 @@ public class UserTest extends AbstractAdminTest {
                 "    }";
 
         CredentialRepresentation deprecatedHashedPassword = JsonSerialization.readValue(deprecatedCredential, CredentialRepresentation.class);
-        Assert.assertNotNull(deprecatedHashedPassword.getHashedSaltedValue());
-        Assert.assertNull(deprecatedHashedPassword.getCredentialData());
+        Assertions.assertNotNull(deprecatedHashedPassword.getHashedSaltedValue());
+        Assertions.assertNull(deprecatedHashedPassword.getCredentialData());
 
         deprecatedHashedPassword.setCreatedDate(1001l);
         deprecatedHashedPassword.setUserLabel("deviceX");
@@ -406,8 +405,8 @@ public class UserTest extends AbstractAdminTest {
         String userId = createUser(user);
 
         UserRepresentation userRep = realm.users().get(userId).toRepresentation();
-        Assert.assertEquals(1, userRep.getRequiredActions().size());
-        Assert.assertEquals(UserModel.RequiredAction.UPDATE_PASSWORD.toString(), userRep.getRequiredActions().get(0));
+        Assertions.assertEquals(1, userRep.getRequiredActions().size());
+        Assertions.assertEquals(UserModel.RequiredAction.UPDATE_PASSWORD.toString(), userRep.getRequiredActions().get(0));
     }
 
     @Test
@@ -546,7 +545,7 @@ public class UserTest extends AbstractAdminTest {
         try (Response response = realm.users().create(user)) {
             assertEquals(400, response.getStatus());
             ErrorRepresentation error = response.readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("User name is missing", error.getErrorMessage());
+            Assertions.assertEquals("User name is missing", error.getErrorMessage());
             assertAdminEvents.assertEmpty();
         }
     }
@@ -572,7 +571,7 @@ public class UserTest extends AbstractAdminTest {
         try (Response response = realm.users().create(user)) {
             assertEquals(400, response.getStatus());
             ErrorRepresentation error = response.readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("User name is missing", error.getErrorMessage());
+            Assertions.assertEquals("User name is missing", error.getErrorMessage());
             assertAdminEvents.assertEmpty();
         }
     }
@@ -595,7 +594,7 @@ public class UserTest extends AbstractAdminTest {
         try (Response response = realm.users().create(user)) {
             assertEquals(400, response.getStatus());
             ErrorRepresentation error = response.readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("Password policy not met", error.getErrorMessage());
+            Assertions.assertEquals("Password policy not met", error.getErrorMessage());
             rep.setPasswordPolicy(passwordPolicy);
             assertAdminEvents.assertEmpty();
             realm.update(rep);
@@ -1311,7 +1310,7 @@ public class UserTest extends AbstractAdminTest {
 
     private void addSampleIdentityProvider(final String alias, final int expectedInitialIdpCount) {
         List<IdentityProviderRepresentation> providers = realm.identityProviders().findAll();
-        Assert.assertEquals(expectedInitialIdpCount, providers.size());
+        Assertions.assertEquals(expectedInitialIdpCount, providers.size());
 
         IdentityProviderRepresentation rep = new IdentityProviderRepresentation();
         rep.setAlias(alias);
@@ -1323,7 +1322,7 @@ public class UserTest extends AbstractAdminTest {
 
     private void removeSampleIdentityProvider() {
         IdentityProviderResource resource = realm.identityProviders().get("social-provider-id");
-        Assert.assertNotNull(resource);
+        Assertions.assertNotNull(resource);
         resource.remove();
         assertAdminEvents.assertEvent(realmId, OperationType.DELETE, AdminEventPaths.identityProviderPath("social-provider-id"), ResourceType.IDENTITY_PROVIDER);
     }
@@ -1459,7 +1458,7 @@ public class UserTest extends AbstractAdminTest {
             user1.singleAttribute("saml.persistent.name.id.for.foo", "bar");
             user1.singleAttribute(LDAPConstants.LDAP_ID, "baz");
             updateUser(realm.users().get(user1Id), user1);
-            Assert.fail("Not supposed to successfully update user");
+            Assertions.fail("Not supposed to successfully update user");
         } catch (BadRequestException bre) {
             // Expected
             assertAdminEvents.assertEmpty();
@@ -1470,7 +1469,7 @@ public class UserTest extends AbstractAdminTest {
             user1.getAttributes().remove(LDAPConstants.LDAP_ID);
             user1.singleAttribute("LDap_Id", "baz");
             updateUser(realm.users().get(user1Id), user1);
-            Assert.fail("Not supposed to successfully update user");
+            Assertions.fail("Not supposed to successfully update user");
         } catch (BadRequestException bre) {
             // Expected
             assertAdminEvents.assertEmpty();
@@ -1481,7 +1480,7 @@ public class UserTest extends AbstractAdminTest {
             user1.getAttributes().remove("LDap_Id");
             user1.singleAttribute("deniedSomeAdmin", "baz");
             updateUser(realm.users().get(user1Id), user1);
-            Assert.fail("Not supposed to successfully update user");
+            Assertions.fail("Not supposed to successfully update user");
         } catch (BadRequestException bre) {
             // Expected
             assertAdminEvents.assertEmpty();
@@ -1531,7 +1530,7 @@ public class UserTest extends AbstractAdminTest {
             assertEquals(400, e.getResponse().getStatus());
 
             ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("User email missing", error.getErrorMessage());
+            Assertions.assertEquals("User email missing", error.getErrorMessage());
             assertAdminEvents.assertEmpty();
         }
         try {
@@ -1546,7 +1545,7 @@ public class UserTest extends AbstractAdminTest {
             assertEquals(400, e.getResponse().getStatus());
 
             ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("User is disabled", error.getErrorMessage());
+            Assertions.assertEquals("User is disabled", error.getErrorMessage());
             assertAdminEvents.assertEmpty();
         }
         try {
@@ -1559,7 +1558,7 @@ public class UserTest extends AbstractAdminTest {
             assertEquals(400, e.getResponse().getStatus());
 
             ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("Client doesn't exist", error.getErrorMessage());
+            Assertions.assertEquals("Client doesn't exist", error.getErrorMessage());
             assertAdminEvents.assertEmpty();
         }
     }
@@ -1579,7 +1578,7 @@ public class UserTest extends AbstractAdminTest {
         user.executeActionsEmail(actions);
         assertAdminEvents.assertEvent(realmId, OperationType.ACTION, AdminEventPaths.userResourcePath(id) + "/execute-actions-email", ResourceType.USER);
 
-        Assert.assertEquals(1, greenMail.getReceivedMessages().length);
+        Assertions.assertEquals(1, greenMail.getReceivedMessages().length);
 
         MimeMessage message = greenMail.getReceivedMessages()[0];
 
@@ -1628,7 +1627,7 @@ public class UserTest extends AbstractAdminTest {
             List<String> actions = new LinkedList<>();
             actions.add(UserModel.RequiredAction.UPDATE_PASSWORD.name());
             user.executeActionsEmail(actions);
-            Assert.assertEquals(1, greenMail.getReceivedMessages().length);
+            Assertions.assertEquals(1, greenMail.getReceivedMessages().length);
 
             MimeMessage message = greenMail.getReceivedMessages()[0];
             MailUtils.EmailBody body = MailUtils.getBody(message);
@@ -1672,7 +1671,7 @@ public class UserTest extends AbstractAdminTest {
         user.executeActionsEmail(actions, lifespan);
         assertAdminEvents.assertEvent(realmId, OperationType.ACTION, AdminEventPaths.userResourcePath(id) + "/execute-actions-email", ResourceType.USER);
 
-        Assert.assertEquals(1, greenMail.getReceivedMessages().length);
+        Assertions.assertEquals(1, greenMail.getReceivedMessages().length);
 
         MimeMessage message = greenMail.getReceivedMessages()[0];
 
@@ -1731,7 +1730,7 @@ public class UserTest extends AbstractAdminTest {
         assertAdminEvents.assertEvent(realmId, OperationType.ACTION, AdminEventPaths.userResourcePath(id) + "/execute-actions-email", ResourceType.USER);
         assertAdminEvents.assertEvent(realmId, OperationType.ACTION, AdminEventPaths.userResourcePath(id) + "/execute-actions-email", ResourceType.USER);
 
-        Assert.assertEquals(2, greenMail.getReceivedMessages().length);
+        Assertions.assertEquals(2, greenMail.getReceivedMessages().length);
 
         int i = 1;
         for (MimeMessage message : greenMail.getReceivedMessages()) {
@@ -1774,7 +1773,7 @@ public class UserTest extends AbstractAdminTest {
         assertAdminEvents.assertEvent(realmId, OperationType.ACTION, AdminEventPaths.userResourcePath(id) + "/execute-actions-email", ResourceType.USER);
         assertAdminEvents.assertEvent(realmId, OperationType.ACTION, AdminEventPaths.userResourcePath(id) + "/execute-actions-email", ResourceType.USER);
 
-        Assert.assertEquals(2, greenMail.getReceivedMessages().length);
+        Assertions.assertEquals(2, greenMail.getReceivedMessages().length);
 
         int i = 1;
         for (int j = greenMail.getReceivedMessages().length - 1; j >= 0; j--) {
@@ -1817,7 +1816,7 @@ public class UserTest extends AbstractAdminTest {
         user.executeActionsEmail(actions);
         assertAdminEvents.assertEvent(realmId, OperationType.ACTION, AdminEventPaths.userResourcePath(id) + "/execute-actions-email", ResourceType.USER);
 
-        Assert.assertEquals(1, greenMail.getReceivedMessages().length);
+        Assertions.assertEquals(1, greenMail.getReceivedMessages().length);
 
         MimeMessage message = greenMail.getReceivedMessages()[0];
 
@@ -1867,7 +1866,7 @@ public class UserTest extends AbstractAdminTest {
             actions.add(UserModel.RequiredAction.UPDATE_PASSWORD.name());
             user.executeActionsEmail(actions);
 
-            Assert.assertEquals(1, greenMail.getReceivedMessages().length);
+            Assertions.assertEquals(1, greenMail.getReceivedMessages().length);
 
             MimeMessage message = greenMail.getReceivedMessages()[0];
 
@@ -1917,7 +1916,7 @@ public class UserTest extends AbstractAdminTest {
             user.executeActionsEmail("myclient2", "http://myclient.com/home.html", actions);
             assertAdminEvents.assertEvent(realmId, OperationType.ACTION, AdminEventPaths.userResourcePath(id) + "/execute-actions-email", ResourceType.USER);
 
-            Assert.assertEquals(1, greenMail.getReceivedMessages().length);
+            Assertions.assertEquals(1, greenMail.getReceivedMessages().length);
 
             MimeMessage message = greenMail.getReceivedMessages()[0];
 
@@ -1929,7 +1928,7 @@ public class UserTest extends AbstractAdminTest {
         user.executeActionsEmail(actions);
         assertAdminEvents.assertEvent(realmId, OperationType.ACTION, AdminEventPaths.userResourcePath(id) + "/execute-actions-email", ResourceType.USER);
 
-        Assert.assertEquals(2, greenMail.getReceivedMessages().length);
+        Assertions.assertEquals(2, greenMail.getReceivedMessages().length);
 
         MimeMessage message = greenMail.getReceivedMessages()[greenMail.getReceivedMessages().length - 1];
 
@@ -1985,14 +1984,14 @@ public class UserTest extends AbstractAdminTest {
             assertEquals(400, e.getResponse().getStatus());
 
             ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("Invalid redirect uri.", error.getErrorMessage());
+            Assertions.assertEquals("Invalid redirect uri.", error.getErrorMessage());
         }
 
 
         user.executeActionsEmail("myclient", "http://myclient.com/home.html", actions);
         assertAdminEvents.assertEvent(realmId, OperationType.ACTION, AdminEventPaths.userResourcePath(id) + "/execute-actions-email", ResourceType.USER);
 
-        Assert.assertEquals(1, greenMail.getReceivedMessages().length);
+        Assertions.assertEquals(1, greenMail.getReceivedMessages().length);
 
         MimeMessage message = greenMail.getReceivedMessages()[0];
 
@@ -2012,7 +2011,7 @@ public class UserTest extends AbstractAdminTest {
         String pageSource = driver.getPageSource();
 
         // check to make sure the back link is set.
-        Assert.assertTrue(pageSource.contains("http://myclient.com/home.html"));
+        Assertions.assertTrue(pageSource.contains("http://myclient.com/home.html"));
 
         driver.navigate().to(link);
 
@@ -2055,14 +2054,14 @@ public class UserTest extends AbstractAdminTest {
             assertEquals(400, e.getResponse().getStatus());
 
             ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("Invalid redirect uri.", error.getErrorMessage());
+            Assertions.assertEquals("Invalid redirect uri.", error.getErrorMessage());
         }
 
 
         user.executeActionsEmail("myclient", "http://myclient.com/home.html", lifespan, actions);
         assertAdminEvents.assertEvent(realmId, OperationType.ACTION, AdminEventPaths.userResourcePath(id) + "/execute-actions-email", ResourceType.USER);
 
-        Assert.assertEquals(1, greenMail.getReceivedMessages().length);
+        Assertions.assertEquals(1, greenMail.getReceivedMessages().length);
 
         MimeMessage message = greenMail.getReceivedMessages()[0];
 
@@ -2096,7 +2095,7 @@ public class UserTest extends AbstractAdminTest {
         String pageSource = driver.getPageSource();
 
         // check to make sure the back link is set.
-        Assert.assertTrue(pageSource.contains("http://myclient.com/home.html"));
+        Assertions.assertTrue(pageSource.contains("http://myclient.com/home.html"));
 
         driver.navigate().to(link);
 
@@ -2120,7 +2119,7 @@ public class UserTest extends AbstractAdminTest {
             assertEquals(400, e.getResponse().getStatus());
 
             ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("User email missing", error.getErrorMessage());
+            Assertions.assertEquals("User email missing", error.getErrorMessage());
         }
         try {
             userRep = user.toRepresentation();
@@ -2134,7 +2133,7 @@ public class UserTest extends AbstractAdminTest {
             assertEquals(400, e.getResponse().getStatus());
 
             ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("User is disabled", error.getErrorMessage());
+            Assertions.assertEquals("User is disabled", error.getErrorMessage());
             assertAdminEvents.assertEmpty();
         }
         try {
@@ -2147,14 +2146,14 @@ public class UserTest extends AbstractAdminTest {
             assertEquals(400, e.getResponse().getStatus());
 
             ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("Client doesn't exist", error.getErrorMessage());
+            Assertions.assertEquals("Client doesn't exist", error.getErrorMessage());
             assertAdminEvents.assertEmpty();
         }
 
         user.sendVerifyEmail();
         assertAdminEvents.assertEvent(realmId, OperationType.ACTION, AdminEventPaths.userResourcePath(id) + "/send-verify-email", ResourceType.USER);
 
-        Assert.assertEquals(1, greenMail.getReceivedMessages().length);
+        Assertions.assertEquals(1, greenMail.getReceivedMessages().length);
 
         String link = MailUtils.getPasswordResetEmailLink(greenMail.getReceivedMessages()[0]);
 
@@ -2163,7 +2162,7 @@ public class UserTest extends AbstractAdminTest {
         proceedPage.assertCurrent();
         assertThat(proceedPage.getInfo(), Matchers.containsString("Verify Email"));
         proceedPage.clickProceedLink();
-        Assert.assertEquals("Your account has been updated.", infoPage.getInfo());
+        Assertions.assertEquals("Your account has been updated.", infoPage.getInfo());
 
         driver.navigate().to("about:blank");
 
@@ -2171,7 +2170,7 @@ public class UserTest extends AbstractAdminTest {
         proceedPage.assertCurrent();
         assertThat(proceedPage.getInfo(), Matchers.containsString("Verify Email"));
         proceedPage.clickProceedLink();
-        Assert.assertEquals("Your account has been updated.", infoPage.getInfo());
+        Assertions.assertEquals("Your account has been updated.", infoPage.getInfo());
     }
 
     @Test
@@ -2260,7 +2259,7 @@ public class UserTest extends AbstractAdminTest {
             assertThat(e.getResponse().getStatus(), is(409));
 
             ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("User exists with same username or email", error.getErrorMessage());
+            Assertions.assertEquals("User exists with same username or email", error.getErrorMessage());
             assertAdminEvents.assertEmpty();
         }
     }
@@ -2420,8 +2419,8 @@ public class UserTest extends AbstractAdminTest {
         String userId = createUser("user1", "user1@localhost");
 
         UserRepresentation userRep = realm.users().get(userId).toRepresentation();
-        Assert.assertEquals(1, userRep.getRequiredActions().size());
-        Assert.assertEquals(UserModel.RequiredAction.UPDATE_PASSWORD.toString(), userRep.getRequiredActions().get(0));
+        Assertions.assertEquals(1, userRep.getRequiredActions().size());
+        Assertions.assertEquals(UserModel.RequiredAction.UPDATE_PASSWORD.toString(), userRep.getRequiredActions().get(0));
 
         // Remove UPDATE_PASSWORD default action
         updatePasswordReqAction = realm.flows().getRequiredAction(UserModel.RequiredAction.UPDATE_PASSWORD.toString());
@@ -2785,9 +2784,9 @@ public class UserTest extends AbstractAdminTest {
     }
 
     private void assertSameIds(List<String> expectedIds, List<CredentialRepresentation> actual) {
-        Assert.assertEquals(expectedIds.size(), actual.size());
+        Assertions.assertEquals(expectedIds.size(), actual.size());
         for (int i = 0; i < expectedIds.size(); i++) {
-            Assert.assertEquals(expectedIds.get(i), actual.get(i).getId());
+            Assertions.assertEquals(expectedIds.get(i), actual.get(i).getId());
         }
     }
 
@@ -2798,30 +2797,30 @@ public class UserTest extends AbstractAdminTest {
         // Get user user-with-one-configured-otp and assert he has no label linked to its OTP credential
         UserResource user = ApiUtil.findUserByUsernameId(testRealm(), "user-with-one-configured-otp");
         CredentialRepresentation otpCred = user.credentials().get(0);
-        Assert.assertNull(otpCred.getUserLabel());
+        Assertions.assertNull(otpCred.getUserLabel());
 
         // Set and check a new label
         String newLabel = "the label";
         user.setCredentialUserLabel(otpCred.getId(), newLabel);
-        Assert.assertEquals(newLabel, user.credentials().get(0).getUserLabel());
+        Assertions.assertEquals(newLabel, user.credentials().get(0).getUserLabel());
     }
 
     @Test
     public void testDeleteCredentials() {
         UserResource user = ApiUtil.findUserByUsernameId(testRealm(), "john-doh@localhost");
         List<CredentialRepresentation> creds = user.credentials();
-        Assert.assertEquals(1, creds.size());
+        Assertions.assertEquals(1, creds.size());
         CredentialRepresentation credPasswd = creds.get(0);
-        Assert.assertEquals("password", credPasswd.getType());
+        Assertions.assertEquals("password", credPasswd.getType());
 
         // Remove password
         user.removeCredential(credPasswd.getId());
-        Assert.assertEquals(0, user.credentials().size());
+        Assertions.assertEquals(0, user.credentials().size());
 
         // Restore password
         credPasswd.setValue("password");
         user.resetPassword(credPasswd);
-        Assert.assertEquals(1, user.credentials().size());
+        Assertions.assertEquals(1, user.credentials().size());
     }
 
     @Test
@@ -2837,21 +2836,21 @@ public class UserTest extends AbstractAdminTest {
         UserResource user2 = ApiUtil.findUserByUsernameId(testRealm(), "test-user@localhost");
         try {
             user2.setCredentialUserLabel(otpCredential.getId(), "new-label");
-            Assert.fail("Not expected to successfully update user label");
+            Assertions.fail("Not expected to successfully update user label");
         } catch (NotFoundException nfe) {
             // Expected
         }
 
         try {
             user2.moveCredentialToFirst(otpCredential.getId());
-            Assert.fail("Not expected to successfully move credential");
+            Assertions.fail("Not expected to successfully move credential");
         } catch (NotFoundException nfe) {
             // Expected
         }
 
         try {
             user2.removeCredential(otpCredential.getId());
-            Assert.fail("Not expected to successfully remove credential");
+            Assertions.fail("Not expected to successfully remove credential");
         } catch (NotFoundException nfe) {
             // Expected
         }
@@ -2861,8 +2860,8 @@ public class UserTest extends AbstractAdminTest {
                 .filter(credentialRep -> OTPCredentialModel.TYPE.equals(credentialRep.getType()))
                 .findFirst()
                 .get();
-        Assert.assertTrue(ObjectUtil.isEqualOrBothNull(otpCredential.getUserLabel(), otpCredentialLoaded.getUserLabel()));
-        Assert.assertTrue(ObjectUtil.isEqualOrBothNull(otpCredential.getPriority(), otpCredentialLoaded.getPriority()));
+        Assertions.assertTrue(ObjectUtil.isEqualOrBothNull(otpCredential.getUserLabel(), otpCredentialLoaded.getUserLabel()));
+        Assertions.assertTrue(ObjectUtil.isEqualOrBothNull(otpCredential.getPriority(), otpCredentialLoaded.getPriority()));
     }
 
     @Test

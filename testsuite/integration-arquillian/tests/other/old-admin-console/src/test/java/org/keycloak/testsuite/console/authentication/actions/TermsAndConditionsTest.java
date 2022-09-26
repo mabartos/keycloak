@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.console.authentication.actions;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.idm.CredentialRepresentation;
@@ -35,7 +35,7 @@ import org.keycloak.testsuite.console.page.authentication.RequiredActions;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * 
@@ -104,11 +104,11 @@ public class TermsAndConditionsTest extends AbstractConsoleTest {
 
         // test t&c - log in and accept
         testRealmLoginPage.form().login(HOMER, HOMER_PASS); 
-        Assert.assertEquals(TERMS_TEXT, termsAndConditionsPage.getText());
+        Assertions.assertEquals(TERMS_TEXT, termsAndConditionsPage.getText());
         termsAndConditionsPage.declineTerms();
  
         testRealmLoginPage.form().login(HOMER, HOMER_PASS); 
-        Assert.assertEquals(TERMS_TEXT, termsAndConditionsPage.getText());
+        Assertions.assertEquals(TERMS_TEXT, termsAndConditionsPage.getText());
       
         termsAndConditionsPage.acceptTerms();        
         testRealmAdminConsolePage.logOut();
@@ -132,7 +132,7 @@ public class TermsAndConditionsTest extends AbstractConsoleTest {
         // test t&c
         testRealmAdminConsolePage.navigateTo();
         testRealmLoginPage.form().login(BART, BART_PASS); 
-        Assert.assertTrue(termsAndConditionsPage.isCurrent());
+        Assertions.assertTrue(termsAndConditionsPage.isCurrent());
         
         // disable terms
         setRequiredActionEnabled(REALM, RequiredActions.TERMS_AND_CONDITIONS, false, false);
@@ -170,7 +170,7 @@ public class TermsAndConditionsTest extends AbstractConsoleTest {
         registrationPage.register(mrBurns);
         
         // test t&c
-        Assert.assertTrue(termsAndConditionsPage.isCurrent());
+        Assertions.assertTrue(termsAndConditionsPage.isCurrent());
         
         // disable terms
         setRequiredActionEnabled(REALM, RequiredActions.TERMS_AND_CONDITIONS, false, false);

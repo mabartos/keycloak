@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.broker;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.common.Profile;
 import org.keycloak.testsuite.arquillian.annotation.EnableFeature;
 
@@ -29,7 +29,7 @@ import org.keycloak.testsuite.arquillian.annotation.EnableFeature;
 public class KcSamlFirstBrokerLoginWithUserProfileTest extends KcSamlFirstBrokerLoginTest {
     
     @Override
-    @Before
+    @BeforeEach
     public void beforeBrokerTest() {
         super.beforeBrokerTest();
         enableDynamicUserProfile();

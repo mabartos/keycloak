@@ -24,9 +24,10 @@ import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.logging.Logger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.junit.runners.model.TestTimedOutException;
 import org.keycloak.admin.client.Keycloak;
@@ -61,7 +62,7 @@ import org.keycloak.testsuite.auth.page.login.OIDCLogin;
 import org.keycloak.testsuite.auth.page.login.UpdatePassword;
 import org.keycloak.testsuite.client.KeycloakTestingClient;
 import org.keycloak.testsuite.pages.LoginPasswordUpdatePage;
-import org.keycloak.testsuite.util.CryptoInitRule;
+import org.keycloak.testsuite.util.CryptoInitExtension;
 import org.keycloak.testsuite.util.DroneUtils;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.keycloak.testsuite.util.TestCleanup;
@@ -111,13 +112,15 @@ import static org.keycloak.testsuite.util.URLUtils.navigateToUri;
  */
 @RunWith(KcArquillian.class)
 @RunAsClient
+@ExtendWith(AssertEvents.class)
 public abstract class AbstractKeycloakTest {
     protected static final String ENGLISH_LOCALE_NAME = "English";
 
     protected Logger log = Logger.getLogger(this.getClass());
 
     @ClassRule
-    public static CryptoInitRule cryptoInitRule = new CryptoInitRule();
+    public static CryptoInitExtension cryptoInitRule = new CryptoInitExtension();
+
 
     @ArquillianResource
     protected SuiteContext suiteContext;
@@ -160,11 +163,13 @@ public abstract class AbstractKeycloakTest {
     @Page
     protected WelcomePage welcomePage;
 
+    protected AssertEvents events = new AssertEvents(this);
+
     private PropertiesConfiguration constantsProperties;
 
     private boolean resetTimeOffset;
 
-    @Before
+    @BeforeEach
     public void beforeAbstractKeycloakTest() throws Exception {
         adminClient = testContext.getAdminClient();
         if (adminClient == null || adminClient.isClosed()) {
@@ -206,7 +211,7 @@ public abstract class AbstractKeycloakTest {
     /**
      * Executed before test realms import
      * <p>
-     * In @Before block
+     * In @BeforeEach block
      */
     protected void beforeAbstractKeycloakTestRealmImport() throws Exception {
     }
@@ -214,7 +219,7 @@ public abstract class AbstractKeycloakTest {
     /**
      * Executed after test realms import
      * <p>
-     * In @Before block
+     * In @BeforeEach block
      */
     protected void afterAbstractKeycloakTestRealmImport() {
     }
@@ -222,12 +227,12 @@ public abstract class AbstractKeycloakTest {
     /**
      * Executed as the last task of each test case
      * <p>
-     * In @After block
+     * In @AfterEach block
      */
     protected void postAfterAbstractKeycloak() throws Exception {
     }
 
-    @After
+    @AfterEach
     public void afterAbstractKeycloakTest() throws Exception {
         if (resetTimeOffset) {
             resetTimeOffset();

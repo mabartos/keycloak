@@ -45,8 +45,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -62,9 +62,9 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.keycloak.testsuite.broker.BrokerTestConstants.REALM_CONS_NAME;
 import static org.keycloak.testsuite.broker.BrokerTestConstants.REALM_PROV_NAME;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
@@ -102,7 +102,7 @@ public class KcSamlIdPInitiatedSsoTest extends AbstractKeycloakTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void cleanupTestUserInConsumerRealm() {
         final UsersResource users = adminClient.realm(REALM_CONS_NAME).users();
         users.search(CONSUMER_CHOSEN_USERNAME).stream()
@@ -111,14 +111,14 @@ public class KcSamlIdPInitiatedSsoTest extends AbstractKeycloakTest {
           .forEach(Response::close);
     }
 
-    @Before
+    @BeforeEach
     public void initRealmUrls() {
         urlRealmProvider = getAuthRoot() + "/auth/realms/" + REALM_PROV_NAME;
         urlRealmConsumer = getAuthRoot() + "/auth/realms/" + REALM_CONS_NAME;
         urlRealmConsumer2 = getAuthRoot() + "/auth/realms/" + REALM_CONS_NAME + "-2";
     }
 
-    @Before
+    @BeforeEach
     public void resetPrincipalType() {
         IdentityProviderResource idp = adminClient.realm(REALM_CONS_NAME).identityProviders().get("saml-leaf");
         IdentityProviderRepresentation rep = idp.toRepresentation();
@@ -148,7 +148,7 @@ public class KcSamlIdPInitiatedSsoTest extends AbstractKeycloakTest {
 
         waitForPage("sign in to", true);
 
-        Assert.assertThat("Driver should be on the provider realm page right now",
+        Assertions.assertThat("Driver should be on the provider realm page right now",
                 driver.getCurrentUrl(), containsString("/auth/realms/" + REALM_PROV_NAME + "/"));
 
         log.debug("Logging in");
@@ -156,8 +156,8 @@ public class KcSamlIdPInitiatedSsoTest extends AbstractKeycloakTest {
 
         waitForPage("update account information", false);
 
-        Assert.assertTrue(updateAccountInformationPage.isCurrent());
-        Assert.assertThat("We must be on consumer realm right now",
+        Assertions.assertTrue(updateAccountInformationPage.isCurrent());
+        Assertions.assertThat("We must be on consumer realm right now",
                 driver.getCurrentUrl(), containsString("/auth/realms/" + REALM_CONS_NAME + "/"));
 
         log.debug("Updating info on updateAccount page");
@@ -166,14 +166,14 @@ public class KcSamlIdPInitiatedSsoTest extends AbstractKeycloakTest {
         UsersResource consumerUsers = adminClient.realm(REALM_CONS_NAME).users();
 
         int userCount = consumerUsers.count();
-        Assert.assertTrue("There must be at least one user", userCount > 0);
+        Assertions.assertTrue("There must be at least one user", userCount > 0);
 
         List<UserRepresentation> users = consumerUsers.search("", 0, userCount);
 
         boolean isUserFound = users.stream().anyMatch(user -> user.getUsername().equals(CONSUMER_CHOSEN_USERNAME) && user.getEmail().equals("test@localhost"));
-        Assert.assertTrue("There must be user " + CONSUMER_CHOSEN_USERNAME + " in realm " + REALM_CONS_NAME, isUserFound);
+        Assertions.assertTrue("There must be user " + CONSUMER_CHOSEN_USERNAME + " in realm " + REALM_CONS_NAME, isUserFound);
 
-        Assert.assertThat(driver.findElement(By.tagName("a")).getAttribute("id"), containsString("account"));
+        Assertions.assertThat(driver.findElement(By.tagName("a")).getAttribute("id"), containsString("account"));
     }
 
     private String getSamlIdpInitiatedUrl(String realmName, String samlIdpInitiatedSsoUrlName) {

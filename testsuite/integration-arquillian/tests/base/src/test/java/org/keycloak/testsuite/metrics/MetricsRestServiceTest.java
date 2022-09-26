@@ -21,8 +21,8 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractKeycloakTest;
 import org.keycloak.testsuite.util.AdminClientUtil;
@@ -43,7 +43,7 @@ public class MetricsRestServiceTest extends AbstractKeycloakTest {
         // no test realms
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
         ContainerAssume.assumeNotAuthServerUndertow();
         ContainerAssume.assumeNotAuthServerQuarkus();

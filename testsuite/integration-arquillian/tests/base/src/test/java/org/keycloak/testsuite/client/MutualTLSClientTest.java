@@ -15,10 +15,10 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.authentication.authenticators.client.X509ClientAuthenticator;
@@ -76,9 +76,9 @@ public class MutualTLSClientTest extends AbstractTestRealmKeycloakTest {
       // ATTR_SUBJECT_DN will be set in the individual tests based on the requested Subject DN Format
    }
 
-   @BeforeClass
+   @BeforeAll
    public static void sslRequired() {
-      Assume.assumeTrue("\"auth.server.ssl.required\" is required for Mutual TLS tests", sslRequired);
+      Assumptions.assumeTrue("\"auth.server.ssl.required\" is required for Mutual TLS tests", sslRequired);
    }
 
    @Test
@@ -232,13 +232,13 @@ public class MutualTLSClientTest extends AbstractTestRealmKeycloakTest {
    }
 
    private void assertTokenObtained(OAuthClient.AccessTokenResponse token) {
-      Assert.assertEquals(200, token.getStatusCode());
-      Assert.assertNotNull(token.getAccessToken());
+      Assertions.assertEquals(200, token.getStatusCode());
+      Assertions.assertNotNull(token.getAccessToken());
    }
 
    private void assertTokenNotObtained(OAuthClient.AccessTokenResponse token) {
-      Assert.assertEquals(400, token.getStatusCode());
-      Assert.assertNull(token.getAccessToken());
+      Assertions.assertEquals(400, token.getStatusCode());
+      Assertions.assertNull(token.getAccessToken());
    }
 
    /*

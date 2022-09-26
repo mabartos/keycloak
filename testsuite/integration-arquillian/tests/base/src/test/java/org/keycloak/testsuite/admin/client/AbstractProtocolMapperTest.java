@@ -33,9 +33,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
@@ -110,7 +110,7 @@ public abstract class AbstractProtocolMapperTest extends AbstractClientTest {
         try {
             List<ProtocolMapperRepresentation> eventMappers = JsonSerialization.readValue(new ByteArrayInputStream(adminEvent.getRepresentation().getBytes()), new TypeReference<List<ProtocolMapperRepresentation>>() {
             });
-            Assert.assertEquals(eventMappers.size(), mappersToAdd.size());
+            Assertions.assertEquals(eventMappers.size(), mappersToAdd.size());
             for (int i=0 ; i< mappersToAdd.size() ; i++) {
                 ProtocolMapperRepresentation repExpected = mappersToAdd.get(i);
                 ProtocolMapperRepresentation repActual = eventMappers.get(i);

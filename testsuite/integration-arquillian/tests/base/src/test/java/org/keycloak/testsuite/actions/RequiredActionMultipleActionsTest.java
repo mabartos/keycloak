@@ -17,9 +17,9 @@
 package org.keycloak.testsuite.actions;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.events.Details;
 import org.keycloak.events.EventType;
 import org.keycloak.models.UserModel.RequiredAction;
@@ -43,8 +43,7 @@ public class RequiredActionMultipleActionsTest extends AbstractTestRealmKeycloak
         ActionUtil.addRequiredActionForUser(testRealm, "test-user@localhost", RequiredAction.UPDATE_PASSWORD.name());
     }
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -75,10 +74,10 @@ public class RequiredActionMultipleActionsTest extends AbstractTestRealmKeycloak
             changePasswordPage.assertCurrent();
             updatePassword(codeId);
         } else {
-            Assert.fail("Expected to update password and profile before login");
+            Assertions.fail("Expected to update password and profile before login");
         }
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         events.expectLogin().session(codeId).assertEvent();
     }

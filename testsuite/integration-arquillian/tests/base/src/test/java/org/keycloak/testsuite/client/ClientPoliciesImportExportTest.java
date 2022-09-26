@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.client;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.exportimport.ExportImportConfig;
 import org.keycloak.exportimport.singlefile.SingleFileExportProviderFactory;
 import org.keycloak.representations.idm.ClientPoliciesRepresentation;
@@ -55,7 +55,7 @@ public class ClientPoliciesImportExportTest extends AbstractClientPoliciesTest {
         removeAllRealmsDespiteMaster();
     }
 
-    @After
+    @AfterEach
     public void afterImportExport() {
         testingClient.testing().exportImport().clear();
     }
@@ -80,7 +80,7 @@ public class ClientPoliciesImportExportTest extends AbstractClientPoliciesTest {
         // Delete some realm (and some data in admin realm)
         adminClient.realm("test").remove();
 
-        Assert.assertNames(adminClient.realms().findAll(), "master");
+        Assertions.assertNames(adminClient.realms().findAll(), "master");
 
         // Configure import
         testingClient.testing().exportImport().setAction(ExportImportConfig.ACTION_IMPORT);
@@ -88,7 +88,7 @@ public class ClientPoliciesImportExportTest extends AbstractClientPoliciesTest {
         testingClient.testing().exportImport().runImport();
 
         // Ensure data are imported back, but just for "test" realm
-        Assert.assertNames(adminClient.realms().findAll(), "master", "test");
+        Assertions.assertNames(adminClient.realms().findAll(), "master", "test");
 
         assertExpectedLoadedProfiles((ClientProfilesRepresentation reps)->{
             ClientProfileRepresentation rep =  getProfileRepresentation(reps, "ordinal-test-profile", false);

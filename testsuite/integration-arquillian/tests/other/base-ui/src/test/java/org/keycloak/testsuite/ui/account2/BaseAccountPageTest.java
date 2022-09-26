@@ -17,11 +17,11 @@
 
 package org.keycloak.testsuite.ui.account2;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.ui.account2.page.AbstractLoggedInPage;
 import org.keycloak.testsuite.ui.account2.page.utils.SigningInPageUtils;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Vaclav Muzikar <vmuzikar@redhat.com>

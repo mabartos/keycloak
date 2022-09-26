@@ -18,9 +18,9 @@ package org.keycloak.testsuite.forms;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.userprofile.DeclarativeUserProfileProvider.REALM_USER_PROFILE_ENABLED;
 
 import java.util.ArrayList;
@@ -34,9 +34,9 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.common.Profile;
@@ -151,8 +151,7 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         client_scope_optional.setRedirectUris(Collections.singletonList("*"));
     }
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -185,11 +184,11 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
 
         //assert field names
         // i18n replaced
-        Assert.assertEquals("First name",verifyProfilePage.getLabelForField("firstName"));
+        Assertions.assertEquals("First name",verifyProfilePage.getLabelForField("firstName"));
         // attribute name used if no display name set
-        Assert.assertEquals("lastName",verifyProfilePage.getLabelForField("lastName"));
+        Assertions.assertEquals("lastName",verifyProfilePage.getLabelForField("lastName"));
         // direct value in display name
-        Assert.assertEquals("Department",verifyProfilePage.getLabelForField("department"));
+        Assertions.assertEquals("Department",verifyProfilePage.getLabelForField("department"));
     }
 
     @Test
@@ -216,42 +215,42 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         String htmlFormId="kc-update-profile-form";
 
         //assert fields and groups location in form
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(1) > div:nth-child(2) > input#lastName")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(2) > div:nth-child(2) > input#username")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(3) > div:nth-child(2) > input#firstName")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(4) > div:nth-child(1) > label#header-company")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(4) > div:nth-child(2) > label#description-company")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(5) > div:nth-child(2) > input#department")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(6) > div:nth-child(1) > label#header-contact")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(7) > div:nth-child(2) > input#email")
                 ).isDisplayed()
@@ -278,27 +277,27 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         verifyProfilePage.assertCurrent();
 
         //assert fields location in form
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#kc-update-profile-form > div:nth-child(1) > div:nth-child(2) > input#lastName")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#kc-update-profile-form > div:nth-child(2) > div:nth-child(2) > input#department")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#kc-update-profile-form > div:nth-child(3) > div:nth-child(2) > input#username")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#kc-update-profile-form > div:nth-child(4) > div:nth-child(2) > input#firstName")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#kc-update-profile-form > div:nth-child(5) > div:nth-child(2) > input#email")
                 ).isDisplayed()
@@ -363,17 +362,17 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
 
         //submit with error
         verifyProfilePage.assertCurrent();
-        Assert.assertFalse(verifyProfilePage.isDepartmentPresent());
+        Assertions.assertFalse(verifyProfilePage.isDepartmentPresent());
         verifyProfilePage.update("First", " ");
 
         //submit OK
         verifyProfilePage.assertCurrent();
-        Assert.assertFalse(verifyProfilePage.isDepartmentPresent());
+        Assertions.assertFalse(verifyProfilePage.isDepartmentPresent());
         verifyProfilePage.update("First", "Last");
 
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(userId);
         assertEquals("First", user.getFirstName());
@@ -420,8 +419,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         verifyProfilePage.assertCurrent();
         verifyProfilePage.update("First", "");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(user2Id);
         assertEquals("First", user.getFirstName());
@@ -451,8 +450,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         //submit OK
         verifyProfilePage.update("First", "Last");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(user5Id);
         assertEquals("First", user.getFirstName());
@@ -475,8 +474,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         loginPage.open();
         loginPage.login("login-test5", "password");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
     }
 
     @Test
@@ -500,8 +499,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
             loginPage.open();
             loginPage.login("login6@test.com", "password");
 
-            Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-            Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+            Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+            Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
         } finally {
             realm.setRegistrationEmailAsUsername(false);
             realmResource.update(realm);
@@ -521,14 +520,14 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         loginPage.login("login-test3", "password");
 
         verifyProfilePage.assertCurrent();
-        Assert.assertEquals("ExistingLast", verifyProfilePage.getLastName());
-        Assert.assertFalse(verifyProfilePage.isDepartmentEnabled());
+        Assertions.assertEquals("ExistingLast", verifyProfilePage.getLastName());
+        Assertions.assertFalse(verifyProfilePage.isDepartmentEnabled());
 
         //update of the other attributes must be successful in this case
         verifyProfilePage.update("First", "Last");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(user3Id);
         assertEquals("First", user.getFirstName());
@@ -549,8 +548,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         loginPage.login("login-test6", "password");
 
         verifyProfilePage.assertCurrent();
-        Assert.assertEquals("ExistingLast", verifyProfilePage.getLastName());
-        Assert.assertFalse("Admin-only attribute should not be visible for user", verifyProfilePage.isDepartmentPresent());
+        Assertions.assertEquals("ExistingLast", verifyProfilePage.getLastName());
+        Assertions.assertFalse("Admin-only attribute should not be visible for user", verifyProfilePage.isDepartmentPresent());
     }
 
 
@@ -568,9 +567,9 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         loginPage.login("login-test6", "password");
 
         verifyProfilePage.assertCurrent();
-        Assert.assertEquals("ExistingLast", verifyProfilePage.getLastName());
+        Assertions.assertEquals("ExistingLast", verifyProfilePage.getLastName());
 
-        Assert.assertFalse("username should not be editable by user", verifyProfilePage.isUsernameEnabled());
+        Assertions.assertFalse("username should not be editable by user", verifyProfilePage.isUsernameEnabled());
     }
 
     @Test
@@ -587,9 +586,9 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         loginPage.login("login-test6", "password");
 
         verifyProfilePage.assertCurrent();
-        Assert.assertEquals("ExistingLast", verifyProfilePage.getLastName());
+        Assertions.assertEquals("ExistingLast", verifyProfilePage.getLastName());
 
-        Assert.assertFalse("username should not be shown to user", verifyProfilePage.isUsernamePresent());
+        Assertions.assertFalse("username should not be shown to user", verifyProfilePage.isUsernamePresent());
     }
 
     @Test
@@ -611,8 +610,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         // set e-mail, update firstname/lastname and complete login
         verifyProfilePage.updateEmail("foo@bar.com", "HasNowMailFirst", "HasNowMailLast");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(userWithoutEmailId);
         assertEquals("HasNowMailFirst", user.getFirstName());
@@ -633,14 +632,14 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         loginPage.login("login-test4", "password");
 
         verifyProfilePage.assertCurrent();
-        Assert.assertEquals("ExistingLast", verifyProfilePage.getLastName());
-        Assert.assertFalse("'department' field is visible" , verifyProfilePage.isDepartmentPresent());
+        Assertions.assertEquals("ExistingLast", verifyProfilePage.getLastName());
+        Assertions.assertFalse("'department' field is visible" , verifyProfilePage.isDepartmentPresent());
 
         //update of the other attributes must be successful in this case
         verifyProfilePage.update("First", "Last");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(user4Id);
         assertEquals("First", user.getFirstName());
@@ -671,8 +670,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         //submit OK
         verifyProfilePage.update("FirstCC", "LastCC", "DepartmentCC");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(user5Id);
         assertEquals("FirstCC", user.getFirstName());
@@ -705,8 +704,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         verifyProfilePage.update("FirstCC", "LastCC", "DepartmentCC");
 
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(user5Id);
         assertEquals("FirstCC", user.getFirstName());
@@ -729,8 +728,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
 
         loginPage.login("login-test5", "password");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(user5Id);
         assertEquals("ExistingFirst", user.getFirstName());
@@ -757,8 +756,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
 
         verifyProfilePage.update("FirstAA", "LastAA", "DepartmentAA");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(user5Id);
         assertEquals("FirstAA", user.getFirstName());
@@ -791,8 +790,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         //submit OK
         verifyProfilePage.update("FirstBB", "LastBB", "DepartmentBB");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(user5Id);
         assertEquals("FirstBB", user.getFirstName());
@@ -816,8 +815,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         loginPage.assertCurrent();
         loginPage.login("login-test5", "password");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(user5Id);
         assertEquals("ExistingFirst", user.getFirstName());
@@ -842,8 +841,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         loginPage.assertCurrent();
         loginPage.login("login-test5", "password");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
     }
 
     @Test
@@ -867,8 +866,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
 
         verifyProfilePage.update("FirstAA", "LastAA", "DepartmentAA");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(user5Id);
         assertEquals("FirstAA", user.getFirstName());
@@ -895,11 +894,11 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
 
         verifyProfilePage.assertCurrent();
 
-        Assert.assertTrue(verifyProfilePage.isDepartmentPresent());
+        Assertions.assertTrue(verifyProfilePage.isDepartmentPresent());
         verifyProfilePage.update("FirstAA", "LastAA", "Department AA");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(user5Id);
         assertEquals("FirstAA", user.getFirstName());
@@ -926,11 +925,11 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
 
         verifyProfilePage.assertCurrent();
 
-        Assert.assertFalse(verifyProfilePage.isDepartmentPresent());
+        Assertions.assertFalse(verifyProfilePage.isDepartmentPresent());
         verifyProfilePage.update("FirstAA", "LastAA");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(user5Id);
         assertEquals("FirstAA", user.getFirstName());
@@ -963,8 +962,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         verifyProfilePage.update("FirstCC", "LastCC", "DepartmentCC");
 
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(user5Id);
         assertEquals("FirstCC", user.getFirstName());
@@ -990,8 +989,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         //submit OK
         verifyProfilePage.updateEmail("newemail@test.org","FirstCC", "LastCC");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUser(user5Id);
         assertEquals("newemail@test.org", user.getEmail());
@@ -1013,8 +1012,8 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
         loginPage.open();
         loginPage.login("login-test5", "password");
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
     }
 
     protected UserRepresentation getUser(String userId) {
@@ -1057,7 +1056,7 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
     public static void setUserProfileConfiguration(RealmResource testRealm, String configuration) {
         try (Response r = testRealm.users().userProfile().update(configuration)) {
             if (r.getStatus() != 200) {
-                Assert.fail("UserProfile Configuration not set due to error: " + r.readEntity(String.class));
+                Assertions.fail("UserProfile Configuration not set due to error: " + r.readEntity(String.class));
             }
         }
     }

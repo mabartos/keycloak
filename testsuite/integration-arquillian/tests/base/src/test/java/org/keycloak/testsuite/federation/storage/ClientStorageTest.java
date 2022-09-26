@@ -18,11 +18,11 @@
 package org.keycloak.testsuite.federation.storage;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.common.Profile.Feature;
 import org.keycloak.common.util.MultivaluedHashMap;
@@ -75,11 +75,11 @@ import static java.util.Calendar.MINUTE;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.keycloak.testsuite.admin.ApiUtil.findUserByUsername;
 import org.keycloak.testsuite.util.AdminClientUtil;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 
 /**
  * Test that clients can override auth flows
@@ -87,8 +87,7 @@ import org.junit.BeforeClass;
  * @author <a href="mailto:bburke@redhat.com">Bill Burke</a>
  */
 public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+
 
     @Page
     protected AppPage appPage;
@@ -113,12 +112,12 @@ public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
         return id;
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void checkNotMapStorage() {
         ProfileAssume.assumeFeatureDisabled(Feature.MAP_STORAGE);
     }
 
-    @Before
+    @BeforeEach
     public void addProvidersBeforeTest() throws URISyntaxException, IOException {
         ComponentRepresentation provider = new ComponentRepresentation();
         provider.setName("client-storage-hardcoded");
@@ -134,7 +133,7 @@ public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
 
     protected String userId;
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         userId = findUserByUsername(adminClient.realm("test"), "test-user@localhost").getId();
         oauth.clientId("hardcoded-client");
@@ -213,20 +212,20 @@ public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
         boolean directTested = false;
         for (Map<String, String> entry : list) {
             if (entry.get("clientId").equals("hardcoded-client")) {
-                Assert.assertEquals("4", entry.get("active"));
-                Assert.assertEquals("2", entry.get("offline"));
+                Assertions.assertEquals("4", entry.get("active"));
+                Assertions.assertEquals("2", entry.get("offline"));
                 hardTested = true;
             } else if (entry.get("clientId").equals("test-app")) {
-                Assert.assertEquals("1", entry.get("active"));
-                Assert.assertEquals("0", entry.get("offline"));
+                Assertions.assertEquals("1", entry.get("active"));
+                Assertions.assertEquals("0", entry.get("offline"));
                 testAppTested = true;
             } else if (entry.get("clientId").equals("direct-grant")) {
-                Assert.assertEquals("3", entry.get("active"));
-                Assert.assertEquals("2", entry.get("offline"));
+                Assertions.assertEquals("3", entry.get("active"));
+                Assertions.assertEquals("2", entry.get("offline"));
                 directTested = true;
             }
         }
-        Assert.assertTrue(hardTested && testAppTested && directTested);
+        Assertions.assertTrue(hardTested && testAppTested && directTested);
 
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
@@ -234,14 +233,14 @@ public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
             ClientModel hardcoded = realm.getClientByClientId("hardcoded-client");
             long activeUserSessions = session.sessions().getActiveUserSessions(realm, hardcoded);
             long offlineSessionsCount = session.sessions().getOfflineSessionsCount(realm, hardcoded);
-            Assert.assertEquals(4, activeUserSessions);
-            Assert.assertEquals(2, offlineSessionsCount);
+            Assertions.assertEquals(4, activeUserSessions);
+            Assertions.assertEquals(2, offlineSessionsCount);
 
             ClientModel direct = realm.getClientByClientId("direct-grant");
             activeUserSessions = session.sessions().getActiveUserSessions(realm, direct);
             offlineSessionsCount = session.sessions().getOfflineSessionsCount(realm, direct);
-            Assert.assertEquals(3, activeUserSessions);
-            Assert.assertEquals(2, offlineSessionsCount);
+            Assertions.assertEquals(3, activeUserSessions);
+            Assertions.assertEquals(2, offlineSessionsCount);
         });
     }
 
@@ -272,8 +271,8 @@ public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
 
         String code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
         OAuthClient.AccessTokenResponse tokenResponse = oauth.doAccessTokenRequest(code, "password");
-        Assert.assertNotNull(tokenResponse.getAccessToken());
-        Assert.assertNotNull(tokenResponse.getRefreshToken());
+        Assertions.assertNotNull(tokenResponse.getAccessToken());
+        Assertions.assertNotNull(tokenResponse.getRefreshToken());
 
         events.clear();
 
@@ -333,7 +332,7 @@ public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
 
     @Test
     public void testDailyEviction() {
-        Assume.assumeTrue("User cache disabled.", isUserCacheEnabled());
+        Assumptions.assumeTrue("User cache disabled.", isUserCacheEnabled());
 
         testIsCached();
 
@@ -358,7 +357,7 @@ public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
     }
     @Test
     public void testWeeklyEviction() {
-        Assume.assumeTrue("User cache disabled.", isUserCacheEnabled());
+        Assumptions.assumeTrue("User cache disabled.", isUserCacheEnabled());
 
         testIsCached();
 
@@ -386,7 +385,7 @@ public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
     }
     @Test
     public void testMaxLifespan() {
-        Assume.assumeTrue("User cache disabled.", isUserCacheEnabled());
+        Assumptions.assumeTrue("User cache disabled.", isUserCacheEnabled());
 
         testIsCached();
 
@@ -417,28 +416,28 @@ public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             ClientModel hardcoded = realm.getClientByClientId("hardcoded-client");
-            Assert.assertNotNull(hardcoded);
-            Assert.assertFalse(hardcoded instanceof ClientAdapter);
+            Assertions.assertNotNull(hardcoded);
+            Assertions.assertFalse(hardcoded instanceof ClientAdapter);
         });
     }
 
 
     @Test
     public void testIsCached() {
-        Assume.assumeTrue("User cache disabled.", isUserCacheEnabled());
+        Assumptions.assumeTrue("User cache disabled.", isUserCacheEnabled());
 
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
             ClientModel hardcoded = realm.getClientByClientId("hardcoded-client");
-            Assert.assertNotNull(hardcoded);
-            Assert.assertTrue(hardcoded instanceof org.keycloak.models.cache.infinispan.ClientAdapter);
+            Assertions.assertNotNull(hardcoded);
+            Assertions.assertTrue(hardcoded instanceof org.keycloak.models.cache.infinispan.ClientAdapter);
         });
     }
 
 
     @Test
     public void testNoCache() {
-        Assume.assumeTrue("User cache disabled.", isUserCacheEnabled());
+        Assumptions.assumeTrue("User cache disabled.", isUserCacheEnabled());
 
         testIsCached();
 
@@ -475,7 +474,7 @@ public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
         oauth.scope(OAuth2Constants.OFFLINE_ACCESS);
         oauth.clientId("hardcoded-client");
         OAuthClient.AccessTokenResponse tokenResponse = oauth.doGrantAccessTokenRequest("password", "test-user@localhost", "password");
-        Assert.assertNull(tokenResponse.getErrorDescription());
+        Assertions.assertNull(tokenResponse.getErrorDescription());
         AccessToken token = oauth.verifyToken(tokenResponse.getAccessToken());
         String offlineTokenString = tokenResponse.getRefreshToken();
         RefreshToken offlineToken = oauth.parseRefreshToken(offlineTokenString);
@@ -494,8 +493,8 @@ public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
                 .removeDetail(Details.CONSENT)
                 .assertEvent();
 
-        Assert.assertEquals(TokenUtil.TOKEN_TYPE_OFFLINE, offlineToken.getType());
-        Assert.assertEquals(0, offlineToken.getExpiration());
+        Assertions.assertEquals(TokenUtil.TOKEN_TYPE_OFFLINE, offlineToken.getType());
+        Assertions.assertEquals(0, offlineToken.getExpiration());
 
         testRefreshWithOfflineToken(token, offlineToken, offlineTokenString, token.getSessionState(), userId);
 
@@ -506,7 +505,7 @@ public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
         oauth.scope(OAuth2Constants.OFFLINE_ACCESS);
         oauth.clientId(clientId);
         OAuthClient.AccessTokenResponse tokenResponse = oauth.doGrantAccessTokenRequest("password", "test-user@localhost", "password");
-        Assert.assertNull(tokenResponse.getErrorDescription());
+        Assertions.assertNull(tokenResponse.getErrorDescription());
         AccessToken token = oauth.verifyToken(tokenResponse.getAccessToken());
         String offlineTokenString = tokenResponse.getRefreshToken();
         RefreshToken offlineToken = oauth.parseRefreshToken(offlineTokenString);
@@ -516,8 +515,8 @@ public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
                                                final String sessionId, String userId) {
         // Change offset to big value to ensure userSession expired
         setTimeOffset(99999);
-        Assert.assertFalse(oldToken.isActive());
-        Assert.assertTrue(offlineToken.isActive());
+        Assertions.assertFalse(oldToken.isActive());
+        Assertions.assertTrue(offlineToken.isActive());
 
         // Assert userSession expired
         testingClient.testing().removeExpired("test");
@@ -532,17 +531,17 @@ public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
         String offlineUserSessionId = testingClient.server().fetch((KeycloakSession session) ->
                 session.sessions().getOfflineUserSession(session.realms().getRealmByName("test"), offlineToken.getSessionState()).getId(), String.class);
 
-        Assert.assertEquals(200, response.getStatusCode());
-        Assert.assertEquals(offlineUserSessionId, refreshedToken.getSessionState());
+        Assertions.assertEquals(200, response.getStatusCode());
+        Assertions.assertEquals(offlineUserSessionId, refreshedToken.getSessionState());
 
         // Assert new refreshToken in the response
         String newRefreshToken = response.getRefreshToken();
-        Assert.assertNotNull(newRefreshToken);
-        Assert.assertNotEquals(oldToken.getId(), refreshedToken.getId());
+        Assertions.assertNotNull(newRefreshToken);
+        Assertions.assertNotEquals(oldToken.getId(), refreshedToken.getId());
 
-        Assert.assertEquals(userId, refreshedToken.getSubject());
+        Assertions.assertEquals(userId, refreshedToken.getSubject());
 
-        Assert.assertTrue(refreshedToken.getRealmAccess().isUserInRole(Constants.OFFLINE_ACCESS_ROLE));
+        Assertions.assertTrue(refreshedToken.getRealmAccess().isUserInRole(Constants.OFFLINE_ACCESS_ROLE));
 
 
         EventRepresentation refreshEvent = events.expectRefresh(offlineToken.getId(), sessionId)
@@ -551,7 +550,7 @@ public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
                 .removeDetail(Details.UPDATED_REFRESH_TOKEN_ID)
                 .detail(Details.REFRESH_TOKEN_TYPE, TokenUtil.TOKEN_TYPE_OFFLINE)
                 .assertEvent();
-        Assert.assertNotEquals(oldToken.getId(), refreshEvent.getDetails().get(Details.TOKEN_ID));
+        Assertions.assertNotEquals(oldToken.getId(), refreshEvent.getDetails().get(Details.TOKEN_ID));
 
         setTimeOffset(0);
         return newRefreshToken;

@@ -7,8 +7,8 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.dom.saml.v2.protocol.AuthnRequestType;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.protocol.saml.SamlProtocol;
@@ -45,9 +45,9 @@ public class SamlClientTest extends AbstractSamlTest {
         try (CloseableHttpClient client = HttpClientBuilder.create().setRedirectStrategy(strategy).build()) {
             HttpUriRequest post = SamlClient.Binding.POST.createSamlUnsignedRequest(samlEndpoint, null, samlRequest);
             CloseableHttpResponse response = sendPost(post, client);
-            Assert.assertEquals(response.getStatusLine().getStatusCode(), 400);
+            Assertions.assertEquals(response.getStatusLine().getStatusCode(), 400);
             String s = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
-            Assert.assertThat(s, Matchers.containsString("Wrong client protocol."));
+            Assertions.assertThat(s, Matchers.containsString("Wrong client protocol."));
 
             response.close();
         }

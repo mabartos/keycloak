@@ -17,10 +17,10 @@
 
 package org.keycloak.testsuite.ui.account2.page;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.keycloak.testsuite.util.UIAssert.assertElementDisabled;
-import static org.keycloak.testsuite.util.UIAssert.assertInputElementValid;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.keycloak.testsuite.util.UIAssertions.assertElementDisabled;
+import static org.keycloak.testsuite.util.UIAssertions.assertInputElementValid;
 import static org.keycloak.testsuite.util.UIUtils.clickLink;
 import static org.keycloak.testsuite.util.UIUtils.getTextInputValue;
 import static org.keycloak.testsuite.util.UIUtils.isElementVisible;

@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.federation.ldap.noimport;
 
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.testsuite.federation.ldap.LDAPGroupMapperTest;
 
@@ -50,7 +50,7 @@ public class LDAPGroupMapperNoImportTest extends LDAPGroupMapperTest {
 
     @Test
     @Override
-    @Ignore
+    @Disabled
     public void test03_importGroupMappings() {
     }
 

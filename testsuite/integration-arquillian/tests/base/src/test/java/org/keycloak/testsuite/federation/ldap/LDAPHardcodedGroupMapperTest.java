@@ -16,8 +16,8 @@
  */
 package org.keycloak.testsuite.federation.ldap;
 
-import org.junit.ClassRule;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.GroupModel;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.RoleModel;

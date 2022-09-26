@@ -18,7 +18,7 @@ package org.keycloak.testsuite.forms;
 
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.keycloak.OAuth2Constants;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.authentication.actiontoken.resetcred.ResetCredentialsActionToken;
 import org.jboss.arquillian.graphene.page.Page;
@@ -39,7 +39,6 @@ import org.keycloak.testsuite.AssertEvents;
 import org.keycloak.testsuite.AbstractTestRealmKeycloakTest;
 import org.keycloak.testsuite.admin.ApiUtil;
 import org.keycloak.testsuite.arquillian.annotation.DisableFeature;
-import org.keycloak.testsuite.auth.page.account.AccountManagement;
 import org.keycloak.testsuite.federation.kerberos.AbstractKerberosTest;
 import org.keycloak.testsuite.pages.AccountUpdateProfilePage;
 import org.keycloak.testsuite.pages.AppPage;
@@ -53,7 +52,7 @@ import org.keycloak.testsuite.pages.LogoutConfirmPage;
 import org.keycloak.testsuite.pages.VerifyEmailPage;
 import org.keycloak.testsuite.updaters.ClientAttributeUpdater;
 import org.keycloak.testsuite.util.BrowserTabUtil;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.InfinispanTestTimeServiceRule;
 import org.keycloak.testsuite.util.MailUtils;
 import org.keycloak.testsuite.util.OAuthClient;
@@ -83,12 +82,13 @@ import org.openqa.selenium.WebElement;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  * @author Stan Silvert ssilvert@redhat.com (C) 2016 Red Hat Inc.
  */
+@ExtendWith(GreenMailExtension.class)
 public class ResetPasswordTest extends AbstractTestRealmKeycloakTest {
 
     private String userId;
@@ -107,7 +107,7 @@ public class ResetPasswordTest extends AbstractTestRealmKeycloakTest {
                 .client(org.keycloak.testsuite.util.ClientBuilder.create().clientId("client-user").serviceAccount());
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         log.info("Adding login-test user");
         defaultUser = UserBuilder.create()
@@ -121,9 +121,6 @@ public class ResetPasswordTest extends AbstractTestRealmKeycloakTest {
         expectedMessagesCount = 0;
         getCleanup().addUserId(userId);
     }
-
-    @Rule
-    public GreenMailRule greenMail = new GreenMailRule();
 
     @Page
     protected AppPage appPage;
@@ -152,8 +149,7 @@ public class ResetPasswordTest extends AbstractTestRealmKeycloakTest {
     @Page
     protected LogoutConfirmPage logoutConfirmPage;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     private int expectedMessagesCount;
 
@@ -589,9 +585,9 @@ public class ResetPasswordTest extends AbstractTestRealmKeycloakTest {
             driver.navigate().to(changePasswordUrl.trim());
 
             errorPage.assertCurrent();
-            Assert.assertEquals("Action expired.", errorPage.getError());
+            Assertions.assertEquals("Action expired.", errorPage.getError());
             String backToAppLink = errorPage.getBackToApplicationLink();
-            Assert.assertTrue(backToAppLink.endsWith("/app/auth"));
+            Assertions.assertTrue(backToAppLink.endsWith("/app/auth"));
 
             events.expectRequiredAction(EventType.EXECUTE_ACTION_TOKEN_ERROR).error("expired_code").client((String) null).user(userId).session((String) null).clearDetails().detail(Details.ACTION, ResetCredentialsActionToken.TOKEN_TYPE).assertEvent();
         } finally {
@@ -632,9 +628,9 @@ public class ResetPasswordTest extends AbstractTestRealmKeycloakTest {
             driver.navigate().to(changePasswordUrl.trim());
 
             errorPage.assertCurrent();
-            Assert.assertEquals("Action expired.", errorPage.getError());
+            Assertions.assertEquals("Action expired.", errorPage.getError());
             String backToAppLink = errorPage.getBackToApplicationLink();
-            Assert.assertTrue(backToAppLink.endsWith("/app/auth"));
+            Assertions.assertTrue(backToAppLink.endsWith("/app/auth"));
 
             events.expectRequiredAction(EventType.EXECUTE_ACTION_TOKEN_ERROR).error("expired_code").client((String) null).user(userId).session((String) null).clearDetails().detail(Details.ACTION, ResetCredentialsActionToken.TOKEN_TYPE).assertEvent();
         } finally {
@@ -676,9 +672,9 @@ public class ResetPasswordTest extends AbstractTestRealmKeycloakTest {
             driver.navigate().to(changePasswordUrl.trim());
 
             errorPage.assertCurrent();
-            Assert.assertEquals("Action expired.", errorPage.getError());
+            Assertions.assertEquals("Action expired.", errorPage.getError());
             String backToAppLink = errorPage.getBackToApplicationLink();
-            Assert.assertTrue(backToAppLink.endsWith("/app/auth"));
+            Assertions.assertTrue(backToAppLink.endsWith("/app/auth"));
 
             events.expectRequiredAction(EventType.EXECUTE_ACTION_TOKEN_ERROR).error("expired_code").client((String) null).user(userId).session((String) null).clearDetails().detail(Details.ACTION, ResetCredentialsActionToken.TOKEN_TYPE).assertEvent();
         } finally {

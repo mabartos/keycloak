@@ -20,10 +20,10 @@ package org.keycloak.testsuite.cluster;
 import org.hamcrest.Matchers;
 import org.infinispan.Cache;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.connections.infinispan.InfinispanConnectionProvider;
 import org.keycloak.models.sessions.infinispan.InfinispanStickySessionEncoderProviderFactory;
 import org.keycloak.connections.infinispan.InfinispanUtil;
@@ -60,7 +60,7 @@ public class AuthenticationSessionClusterTest extends AbstractClusterTest {
     protected AppPage appPage;
 
 
-    @Before
+    @BeforeEach
     public void setup() {
         try {
             adminClient.realm("test").remove();
@@ -71,7 +71,7 @@ public class AuthenticationSessionClusterTest extends AbstractClusterTest {
         adminClient.realms().create(testRealm);
     }
 
-    @After
+    @AfterEach
     public void after() {
         adminClient.realm("test").remove();
     }
@@ -94,7 +94,7 @@ public class AuthenticationSessionClusterTest extends AbstractClusterTest {
             driver.navigate().to(testAppLoginNode1URL);
             String authSessionCookie = AuthenticationSessionFailoverClusterTest.getAuthSessionCookieValue(driver);
 
-            Assert.assertThat(authSessionCookie.length(), Matchers.greaterThan(36));
+            Assertions.assertThat(authSessionCookie.length(), Matchers.greaterThan(36));
             String route = authSessionCookie.substring(37);
             visitedRoutes.add(route);
 
@@ -102,7 +102,7 @@ public class AuthenticationSessionClusterTest extends AbstractClusterTest {
             driver.manage().deleteAllCookies();
         }
 
-        Assert.assertThat(visitedRoutes, Matchers.containsInAnyOrder(Matchers.startsWith("node1"), Matchers.startsWith("node2")));
+        Assertions.assertThat(visitedRoutes, Matchers.containsInAnyOrder(Matchers.startsWith("node1"), Matchers.startsWith("node2")));
     }
 
 
@@ -125,7 +125,7 @@ public class AuthenticationSessionClusterTest extends AbstractClusterTest {
             driver.navigate().to(testAppLoginNode1URL);
             String authSessionCookie = AuthenticationSessionFailoverClusterTest.getAuthSessionCookieValue(driver);
 
-            Assert.assertEquals(36, authSessionCookie.length());
+            Assertions.assertEquals(36, authSessionCookie.length());
 
             // Drop all cookies before continue
             driver.manage().deleteAllCookies();
@@ -134,7 +134,7 @@ public class AuthenticationSessionClusterTest extends AbstractClusterTest {
             getTestingClientFor(backendNode(0)).server().run(session -> {
                 Cache authSessionCache = session.getProvider(InfinispanConnectionProvider.class).getCache(InfinispanConnectionProvider.AUTHENTICATION_SESSIONS_CACHE_NAME);
                 String keyOwner = InfinispanUtil.getTopologyInfo(session).getRouteName(authSessionCache, authSessionCookie);
-                Assert.assertTrue(keyOwner.startsWith("node1"));
+                Assertions.assertTrue(keyOwner.startsWith("node1"));
             });
         }
 

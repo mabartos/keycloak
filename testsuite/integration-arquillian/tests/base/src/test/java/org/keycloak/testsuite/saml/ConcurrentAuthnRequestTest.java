@@ -44,8 +44,8 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -56,7 +56,7 @@ import static org.keycloak.testsuite.util.SamlClient.*;
  *
  * @author hmlnarik
  */
-@Ignore
+@Disabled
 public class ConcurrentAuthnRequestTest extends AbstractSamlTest {
 
     public static final int ITERATIONS = 10000;

@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.i18n;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractTestRealmKeycloakTest;
 import org.keycloak.testsuite.util.RealmBuilder;
@@ -43,7 +43,7 @@ public abstract class AbstractI18NTest extends AbstractTestRealmKeycloakTest {
      * Remove cookies at the end so that the next test will start out
      * using the default locale.
      */
-    @After
+    @AfterEach
     public void deleteCookies() {
         driver.manage().deleteAllCookies();
     }

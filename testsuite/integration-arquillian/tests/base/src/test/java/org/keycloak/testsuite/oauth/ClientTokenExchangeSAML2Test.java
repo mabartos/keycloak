@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.oauth;
 
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.TokenVerifier;
 import org.keycloak.authorization.model.Policy;
@@ -73,7 +73,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.keycloak.models.ImpersonationSessionNote.IMPERSONATOR_ID;
 import static org.keycloak.models.ImpersonationSessionNote.IMPERSONATOR_USERNAME;
 import static org.keycloak.protocol.saml.SamlProtocol.SAML_ASSERTION_CONSUMER_URL_POST_ATTRIBUTE;
@@ -96,8 +96,7 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
     private static final String ENCRYPTION_CERTIFICATE = "MIIB1DCCAT0CBgFJGVacCDANBgkqhkiG9w0BAQsFADAwMS4wLAYDVQQDEyVodHRwOi8vbG9jYWxob3N0OjgwODAvc2FsZXMtcG9zdC1lbmMvMB4XDTE0MTAxNjE0MjA0NloXDTI0MTAxNjE0MjIyNlowMDEuMCwGA1UEAxMlaHR0cDovL2xvY2FsaG9zdDo4MDgwL3NhbGVzLXBvc3QtZW5jLzCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA2+5MCT5BnVN+IYnKZcH6ev1pjXGi4feE0nOycq/VJ3aeaZMi4G9AxOxCBPupErOC7Kgm/Bw5AdJyw+Q12wSRXfJ9FhqCrLXpb7YOhbVSTJ8De5O8mW35DxAlh/cxe9FXjqPb286wKTUZ3LfGYR+X235UQeCTAPS/Ufi21EXaEikCAwEAATANBgkqhkiG9w0BAQsFAAOBgQBMrfGD9QFfx5v7ld/OAto5rjkTe3R1Qei8XRXfcs83vLaqEzjEtTuLGrJEi55kXuJgBpVmQpnwCCkkjSy0JxbqLDdVi9arfWUxEGmOr01ZHycELhDNaQcFqVMPr5kRHIHgktT8hK2IgCvd3Fy9/JCgUgCPxKfhwecyEOKxUc857g==";
     private static final String ENCRYPTION_PRIVATE_KEY = "MIICXQIBAAKBgQDb7kwJPkGdU34hicplwfp6/WmNcaLh94TSc7Jyr9Undp5pkyLgb0DE7EIE+6kSs4LsqCb8HDkB0nLD5DXbBJFd8n0WGoKstelvtg6FtVJMnwN7k7yZbfkPECWH9zF70VeOo9vbzrApNRnct8ZhH5fbflRB4JMA9L9R+LbURdoSKQIDAQABAoGBANtbZG9bruoSGp2s5zhzLzd4hczT6Jfk3o9hYjzNb5Z60ymN3Z1omXtQAdEiiNHkRdNxK+EM7TcKBfmoJqcaeTkW8cksVEAW23ip8W9/XsLqmbU2mRrJiKa+KQNDSHqJi1VGyimi4DDApcaqRZcaKDFXg2KDr/Qt5JFD/o9IIIPZAkEA+ZENdBIlpbUfkJh6Ln+bUTss/FZ1FsrcPZWu13rChRMrsmXsfzu9kZUWdUeQ2Dj5AoW2Q7L/cqdGXS7Mm5XhcwJBAOGZq9axJY5YhKrsksvYRLhQbStmGu5LG75suF+rc/44sFq+aQM7+oeRr4VY88Mvz7mk4esdfnk7ae+cCazqJvMCQQCx1L1cZw3yfRSn6S6u8XjQMjWE/WpjulujeoRiwPPY9WcesOgLZZtYIH8nRL6ehEJTnMnahbLmlPFbttxPRUanAkA11MtSIVcKzkhp2KV2ipZrPJWwI18NuVJXb+3WtjypTrGWFZVNNkSjkLnHIeCYlJIGhDd8OL9zAiBXEm6kmgLNAkBWAg0tK2hCjvzsaA505gWQb4X56uKWdb0IzN+fOLB3Qt7+fLqbVQNQoNGzqey6B4MoS1fUKAStqdGTFYPG/+9t";
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Override
     public void addTestRealms(List<RealmRepresentation> testRealms) {
@@ -239,8 +238,8 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
         String accessToken = response.getAccessToken();
         TokenVerifier<AccessToken> accessTokenVerifier = TokenVerifier.create(accessToken, AccessToken.class);
         AccessToken token = accessTokenVerifier.parse().getToken();
-        Assert.assertEquals(token.getPreferredUsername(), "user");
-        Assert.assertTrue(token.getRealmAccess() == null || !token.getRealmAccess().isUserInRole("example"));
+        Assertions.assertEquals(token.getPreferredUsername(), "user");
+        Assertions.assertTrue(token.getRealmAccess() == null || !token.getRealmAccess().isUserInRole("example"));
 
         Map<String, String> params = new HashMap<>();
         params.put(OAuth2Constants.REQUESTED_TOKEN_TYPE, OAuth2Constants.SAML2_TOKEN_TYPE);
@@ -252,27 +251,27 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
             String assertionXML = new String(Base64Url.decode(exchangedTokenString), "UTF-8");
 
             // Verify issued_token_type
-            Assert.assertEquals(OAuth2Constants.SAML2_TOKEN_TYPE, response.getIssuedTokenType());
+            Assertions.assertEquals(OAuth2Constants.SAML2_TOKEN_TYPE, response.getIssuedTokenType());
 
             // Verify assertion
             Element assertionElement = DocumentUtil.getDocument(assertionXML).getDocumentElement();
-            Assert.assertTrue(AssertionUtil.isSignedElement(assertionElement));
+            Assertions.assertTrue(AssertionUtil.isSignedElement(assertionElement));
             AssertionType assertion = (AssertionType) SAMLParser.getInstance().parse(assertionElement);
-            Assert.assertTrue(AssertionUtil.isSignatureValid(assertionElement, publicKeyFromString(REALM_PUBLIC_KEY)));
+            Assertions.assertTrue(AssertionUtil.isSignatureValid(assertionElement, publicKeyFromString(REALM_PUBLIC_KEY)));
 
             // Expires
-            Assert.assertEquals(60, response.getExpiresIn());
+            Assertions.assertEquals(60, response.getExpiresIn());
 
             // Audience
             AudienceRestrictionType aud = (AudienceRestrictionType) assertion.getConditions().getConditions().get(0);
-            Assert.assertEquals(SAML_SIGNED_TARGET, aud.getAudience().get(0).toString());
+            Assertions.assertEquals(SAML_SIGNED_TARGET, aud.getAudience().get(0).toString());
 
             // NameID
-            Assert.assertEquals("user", ((NameIDType) assertion.getSubject().getSubType().getBaseID()).getValue());
+            Assertions.assertEquals("user", ((NameIDType) assertion.getSubject().getSubType().getBaseID()).getValue());
 
             // Role mapping
             List<String> roles = AssertionUtil.getRoles(assertion, null);
-            Assert.assertTrue(roles.contains("example"));
+            Assertions.assertTrue(roles.contains("example"));
         }
 
         {
@@ -282,28 +281,28 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
             String assertionXML = new String(Base64Url.decode(exchangedTokenString), "UTF-8");
 
             // Verify issued_token_type
-            Assert.assertEquals(OAuth2Constants.SAML2_TOKEN_TYPE, response.getIssuedTokenType());
+            Assertions.assertEquals(OAuth2Constants.SAML2_TOKEN_TYPE, response.getIssuedTokenType());
 
             // Verify assertion
             Element assertionElement = DocumentUtil.getDocument(assertionXML).getDocumentElement();
-            Assert.assertTrue(AssertionUtil.isSignedElement(assertionElement));
+            Assertions.assertTrue(AssertionUtil.isSignedElement(assertionElement));
             AssertionType assertion = (AssertionType) SAMLParser.getInstance().parse(assertionElement);
-            Assert.assertTrue(AssertionUtil.isSignatureValid(assertionElement, publicKeyFromString(REALM_PUBLIC_KEY)));
+            Assertions.assertTrue(AssertionUtil.isSignatureValid(assertionElement, publicKeyFromString(REALM_PUBLIC_KEY)));
 
             // Audience
             AudienceRestrictionType aud = (AudienceRestrictionType) assertion.getConditions().getConditions().get(0);
-            Assert.assertEquals(SAML_SIGNED_TARGET, aud.getAudience().get(0).toString());
+            Assertions.assertEquals(SAML_SIGNED_TARGET, aud.getAudience().get(0).toString());
 
             // NameID
-            Assert.assertEquals("user", ((NameIDType) assertion.getSubject().getSubType().getBaseID()).getValue());
+            Assertions.assertEquals("user", ((NameIDType) assertion.getSubject().getSubType().getBaseID()).getValue());
 
             // Role mapping
             List<String> roles = AssertionUtil.getRoles(assertion, null);
-            Assert.assertTrue(roles.contains("example"));
+            Assertions.assertTrue(roles.contains("example"));
         }
         {
             response = oauth.doTokenExchange(TEST, accessToken, SAML_SIGNED_TARGET, "illegal", "secret", params);
-            Assert.assertEquals(403, response.getStatusCode());
+            Assertions.assertEquals(403, response.getStatusCode());
         }
     }
 
@@ -318,8 +317,8 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
         String accessToken = response.getAccessToken();
         TokenVerifier<AccessToken> accessTokenVerifier = TokenVerifier.create(accessToken, AccessToken.class);
         AccessToken token = accessTokenVerifier.parse().getToken();
-        Assert.assertEquals(token.getPreferredUsername(), "user");
-        Assert.assertTrue(token.getRealmAccess() == null || !token.getRealmAccess().isUserInRole("example"));
+        Assertions.assertEquals(token.getPreferredUsername(), "user");
+        Assertions.assertTrue(token.getRealmAccess() == null || !token.getRealmAccess().isUserInRole("example"));
 
         Map<String, String> params = new HashMap<>();
         params.put(OAuth2Constants.REQUESTED_TOKEN_TYPE, OAuth2Constants.SAML2_TOKEN_TYPE);
@@ -331,27 +330,27 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
             String assertionXML = new String(Base64Url.decode(exchangedTokenString), "UTF-8");
 
             // Verify issued_token_type
-            Assert.assertEquals(OAuth2Constants.SAML2_TOKEN_TYPE, response.getIssuedTokenType());
+            Assertions.assertEquals(OAuth2Constants.SAML2_TOKEN_TYPE, response.getIssuedTokenType());
 
             // Decrypt assertion
             Document assertionDoc = DocumentUtil.getDocument(assertionXML);
             Element assertionElement = XMLEncryptionUtil.decryptElementInDocument(assertionDoc, privateKeyFromString(ENCRYPTION_PRIVATE_KEY));
-            Assert.assertFalse(AssertionUtil.isSignedElement(assertionElement));
+            Assertions.assertFalse(AssertionUtil.isSignedElement(assertionElement));
             AssertionType assertion = (AssertionType) SAMLParser.getInstance().parse(assertionElement);
 
             // Expires
-            Assert.assertEquals(30, response.getExpiresIn());
+            Assertions.assertEquals(30, response.getExpiresIn());
 
             // Audience
             AudienceRestrictionType aud = (AudienceRestrictionType) assertion.getConditions().getConditions().get(0);
-            Assert.assertEquals(SAML_ENCRYPTED_TARGET, aud.getAudience().get(0).toString());
+            Assertions.assertEquals(SAML_ENCRYPTED_TARGET, aud.getAudience().get(0).toString());
 
             // NameID
-            Assert.assertEquals("user", ((NameIDType) assertion.getSubject().getSubType().getBaseID()).getValue());
+            Assertions.assertEquals("user", ((NameIDType) assertion.getSubject().getSubType().getBaseID()).getValue());
 
             // Role mapping
             List<String> roles = AssertionUtil.getRoles(assertion, null);
-            Assert.assertTrue(roles.contains("example"));
+            Assertions.assertTrue(roles.contains("example"));
         }
     }
 
@@ -366,8 +365,8 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
         String accessToken = response.getAccessToken();
         TokenVerifier<AccessToken> accessTokenVerifier = TokenVerifier.create(accessToken, AccessToken.class);
         AccessToken token = accessTokenVerifier.parse().getToken();
-        Assert.assertEquals(token.getPreferredUsername(), "user");
-        Assert.assertTrue(token.getRealmAccess() == null || !token.getRealmAccess().isUserInRole("example"));
+        Assertions.assertEquals(token.getPreferredUsername(), "user");
+        Assertions.assertTrue(token.getRealmAccess() == null || !token.getRealmAccess().isUserInRole("example"));
 
         Map<String, String> params = new HashMap<>();
         params.put(OAuth2Constants.REQUESTED_TOKEN_TYPE, OAuth2Constants.SAML2_TOKEN_TYPE);
@@ -379,25 +378,25 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
             String assertionXML = new String(Base64Url.decode(exchangedTokenString), "UTF-8");
 
             // Verify issued_token_type
-            Assert.assertEquals(OAuth2Constants.SAML2_TOKEN_TYPE, response.getIssuedTokenType());
+            Assertions.assertEquals(OAuth2Constants.SAML2_TOKEN_TYPE, response.getIssuedTokenType());
 
             // Verify assertion
             Document assertionDoc = DocumentUtil.getDocument(assertionXML);
             Element assertionElement = XMLEncryptionUtil.decryptElementInDocument(assertionDoc, privateKeyFromString(ENCRYPTION_PRIVATE_KEY));
-            Assert.assertTrue(AssertionUtil.isSignedElement(assertionElement));
+            Assertions.assertTrue(AssertionUtil.isSignedElement(assertionElement));
             AssertionType assertion = (AssertionType) SAMLParser.getInstance().parse(assertionElement);
-            Assert.assertTrue(AssertionUtil.isSignatureValid(assertionElement, publicKeyFromString(REALM_PUBLIC_KEY)));
+            Assertions.assertTrue(AssertionUtil.isSignatureValid(assertionElement, publicKeyFromString(REALM_PUBLIC_KEY)));
 
             // Audience
             AudienceRestrictionType aud = (AudienceRestrictionType) assertion.getConditions().getConditions().get(0);
-            Assert.assertEquals(SAML_SIGNED_AND_ENCRYPTED_TARGET, aud.getAudience().get(0).toString());
+            Assertions.assertEquals(SAML_SIGNED_AND_ENCRYPTED_TARGET, aud.getAudience().get(0).toString());
 
             // NameID
-            Assert.assertEquals("user", ((NameIDType) assertion.getSubject().getSubType().getBaseID()).getValue());
+            Assertions.assertEquals("user", ((NameIDType) assertion.getSubject().getSubType().getBaseID()).getValue());
 
             // Role mapping
             List<String> roles = AssertionUtil.getRoles(assertion, null);
-            Assert.assertTrue(roles.contains("example"));
+            Assertions.assertTrue(roles.contains("example"));
         }
     }
 
@@ -412,8 +411,8 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
         String accessToken = response.getAccessToken();
         TokenVerifier<AccessToken> accessTokenVerifier = TokenVerifier.create(accessToken, AccessToken.class);
         AccessToken token = accessTokenVerifier.parse().getToken();
-        Assert.assertEquals(token.getPreferredUsername(), "user");
-        Assert.assertTrue(token.getRealmAccess() == null || !token.getRealmAccess().isUserInRole("example"));
+        Assertions.assertEquals(token.getPreferredUsername(), "user");
+        Assertions.assertTrue(token.getRealmAccess() == null || !token.getRealmAccess().isUserInRole("example"));
 
         Map<String, String> params = new HashMap<>();
         params.put(OAuth2Constants.REQUESTED_TOKEN_TYPE, OAuth2Constants.SAML2_TOKEN_TYPE);
@@ -425,23 +424,23 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
             String assertionXML = new String(Base64Url.decode(exchangedTokenString), "UTF-8");
 
             // Verify issued_token_type
-            Assert.assertEquals(OAuth2Constants.SAML2_TOKEN_TYPE, response.getIssuedTokenType());
+            Assertions.assertEquals(OAuth2Constants.SAML2_TOKEN_TYPE, response.getIssuedTokenType());
 
             // Verify assertion
             Document assertionDoc = DocumentUtil.getDocument(assertionXML);
-            Assert.assertFalse(AssertionUtil.isSignedElement(assertionDoc.getDocumentElement()));
+            Assertions.assertFalse(AssertionUtil.isSignedElement(assertionDoc.getDocumentElement()));
             AssertionType assertion = (AssertionType) SAMLParser.getInstance().parse(assertionDoc);
 
             // Audience
             AudienceRestrictionType aud = (AudienceRestrictionType) assertion.getConditions().getConditions().get(0);
-            Assert.assertEquals(SAML_UNSIGNED_AND_UNENCRYPTED_TARGET, aud.getAudience().get(0).toString());
+            Assertions.assertEquals(SAML_UNSIGNED_AND_UNENCRYPTED_TARGET, aud.getAudience().get(0).toString());
 
             // NameID
-            Assert.assertEquals("user", ((NameIDType) assertion.getSubject().getSubType().getBaseID()).getValue());
+            Assertions.assertEquals("user", ((NameIDType) assertion.getSubject().getSubType().getBaseID()).getValue());
 
             // Role mapping
             List<String> roles = AssertionUtil.getRoles(assertion, null);
-            Assert.assertTrue(roles.contains("example"));
+            Assertions.assertTrue(roles.contains("example"));
         }
     }
 
@@ -457,8 +456,8 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
         String accessToken = response.getAccessToken();
         TokenVerifier<AccessToken> accessTokenVerifier = TokenVerifier.create(accessToken, AccessToken.class);
         AccessToken token = accessTokenVerifier.parse().getToken();
-        Assert.assertEquals(token.getPreferredUsername(), "user");
-        Assert.assertTrue(token.getRealmAccess() == null || !token.getRealmAccess().isUserInRole("example"));
+        Assertions.assertEquals(token.getPreferredUsername(), "user");
+        Assertions.assertTrue(token.getRealmAccess() == null || !token.getRealmAccess().isUserInRole("example"));
 
         Map<String, String> params = new HashMap<>();
         params.put(OAuth2Constants.REQUESTED_TOKEN_TYPE, OAuth2Constants.SAML2_TOKEN_TYPE);
@@ -472,24 +471,24 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
             String assertionXML = new String(Base64Url.decode(exchangedTokenString), "UTF-8");
 
             // Verify issued_token_type
-            Assert.assertEquals(OAuth2Constants.SAML2_TOKEN_TYPE, response.getIssuedTokenType());
+            Assertions.assertEquals(OAuth2Constants.SAML2_TOKEN_TYPE, response.getIssuedTokenType());
 
             // Verify assertion
             Element assertionElement = DocumentUtil.getDocument(assertionXML).getDocumentElement();
-            Assert.assertTrue(AssertionUtil.isSignedElement(assertionElement));
+            Assertions.assertTrue(AssertionUtil.isSignedElement(assertionElement));
             AssertionType assertion = (AssertionType) SAMLParser.getInstance().parse(assertionElement);
-            Assert.assertTrue(AssertionUtil.isSignatureValid(assertionElement, publicKeyFromString(REALM_PUBLIC_KEY)));
+            Assertions.assertTrue(AssertionUtil.isSignatureValid(assertionElement, publicKeyFromString(REALM_PUBLIC_KEY)));
 
             // Audience
             AudienceRestrictionType aud = (AudienceRestrictionType) assertion.getConditions().getConditions().get(0);
-            Assert.assertEquals(SAML_SIGNED_TARGET, aud.getAudience().get(0).toString());
+            Assertions.assertEquals(SAML_SIGNED_TARGET, aud.getAudience().get(0).toString());
 
             // NameID
-            Assert.assertEquals("impersonated-user", ((NameIDType) assertion.getSubject().getSubType().getBaseID()).getValue());
+            Assertions.assertEquals("impersonated-user", ((NameIDType) assertion.getSubject().getSubType().getBaseID()).getValue());
 
             // Role mapping
             List<String> roles = AssertionUtil.getRoles(assertion, null);
-            Assert.assertTrue(roles.contains("example"));
+            Assertions.assertTrue(roles.contains("example"));
         }
     }
 
@@ -505,8 +504,8 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
         String accessToken = response.getAccessToken();
         TokenVerifier<AccessToken> accessTokenVerifier = TokenVerifier.create(accessToken, AccessToken.class);
         AccessToken token = accessTokenVerifier.parse().getToken();
-        Assert.assertEquals(token.getPreferredUsername(), "bad-impersonator");
-        Assert.assertTrue(token.getRealmAccess() == null || !token.getRealmAccess().isUserInRole("example"));
+        Assertions.assertEquals(token.getPreferredUsername(), "bad-impersonator");
+        Assertions.assertTrue(token.getRealmAccess() == null || !token.getRealmAccess().isUserInRole("example"));
 
         Map<String, String> params = new HashMap<>();
         params.put(OAuth2Constants.REQUESTED_TOKEN_TYPE, OAuth2Constants.SAML2_TOKEN_TYPE);
@@ -515,7 +514,7 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
         {
             params.put(OAuth2Constants.REQUESTED_SUBJECT, "impersonated-user");
             response = oauth.doTokenExchange(TEST, accessToken, SAML_SIGNED_TARGET, "client-exchanger", "secret", params);
-            Assert.assertEquals(403, response.getStatusCode());
+            Assertions.assertEquals(403, response.getStatusCode());
         }
     }
 
@@ -542,7 +541,7 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
                                     .param(OAuth2Constants.REQUESTED_SUBJECT, "impersonated-user")
                                     .param(OAuth2Constants.AUDIENCE, SAML_SIGNED_TARGET)
                     ));
-            Assert.assertEquals(200, response.getStatus());
+            Assertions.assertEquals(200, response.getStatus());
             AccessTokenResponse accessTokenResponse = response.readEntity(AccessTokenResponse.class);
             response.close();
 
@@ -550,24 +549,24 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
             String assertionXML = new String(Base64Url.decode(exchangedTokenString), "UTF-8");
 
             // Verify issued_token_type
-            Assert.assertEquals(OAuth2Constants.SAML2_TOKEN_TYPE, accessTokenResponse.getOtherClaims().get(OAuth2Constants.ISSUED_TOKEN_TYPE));
+            Assertions.assertEquals(OAuth2Constants.SAML2_TOKEN_TYPE, accessTokenResponse.getOtherClaims().get(OAuth2Constants.ISSUED_TOKEN_TYPE));
 
             // Verify assertion
             Element assertionElement = DocumentUtil.getDocument(assertionXML).getDocumentElement();
-            Assert.assertTrue(AssertionUtil.isSignedElement(assertionElement));
+            Assertions.assertTrue(AssertionUtil.isSignedElement(assertionElement));
             AssertionType assertion = (AssertionType) SAMLParser.getInstance().parse(assertionElement);
-            Assert.assertTrue(AssertionUtil.isSignatureValid(assertionElement, publicKeyFromString(REALM_PUBLIC_KEY)));
+            Assertions.assertTrue(AssertionUtil.isSignatureValid(assertionElement, publicKeyFromString(REALM_PUBLIC_KEY)));
 
             // Audience
             AudienceRestrictionType aud = (AudienceRestrictionType) assertion.getConditions().getConditions().get(0);
-            Assert.assertEquals(SAML_SIGNED_TARGET, aud.getAudience().get(0).toString());
+            Assertions.assertEquals(SAML_SIGNED_TARGET, aud.getAudience().get(0).toString());
 
             // NameID
-            Assert.assertEquals("impersonated-user", ((NameIDType) assertion.getSubject().getSubType().getBaseID()).getValue());
+            Assertions.assertEquals("impersonated-user", ((NameIDType) assertion.getSubject().getSubType().getBaseID()).getValue());
 
             // Role mapping
             List<String> roles = AssertionUtil.getRoles(assertion, null);
-            Assert.assertTrue(roles.contains("example"));
+            Assertions.assertTrue(roles.contains("example"));
         }
 
         // direct-public fails impersonation
@@ -581,7 +580,7 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
                                     .param(OAuth2Constants.REQUESTED_SUBJECT, "impersonated-user")
                                     .param(OAuth2Constants.AUDIENCE, SAML_SIGNED_TARGET)
                     ));
-            Assert.assertEquals(403, response.getStatus());
+            Assertions.assertEquals(403, response.getStatus());
             response.close();
         }
 
@@ -596,7 +595,7 @@ public class ClientTokenExchangeSAML2Test extends AbstractKeycloakTest {
                                     .param(OAuth2Constants.REQUESTED_SUBJECT, "impersonated-user")
                                     .param(OAuth2Constants.AUDIENCE, SAML_SIGNED_TARGET)
                     ));
-            Assert.assertTrue(response.getStatus() >= 400);
+            Assertions.assertTrue(response.getStatus() >= 400);
             response.close();
         }
     }

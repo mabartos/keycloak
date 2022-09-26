@@ -20,7 +20,7 @@ package org.keycloak.testsuite.keys;
 import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
 import org.keycloak.common.util.MultivaluedHashMap;
 import org.keycloak.jose.jws.AlgorithmType;
@@ -42,7 +42,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 
 /**
@@ -57,8 +57,7 @@ public class JavaKeystoreKeyProviderTest extends AbstractKeycloakTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;

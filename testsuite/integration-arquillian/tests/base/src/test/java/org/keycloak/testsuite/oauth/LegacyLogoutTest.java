@@ -25,10 +25,10 @@ import javax.ws.rs.NotFoundException;
 
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -58,8 +58,8 @@ import org.keycloak.testsuite.util.ServerURLs;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlDoesntStartWith;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlDoesntStartWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
 
 /**
  * Test logout endpoint with deprecated "redirect_uri" parameter
@@ -68,8 +68,7 @@ import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
  */
 public class LegacyLogoutTest extends AbstractTestRealmKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Rule
     public InfinispanTestTimeServiceRule ispnTestTimeService = new InfinispanTestTimeServiceRule(this);
@@ -101,7 +100,7 @@ public class LegacyLogoutTest extends AbstractTestRealmKeycloakTest {
     public void configureTestRealm(RealmRepresentation testRealm) {
     }
 
-    @Before
+    @BeforeEach
     public void configLegacyRedirectUriEnabled() {
         getTestingClient().testing().setSystemPropertyOnServer("oidc." + OIDCLoginProtocolFactory.CONFIG_LEGACY_LOGOUT_REDIRECT_URI, "true");
         getTestingClient().testing().reinitializeProviderFactoryWithSystemPropertiesScope(LoginProtocol.class.getName(), OIDCLoginProtocol.LOGIN_PROTOCOL, "oidc.");
@@ -109,7 +108,7 @@ public class LegacyLogoutTest extends AbstractTestRealmKeycloakTest {
         APP_REDIRECT_URI = oauth.APP_AUTH_ROOT;
     }
 
-    @After
+    @AfterEach
     public void revertConfiguration() {
         getTestingClient().testing().setSystemPropertyOnServer("oidc." + OIDCLoginProtocolFactory.CONFIG_LEGACY_LOGOUT_REDIRECT_URI, "false");
         getTestingClient().testing().setSystemPropertyOnServer("oidc." + OIDCLoginProtocolFactory.SUPPRESS_LOGOUT_CONFIRMATION_SCREEN, "false");
@@ -128,7 +127,7 @@ public class LegacyLogoutTest extends AbstractTestRealmKeycloakTest {
         driver.navigate().to(logoutUrl);
 
         events.expectLogout(sessionId).detail(Details.REDIRECT_URI, APP_REDIRECT_URI).assertEvent();
-        Assert.assertThat(false, is(isSessionActive(sessionId)));
+        Assertions.assertThat(false, is(isSessionActive(sessionId)));
         assertCurrentUrlEquals(APP_REDIRECT_URI);
     }
 
@@ -143,13 +142,13 @@ public class LegacyLogoutTest extends AbstractTestRealmKeycloakTest {
 
         // Assert logout confirmation page. Session still exists. Assert default language on logout page (English)
         logoutConfirmPage.assertCurrent();
-        Assert.assertThat(true, is(isSessionActive(sessionId)));
+        Assertions.assertThat(true, is(isSessionActive(sessionId)));
         events.assertEmpty();
         logoutConfirmPage.confirmLogout();
 
         // Redirected back to the application with expected state
         events.expectLogout(sessionId).removeDetail(Details.REDIRECT_URI).assertEvent();
-        Assert.assertThat(false, is(isSessionActive(sessionId)));
+        Assertions.assertThat(false, is(isSessionActive(sessionId)));
         assertCurrentUrlEquals(APP_REDIRECT_URI);
     }
 
@@ -201,10 +200,10 @@ public class LegacyLogoutTest extends AbstractTestRealmKeycloakTest {
 
             assertCurrentUrlDoesntStartWith(invalidRedirectUri);
             errorPage.assertCurrent();
-            Assert.assertEquals("Invalid redirect uri", errorPage.getError());
+            Assertions.assertEquals("Invalid redirect uri", errorPage.getError());
 
             // Session still active
-            Assert.assertThat(true, is(isSessionActive(tokenResponse.getSessionState())));
+            Assertions.assertThat(true, is(isSessionActive(tokenResponse.getSessionState())));
         } finally {
             // Revert
             clientRes.update(clientRepOrig);
@@ -253,7 +252,7 @@ public class LegacyLogoutTest extends AbstractTestRealmKeycloakTest {
         driver.navigate().to(logoutUrl);
 
         events.expectLogout(sessionId).detail(Details.REDIRECT_URI, APP_REDIRECT_URI).assertEvent();
-        Assert.assertThat(false, is(isSessionActive(sessionId)));
+        Assertions.assertThat(false, is(isSessionActive(sessionId)));
         assertCurrentUrlEquals(APP_REDIRECT_URI);
     }
 

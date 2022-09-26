@@ -18,7 +18,7 @@ package org.keycloak.testsuite.oidc;
 
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.common.util.Base64Url;
 import org.keycloak.common.util.PemUtils;
@@ -58,8 +58,7 @@ import java.util.Map;
 
 public class AuthorizationTokenEncryptionTest extends AbstractTestRealmKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -191,7 +190,7 @@ public class AuthorizationTokenEncryptionTest extends AbstractTestRealmKeycloakT
             // parse JWE and JOSE Header
             String jweStr = response.getResponse();
             String[] parts = jweStr.split("\\.");
-            Assert.assertEquals(parts.length, 5);
+            Assertions.assertEquals(parts.length, 5);
 
             // get decryption key
             // not publickey , use privateKey
@@ -206,15 +205,15 @@ public class AuthorizationTokenEncryptionTest extends AbstractTestRealmKeycloakT
 
             // a nested JWT (signed and encrypted JWT) needs to set "JWT" to its JOSE Header's "cty" field
             JWEHeader jweHeader = (JWEHeader) getHeader(parts[0]);
-            Assert.assertEquals("JWT", jweHeader.getContentType());
+            Assertions.assertEquals("JWT", jweHeader.getContentType());
 
             // verify JWS
             AuthorizationResponseToken authorizationToken = oauth.verifyAuthorizationResponseToken(authorizationTokenString);
-            Assert.assertEquals("test-app", authorizationToken.getAudience()[0]);
-            Assert.assertEquals("OpenIdConnect.AuthenticationProperties=2302984sdlk", authorizationToken.getOtherClaims().get("state"));
-            Assert.assertNotNull(authorizationToken.getOtherClaims().get("code"));
+            Assertions.assertEquals("test-app", authorizationToken.getAudience()[0]);
+            Assertions.assertEquals("OpenIdConnect.AuthenticationProperties=2302984sdlk", authorizationToken.getOtherClaims().get("state"));
+            Assertions.assertNotNull(authorizationToken.getOtherClaims().get("code"));
         } catch (JWEException | UnsupportedEncodingException e) {
-            Assert.fail();
+            Assertions.fail();
         } finally {
             clientResource = ApiUtil.findClientByClientId(adminClient.realm("test"), "test-app");
             clientRep = clientResource.toRepresentation();

@@ -20,12 +20,12 @@ package org.keycloak.testsuite.welcomepage;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractKeycloakTest;
@@ -74,17 +74,17 @@ public class WelcomePageTest extends AbstractKeycloakTest {
      * Leave out client initialization and creation of a user account. We
      * don't need those.
      */
-    @Before
+    @BeforeEach
     @Override
     public void beforeAbstractKeycloakTest() throws Exception {
-        Assume.assumeThat("Test skipped",
+        Assumptions.assumeThat("Test skipped",
                 suiteContext.getAuthServerInfo().isJBossBased(),
                 Matchers.is(true));
         DroneUtils.replaceDefaultWebDriver(this, phantomJS);
         setDefaultPageUriParameters();
     }
 
-    @After
+    @AfterEach
     @Override
     public void afterAbstractKeycloakTest() {
         // no need for this either
@@ -121,29 +121,29 @@ public class WelcomePageTest extends AbstractKeycloakTest {
     @Test
     public void test_1_LocalAccessNoAdmin() throws Exception {
         welcomePage.navigateTo();
-        Assert.assertFalse("Welcome page did not ask to create a new admin user.", welcomePage.isPasswordSet());
+        Assertions.assertFalse("Welcome page did not ask to create a new admin user.", welcomePage.isPasswordSet());
     }
 
     @Test
     public void test_2_RemoteAccessNoAdmin() throws Exception {
         navigateToUri(getPublicServerUrl().toString());
-        Assert.assertFalse("Welcome page did not ask to create a new admin user.", welcomePage.isPasswordSet());
+        Assertions.assertFalse("Welcome page did not ask to create a new admin user.", welcomePage.isPasswordSet());
     }
 
     @Test
     public void test_3_LocalAccessWithAdmin() throws Exception {
         welcomePage.navigateTo();
         welcomePage.setPassword("admin", "admin");
-        Assert.assertTrue(driver.getPageSource().contains("User created"));
+        Assertions.assertTrue(driver.getPageSource().contains("User created"));
 
         welcomePage.navigateTo();
-        Assert.assertTrue("Welcome page asked to set admin password.", welcomePage.isPasswordSet());
+        Assertions.assertTrue("Welcome page asked to set admin password.", welcomePage.isPasswordSet());
     }
 
     @Test
     public void test_4_RemoteAccessWithAdmin() throws Exception {
         navigateToUri(getPublicServerUrl().toString());
-        Assert.assertTrue("Welcome page asked to set admin password.", welcomePage.isPasswordSet());
+        Assertions.assertTrue("Welcome page asked to set admin password.", welcomePage.isPasswordSet());
     }
 
     @Test
@@ -151,7 +151,7 @@ public class WelcomePageTest extends AbstractKeycloakTest {
         welcomePage.navigateTo();
         welcomePage.navigateToAdminConsole();
         // TODO PhantomJS is not loading the new admin console for some reason, so is not redirecting to the login page. It works with Chrome though.
-        Assert.assertEquals("Keycloak Administration Console", phantomJS.getTitle());
+        Assertions.assertEquals("Keycloak Administration Console", phantomJS.getTitle());
     }
 
     @Test
@@ -161,7 +161,7 @@ public class WelcomePageTest extends AbstractKeycloakTest {
         String actualMessage = welcomePage.getWelcomeMessage();
         String expectedMessage = suiteContext.getAuthServerInfo().isEAP() ? "Red Hat Single Sign-On" : "Keycloak";
 
-        Assert.assertEquals("Welcome to " + expectedMessage, actualMessage);
+        Assertions.assertEquals("Welcome to " + expectedMessage, actualMessage);
     }
 
 }

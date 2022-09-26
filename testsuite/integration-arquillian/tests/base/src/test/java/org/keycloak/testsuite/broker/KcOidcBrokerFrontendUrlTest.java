@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.broker;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.broker.BrokerTestConstants.IDP_OIDC_ALIAS;
 import static org.keycloak.testsuite.broker.BrokerTestConstants.REALM_CONS_NAME;
 import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
@@ -12,16 +12,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.util.ReverseProxy;
 
+@ExtendWith(ReverseProxy.class)
 public final class KcOidcBrokerFrontendUrlTest extends AbstractBrokerTest {
 
-    @Rule
     public ReverseProxy proxy = new ReverseProxy();
 
     @Override
@@ -79,7 +80,7 @@ public final class KcOidcBrokerFrontendUrlTest extends AbstractBrokerTest {
         accountUpdateProfilePage.assertCurrent();
     }
 
-    @Ignore
+    @Disabled
     @Test
     @Override
     public void loginWithExistingUser() {

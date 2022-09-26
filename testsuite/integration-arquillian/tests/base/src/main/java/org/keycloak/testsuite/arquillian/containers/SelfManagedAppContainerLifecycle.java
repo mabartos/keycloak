@@ -32,12 +32,12 @@ import java.util.concurrent.TimeoutException;
 public interface SelfManagedAppContainerLifecycle {
 
     /**
-     * Should be called @Before
+     * Should be called @BeforeEach
      */
     void startServer() throws InterruptedException, IOException, OperationException, TimeoutException, CommandFailedException, CliException;
 
     /**
-     * Should be called @After
+     * Should be called @AfterEach
      */
     void stopServer();
 }

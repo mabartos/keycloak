@@ -4,7 +4,7 @@ import static org.hamcrest.Matchers.is;
 import static org.keycloak.testsuite.admin.ApiUtil.assignRealmRoles;
 import static org.keycloak.testsuite.admin.ApiUtil.createUserWithAdminClient;
 import static org.keycloak.testsuite.admin.ApiUtil.resetUserPassword;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -16,9 +16,9 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.logging.Logger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.RoleResource;
@@ -214,13 +214,13 @@ public abstract class AbstractSpringBootTest extends AbstractKeycloakTest {
         correctRole.remove();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         createRoles();
         addUsers();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         cleanupUsers();
         cleanupRoles();

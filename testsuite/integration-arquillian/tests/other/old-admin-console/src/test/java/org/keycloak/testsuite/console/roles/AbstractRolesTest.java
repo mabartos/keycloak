@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.console.roles;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.testsuite.console.AbstractConsoleTest;
 import org.keycloak.testsuite.console.page.roles.Roles;
 import org.keycloak.testsuite.console.page.users.User;
@@ -18,7 +18,7 @@ public abstract class AbstractRolesTest extends AbstractConsoleTest {
     @Page
     protected User userPage;
     
-    @Before
+    @BeforeEach
     public void beforeRolesTest() {
 //        configure().roles();
     }

@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.client;
 
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.authentication.authenticators.client.ClientIdAndSecretAuthenticator;
 import org.keycloak.authentication.authenticators.client.JWTClientAuthenticator;
@@ -50,8 +50,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createClientAccessTypeConditionConfig;
 import static org.keycloak.testsuite.util.ClientPoliciesUtil.createClientRolesConditionConfig;
@@ -103,7 +103,7 @@ public class ClientPoliciesLoadUpdateTest extends AbstractClientPoliciesTest {
         // No global policies expected
         assertExpectedPolicies(Collections.emptyList(), actualPoliciesRep);
         ClientPolicyRepresentation actualPolicyRep =  getPolicyRepresentation(actualPoliciesRep, "builtin-default-policy");
-        Assert.assertNull(actualPolicyRep);
+        Assertions.assertNull(actualPolicyRep);
     }
 
     @Test

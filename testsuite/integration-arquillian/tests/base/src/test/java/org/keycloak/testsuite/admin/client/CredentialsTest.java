@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.admin.client;
 
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientAttributeCertificateResource;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.common.util.PemUtils;
@@ -43,11 +43,11 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
@@ -58,7 +58,7 @@ public class CredentialsTest extends AbstractClientTest {
     private ClientResource accountClient;
     private String accountClientDbId;
 
-    @Before
+    @BeforeEach
     public void init() {
         accountClient = findClientResourceById("account");
         accountClientDbId = accountClient.toRepresentation().getId();

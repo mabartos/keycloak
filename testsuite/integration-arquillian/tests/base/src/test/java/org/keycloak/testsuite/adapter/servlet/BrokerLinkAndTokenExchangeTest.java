@@ -21,9 +21,9 @@ import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.authorization.model.Policy;
@@ -206,7 +206,7 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
         checkFeature(Response.Status.OK.getStatusCode());
     }
 
-    @Before
+    @BeforeEach
     public void beforeTest() throws Exception {
         addIdpUser();
         addChildUser();
@@ -265,7 +265,7 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
         RealmModel realm = session.realms().getRealmByName(CHILD_IDP);
         ClientModel client = realm.getClientByClientId(ClientApp.DEPLOYMENT_NAME);
         IdentityProviderModel idp = realm.getIdentityProviderByAlias(PARENT_IDP);
-        Assert.assertNotNull(idp);
+        Assertions.assertNotNull(idp);
 
         ClientModel directExchanger = realm.addClient("direct-exchanger");
         directExchanger.setClientId("direct-exchanger");
@@ -330,7 +330,7 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
         testingClient.server().run(BrokerLinkAndTokenExchangeTest::turnOnTokenStore);
         RealmResource realm = adminClient.realms().realm(CHILD_IDP);
         List<FederatedIdentityRepresentation> links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertTrue(links.isEmpty());
+        Assertions.assertTrue(links.isEmpty());
 
         String servletUri = appPage.getInjectedUrl().toString();
         UriBuilder linkBuilder = UriBuilder.fromUri(servletUri)
@@ -340,19 +340,19 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
                 .queryParam("provider", PARENT_IDP).build().toString();
         System.out.println("linkUrl: " + linkUrl);
         navigateTo(linkUrl);
-        Assert.assertTrue(loginPage.isCurrent(CHILD_IDP));
-        Assert.assertTrue(driver.getPageSource().contains(PARENT_IDP));
+        Assertions.assertTrue(loginPage.isCurrent(CHILD_IDP));
+        Assertions.assertTrue(driver.getPageSource().contains(PARENT_IDP));
         loginPage.login("child", "password");
-        Assert.assertTrue(loginPage.isCurrent(PARENT_IDP));
+        Assertions.assertTrue(loginPage.isCurrent(PARENT_IDP));
         loginPage.login(PARENT_USERNAME, "password");
         System.out.println("After linking: " + driver.getCurrentUrl());
         System.out.println(driver.getPageSource());
-        Assert.assertTrue(driver.getCurrentUrl().startsWith(linkBuilder.toTemplate()));
-        Assert.assertTrue(driver.getPageSource().contains("Account Linked"));
-        Assert.assertTrue(driver.getPageSource().contains("Exchange token received"));
+        Assertions.assertTrue(driver.getCurrentUrl().startsWith(linkBuilder.toTemplate()));
+        Assertions.assertTrue(driver.getPageSource().contains("Account Linked"));
+        Assertions.assertTrue(driver.getPageSource().contains("Exchange token received"));
 
         links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertFalse(links.isEmpty());
+        Assertions.assertFalse(links.isEmpty());
 
 
         // do exchange
@@ -373,12 +373,12 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
                                     .param(OAuth2Constants.REQUESTED_ISSUER, PARENT_IDP)
 
                     ));
-            Assert.assertEquals(200, response.getStatus());
+            Assertions.assertEquals(200, response.getStatus());
             AccessTokenResponse tokenResponse = response.readEntity(AccessTokenResponse.class);
             response.close();
             String externalToken = tokenResponse.getToken();
-            Assert.assertNotNull(externalToken);
-            Assert.assertTrue(tokenResponse.getExpiresIn() > 0);
+            Assertions.assertNotNull(externalToken);
+            Assertions.assertTrue(tokenResponse.getExpiresIn() > 0);
             setTimeOffset((int) tokenResponse.getExpiresIn() + 1);
 
             // test that token refresh happens
@@ -395,10 +395,10 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
                                     .param(OAuth2Constants.REQUESTED_ISSUER, PARENT_IDP)
 
                     ));
-            Assert.assertEquals(200, response.getStatus());
+            Assertions.assertEquals(200, response.getStatus());
             tokenResponse = response.readEntity(AccessTokenResponse.class);
             response.close();
-            Assert.assertNotEquals(externalToken, tokenResponse.getToken());
+            Assertions.assertNotEquals(externalToken, tokenResponse.getToken());
 
             // test direct exchange
             response = exchangeUrl.request()
@@ -410,10 +410,10 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
                                     .param(OAuth2Constants.REQUESTED_ISSUER, PARENT_IDP)
 
                     ));
-            Assert.assertEquals(200, response.getStatus());
+            Assertions.assertEquals(200, response.getStatus());
             tokenResponse = response.readEntity(AccessTokenResponse.class);
             response.close();
-            Assert.assertNotEquals(externalToken, tokenResponse.getToken());
+            Assertions.assertNotEquals(externalToken, tokenResponse.getToken());
 
 
             resetTimeOffset();
@@ -422,7 +422,7 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
 
             realm.users().get(childUserId).removeFederatedIdentity(PARENT_IDP);
             links = realm.users().get(childUserId).getFederatedIdentity();
-            Assert.assertTrue(links.isEmpty());
+            Assertions.assertTrue(links.isEmpty());
         } finally {
             httpClient.close();
         }
@@ -458,7 +458,7 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
 
         RealmResource realm = adminClient.realms().realm(CHILD_IDP);
         List<FederatedIdentityRepresentation> links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertTrue(links.isEmpty());
+        Assertions.assertTrue(links.isEmpty());
 
         UriBuilder linkBuilder = UriBuilder.fromUri(appPage.getInjectedUrl().toString())
                 .path("link");
@@ -467,19 +467,19 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
                 .queryParam("provider", PARENT_IDP).build().toString();
         System.out.println("linkUrl: " + linkUrl);
         navigateTo(linkUrl);
-        Assert.assertTrue(loginPage.isCurrent(CHILD_IDP));
-        Assert.assertTrue(driver.getPageSource().contains(PARENT_IDP));
+        Assertions.assertTrue(loginPage.isCurrent(CHILD_IDP));
+        Assertions.assertTrue(driver.getPageSource().contains(PARENT_IDP));
         loginPage.login("child", "password");
-        Assert.assertTrue("Unexpected page. Current Page URL: " + driver.getCurrentUrl(),loginPage.isCurrent(PARENT_IDP));
+        Assertions.assertTrue("Unexpected page. Current Page URL: " + driver.getCurrentUrl(),loginPage.isCurrent(PARENT_IDP));
         loginPage.login(PARENT_USERNAME, "password");
         System.out.println("After linking: " + driver.getCurrentUrl());
         System.out.println(driver.getPageSource());
-        Assert.assertTrue(driver.getCurrentUrl().startsWith(linkBuilder.toTemplate()));
-        Assert.assertTrue(driver.getPageSource().contains("Account Linked"));
-        Assert.assertTrue(driver.getPageSource().contains("Exchange token received"));
+        Assertions.assertTrue(driver.getCurrentUrl().startsWith(linkBuilder.toTemplate()));
+        Assertions.assertTrue(driver.getPageSource().contains("Account Linked"));
+        Assertions.assertTrue(driver.getPageSource().contains("Exchange token received"));
 
         links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertFalse(links.isEmpty());
+        Assertions.assertFalse(links.isEmpty());
 
 
         logoutAll();
@@ -487,7 +487,7 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
 
         realm.users().get(childUserId).removeFederatedIdentity(PARENT_IDP);
         links = realm.users().get(childUserId).getFederatedIdentity();
-        Assert.assertTrue(links.isEmpty());
+        Assertions.assertTrue(links.isEmpty());
     }
 
 
@@ -524,7 +524,7 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
         RealmResource childRealm = adminClient.realms().realm(CHILD_IDP);
 
         String accessToken = oauth.doGrantAccessTokenRequest(PARENT_IDP, PARENT2_USERNAME, "password", null, PARENT_CLIENT, "password").getAccessToken();
-        Assert.assertEquals(0, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
+        Assertions.assertEquals(0, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
 
         Client httpClient = AdminClientUtil.createResteasyClient();
         try {
@@ -560,7 +560,7 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
                                         .param(OAuth2Constants.SCOPE, OAuth2Constants.SCOPE_OPENID)
 
                         ));
-                Assert.assertEquals(200, response.getStatus());
+                Assertions.assertEquals(200, response.getStatus());
                 AccessTokenResponse tokenResponse = response.readEntity(AccessTokenResponse.class);
                 String idToken = tokenResponse.getIdToken();
                 JWSInput jws = new JWSInput(tokenResponse.getToken());
@@ -585,12 +585,12 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
                                         .param(OAuth2Constants.REQUESTED_ISSUER, PARENT_IDP)
 
                         ));
-                Assert.assertEquals(200, response.getStatus());
+                Assertions.assertEquals(200, response.getStatus());
                 tokenResponse = response.readEntity(AccessTokenResponse.class);
-                Assert.assertEquals(accessToken, tokenResponse.getToken());
+                Assertions.assertEquals(accessToken, tokenResponse.getToken());
                 response.close();
 
-                Assert.assertEquals(1, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
+                Assertions.assertEquals(1, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
 
                 // test logout
                 response = childLogoutWebTarget(httpClient)
@@ -599,11 +599,11 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
                         .get();
                 response.close();
 
-                Assert.assertEquals(0, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
+                Assertions.assertEquals(0, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
 
 
                 List<FederatedIdentityRepresentation> links = childRealm.users().get(exchangedUserId).getFederatedIdentity();
-                Assert.assertEquals(1, links.size());
+                Assertions.assertEquals(1, links.size());
             }
             {
                 // check that we can request an exchange again and that the previously linked user is obtained
@@ -618,7 +618,7 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
                                         .param(OAuth2Constants.SCOPE, OAuth2Constants.SCOPE_OPENID)
 
                         ));
-                Assert.assertEquals(200, response.getStatus());
+                Assertions.assertEquals(200, response.getStatus());
                 AccessTokenResponse tokenResponse = response.readEntity(AccessTokenResponse.class);
                 String idToken = tokenResponse.getIdToken();
                 JWSInput jws = new JWSInput(tokenResponse.getToken());
@@ -630,8 +630,8 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
 
                 // assert that we get the same linked account as was previously imported
 
-                Assert.assertEquals(exchangedUserId, exchanged2UserId);
-                Assert.assertEquals(exchangedUsername, exchanged2Username);
+                Assertions.assertEquals(exchangedUserId, exchanged2UserId);
+                Assertions.assertEquals(exchangedUsername, exchanged2Username);
 
                 // test logout
                 response = childLogoutWebTarget(httpClient)
@@ -640,11 +640,11 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
                         .get();
                 response.close();
 
-                Assert.assertEquals(0, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
+                Assertions.assertEquals(0, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
 
 
                 List<FederatedIdentityRepresentation> links = childRealm.users().get(exchangedUserId).getFederatedIdentity();
-                Assert.assertEquals(1, links.size());
+                Assertions.assertEquals(1, links.size());
             }
             {
                 // check that we can exchange without specifying an SUBJECT_ISSUER
@@ -658,7 +658,7 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
                                         .param(OAuth2Constants.SCOPE, OAuth2Constants.SCOPE_OPENID)
 
                         ));
-                Assert.assertEquals(200, response.getStatus());
+                Assertions.assertEquals(200, response.getStatus());
                 AccessTokenResponse tokenResponse = response.readEntity(AccessTokenResponse.class);
                 String idToken = tokenResponse.getIdToken();
                 JWSInput jws = new JWSInput(tokenResponse.getToken());
@@ -670,8 +670,8 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
 
                 // assert that we get the same linked account as was previously imported
 
-                Assert.assertEquals(exchangedUserId, exchanged2UserId);
-                Assert.assertEquals(exchangedUsername, exchanged2Username);
+                Assertions.assertEquals(exchangedUserId, exchanged2UserId);
+                Assertions.assertEquals(exchangedUsername, exchanged2Username);
 
                 // test logout
                 response = childLogoutWebTarget(httpClient)
@@ -680,11 +680,11 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
                         .get();
                 response.close();
 
-                Assert.assertEquals(0, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
+                Assertions.assertEquals(0, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
 
 
                 List<FederatedIdentityRepresentation> links = childRealm.users().get(exchangedUserId).getFederatedIdentity();
-                Assert.assertEquals(1, links.size());
+                Assertions.assertEquals(1, links.size());
             }
             // cleanup  remove the user
             childRealm.users().get(exchangedUserId).remove();
@@ -701,7 +701,7 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
                                         .param(OAuth2Constants.SUBJECT_ISSUER, PARENT_IDP)
 
                         ))) {
-                    Assert.assertEquals(403, response.getStatus());
+                    Assertions.assertEquals(403, response.getStatus());
                 }
             }
         } finally {
@@ -717,7 +717,7 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
         RealmResource childRealm = adminClient.realms().realm(CHILD_IDP);
 
         String accessToken = oauth.doGrantAccessTokenRequest(PARENT_IDP, PARENT3_USERNAME, "password", null, PARENT_CLIENT, "password").getAccessToken();
-        Assert.assertEquals(0, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
+        Assertions.assertEquals(0, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
 
         Client httpClient = AdminClientUtil.createResteasyClient();
         try {
@@ -737,19 +737,19 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
                                     .param(OAuth2Constants.SUBJECT_ISSUER, PARENT_IDP)
                                     .param(OAuth2Constants.SCOPE, OAuth2Constants.SCOPE_OPENID)
                     ))) {
-                Assert.assertEquals(200, response.getStatus());
+                Assertions.assertEquals(200, response.getStatus());
 
                 AccessTokenResponse tokenResponse = response.readEntity(AccessTokenResponse.class);
                 JWSInput jws = new JWSInput(tokenResponse.getToken());
                 token = jws.readJsonContent(AccessToken.class);
             }
 
-            Assert.assertNotNull(token);
-            Assert.assertNotNull(token.getSubject());
-            Assert.assertEquals(PARENT3_USERNAME, token.getPreferredUsername());
-            Assert.assertEquals("first name", token.getGivenName());
-            Assert.assertEquals("last name", token.getFamilyName());
-            Assert.assertEquals("email", token.getEmail());
+            Assertions.assertNotNull(token);
+            Assertions.assertNotNull(token.getSubject());
+            Assertions.assertEquals(PARENT3_USERNAME, token.getPreferredUsername());
+            Assertions.assertEquals("first name", token.getGivenName());
+            Assertions.assertEquals("last name", token.getFamilyName());
+            Assertions.assertEquals("email", token.getEmail());
 
             // cleanup remove the user
             childRealm.users().get(token.getSubject()).remove();
@@ -772,7 +772,7 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
         String accessToken = oauth.doGrantAccessTokenRequest(PARENT_IDP, PARENT2_USERNAME, "password", null, PARENT_CLIENT, "password").getAccessToken();
 
         if (statusCode != Response.Status.NOT_IMPLEMENTED.getStatusCode()) {
-            Assert.assertEquals(0, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
+            Assertions.assertEquals(0, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
         }
 
         Client httpClient = AdminClientUtil.createResteasyClient();
@@ -794,15 +794,15 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
                                         .param(OAuth2Constants.SCOPE, OAuth2Constants.SCOPE_OPENID)
 
                         ));
-                Assert.assertEquals(statusCode, response.getStatus());
+                Assertions.assertEquals(statusCode, response.getStatus());
 
                 if (statusCode != Response.Status.NOT_IMPLEMENTED.getStatusCode()) {
                     AccessTokenResponse tokenResponse = response.readEntity(AccessTokenResponse.class);
                     String idToken = tokenResponse.getIdToken();
-                    Assert.assertNotNull(idToken);
+                    Assertions.assertNotNull(idToken);
                     response.close();
 
-                    Assert.assertEquals(1, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
+                    Assertions.assertEquals(1, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
 
                     // test logout
                     response = childLogoutWebTarget(httpClient)
@@ -811,7 +811,7 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
                             .get();
                     response.close();
 
-                    Assert.assertEquals(0, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
+                    Assertions.assertEquals(0, adminClient.realm(CHILD_IDP).getClientSessionStats().size());
                 }
             }
         } finally {

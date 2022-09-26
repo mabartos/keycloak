@@ -17,8 +17,8 @@
  */
 package org.keycloak.testsuite.oidc;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.common.Profile;
 import org.keycloak.events.Details;
@@ -86,7 +86,7 @@ public class OIDCDynamicScopeTest extends OIDCScopeTest {
         testRealm.getRoles().getRealm().add(dynamicScopeRole);
     }
 
-    @Before
+    @BeforeEach
     public void assertDynamicScopesFeatureEnabled() {
         ProfileAssume.assumeFeatureEnabled(DYNAMIC_SCOPES);
     }
@@ -230,7 +230,7 @@ public class OIDCDynamicScopeTest extends OIDCScopeTest {
                 .assertEvent();
 
         Tokens tokens = sendTokenRequest(loginEvent, userId, "openid email profile " + expectedRoleScopes, "test-app");
-        Assert.assertNames(tokens.accessToken.getRealmAccess().getRoles(), expectedRoles);
+        Assertions.assertNames(tokens.accessToken.getRealmAccess().getRoles(), expectedRoles);
 
         oauth.doLogout(tokens.refreshToken, "password");
         events.expectLogout(tokens.idToken.getSessionState())

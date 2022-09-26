@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.console.users;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.representations.idm.GroupRepresentation;
@@ -30,10 +30,10 @@ import org.keycloak.testsuite.console.page.groups.Groups;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.keycloak.testsuite.admin.Users.setPasswordFor;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 
 /**
  *
@@ -51,7 +51,7 @@ public class UserAttributesTest extends AbstractUserTest {
     @Page
     protected CreateGroup createGroupPage;
 
-    @Before
+    @BeforeEach
     public void beforeUserAttributesTest() {
         usersPage.navigateTo();
     }

@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.webauthn.passwordless;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.webauthn.WebAuthnPropertyTest;
 
 /**
@@ -32,7 +32,7 @@ public class WebAuthnPwdLessPropertyTest extends WebAuthnPropertyTest {
     }
 
     @Override
-    @Ignore("Not usable for Passwordless")
+    @Disabled("Not usable for Passwordless")
     @Test
     public void requiredActionRegistration() {
     }

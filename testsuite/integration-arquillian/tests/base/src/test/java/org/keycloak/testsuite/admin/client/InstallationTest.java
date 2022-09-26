@@ -24,9 +24,9 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.events.admin.ResourceType;
@@ -45,7 +45,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.ws.rs.NotFoundException;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.hamcrest.Matchers.*;
 import static org.keycloak.common.Profile.Feature.AUTHORIZATION;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
@@ -74,7 +74,7 @@ public class InstallationTest extends AbstractClientTest {
     private ClientResource samlClient;
     private String samlClientId;
 
-    @Before
+    @BeforeEach
     public void createClients() {
         oidcClientId = createOidcClient(OIDC_NAME);
         oidcBearerOnlyClientId = createOidcBearerOnlyClient(OIDC_NAME_BEARER_ONLY_NAME);
@@ -86,7 +86,7 @@ public class InstallationTest extends AbstractClientTest {
         samlClient = findClientResource(SAML_NAME);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         removeClient(oidcClientId);
         removeClient(oidcBearerOnlyClientId);

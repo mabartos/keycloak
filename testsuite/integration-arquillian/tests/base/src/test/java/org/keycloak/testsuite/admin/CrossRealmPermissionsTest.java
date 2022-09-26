@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.admin;
 
-import org.junit.AfterClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.common.util.Time;
@@ -37,8 +37,8 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.testsuite.util.ServerURLs.getAuthServerContextRoot;
 
 /**
@@ -84,7 +84,7 @@ public class CrossRealmPermissionsTest extends AbstractKeycloakTest {
     }
 
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         adminClient1.close();
         adminClient2.close();

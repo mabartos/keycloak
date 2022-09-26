@@ -16,9 +16,9 @@
  */
 package org.keycloak.testsuite.oauth;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -27,7 +27,7 @@ import org.keycloak.testsuite.AssertEvents;
 import org.keycloak.testsuite.util.OAuthClient;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 import static org.keycloak.testsuite.admin.ApiUtil.findUserByUsername;
 import static org.keycloak.testsuite.util.ServerURLs.getAuthServerContextRoot;
@@ -39,8 +39,7 @@ import org.openqa.selenium.By;
  */
 public class AccessTokenDuplicateEmailsTest extends AbstractKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
 
     @Override
@@ -48,7 +47,7 @@ public class AccessTokenDuplicateEmailsTest extends AbstractKeycloakTest {
         super.beforeAbstractKeycloakTest();
     }
 
-    @Before
+    @BeforeEach
     public void clientConfiguration() {
         oauth.clientId("test-app");
         oauth.realm("test-duplicate-emails");

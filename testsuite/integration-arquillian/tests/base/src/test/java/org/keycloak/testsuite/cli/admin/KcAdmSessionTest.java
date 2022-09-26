@@ -2,8 +2,8 @@ package org.keycloak.testsuite.cli.admin;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.client.admin.cli.config.FileConfigHandler;
 import org.keycloak.testsuite.cli.KcAdmExec;
 import org.keycloak.testsuite.util.TempFileResource;
@@ -39,7 +39,7 @@ public class KcAdmSessionTest extends AbstractAdmCliTest {
             KcAdmExec exe = execute("create realms --config '" + configFile.getName() + "' -s realm=demorealm -s enabled=true");
 
             assertExitCodeAndStreamSizes(exe, 0, 0, 1);
-            Assert.assertTrue(exe.stderrLines().get(0).startsWith("Created "));
+            Assertions.assertTrue(exe.stderrLines().get(0).startsWith("Created "));
 
             // create user
             exe = execute("create users --config '" + configFile.getName() + "' -r demorealm -s username=testuser -s enabled=true -i");
@@ -67,14 +67,14 @@ public class KcAdmSessionTest extends AbstractAdmCliTest {
 
             assertExitCodeAndStdErrSize(exe, 0, 0);
             List<ObjectNode> roles = loadJson(exe.stdout(), LIST_OF_JSON);
-            Assert.assertThat("expected three realm roles available", roles.size(), equalTo(3));
+            Assertions.assertThat("expected three realm roles available", roles.size(), equalTo(3));
 
             // create realm role
             exe = execute("create roles --config '" + configFile.getName() + "' -s name=testrole -s 'description=Test role' -o");
 
             assertExitCodeAndStdErrSize(exe, 0, 0);
             ObjectNode role = loadJson(exe.stdout(), ObjectNode.class);
-            Assert.assertEquals("testrole", role.get("name").asText());
+            Assertions.assertEquals("testrole", role.get("name").asText());
             String roleId = role.get("id").asText();
 
             // get realm roles again
@@ -82,7 +82,7 @@ public class KcAdmSessionTest extends AbstractAdmCliTest {
 
             assertExitCodeAndStdErrSize(exe, 0, 0);
             roles = loadJson(exe.stdout(), LIST_OF_JSON);
-            Assert.assertThat("expected four realm roles available", roles.size(), equalTo(4));
+            Assertions.assertThat("expected four realm roles available", roles.size(), equalTo(4));
 
             // create client
             exe = execute("create clients --config '" + configFile.getName() + "' -s clientId=testclient -i");
@@ -95,15 +95,15 @@ public class KcAdmSessionTest extends AbstractAdmCliTest {
             exe = execute("create clients/" + idOfClient + "/roles --config '" + configFile.getName() + "' -s name=clientrole  -s 'description=Test client role'");
 
             assertExitCodeAndStreamSizes(exe, 0, 0, 1);
-            Assert.assertTrue(exe.stderrLines().get(0).startsWith("Created "));
+            Assertions.assertTrue(exe.stderrLines().get(0).startsWith("Created "));
 
             // make sure client role has been created
             exe = execute("get-roles --config '" + configFile.getName() + "' --cclientid testclient");
 
             assertExitCodeAndStdErrSize(exe, 0, 0);
             roles = loadJson(exe.stdout(), LIST_OF_JSON);
-            Assert.assertThat("expected one role", roles.size(), equalTo(1));
-            Assert.assertEquals("clientrole", roles.get(0).get("name").asText());
+            Assertions.assertThat("expected one role", roles.size(), equalTo(1));
+            Assertions.assertEquals("clientrole", roles.get(0).get("name").asText());
 
             // add created role to user - we are realm admin so we can add role to ourself
             exe = execute("add-roles --config '" + configFile.getName() + "' --uusername testuser --cclientid testclient --rolename clientrole");
@@ -116,25 +116,25 @@ public class KcAdmSessionTest extends AbstractAdmCliTest {
 
             assertExitCodeAndStdErrSize(exe, 0, 0);
             ObjectNode node = loadJson(exe.stdout(), ObjectNode.class);
-            Assert.assertNotNull(node.get("realmMappings"));
+            Assertions.assertNotNull(node.get("realmMappings"));
 
             List<String> realmMappings = StreamSupport.stream(node.get("realmMappings").spliterator(), false)
                     .map(o -> o.get("name").asText()).sorted().collect(Collectors.toList());
-            Assert.assertEquals(Arrays.asList("default-roles-demorealm"), realmMappings);
+            Assertions.assertEquals(Arrays.asList("default-roles-demorealm"), realmMappings);
 
             ObjectNode clientRoles = (ObjectNode) node.get("clientMappings");
             //List<String> fields = asSortedList(clientRoles.fieldNames());
             List<String> fields = StreamSupport.stream(clientRoles.spliterator(), false)
                     .map(o -> o.get("client").asText()).sorted().collect(Collectors.toList());
-            Assert.assertEquals(Arrays.asList("realm-management", "testclient"), fields);
+            Assertions.assertEquals(Arrays.asList("realm-management", "testclient"), fields);
 
             realmMappings = StreamSupport.stream(clientRoles.get("realm-management").get("mappings").spliterator(), false)
                     .map(o -> o.get("name").asText()).sorted().collect(Collectors.toList());
-            Assert.assertEquals(Arrays.asList("realm-admin"), realmMappings);
+            Assertions.assertEquals(Arrays.asList("realm-admin"), realmMappings);
 
             realmMappings = StreamSupport.stream(clientRoles.get("testclient").get("mappings").spliterator(), false)
                     .map(o -> o.get("name").asText()).sorted().collect(Collectors.toList());
-            Assert.assertEquals(Arrays.asList("clientrole"), realmMappings);
+            Assertions.assertEquals(Arrays.asList("clientrole"), realmMappings);
 
 
 
@@ -149,11 +149,11 @@ public class KcAdmSessionTest extends AbstractAdmCliTest {
             assertExitCodeAndStdErrSize(exe, 0, 0);
 
             node = loadJson(exe.stdout(), ObjectNode.class);
-            Assert.assertNotNull(node.get("realmMappings"));
+            Assertions.assertNotNull(node.get("realmMappings"));
 
             realmMappings = StreamSupport.stream(node.get("realmMappings").spliterator(), false)
                     .map(o -> o.get("name").asText()).sorted().collect(Collectors.toList());
-            Assert.assertEquals(Arrays.asList("default-roles-demorealm", "testrole"), realmMappings);
+            Assertions.assertEquals(Arrays.asList("default-roles-demorealm", "testrole"), realmMappings);
 
             // create a group
             exe = execute("create groups --config '" + configFile.getName() + "' -s name=TestUsers -i");

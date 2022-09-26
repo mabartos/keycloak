@@ -61,13 +61,13 @@ import java.net.URI;
 import java.util.UUID;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+
+import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.keycloak.testsuite.broker.BrokerTestConstants.IDP_SAML_ALIAS;
 import static org.keycloak.testsuite.federation.ldap.AbstractLDAPTest.TEST_REALM_NAME;
 import static org.keycloak.testsuite.federation.ldap.AbstractLDAPTest.ldapModelId;
@@ -142,7 +142,7 @@ public class LDAPSamlIdPInitiatedVaryingLetterCaseTest extends AbstractLDAPTest 
         testRealm().components().add(ldapMapper);
     }
 
-    @Before
+    @BeforeEach
     public void setupIdentityProvider() {
         // don't run this test when map storage is enabled, as map storage doesn't support LDAP, yet
         ProfileAssume.assumeFeatureDisabled(Profile.Feature.MAP_STORAGE);
@@ -187,7 +187,7 @@ public class LDAPSamlIdPInitiatedVaryingLetterCaseTest extends AbstractLDAPTest 
         getCleanup().addCleanup(idpCreator);
     }
 
-    @Before
+    @BeforeEach
     public void setupClients() {
         getCleanup().addCleanup(Creator.create(testRealm(), ClientBuilder.create()
           .protocol(SamlProtocol.LOGIN_PROTOCOL)
@@ -207,7 +207,7 @@ public class LDAPSamlIdPInitiatedVaryingLetterCaseTest extends AbstractLDAPTest 
         );
     }
 
-    @After
+    @AfterEach
     public void cleanupUsers() {
         testRealm().userStorage().removeImportedUsers(ldapModelId);
     }
@@ -217,8 +217,8 @@ public class LDAPSamlIdPInitiatedVaryingLetterCaseTest extends AbstractLDAPTest 
         loginPage.open();
         loginPage.login(USER_NAME_LDAP, USER_PASSWORD);
         appPage.assertCurrent();
-        Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
         String code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
         String idTokenHint = oauth.doAccessTokenRequest(code, USER_PASSWORD).getIdToken();
         appPage.logout(idTokenHint);

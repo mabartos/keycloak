@@ -16,8 +16,8 @@
  */
 package org.keycloak.testsuite.adapter.example.authorization;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientPoliciesResource;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.ResourcesResource;
@@ -38,8 +38,8 @@ import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
 
 /**
@@ -198,7 +198,7 @@ public abstract class AbstractServletAuthzAdapterTest extends AbstractBaseServle
     
     //KEYCLOAK-3830
     @Test
-    @Ignore // Ignored because: KEYCLOAK-7941
+    @Disabled // Ignored because: KEYCLOAK-7941
     public void testAccessPublicResource() throws Exception {
         performTests(() -> {
             driver.navigate().to(getResourceServerUrl() + "/public-html.html");

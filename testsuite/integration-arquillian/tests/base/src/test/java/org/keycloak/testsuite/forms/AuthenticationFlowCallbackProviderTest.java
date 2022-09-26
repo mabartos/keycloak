@@ -18,9 +18,9 @@
 package org.keycloak.testsuite.forms;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.authentication.authenticators.access.AllowAccessAuthenticatorFactory;
 import org.keycloak.authentication.authenticators.browser.UsernamePasswordFormFactory;
 import org.keycloak.authentication.authenticators.conditional.ConditionalLoaAuthenticator;
@@ -54,12 +54,12 @@ public class AuthenticationFlowCallbackProviderTest extends AbstractTestRealmKey
     public void configureTestRealm(RealmRepresentation testRealm) {
     }
 
-    @Before
+    @BeforeEach
     public void setUpFlow() {
         setBrowserFlow();
     }
 
-    @After
+    @AfterEach
     public void revertFlow() {
         BrowserFlowTest.revertFlows(testRealm(), DEFAULT_FLOW);
     }

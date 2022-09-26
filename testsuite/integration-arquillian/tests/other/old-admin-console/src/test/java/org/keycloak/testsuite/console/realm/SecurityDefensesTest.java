@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.console.realm;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.testsuite.arquillian.annotation.DisableFeature;
 import org.keycloak.testsuite.auth.page.account.Account;
@@ -29,12 +29,12 @@ import org.keycloak.testsuite.console.page.users.Users;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.keycloak.representations.idm.CredentialRepresentation.PASSWORD;
 import static org.keycloak.testsuite.admin.Users.setPasswordFor;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
 import static org.keycloak.testsuite.util.UIUtils.getTextFromElement;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.*;
 
 /**
@@ -71,7 +71,7 @@ public class SecurityDefensesTest extends AbstractRealmTest {
         testRealmAccountPage.setAuthRealm(TEST);
     }
 
-    @Before
+    @BeforeEach
     public void beforeSecurityDefensesTest() {
         bruteForceDetectionPage.navigateTo();
     }

@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.ws.rs.core.Response;
 import org.hamcrest.Matchers;
 import org.jboss.logging.Logger;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import static org.keycloak.testsuite.admin.ApiUtil.getCreatedId;
 
 /**
@@ -112,7 +112,7 @@ public class Creator<T> implements AutoCloseable {
 
     public static Creator<IdentityProviderResource> create(RealmResource realmResource, IdentityProviderRepresentation rep) {
         final IdentityProvidersResource res = realmResource.identityProviders();
-        Assert.assertThat("Identity provider alias must be specified", rep.getAlias(), Matchers.notNullValue());
+        Assertions.assertThat("Identity provider alias must be specified", rep.getAlias(), Matchers.notNullValue());
         try (Response response = res.create(rep)) {
             String createdId = getCreatedId(response);
             final IdentityProviderResource r = res.get(rep.getAlias());

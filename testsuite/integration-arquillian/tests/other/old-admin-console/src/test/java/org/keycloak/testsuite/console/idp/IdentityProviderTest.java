@@ -18,8 +18,8 @@
 package org.keycloak.testsuite.console.idp;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.console.page.idp.mappers.MultivaluedStringProperty;
 import org.keycloak.testsuite.console.AbstractConsoleTest;
 import org.keycloak.testsuite.console.page.idp.CreateIdentityProvider;
@@ -28,11 +28,11 @@ import org.keycloak.testsuite.console.page.idp.IdentityProvider;
 import org.keycloak.testsuite.console.page.idp.IdentityProviders;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.util.UIUtils.refreshPageAndWaitForLoad;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -57,7 +57,7 @@ public class IdentityProviderTest extends AbstractConsoleTest {
     @Page
     private MultivaluedStringProperty multiStringPropertyForm;
 
-    @Before
+    @BeforeEach
     public void beforeIdentityProviderTest() {
         identityProvidersPage.navigateTo();
     }
@@ -234,7 +234,7 @@ public class IdentityProviderTest extends AbstractConsoleTest {
 //    }
 //
 //    @Test
-//    @Ignore
+//    @Disabled
 //    public void testAddMultipleProviders() {
 //    }
 }

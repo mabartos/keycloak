@@ -22,17 +22,17 @@
 package org.keycloak.testsuite.console.clients;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.testsuite.console.page.clients.Client;
 import org.keycloak.testsuite.console.page.clients.credentials.ClientCredentials;
 import org.keycloak.testsuite.console.page.clients.credentials.ClientCredentialsGeneratePrivateKeys;
 import org.keycloak.testsuite.console.page.clients.credentials.OIDCClientCredentialsForm;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.keycloak.testsuite.auth.page.login.Login.OIDC;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlEquals;
 
 /**
  *
@@ -54,7 +54,7 @@ public class ClientCredentialsTest extends AbstractClientTest {
     @Page
     private ClientCredentialsGeneratePrivateKeys generatePrivateKeysPage;
     
-    @Before
+    @BeforeEach
     public void before() {
         newClient = createClientRep(TEST_CLIENT_ID, OIDC);
         testRealmResource().clients().create(newClient).close();

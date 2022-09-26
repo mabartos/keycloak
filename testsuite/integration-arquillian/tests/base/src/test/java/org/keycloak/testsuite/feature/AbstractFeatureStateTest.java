@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.feature;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.info.ServerInfoRepresentation;
 import org.keycloak.testsuite.AbstractTestRealmKeycloakTest;
@@ -47,7 +47,7 @@ public abstract class AbstractFeatureStateTest extends AbstractTestRealmKeycloak
     public void testFeatureAvailability(boolean expectedAvailability) {
         ServerInfoRepresentation serverInfo = adminClient.serverInfo().getInfo();
         Set<String> authenticatorProviderIds = serverInfo.getProviders().get(getFeatureSpiName()).getProviders().keySet();
-        Assert.assertEquals(expectedAvailability, authenticatorProviderIds.contains(getFeatureProviderId()));
+        Assertions.assertEquals(expectedAvailability, authenticatorProviderIds.contains(getFeatureProviderId()));
     }
 
     @Override

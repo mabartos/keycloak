@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.pages;
 
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.keycloak.common.util.KeycloakUriBuilder;
 import org.keycloak.testsuite.arquillian.SuiteContext;
 import org.keycloak.testsuite.util.DroneUtils;
@@ -46,7 +46,7 @@ public abstract class AbstractPage {
     public void assertCurrent() {
         WaitUtils.waitForPageToLoad();
         String name = getClass().getSimpleName();
-        Assert.assertTrue("Expected " + name + " but was " + DroneUtils.getCurrentDriver().getTitle() + " (" + DroneUtils.getCurrentDriver().getCurrentUrl() + ")",
+        Assertions.assertTrue("Expected " + name + " but was " + DroneUtils.getCurrentDriver().getTitle() + " (" + DroneUtils.getCurrentDriver().getCurrentUrl() + ")",
                 isCurrent());
     }
 

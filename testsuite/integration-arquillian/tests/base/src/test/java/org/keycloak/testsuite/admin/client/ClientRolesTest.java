@@ -17,9 +17,9 @@
 
 package org.keycloak.testsuite.admin.client;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.RoleByIdResource;
 import org.keycloak.admin.client.resource.RoleResource;
@@ -46,10 +46,10 @@ import javax.ws.rs.ClientErrorException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
 
 import org.keycloak.testsuite.util.RoleBuilder;
@@ -63,14 +63,14 @@ public class ClientRolesTest extends AbstractClientTest {
     private String clientDbId;
     private RolesResource rolesRsc;
 
-    @Before
+    @BeforeEach
     public void init() {
         clientDbId = createOidcClient("roleClient");
         clientRsc = findClientResource("roleClient");
         rolesRsc = clientRsc.roles();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         clientRsc.remove();
     }
@@ -148,13 +148,13 @@ public class ClientRolesTest extends AbstractClientTest {
         Set<RoleRepresentation> composites = rolesRsc.get("role-a").getRoleComposites();
 
         assertTrue(rolesRsc.get("role-a").toRepresentation().isComposite());
-        Assert.assertNames(composites, "role-b", "role-c");
+        Assertions.assertNames(composites, "role-b", "role-c");
 
         Set<RoleRepresentation> realmComposites = rolesRsc.get("role-a").getRealmRoleComposites();
-        Assert.assertNames(realmComposites, "role-c");
+        Assertions.assertNames(realmComposites, "role-c");
 
         Set<RoleRepresentation> clientComposites = rolesRsc.get("role-a").getClientRoleComposites(clientRsc.toRepresentation().getId());
-        Assert.assertNames(clientComposites, "role-b");
+        Assertions.assertNames(clientComposites, "role-b");
 
         rolesRsc.get("role-a").deleteComposites(l);
         assertAdminEvents.assertEvent(getRealmId(), OperationType.DELETE, AdminEventPaths.clientRoleResourceCompositesPath(clientDbId, "role-a"), l, ResourceType.CLIENT_ROLE);

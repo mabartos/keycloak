@@ -16,8 +16,8 @@
  */
 package org.keycloak.testsuite.admin;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.models.AdminRoles;
 import org.keycloak.models.ClientModel;
@@ -164,9 +164,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmManageAuthorization);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
             
@@ -174,9 +174,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmViewAuthorization);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -184,9 +184,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmAdmin);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -194,9 +194,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmManageClients);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -204,9 +204,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmViewClients);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -214,9 +214,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmManageEvents);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -224,9 +224,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmViewEvents);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -234,9 +234,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmManageIdentityProviders);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -244,9 +244,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmViewIdentityProviders);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -254,9 +254,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmManageRealm);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -264,9 +264,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmViewRealm);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -274,9 +274,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmImpersonate);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -315,9 +315,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmManageAuthorization);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -325,9 +325,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmViewAuthorization);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -335,9 +335,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmAdmin);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -345,9 +345,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmManageClients);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -355,9 +355,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmViewClients);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -365,9 +365,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmManageEvents);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -375,9 +375,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmViewEvents);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -385,9 +385,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmManageIdentityProviders);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -395,9 +395,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmViewIdentityProviders);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -405,9 +405,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmManageRealm);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -415,9 +415,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmViewRealm);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -425,9 +425,9 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(realmImpersonate);
                 try {
                     realmClient.realm(TEST).users().get(realmUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
 
@@ -466,144 +466,144 @@ public class IllegalAdminUpgradeTest extends AbstractKeycloakTest {
                 roles.add(masterManageAuthorization);
                 try {
                     realmClient.realm("master").users().get(masterUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));                    
                 }
                 roles.clear();
                 roles.add(masterViewAuthorization);
                 try {
                     realmClient.realm("master").users().get(masterUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));                    
                 }
                 roles.clear();
                 roles.add(masterManageClients);
                 try {
                     realmClient.realm("master").users().get(masterUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));                    
                 }
                 roles.clear();
                 roles.add(masterViewClients);
                 try {
                     realmClient.realm("master").users().get(masterUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));                    
                 }
                 roles.clear();
                 roles.add(masterManageEvents);
                 try {
                     realmClient.realm("master").users().get(masterUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));                    
                 }
                 roles.clear();
                 roles.add(masterViewEvents);
                 try {
                     realmClient.realm("master").users().get(masterUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));                    
                 }
                 roles.clear();
                 roles.add(masterManageIdentityProviders);
                 try {
                     realmClient.realm("master").users().get(masterUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));                    
                 }
                 roles.clear();
                 roles.add(masterViewIdentityProviders);
                 try {
                     realmClient.realm("master").users().get(masterUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));                    
                 }
                 roles.clear();
                 roles.add(masterManageRealm);
                 try {
                     realmClient.realm("master").users().get(masterUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));                    
                 }
                 roles.clear();
                 roles.add(masterViewRealm);
                 try {
                     realmClient.realm("master").users().get(masterUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));                    
                 }
                 roles.clear();
                 roles.add(masterImpersonate);
                 try {
                     realmClient.realm("master").users().get(masterUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));                    
                 }
                 roles.clear();
                 roles.add(masterManageUsers);
                 try {
                     realmClient.realm("master").users().get(masterUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));                    
                 }
                 roles.clear();
                 roles.add(masterViewUsers);
                 try {
                     realmClient.realm("master").users().get(masterUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));                    
                 }
                 roles.clear();
                 roles.add(masterQueryUsers);
                 try {
                     realmClient.realm("master").users().get(masterUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));                    
                 }
                 roles.clear();
                 roles.add(masterQueryGroups);
                 try {
                     realmClient.realm("master").users().get(masterUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));                    
                 }
                 roles.clear();
                 roles.add(masterQueryClients);
                 try {
                     realmClient.realm("master").users().get(masterUser.getId()).roles().clientLevel(client.getId()).add(roles);
-                    Assert.fail("should fail with forbidden exception");
+                    Assertions.fail("should fail with forbidden exception");
                 } catch (ClientErrorException e) {
-                    Assert.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()), 
+                    Assertions.assertThat(Response.Status.fromStatusCode(e.getResponse().getStatus()),
                             is(equalTo(Response.Status.FORBIDDEN)));
                 }
             }

@@ -11,8 +11,8 @@ import org.keycloak.testsuite.util.SamlClient.Binding;
 import org.keycloak.testsuite.util.SamlClientBuilder;
 import java.io.Closeable;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import static org.keycloak.saml.common.constants.JBossSAMLURIConstants.ASSERTION_NSURI;
@@ -50,7 +50,7 @@ public final class KcSamlCustomEntityIdBrokerTest extends AbstractBrokerTest {
 
                         // Find the Issuer element
                         Element issuerElement = DocumentUtil.getDirectChildElement(document.getDocumentElement(), ASSERTION_NSURI.get(), "Issuer");
-                        Assert.assertEquals("Unexpected Issuer element value", getAuthServerRoot() + "realms/consumer", issuerElement.getTextContent());
+                        Assertions.assertEquals("Unexpected Issuer element value", getAuthServerRoot() + "realms/consumer", issuerElement.getTextContent());
                     }
                     catch (Exception ex)
                     {
@@ -85,7 +85,7 @@ public final class KcSamlCustomEntityIdBrokerTest extends AbstractBrokerTest {
 
                         // Find the Issuer element
                         Element issuerElement = DocumentUtil.getDirectChildElement(document.getDocumentElement(), ASSERTION_NSURI.get(), "Issuer");
-                        Assert.assertEquals("Unexpected Issuer element value", "http://my.custom.entity.id", issuerElement.getTextContent());
+                        Assertions.assertEquals("Unexpected Issuer element value", "http://my.custom.entity.id", issuerElement.getTextContent());
                     }
                     catch (Exception ex)
                     {

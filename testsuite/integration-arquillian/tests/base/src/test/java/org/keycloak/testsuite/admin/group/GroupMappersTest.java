@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.admin.group;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.protocol.ProtocolMapperUtils;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
@@ -46,7 +46,7 @@ public class GroupMappersTest extends AbstractGroupTest {
         testRealmRep.setEventsEnabled(true);
 
         ClientRepresentation client = getClientByAlias(testRealmRep, "test-app");
-        Assert.assertNotNull("test-app client exists", client);
+        Assertions.assertNotNull("test-app client exists", client);
 
         client.setDirectAccessGrantsEnabled(true);
 
@@ -108,26 +108,26 @@ public class GroupMappersTest extends AbstractGroupTest {
             UserRepresentation user = realm.users().search("topGroupUser", -1, -1).get(0);
 
             AccessToken token = login(user.getUsername(), "test-app", "password", user.getId());
-            Assert.assertTrue(token.getRealmAccess().getRoles().contains("user"));
+            Assertions.assertTrue(token.getRealmAccess().getRoles().contains("user"));
             List<String> groups = (List<String>) token.getOtherClaims().get("groups");
-            Assert.assertNotNull(groups);
-            Assert.assertTrue(groups.size() == 1);
-            Assert.assertEquals("topGroup", groups.get(0));
-            Assert.assertEquals("true", token.getOtherClaims().get("topAttribute"));
+            Assertions.assertNotNull(groups);
+            Assertions.assertTrue(groups.size() == 1);
+            Assertions.assertEquals("topGroup", groups.get(0));
+            Assertions.assertEquals("true", token.getOtherClaims().get("topAttribute"));
         }
         {
             UserRepresentation user = realm.users().search("level2GroupUser", -1, -1).get(0);
 
             AccessToken token = login(user.getUsername(), "test-app", "password", user.getId());
-            Assert.assertTrue(token.getRealmAccess().getRoles().contains("user"));
-            Assert.assertTrue(token.getRealmAccess().getRoles().contains("admin"));
-            Assert.assertTrue(token.getResourceAccess("test-app").getRoles().contains("customer-user"));
+            Assertions.assertTrue(token.getRealmAccess().getRoles().contains("user"));
+            Assertions.assertTrue(token.getRealmAccess().getRoles().contains("admin"));
+            Assertions.assertTrue(token.getResourceAccess("test-app").getRoles().contains("customer-user"));
             List<String> groups = (List<String>) token.getOtherClaims().get("groups");
-            Assert.assertNotNull(groups);
-            Assert.assertTrue(groups.size() == 1);
-            Assert.assertEquals("level2group", groups.get(0));
-            Assert.assertEquals("true", token.getOtherClaims().get("topAttribute"));
-            Assert.assertEquals("true", token.getOtherClaims().get("level2Attribute"));
+            Assertions.assertNotNull(groups);
+            Assertions.assertTrue(groups.size() == 1);
+            Assertions.assertEquals("level2group", groups.get(0));
+            Assertions.assertEquals("true", token.getOtherClaims().get("topAttribute"));
+            Assertions.assertEquals("true", token.getOtherClaims().get("level2Attribute"));
         }
     }
 }

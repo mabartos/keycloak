@@ -42,8 +42,7 @@ import org.keycloak.testsuite.util.OAuthClient;
  */
 public abstract class AbstractOIDCScopeTest extends AbstractTestRealmKeycloakTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;
@@ -70,7 +69,7 @@ public abstract class AbstractOIDCScopeTest extends AbstractTestRealmKeycloakTes
 
         String code = new OAuthClient.AuthorizationEndpointResponse(oauth).getCode();
         OAuthClient.AccessTokenResponse response = oauth.doAccessTokenRequest(code, "password");
-        Assert.assertEquals(200, response.getStatusCode());
+        Assertions.assertEquals(200, response.getStatusCode());
 
         // Test scopes
         log.info("expectedScopes = " + expectedScope);
@@ -97,7 +96,7 @@ public abstract class AbstractOIDCScopeTest extends AbstractTestRealmKeycloakTes
     public static void assertScopes(String expectedScope, String receivedScope) {
         Collection<String> expectedScopes = Arrays.asList(expectedScope.split(" "));
         Collection<String> receivedScopes = Arrays.asList(receivedScope.split(" "));
-        Assert.assertTrue("Not matched. expectedScope: " + expectedScope + ", receivedScope: " + receivedScope,
+        Assertions.assertTrue("Not matched. expectedScope: " + expectedScope + ", receivedScope: " + receivedScope,
                 expectedScopes.containsAll(receivedScopes) && receivedScopes.containsAll(expectedScopes));
     }
 

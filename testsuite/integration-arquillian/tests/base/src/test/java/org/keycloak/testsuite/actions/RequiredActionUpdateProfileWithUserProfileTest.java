@@ -18,9 +18,9 @@ package org.keycloak.testsuite.actions;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static org.keycloak.testsuite.forms.VerifyProfileTest.PERMISSIONS_ALL;
 import static org.keycloak.testsuite.forms.VerifyProfileTest.PERMISSIONS_ADMIN_EDITABLE;
@@ -34,9 +34,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.common.Profile;
 import org.keycloak.events.Details;
@@ -90,7 +90,7 @@ public class RequiredActionUpdateProfileWithUserProfileTest extends RequiredActi
 
     }
 
-    @Before
+    @BeforeEach
     public void beforeTest() {
         VerifyProfileTest.setUserProfileConfiguration(testRealm(),null);
         super.beforeTest();
@@ -112,11 +112,11 @@ public class RequiredActionUpdateProfileWithUserProfileTest extends RequiredActi
 
         //assert field names
         // i18n replaced
-        Assert.assertEquals("First name",updateProfilePage.getLabelForField("firstName"));
+        Assertions.assertEquals("First name",updateProfilePage.getLabelForField("firstName"));
         // attribute name used if no display name set
-        Assert.assertEquals("lastName",updateProfilePage.getLabelForField("lastName"));
+        Assertions.assertEquals("lastName",updateProfilePage.getLabelForField("lastName"));
         // direct value in display name
-        Assert.assertEquals("Department",updateProfilePage.getLabelForField("department"));
+        Assertions.assertEquals("Department",updateProfilePage.getLabelForField("department"));
 
     }
 
@@ -141,42 +141,42 @@ public class RequiredActionUpdateProfileWithUserProfileTest extends RequiredActi
         String htmlFormId="kc-update-profile-form";
 
         //assert fields and groups location in form
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(1) > div:nth-child(2) > input#lastName")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(2) > div:nth-child(2) > input#username")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(3) > div:nth-child(2) > input#firstName")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(4) > div:nth-child(1) > label#header-company")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(4) > div:nth-child(2) > label#description-company")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(5) > div:nth-child(2) > input#department")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(6) > div:nth-child(1) > label#header-contact")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(7) > div:nth-child(2) > input#email")
                 ).isDisplayed()
@@ -201,27 +201,27 @@ public class RequiredActionUpdateProfileWithUserProfileTest extends RequiredActi
         updateProfilePage.assertCurrent();
 
         //assert fields location in form
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#kc-update-profile-form > div:nth-child(1) > div:nth-child(2) > input#lastName")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#kc-update-profile-form > div:nth-child(2) > div:nth-child(2) > input#department")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#kc-update-profile-form > div:nth-child(3) > div:nth-child(2) > input#username")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#kc-update-profile-form > div:nth-child(4) > div:nth-child(2) > input#firstName")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#kc-update-profile-form > div:nth-child(5) > div:nth-child(2) > input#email")
                 ).isDisplayed()
@@ -288,16 +288,16 @@ public class RequiredActionUpdateProfileWithUserProfileTest extends RequiredActi
                 .detail(Details.PREVIOUS_LAST_NAME, "Brady")
                 .detail(Details.PREVIOUS_EMAIL, USERNAME1).detail(Details.UPDATED_EMAIL, "new@email.com")
                 .assertEvent();
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
         events.expectLogin().assertEvent();
 
         // assert user is really updated in persistent store
         UserRepresentation user = ActionUtil.findUserWithAdminClient(adminClient, USERNAME1);
-        Assert.assertEquals("New first", user.getFirstName());
+        Assertions.assertEquals("New first", user.getFirstName());
         assertThat(StringUtils.isEmpty(user.getLastName()), is(true));
-        Assert.assertEquals("new@email.com", user.getEmail());
-        Assert.assertEquals(USERNAME1, user.getUsername());
+        Assertions.assertEquals("new@email.com", user.getEmail());
+        Assertions.assertEquals(USERNAME1, user.getUsername());
     }
 
     @Test
@@ -323,8 +323,8 @@ public class RequiredActionUpdateProfileWithUserProfileTest extends RequiredActi
         //submit OK
         updateProfilePage.prepareUpdate().username(USERNAME1).firstName("First").lastName("Last").email(USERNAME1).submit();
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUserByUsername(USERNAME1);
         assertEquals("First", user.getFirstName());
@@ -346,14 +346,14 @@ public class RequiredActionUpdateProfileWithUserProfileTest extends RequiredActi
         loginPage.login(USERNAME1, PASSWORD);
 
         updateProfilePage.assertCurrent();
-        Assert.assertEquals("Brady", updateProfilePage.getLastName());
-        Assert.assertFalse(updateProfilePage.isDepartmentEnabled());
+        Assertions.assertEquals("Brady", updateProfilePage.getLastName());
+        Assertions.assertFalse(updateProfilePage.isDepartmentEnabled());
 
         //update of the other attributes must be successful in this case
         updateProfilePage.prepareUpdate().username(USERNAME1).firstName("First").lastName("Last").email(USERNAME1).submit();
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUserByUsername(USERNAME1);
         assertEquals("First", user.getFirstName());
@@ -373,14 +373,14 @@ public class RequiredActionUpdateProfileWithUserProfileTest extends RequiredActi
         loginPage.login(USERNAME1, PASSWORD);
 
         updateProfilePage.assertCurrent();
-        Assert.assertEquals("last", updateProfilePage.getLastName());
-        Assert.assertFalse(updateProfilePage.isDepartmentEnabled());
+        Assertions.assertEquals("last", updateProfilePage.getLastName());
+        Assertions.assertFalse(updateProfilePage.isDepartmentEnabled());
 
         //update of the other attributes must be successful in this case
         updateProfilePage.prepareUpdate().username(USERNAME1).firstName("First").lastName("Last").email(USERNAME1).submit();
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUserByUsername(USERNAME1);
         assertEquals("First", user.getFirstName());
@@ -400,14 +400,14 @@ public class RequiredActionUpdateProfileWithUserProfileTest extends RequiredActi
         loginPage.login(USERNAME1, PASSWORD);
 
         updateProfilePage.assertCurrent();
-        Assert.assertEquals("Brady", updateProfilePage.getLastName());
-        Assert.assertFalse("'department' field is visible" , updateProfilePage.isDepartmentPresent());
+        Assertions.assertEquals("Brady", updateProfilePage.getLastName());
+        Assertions.assertFalse("'department' field is visible" , updateProfilePage.isDepartmentPresent());
 
         //update of the other attributes must be successful in this case
         updateProfilePage.prepareUpdate().username(USERNAME1).firstName("First").lastName("Last").email(USERNAME1).submit();
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUserByUsername(USERNAME1);
         assertEquals("First", user.getFirstName());
@@ -444,8 +444,8 @@ public class RequiredActionUpdateProfileWithUserProfileTest extends RequiredActi
                 .detail(Details.PREF_UPDATED + "department", "DepartmentCC")
                 .assertEvent();
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUserByUsername(USERNAME1);
         assertEquals("FirstCC", user.getFirstName());
@@ -484,8 +484,8 @@ public class RequiredActionUpdateProfileWithUserProfileTest extends RequiredActi
                 .assertEvent();
 
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUserByUsername(USERNAME1);
         assertEquals("FirstCC", user.getFirstName());
@@ -518,8 +518,8 @@ public class RequiredActionUpdateProfileWithUserProfileTest extends RequiredActi
         updateProfilePage.prepareUpdate().username(USERNAME1).firstName("FirstCC").lastName("LastCC").email(USERNAME1)
                 .department("DepartmentCC").submit();
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUserByUsername(USERNAME1);
         assertEquals("FirstCC", user.getFirstName());
@@ -552,8 +552,8 @@ public class RequiredActionUpdateProfileWithUserProfileTest extends RequiredActi
         updateProfilePage.prepareUpdate().username(USERNAME1).firstName("FirstCC").lastName("LastCC").email(USERNAME1)
                 .department("DepartmentCC").submit();
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUserByUsername(USERNAME1);
         assertEquals("FirstCC", user.getFirstName());
@@ -577,12 +577,12 @@ public class RequiredActionUpdateProfileWithUserProfileTest extends RequiredActi
 
         updateProfilePage.assertCurrent();
 
-        Assert.assertTrue(updateProfilePage.isDepartmentPresent());
+        Assertions.assertTrue(updateProfilePage.isDepartmentPresent());
         updateProfilePage.prepareUpdate().username(USERNAME1).firstName("FirstCC").lastName("LastCC").email(USERNAME1)
                 .department("DepartmentCC").submit();
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUserByUsername(USERNAME1);
         assertEquals("FirstCC", user.getFirstName());
@@ -606,11 +606,11 @@ public class RequiredActionUpdateProfileWithUserProfileTest extends RequiredActi
 
         updateProfilePage.assertCurrent();
 
-        Assert.assertFalse(updateProfilePage.isDepartmentPresent());
+        Assertions.assertFalse(updateProfilePage.isDepartmentPresent());
         updateProfilePage.prepareUpdate().username(USERNAME1).firstName("FirstCC").lastName("LastCC").email(USERNAME1).submit();
 
-        Assert.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
+        Assertions.assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
+        Assertions.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
 
         UserRepresentation user = getUserByUsername(USERNAME1);
         assertEquals("FirstCC", user.getFirstName());

@@ -19,8 +19,8 @@ package org.keycloak.testsuite.console.realm;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.console.page.realm.ThemeSettings;
 
 /**
@@ -33,7 +33,7 @@ public class ThemeSettingsTest extends AbstractRealmTest {
     @Page
     private ThemeSettings themeSettingsPage;
 
-    @Before
+    @BeforeEach
     public void beforeThemeTest() {
 //        configure().realmSettings();
 //        tabs().themes();

@@ -20,12 +20,12 @@ package org.keycloak.testsuite.crossdc;
 import javax.ws.rs.core.Response;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.Assert;
 import org.keycloak.testsuite.util.Matchers;
 import org.keycloak.testsuite.util.OAuthClient;
 
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
@@ -42,7 +42,7 @@ public class LoginCrossDCTest extends AbstractAdminCrossDCTest {
             OAuthClient.AuthorizationEndpointResponse response1 = oauth.doLogin("test-user@localhost", "password");
             String code = response1.getCode();
             OAuthClient.AccessTokenResponse response2 = oauth.doAccessTokenRequest(code, "password");
-            Assert.assertNotNull(response2.getAccessToken());
+            Assertions.assertNotNull(response2.getAccessToken());
 
             try (CloseableHttpResponse response3 = oauth.doLogout(response2.getRefreshToken(), "password")) {
                 assertThat(response3, Matchers.statusCodeIsHC(Response.Status.NO_CONTENT));

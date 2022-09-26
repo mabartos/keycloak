@@ -18,7 +18,7 @@ package org.keycloak.testsuite.broker;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
 import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
 import static org.keycloak.testsuite.forms.VerifyProfileTest.ATTRIBUTE_DEPARTMENT;
@@ -26,9 +26,9 @@ import static org.keycloak.testsuite.forms.VerifyProfileTest.PERMISSIONS_ADMIN_E
 import static org.keycloak.testsuite.forms.VerifyProfileTest.PERMISSIONS_ALL;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -47,7 +47,7 @@ import org.openqa.selenium.By;
 public class KcOidcFirstBrokerLoginWithUserProfileTest extends KcOidcFirstBrokerLoginTest {
 
     @Override
-    @Before
+    @BeforeEach
     public void beforeBrokerTest() {
         super.beforeBrokerTest();
         enableDynamicUserProfile();
@@ -72,11 +72,11 @@ public class KcOidcFirstBrokerLoginWithUserProfileTest extends KcOidcFirstBroker
 
         //assert field names
         // i18n replaced
-        Assert.assertEquals("First name", updateAccountInformationPage.getLabelForField("firstName"));
+        Assertions.assertEquals("First name", updateAccountInformationPage.getLabelForField("firstName"));
         // attribute name used if no display name set
-        Assert.assertEquals("lastName", updateAccountInformationPage.getLabelForField("lastName"));
+        Assertions.assertEquals("lastName", updateAccountInformationPage.getLabelForField("lastName"));
         // direct value in display name
-        Assert.assertEquals("Department", updateAccountInformationPage.getLabelForField("department"));
+        Assertions.assertEquals("Department", updateAccountInformationPage.getLabelForField("department"));
     }
 
     @Test
@@ -105,42 +105,42 @@ public class KcOidcFirstBrokerLoginWithUserProfileTest extends KcOidcFirstBroker
         String htmlFormId = "kc-idp-review-profile-form";
 
         //assert fields and groups location in form
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(1) > div:nth-child(2) > input#lastName")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(2) > div:nth-child(2) > input#username")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(3) > div:nth-child(2) > input#firstName")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(4) > div:nth-child(1) > label#header-company")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(4) > div:nth-child(2) > label#description-company")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(5) > div:nth-child(2) > input#department")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(6) > div:nth-child(1) > label#header-contact")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(7) > div:nth-child(2) > input#email")
                 ).isDisplayed()
@@ -168,27 +168,27 @@ public class KcOidcFirstBrokerLoginWithUserProfileTest extends KcOidcFirstBroker
 
         //assert fields location in form
         String htmlFormId = "kc-idp-review-profile-form";
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(1) > div:nth-child(2) > input#lastName")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(2) > div:nth-child(2) > input#department")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(3) > div:nth-child(2) > input#username")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(4) > div:nth-child(2) > input#firstName")
                 ).isDisplayed()
         );
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 driver.findElement(
                         By.cssSelector("form#"+htmlFormId+" > div:nth-child(5) > div:nth-child(2) > input#email")
                 ).isDisplayed()
@@ -287,7 +287,7 @@ public class KcOidcFirstBrokerLoginWithUserProfileTest extends KcOidcFirstBroker
         waitForPage(driver, "update account information", false);
         updateAccountInformationPage.assertCurrent();
 
-        Assert.assertFalse(updateAccountInformationPage.isDepartmentPresent());
+        Assertions.assertFalse(updateAccountInformationPage.isDepartmentPresent());
 
 
         updateAccountInformationPage.updateAccountInformation( "requiredReadOnlyAttributeNotRenderedAndNotBlockingRegistration", "requiredReadOnlyAttributeNotRenderedAndNotBlockingRegistration@email", "FirstAA", "LastAA");
@@ -347,7 +347,7 @@ public class KcOidcFirstBrokerLoginWithUserProfileTest extends KcOidcFirstBroker
         waitForPage(driver, "update account information", false);
         updateAccountInformationPage.assertCurrent();
 
-        Assert.assertTrue(updateAccountInformationPage.isDepartmentPresent());
+        Assertions.assertTrue(updateAccountInformationPage.isDepartmentPresent());
         updateAccountInformationPage.updateAccountInformation( "attributeNotRequiredAndSelectedByScopeCanBeIgnored", "attributeNotRequiredAndSelectedByScopeCanBeIgnored@email", "FirstAA", "LastAA");
 
         waitForAccountManagementTitle();
@@ -377,7 +377,7 @@ public class KcOidcFirstBrokerLoginWithUserProfileTest extends KcOidcFirstBroker
         waitForPage(driver, "update account information", false);
         updateAccountInformationPage.assertCurrent();
 
-        Assert.assertTrue(updateAccountInformationPage.isDepartmentPresent());
+        Assertions.assertTrue(updateAccountInformationPage.isDepartmentPresent());
         updateAccountInformationPage.updateAccountInformation( "attributeNotRequiredAndSelectedByScopeCanBeSet", "attributeNotRequiredAndSelectedByScopeCanBeSet@email", "FirstAA", "LastAA","Department AA");
 
         waitForAccountManagementTitle();
@@ -408,7 +408,7 @@ public class KcOidcFirstBrokerLoginWithUserProfileTest extends KcOidcFirstBroker
         waitForPage(driver, "update account information", false);
         updateAccountInformationPage.assertCurrent();
 
-        Assert.assertFalse(updateAccountInformationPage.isDepartmentPresent());
+        Assertions.assertFalse(updateAccountInformationPage.isDepartmentPresent());
         updateAccountInformationPage.updateAccountInformation( "attributeRequiredButNotSelectedByScopeIsNotRenderedAndNotBlockingRegistration", "attributeRequiredButNotSelectedByScopeIsNotRenderedAndNotBlockingRegistration@email", "FirstAA", "LastAA");
 
         waitForAccountManagementTitle();

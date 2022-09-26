@@ -17,9 +17,10 @@
 
 package org.keycloak.testsuite.admin.client;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.events.admin.ResourceType;
@@ -43,9 +44,9 @@ import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
  *
  * @author Stan Silvert ssilvert@redhat.com (C) 2016 Red Hat Inc.
  */
+@ExtendWith(AssertAdminEvents.class)
 public abstract class AbstractClientTest extends AbstractAuthTest {
 
-    @Rule
     public AssertAdminEvents assertAdminEvents = new AssertAdminEvents(this);
 
     @Override
@@ -55,7 +56,7 @@ public abstract class AbstractClientTest extends AbstractAuthTest {
         accountPage.setAuthRealm("test");
     }    
 
-    @Before
+    @BeforeEach
     public void setupAdminEvents() {
         RealmRepresentation realm = testRealmResource().toRepresentation();
         if (realm.getEventsListeners() == null || !realm.getEventsListeners().contains(TestEventsListenerProviderFactory.PROVIDER_ID)) {
@@ -64,7 +65,7 @@ public abstract class AbstractClientTest extends AbstractAuthTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDownAdminEvents() {
         RealmRepresentation realm = RealmBuilder.edit(testRealmResource().toRepresentation()).removeTestEventListener().build();
         testRealmResource().update(realm);
@@ -88,7 +89,7 @@ public abstract class AbstractClientTest extends AbstractAuthTest {
                 result = user;
             }
         }
-        Assert.assertNotNull("Did not find user with username " + userName, result);
+        Assertions.assertNotNull("Did not find user with username " + userName, result);
         return result;
     }
 

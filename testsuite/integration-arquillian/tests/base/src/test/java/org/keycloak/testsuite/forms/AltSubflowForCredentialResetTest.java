@@ -19,10 +19,11 @@
 package org.keycloak.testsuite.forms;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.authentication.authenticators.resetcred.ResetCredentialChooseUser;
 import org.keycloak.authentication.authenticators.resetcred.ResetCredentialEmail;
 import org.keycloak.authentication.authenticators.resetcred.ResetPassword;
@@ -38,12 +39,12 @@ import org.keycloak.testsuite.pages.LoginPage;
 import org.keycloak.testsuite.pages.LoginPasswordResetPage;
 import org.keycloak.testsuite.pages.LoginUsernameOnlyPage;
 import org.keycloak.testsuite.util.FlowUtil;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.UserBuilder;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
 
 /**
@@ -51,15 +52,12 @@ import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
  *
  * @author <a href="mailto:drichtar@redhat.com">Denis Richtárik</a>
  */
+@ExtendWith(GreenMailExtension.class)
 public class AltSubflowForCredentialResetTest extends AbstractTestRealmKeycloakTest {
 
     private String userID;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
-
-    @Rule
-    public GreenMailRule greenMailRule = new GreenMailRule();
+    
 
     @Page
     LoginPage loginPage;
@@ -86,7 +84,7 @@ public class AltSubflowForCredentialResetTest extends AbstractTestRealmKeycloakT
         testRealms.add(loadTestRealm());
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         log.info("Adding login-test user");
         UserRepresentation testUser = UserBuilder.create().username("login-test").email("login@test.com").enabled(true).build();
@@ -117,12 +115,12 @@ public class AltSubflowForCredentialResetTest extends AbstractTestRealmKeycloakT
         try {
             loginPage.open();
             loginPage.resetPassword();
-            Assert.assertTrue(loginPasswordResetPage.isCurrent());
+            Assertions.assertTrue(loginPasswordResetPage.isCurrent());
             loginPasswordResetPage.changePassword("login@test.com.com");
-            Assert.assertTrue(loginPage.isCurrent());
+            Assertions.assertTrue(loginPage.isCurrent());
             assertEquals("You should receive an email shortly with further instructions.", loginUsernameOnlyPage.getSuccessMessage());
             loginPage.open();
-            Assert.assertTrue(loginPage.isCurrent());
+            Assertions.assertTrue(loginPage.isCurrent());
         } finally {
             testRealm().flows().getFlows().clear();
             RealmRepresentation realm = testRealm().toRepresentation();

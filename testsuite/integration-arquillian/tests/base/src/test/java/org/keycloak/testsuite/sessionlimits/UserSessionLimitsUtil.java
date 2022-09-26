@@ -11,7 +11,7 @@ import org.keycloak.testsuite.runonserver.RunOnServer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UserSessionLimitsUtil {
     protected static final String ERROR_TO_DISPLAY = "This account has too many sessions";

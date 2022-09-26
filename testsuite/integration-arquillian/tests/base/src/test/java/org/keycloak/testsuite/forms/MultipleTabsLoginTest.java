@@ -17,14 +17,15 @@
 
 package org.keycloak.testsuite.forms;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.testsuite.util.ServerURLs.getAuthServerContextRoot;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.models.Constants;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.utils.KeycloakModelUtils;
@@ -33,7 +34,6 @@ import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.AbstractTestRealmKeycloakTest;
 import org.keycloak.testsuite.ActionURIUtils;
-import org.keycloak.testsuite.Assert;
 import org.keycloak.testsuite.AssertEvents;
 import org.keycloak.testsuite.admin.ApiUtil;
 import org.keycloak.testsuite.pages.AppPage;
@@ -48,7 +48,7 @@ import org.keycloak.testsuite.pages.OAuthGrantPage;
 import org.keycloak.testsuite.pages.RegisterPage;
 import org.keycloak.testsuite.pages.VerifyEmailPage;
 import org.keycloak.testsuite.util.ClientBuilder;
-import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailExtension;
 import org.keycloak.testsuite.util.UserBuilder;
 import org.openqa.selenium.NoSuchElementException;
 
@@ -57,6 +57,7 @@ import org.openqa.selenium.NoSuchElementException;
  *
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
  */
+@ExtendWith(GreenMailExtension.class)
 public class MultipleTabsLoginTest extends AbstractTestRealmKeycloakTest {
 
     private String userId;
@@ -70,7 +71,7 @@ public class MultipleTabsLoginTest extends AbstractTestRealmKeycloakTest {
         return true;
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         UserRepresentation user = UserBuilder.create()
                 .username("login-test")
@@ -85,9 +86,6 @@ public class MultipleTabsLoginTest extends AbstractTestRealmKeycloakTest {
 
         oauth.clientId("test-app");
     }
-
-    @Rule
-    public GreenMailRule greenMail = new GreenMailRule();
 
     @Page
     protected AppPage appPage;
@@ -122,8 +120,7 @@ public class MultipleTabsLoginTest extends AbstractTestRealmKeycloakTest {
     @Page
     protected OAuthGrantPage grantPage;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
 
     @Test
@@ -152,7 +149,7 @@ public class MultipleTabsLoginTest extends AbstractTestRealmKeycloakTest {
         // Try to go back to tab 1. We should have ALREADY_LOGGED_IN info page
         driver.navigate().to(tab1Url);
         infoPage.assertCurrent();
-        Assert.assertEquals("You are already logged in.", infoPage.getInfo());
+        Assertions.assertEquals("You are already logged in.", infoPage.getInfo());
 
         infoPage.clickBackToApplicationLink();
         appPage.assertCurrent();
@@ -200,12 +197,12 @@ public class MultipleTabsLoginTest extends AbstractTestRealmKeycloakTest {
 
         loginPage.login("invalid", "invalid");
         loginPage.assertCurrent();
-        Assert.assertEquals("Invalid username or password.", loginPage.getInputError());
+        Assertions.assertEquals("Invalid username or password.", loginPage.getInputError());
 
         // Simulate going back to tab1 and confirm login form. Login page with "action expired" message should be shown (NOTE: WebDriver does it with GET, when real browser would do it with POST. Improve test if needed...)
         driver.navigate().to(actionUrl1);
         loginPage.assertCurrent();
-        Assert.assertEquals("Action expired. Please continue with login now.", loginPage.getError());
+        Assertions.assertEquals("Action expired. Please continue with login now.", loginPage.getError());
 
         // Login success now
         loginPage.login("login-test", "password");
@@ -345,7 +342,7 @@ public class MultipleTabsLoginTest extends AbstractTestRealmKeycloakTest {
         appPage.assertCurrent();
         String currentUrl = driver.getCurrentUrl();
         assertCurrentUrlStartsWith(redirectUri1);
-        Assert.assertTrue(currentUrl.contains("state1"));
+        Assertions.assertTrue(currentUrl.contains("state1"));
     }
 
 
@@ -379,7 +376,7 @@ public class MultipleTabsLoginTest extends AbstractTestRealmKeycloakTest {
         appPage.assertCurrent();
         String currentUrl = driver.getCurrentUrl();
         assertCurrentUrlStartsWith(redirectUri2);
-        Assert.assertTrue(currentUrl.contains("state2"));
+        Assertions.assertTrue(currentUrl.contains("state2"));
     }
 
     // KEYCLOAK-12161
@@ -422,7 +419,7 @@ public class MultipleTabsLoginTest extends AbstractTestRealmKeycloakTest {
         // Try to go back to tab 1. We should have ALREADY_LOGGED_IN info page
         driver.navigate().to(tab1Url);
         infoPage.assertCurrent();
-        Assert.assertEquals("You are already logged in.", infoPage.getInfo());
+        Assertions.assertEquals("You are already logged in.", infoPage.getInfo());
 
         try {
             infoPage.clickBackToApplicationLink();

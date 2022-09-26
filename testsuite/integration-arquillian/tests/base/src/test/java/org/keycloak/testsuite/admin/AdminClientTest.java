@@ -21,9 +21,9 @@ package org.keycloak.testsuite.admin;
 import java.util.List;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -60,8 +60,7 @@ public class AdminClientTest extends AbstractKeycloakTest {
     private static String clientId;
     private static String clientSecret;
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -115,13 +114,13 @@ public class AdminClientTest extends AbstractKeycloakTest {
         try (Keycloak adminClient = AdminClientUtil.createAdminClientWithClientCredentials(realmName, clientId, clientSecret, null)) {
             // Check possible to load the realm
             RealmRepresentation realm = adminClient.realm(realmName).toRepresentation();
-            Assert.assertEquals(realmName, realm.getRealm());
+            Assertions.assertEquals(realmName, realm.getRealm());
 
             setTimeOffset(1000);
 
             // Check still possible to load the realm after original token expired (admin client should automatically re-authenticate)
             realm = adminClient.realm(realmName).toRepresentation();
-            Assert.assertEquals(realmName, realm.getRealm());
+            Assertions.assertEquals(realmName, realm.getRealm());
         }
     }
 
@@ -130,7 +129,7 @@ public class AdminClientTest extends AbstractKeycloakTest {
         try (Keycloak adminClient = AdminClientUtil.createAdminClientWithClientCredentials(realmName, clientId, clientSecret, null)) {
             // Check possible to load the realm
             RealmRepresentation realm = adminClient.realm(realmName).toRepresentation();
-            Assert.assertEquals(realmName, realm.getRealm());
+            Assertions.assertEquals(realmName, realm.getRealm());
 
             // Disable client and check it should not be possible to load the realms anymore
             setClientEnabled(clientId, false);
@@ -138,7 +137,7 @@ public class AdminClientTest extends AbstractKeycloakTest {
             // Check not possible to invoke anymore
             try {
                 realm = adminClient.realm(realmName).toRepresentation();
-                Assert.fail("Not expected to successfully get realm");
+                Assertions.fail("Not expected to successfully get realm");
             } catch (NotAuthorizedException nae) {
                 // Expected
             }
@@ -152,7 +151,7 @@ public class AdminClientTest extends AbstractKeycloakTest {
         try (Keycloak adminClient = AdminClientUtil.createAdminClient(false, realmName, "test-user@localhost", "password", Constants.ADMIN_CLI_CLIENT_ID, null)) {
             // Check possible to load the realm
             RealmRepresentation realm = adminClient.realm(realmName).toRepresentation();
-            Assert.assertEquals(realmName, realm.getRealm());
+            Assertions.assertEquals(realmName, realm.getRealm());
 
             // Disable client and check it should not be possible to load the realms anymore
             setClientEnabled(Constants.ADMIN_CLI_CLIENT_ID, false);
@@ -160,7 +159,7 @@ public class AdminClientTest extends AbstractKeycloakTest {
             // Check not possible to invoke anymore
             try {
                 realm = adminClient.realm(realmName).toRepresentation();
-                Assert.fail("Not expected to successfully get realm");
+                Assertions.fail("Not expected to successfully get realm");
             } catch (NotAuthorizedException nae) {
                 // Expected
             }
@@ -183,13 +182,13 @@ public class AdminClientTest extends AbstractKeycloakTest {
         try (Keycloak adminClient = AdminClientUtil.createAdminClientWithClientCredentials(realmName,
             clientId, clientSecret, scopeName)) {
             final AccessTokenResponse accessToken = adminClient.tokenManager().getAccessToken();
-            Assert.assertTrue(accessToken.getScope().contains(scopeName));
+            Assertions.assertTrue(accessToken.getScope().contains(scopeName));
         }
         // without scope
         try (Keycloak adminClient = AdminClientUtil.createAdminClientWithClientCredentials(realmName,
             clientId, clientSecret, null)) {
             final AccessTokenResponse accessToken = adminClient.tokenManager().getAccessToken();
-            Assert.assertFalse(accessToken.getScope().contains(scopeName));
+            Assertions.assertFalse(accessToken.getScope().contains(scopeName));
         }
     }
 
@@ -205,6 +204,6 @@ public class AdminClientTest extends AbstractKeycloakTest {
             ClientScopeBuilder.create().name(scopeName).protocol("openid-connect").build();
         testScope.setId(scopeId);
         final Response scope = testRealm.clientScopes().create(testScope);
-        Assert.assertEquals(201, scope.getStatus());
+        Assertions.assertEquals(201, scope.getStatus());
     }
 }

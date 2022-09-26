@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.testsuite.Assert;
@@ -37,7 +37,7 @@ import org.keycloak.util.TokenUtil;
 import org.hamcrest.MatcherAssert;
 import static org.hamcrest.Matchers.hasItems;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.keycloak.testsuite.auth.page.login.Login.OIDC;
 
 /**
@@ -58,7 +58,7 @@ public class ClientClientScopesTest extends AbstractClientTest {
     private ClientScopesEvaluate clientScopesEvaluatePage;
 
 
-    @Before
+    @BeforeEach
     public void before() {
         newClient = createClientRep(TEST_CLIENT_ID, OIDC);
         newClient.setFullScopeAllowed(false);
@@ -77,40 +77,40 @@ public class ClientClientScopesTest extends AbstractClientTest {
         ClientScopesSetupForm setupForm = clientScopesSetupPage.form();
 
         // Test the initial state
-        Assert.assertNames(setupForm.getAvailableDefaultClientScopes());
-        Assert.assertNames(setupForm.getDefaultClientScopes(), "email", "profile", "roles", "web-origins", "acr");
-        Assert.assertNames(setupForm.getAvailableOptionalClientScopes());
-        Assert.assertNames(setupForm.getOptionalClientScopes(), "address", "phone", "offline_access", "microprofile-jwt");
+        Assertions.assertNames(setupForm.getAvailableDefaultClientScopes());
+        Assertions.assertNames(setupForm.getDefaultClientScopes(), "email", "profile", "roles", "web-origins", "acr");
+        Assertions.assertNames(setupForm.getAvailableOptionalClientScopes());
+        Assertions.assertNames(setupForm.getOptionalClientScopes(), "address", "phone", "offline_access", "microprofile-jwt");
 
         // Remove 'profile' as default client scope and assert
         setupForm.setDefaultClientScopes(Collections.singletonList("email"));
-        Assert.assertNames(setupForm.getAvailableDefaultClientScopes(), "profile", "roles", "web-origins", "acr");
-        Assert.assertNames(setupForm.getDefaultClientScopes(), "email");
-        Assert.assertNames(setupForm.getAvailableOptionalClientScopes(), "profile", "roles", "web-origins", "acr");
-        Assert.assertNames(setupForm.getOptionalClientScopes(), "address", "phone", "offline_access", "microprofile-jwt");
+        Assertions.assertNames(setupForm.getAvailableDefaultClientScopes(), "profile", "roles", "web-origins", "acr");
+        Assertions.assertNames(setupForm.getDefaultClientScopes(), "email");
+        Assertions.assertNames(setupForm.getAvailableOptionalClientScopes(), "profile", "roles", "web-origins", "acr");
+        Assertions.assertNames(setupForm.getOptionalClientScopes(), "address", "phone", "offline_access", "microprofile-jwt");
 
         // Add 'profile' as optional client scope and assert
         setupForm.setOptionalClientScopes(Arrays.asList("profile", "address", "phone", "offline_access", "microprofile-jwt", "acr"));
-        Assert.assertNames(setupForm.getAvailableDefaultClientScopes(), "roles", "web-origins");
-        Assert.assertNames(setupForm.getDefaultClientScopes(), "email");
-        Assert.assertNames(setupForm.getAvailableOptionalClientScopes(), "roles", "web-origins");
-        Assert.assertNames(setupForm.getOptionalClientScopes(), "profile", "address", "phone", "offline_access", "microprofile-jwt", "acr");
+        Assertions.assertNames(setupForm.getAvailableDefaultClientScopes(), "roles", "web-origins");
+        Assertions.assertNames(setupForm.getDefaultClientScopes(), "email");
+        Assertions.assertNames(setupForm.getAvailableOptionalClientScopes(), "roles", "web-origins");
+        Assertions.assertNames(setupForm.getOptionalClientScopes(), "profile", "address", "phone", "offline_access", "microprofile-jwt", "acr");
 
         // Retrieve client through adminClient
         found = findClientByClientId(TEST_CLIENT_ID);
-        Assert.assertNames(found.getDefaultClientScopes(), "email");
-        Assert.assertNames(found.getOptionalClientScopes(), "profile", "address", "phone", "offline_access", "microprofile-jwt", "acr");
+        Assertions.assertNames(found.getDefaultClientScopes(), "email");
+        Assertions.assertNames(found.getOptionalClientScopes(), "profile", "address", "phone", "offline_access", "microprofile-jwt", "acr");
 
 
         // Revert and check things successfully reverted
         setupForm.setOptionalClientScopes(Arrays.asList("address", "phone", "offline_access", "microprofile-jwt", "acr"));
-        Assert.assertNames(setupForm.getAvailableDefaultClientScopes(), "profile", "roles", "web-origins");
+        Assertions.assertNames(setupForm.getAvailableDefaultClientScopes(), "profile", "roles", "web-origins");
         setupForm.setDefaultClientScopes(Arrays.asList("profile", "email"));
 
-        Assert.assertNames(setupForm.getAvailableDefaultClientScopes(), "roles", "web-origins");
-        Assert.assertNames(setupForm.getDefaultClientScopes(), "email", "profile");
-        Assert.assertNames(setupForm.getAvailableOptionalClientScopes(), "roles", "web-origins");
-        Assert.assertNames(setupForm.getOptionalClientScopes(), "address", "phone", "offline_access", "microprofile-jwt", "acr");
+        Assertions.assertNames(setupForm.getAvailableDefaultClientScopes(), "roles", "web-origins");
+        Assertions.assertNames(setupForm.getDefaultClientScopes(), "email", "profile");
+        Assertions.assertNames(setupForm.getAvailableOptionalClientScopes(), "roles", "web-origins");
+        Assertions.assertNames(setupForm.getOptionalClientScopes(), "address", "phone", "offline_access", "microprofile-jwt", "acr");
     }
 
 
@@ -122,21 +122,21 @@ public class ClientClientScopesTest extends AbstractClientTest {
         ClientScopesEvaluateForm evaluateForm = clientScopesEvaluatePage.form();
 
         // Check the defaults
-        Assert.assertNames(evaluateForm.getAvailableClientScopes(), "address", "phone", "offline_access", "microprofile-jwt");
-        Assert.assertNames(evaluateForm.getAssignedClientScopes());
-        Assert.assertNames(evaluateForm.getEffectiveClientScopes(), "profile", "email", "roles", "web-origins", "acr");
+        Assertions.assertNames(evaluateForm.getAvailableClientScopes(), "address", "phone", "offline_access", "microprofile-jwt");
+        Assertions.assertNames(evaluateForm.getAssignedClientScopes());
+        Assertions.assertNames(evaluateForm.getEffectiveClientScopes(), "profile", "email", "roles", "web-origins", "acr");
 
         // Add some optional scopes to the evaluation
         evaluateForm.setAssignedClientScopes(Arrays.asList("address", "phone"));
-        Assert.assertNames(evaluateForm.getAvailableClientScopes(), "offline_access", "microprofile-jwt");
-        Assert.assertNames(evaluateForm.getAssignedClientScopes(), "address", "phone");
-        Assert.assertNames(evaluateForm.getEffectiveClientScopes(), "address", "phone", "profile", "email", "roles", "web-origins", "acr");
+        Assertions.assertNames(evaluateForm.getAvailableClientScopes(), "offline_access", "microprofile-jwt");
+        Assertions.assertNames(evaluateForm.getAssignedClientScopes(), "address", "phone");
+        Assertions.assertNames(evaluateForm.getEffectiveClientScopes(), "address", "phone", "profile", "email", "roles", "web-origins", "acr");
 
         // Remove optional 'phone' scope from the evaluation
         evaluateForm.setAssignedClientScopes(Arrays.asList("address", "offline_access"));
-        Assert.assertNames(evaluateForm.getAvailableClientScopes(), "phone", "microprofile-jwt");
-        Assert.assertNames(evaluateForm.getAssignedClientScopes(), "address", "offline_access");
-        Assert.assertNames(evaluateForm.getEffectiveClientScopes(), "address", "offline_access", "profile", "email", "roles", "web-origins", "acr");
+        Assertions.assertNames(evaluateForm.getAvailableClientScopes(), "phone", "microprofile-jwt");
+        Assertions.assertNames(evaluateForm.getAssignedClientScopes(), "address", "offline_access");
+        Assertions.assertNames(evaluateForm.getEffectiveClientScopes(), "address", "offline_access", "profile", "email", "roles", "web-origins", "acr");
 
         // Select some user
         evaluateForm.selectUser("test");
@@ -146,16 +146,16 @@ public class ClientClientScopesTest extends AbstractClientTest {
 
         // Test protocolMappers of 'address' , 'profile' and 'email' scopes are included
         Set<String> protocolMappers = evaluateForm.getEffectiveProtocolMapperNames();
-        Assert.assertTrue(protocolMappers.contains("address"));
-        Assert.assertTrue(protocolMappers.contains("email"));
-        Assert.assertTrue(protocolMappers.contains("email verified"));
-        Assert.assertTrue(protocolMappers.contains("username"));
-        Assert.assertTrue(protocolMappers.contains("full name"));
-        Assert.assertFalse(protocolMappers.contains("phone"));
+        Assertions.assertTrue(protocolMappers.contains("address"));
+        Assertions.assertTrue(protocolMappers.contains("email"));
+        Assertions.assertTrue(protocolMappers.contains("email verified"));
+        Assertions.assertTrue(protocolMappers.contains("username"));
+        Assertions.assertTrue(protocolMappers.contains("full name"));
+        Assertions.assertFalse(protocolMappers.contains("phone"));
 
         // Test roles
         evaluateForm.showRoles();
-        Assert.assertNames(evaluateForm.getGrantedRealmRoles(), "offline_access");
+        Assertions.assertNames(evaluateForm.getGrantedRealmRoles(), "offline_access");
         MatcherAssert.assertThat(evaluateForm.getNotGrantedRealmRoles(),
                 hasItems("uma_authorization", "default-roles-test"));
 
@@ -165,10 +165,10 @@ public class ClientClientScopesTest extends AbstractClientTest {
 
         AccessToken token = JsonSerialization.readValue(accessTokenStr, AccessToken.class);
         String scopeParam = token.getScope();
-        Assert.assertTrue(TokenUtil.isOIDCRequest(scopeParam));
-        Assert.assertTrue(TokenUtil.hasScope(scopeParam, "address"));
-        Assert.assertTrue(TokenUtil.hasScope(scopeParam, "profile"));
-        Assert.assertTrue(TokenUtil.hasScope(scopeParam, "email"));
-        Assert.assertFalse(TokenUtil.hasScope(scopeParam, "phone"));
+        Assertions.assertTrue(TokenUtil.isOIDCRequest(scopeParam));
+        Assertions.assertTrue(TokenUtil.hasScope(scopeParam, "address"));
+        Assertions.assertTrue(TokenUtil.hasScope(scopeParam, "profile"));
+        Assertions.assertTrue(TokenUtil.hasScope(scopeParam, "email"));
+        Assertions.assertFalse(TokenUtil.hasScope(scopeParam, "phone"));
     }
 }

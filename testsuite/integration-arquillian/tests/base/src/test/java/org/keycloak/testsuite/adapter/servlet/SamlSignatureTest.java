@@ -34,7 +34,7 @@ import org.keycloak.testsuite.util.Matchers;
 import org.keycloak.testsuite.util.RealmBuilder;
 import org.keycloak.testsuite.util.RoleBuilder;
 import org.keycloak.testsuite.util.RolesBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.util.SamlClient.Binding;
 import org.keycloak.testsuite.util.SamlClientBuilder;
 import org.keycloak.testsuite.util.UserBuilder;
@@ -50,8 +50,8 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assume;
-import org.junit.Before;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -63,7 +63,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import static org.keycloak.saml.common.constants.JBossSAMLURIConstants.ASSERTION_NSURI;
 import static org.keycloak.saml.common.constants.JBossSAMLURIConstants.PROTOCOL_NSURI;
 import static org.keycloak.testsuite.adapter.AbstractServletsAdapterTest.samlServletDeployment;
@@ -103,7 +103,7 @@ public class SamlSignatureTest extends AbstractAdapterTest {
             Element response = (Element) document.getElementsByTagNameNS(PROTOCOL_NSURI.get(), "Response").item(0);
             Element clonedResponse = (Element) response.cloneNode(true);
             Element clonedSignature = (Element) clonedResponse.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature").item(0);
-            Assume.assumeThat("Response needs to be signed", clonedSignature, notNullValue());
+            Assumptions.assumeThat("Response needs to be signed", clonedSignature, notNullValue());
             clonedResponse.removeChild(clonedSignature);
             Element signature = (Element) response.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature").item(0);
             signature.appendChild(clonedResponse);
@@ -114,7 +114,7 @@ public class SamlSignatureTest extends AbstractAdapterTest {
             Element response = (Element) document.getElementsByTagNameNS(PROTOCOL_NSURI.get(), "Response").item(0);
             Element clonedResponse = (Element) response.cloneNode(true);
             Element clonedSignature = (Element) clonedResponse.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature").item(0);
-            Assume.assumeThat("Response needs to be signed", clonedSignature, notNullValue());
+            Assumptions.assumeThat("Response needs to be signed", clonedSignature, notNullValue());
             clonedResponse.removeChild(clonedSignature);
             Element signature = (Element) response.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature").item(0);
             response.insertBefore(clonedResponse, signature);
@@ -125,7 +125,7 @@ public class SamlSignatureTest extends AbstractAdapterTest {
             Element assertion = (Element) document.getElementsByTagNameNS(ASSERTION_NSURI.get(), "Assertion").item(0);
             Element evilAssertion = (Element) assertion.cloneNode(true);
             Element copiedSignature = (Element) evilAssertion.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature").item(0);
-            Assume.assumeThat("Assertion needs to be signed", copiedSignature, notNullValue());
+            Assumptions.assumeThat("Assertion needs to be signed", copiedSignature, notNullValue());
             evilAssertion.setAttribute("ID", "_evil_assertion_ID");
             evilAssertion.removeChild(copiedSignature);
             document.getDocumentElement().insertBefore(evilAssertion, assertion);
@@ -135,7 +135,7 @@ public class SamlSignatureTest extends AbstractAdapterTest {
             Element assertion = (Element) document.getElementsByTagNameNS(ASSERTION_NSURI.get(), "Assertion").item(0);
             Element evilAssertion = (Element) assertion.cloneNode(true);
             Element copiedSignature = (Element) evilAssertion.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature").item(0);
-            Assume.assumeThat("Assertion needs to be signed", copiedSignature, notNullValue());
+            Assumptions.assumeThat("Assertion needs to be signed", copiedSignature, notNullValue());
             evilAssertion.setAttribute("ID", "_evil_assertion_ID");
             evilAssertion.removeChild(copiedSignature);
             document.getDocumentElement().appendChild(evilAssertion);
@@ -146,7 +146,7 @@ public class SamlSignatureTest extends AbstractAdapterTest {
             Element evilAssertion = (Element) document.getElementsByTagNameNS(ASSERTION_NSURI.get(), "Assertion").item(0);
             Element assertion = (Element) evilAssertion.cloneNode(true);
             Element copiedSignature = (Element) assertion.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature").item(0);
-            Assume.assumeThat("Assertion needs to be signed", copiedSignature, notNullValue());
+            Assumptions.assumeThat("Assertion needs to be signed", copiedSignature, notNullValue());
             assertion.removeChild(copiedSignature);
             document.getDocumentElement().appendChild(assertion);
             evilAssertion.setAttribute("ID", "_evil_assertion_ID");
@@ -157,7 +157,7 @@ public class SamlSignatureTest extends AbstractAdapterTest {
             Element originalSignature = (Element) evilAssertion.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature").item(0);
             Element assertion = (Element) evilAssertion.cloneNode(true);
             Element copiedSignature = (Element) assertion.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature").item(0);
-            Assume.assumeThat("Assertion needs to be signed", copiedSignature, notNullValue());
+            Assumptions.assumeThat("Assertion needs to be signed", copiedSignature, notNullValue());
             assertion.removeChild(copiedSignature);
             originalSignature.appendChild(assertion);
             evilAssertion.setAttribute("ID", "_evil_assertion_ID");
@@ -169,7 +169,7 @@ public class SamlSignatureTest extends AbstractAdapterTest {
             document.getDocumentElement().insertBefore(extensions, assertion);
             Element evilAssertion = (Element) assertion.cloneNode(true);
             Element copiedSignature = (Element) evilAssertion.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature").item(0);
-            Assume.assumeThat("Assertion needs to be signed", copiedSignature, notNullValue());
+            Assumptions.assumeThat("Assertion needs to be signed", copiedSignature, notNullValue());
             evilAssertion.removeChild(copiedSignature);
             extensions.appendChild(evilAssertion);
         }
@@ -179,7 +179,7 @@ public class SamlSignatureTest extends AbstractAdapterTest {
             Element originalSignature = (Element) evilAssertion.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature").item(0);
             Element assertion = (Element) evilAssertion.cloneNode(true);
             Element copiedSignature = (Element) assertion.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature").item(0);
-            Assume.assumeThat("Assertion needs to be signed", copiedSignature, notNullValue());
+            Assumptions.assumeThat("Assertion needs to be signed", copiedSignature, notNullValue());
             assertion.removeChild(copiedSignature);
             Element object = document.createElement("Object");
             originalSignature.appendChild(object);
@@ -254,7 +254,7 @@ public class SamlSignatureTest extends AbstractAdapterTest {
         );
     }
 
-    @Before
+    @BeforeEach
     public void addFreshUserToDemoRealm() {
         this.user = UserBuilder.edit(createUserRepresentation(("U-" + UUID.randomUUID().toString()).toLowerCase(), "a@b.c", "A", "B", true))
           .password("password")

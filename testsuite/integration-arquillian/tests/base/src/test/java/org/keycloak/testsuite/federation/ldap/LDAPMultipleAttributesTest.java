@@ -17,12 +17,12 @@
 
 package org.keycloak.testsuite.federation.ldap;
 
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 import org.keycloak.common.Profile;
 import org.keycloak.models.ClientModel;
@@ -71,7 +71,7 @@ public class LDAPMultipleAttributesTest extends AbstractLDAPTest {
         return ldapRule;
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         // don't run this test when map storage is enabled, as map storage doesn't support LDAP, yet
         ProfileAssume.assumeFeatureDisabled(Profile.Feature.MAP_STORAGE);
@@ -115,7 +115,7 @@ public class LDAPMultipleAttributesTest extends AbstractLDAPTest {
 
     @Test
     public void testUserImport() {
-        Assume.assumeTrue("User cache disabled.", isUserCacheEnabled());
+        Assumptions.assumeTrue("User cache disabled.", isUserCacheEnabled());
         testingClient.server().run(session -> {
             LDAPTestContext ctx = LDAPTestContext.init(session);
             UserStorageUtil.userCache(session).clear();
@@ -123,7 +123,7 @@ public class LDAPMultipleAttributesTest extends AbstractLDAPTest {
 
             // Test user imported in local storage now
             UserModel user = session.users().getUserByUsername(appRealm, "jbrown");
-            Assert.assertNotNull(UserStoragePrivateUtil.userLocalStorage(session).getUserById(appRealm, user.getId()));
+            Assertions.assertNotNull(UserStoragePrivateUtil.userLocalStorage(session).getUserById(appRealm, user.getId()));
             LDAPTestAsserts.assertUserImported(UserStoragePrivateUtil.userLocalStorage(session), appRealm, "jbrown", "James", "Brown", "jbrown@keycloak.org", "88441");
         });
     }
@@ -131,18 +131,18 @@ public class LDAPMultipleAttributesTest extends AbstractLDAPTest {
 
     @Test
     public void testModel() {
-        Assume.assumeTrue("User cache disabled.", isUserCacheEnabled());
+        Assumptions.assumeTrue("User cache disabled.", isUserCacheEnabled());
         testingClient.server().run(session -> {
             LDAPTestContext ctx = LDAPTestContext.init(session);
             UserStorageUtil.userCache(session).clear();
             RealmModel appRealm = ctx.getRealm();
 
             UserModel user = session.users().getUserByUsername(appRealm, "bwilson");
-            Assert.assertEquals("bwilson@keycloak.org", user.getEmail());
-            Assert.assertEquals("Bruce", user.getFirstName());
+            Assertions.assertEquals("bwilson@keycloak.org", user.getEmail());
+            Assertions.assertEquals("Bruce", user.getFirstName());
 
             // There are 2 lastnames in ldif
-            Assert.assertTrue("Wilson".equals(user.getLastName()) || "Schneider".equals(user.getLastName()));
+            Assertions.assertTrue("Wilson".equals(user.getLastName()) || "Schneider".equals(user.getLastName()));
 
             // Actually there are 2 postalCodes
             List<String> postalCodes = user.getAttributeStream("postal_code").collect(Collectors.toList());
@@ -184,10 +184,10 @@ public class LDAPMultipleAttributesTest extends AbstractLDAPTest {
         }
 
 
-        Assert.assertEquals(expectedPostalCodes.length, postalCodes.size());
+        Assertions.assertEquals(expectedPostalCodes.length, postalCodes.size());
         for (String expected : expectedPostalCodes) {
             if (!postalCodes.contains(expected)) {
-                Assert.fail("postalCode '" + expected + "' not in postalCodes: " + postalCodes);
+                Assertions.fail("postalCode '" + expected + "' not in postalCodes: " + postalCodes);
             }
         }
     }
@@ -204,15 +204,15 @@ public class LDAPMultipleAttributesTest extends AbstractLDAPTest {
         String code = new OAuthClient.AuthorizationEndpointResponse(oauth).getCode();
         OAuthClient.AccessTokenResponse response = oauth.doAccessTokenRequest(code, "password");
 
-        Assert.assertEquals(200, response.getStatusCode());
+        Assertions.assertEquals(200, response.getStatusCode());
         IDToken idToken = oauth.verifyIDToken(response.getIdToken());
 
-        Assert.assertEquals("Bruce Wilson", idToken.getName());
-        Assert.assertEquals("Elm 5", idToken.getOtherClaims().get("street"));
+        Assertions.assertEquals("Bruce Wilson", idToken.getName());
+        Assertions.assertEquals("Elm 5", idToken.getOtherClaims().get("street"));
         Collection postalCodes = (Collection) idToken.getOtherClaims().get("postal_code");
-        Assert.assertEquals(2, postalCodes.size());
-        Assert.assertTrue(postalCodes.contains("88441"));
-        Assert.assertTrue(postalCodes.contains("77332"));
+        Assertions.assertEquals(2, postalCodes.size());
+        Assertions.assertTrue(postalCodes.contains("88441"));
+        Assertions.assertTrue(postalCodes.contains("77332"));
 
         oauth.doLogout(response.getRefreshToken(), "password");
 
@@ -226,12 +226,12 @@ public class LDAPMultipleAttributesTest extends AbstractLDAPTest {
         org.keycloak.testsuite.Assert.assertEquals(200, response.getStatusCode());
         idToken = oauth.verifyIDToken(response.getIdToken());
 
-        Assert.assertEquals("James Brown", idToken.getName());
-        Assert.assertNull(idToken.getOtherClaims().get("street"));
+        Assertions.assertEquals("James Brown", idToken.getName());
+        Assertions.assertNull(idToken.getOtherClaims().get("street"));
         postalCodes = (Collection) idToken.getOtherClaims().get("postal_code");
-        Assert.assertEquals(1, postalCodes.size());
-        Assert.assertTrue(postalCodes.contains("88441"));
-        Assert.assertFalse(postalCodes.contains("77332"));
+        Assertions.assertEquals(1, postalCodes.size());
+        Assertions.assertTrue(postalCodes.contains("88441"));
+        Assertions.assertFalse(postalCodes.contains("77332"));
 
         oauth.doLogout(response.getRefreshToken(), "password");
     }

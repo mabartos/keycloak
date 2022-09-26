@@ -17,9 +17,9 @@
 package org.keycloak.testsuite.forms;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractTestRealmKeycloakTest;
@@ -54,12 +54,12 @@ public class HiddenProviderTest extends AbstractTestRealmKeycloakTest {
     @Test
     public void testVisibleProviderButton() {
         loginPage.open();
-        Assert.assertNotNull(loginPage.findSocialButton("visible-oidc"));
+        Assertions.assertNotNull(loginPage.findSocialButton("visible-oidc"));
     }
     
     @Test(expected=org.openqa.selenium.NoSuchElementException.class)
     public void testHiddenProviderButton() {
         loginPage.open();
-        Assert.assertNull(loginPage.findSocialButton("hidden-oidc"));
+        Assertions.assertNull(loginPage.findSocialButton("hidden-oidc"));
     } 
 }

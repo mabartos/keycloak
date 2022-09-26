@@ -4,9 +4,10 @@ import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.ssl.SSLContextBuilder;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.dom.saml.v2.protocol.ResponseType;
 import org.keycloak.events.Errors;
 import org.keycloak.events.EventType;
@@ -44,12 +45,11 @@ import static org.keycloak.testsuite.broker.BrokerTestConstants.USER_PASSWORD;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
 import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
 
+@ExtendWith(AssertEvents.class)
+@ExtendWith(ReverseProxy.class)
 public final class KcSamlBrokerFrontendUrlTest extends AbstractBrokerTest {
 
-    @Rule
     public ReverseProxy proxy = new ReverseProxy();
-
-    @Rule
     public AssertEvents events = new AssertEvents(this);
 
     @Override
@@ -212,7 +212,7 @@ public final class KcSamlBrokerFrontendUrlTest extends AbstractBrokerTest {
                 });
     }
 
-    @Ignore
+    @Disabled
     @Test
     @Override
     public void loginWithExistingUser() {

@@ -19,7 +19,7 @@ package org.keycloak.testsuite.console.other;
 
 import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.console.AbstractConsoleTest;
 import org.keycloak.testsuite.console.page.AdminConsoleRealm;
 import org.keycloak.testsuite.console.page.realm.GeneralSettings;

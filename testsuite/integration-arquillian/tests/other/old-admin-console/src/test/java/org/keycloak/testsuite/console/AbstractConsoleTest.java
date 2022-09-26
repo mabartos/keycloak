@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.console;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.AbstractAuthTest;
@@ -37,8 +37,8 @@ import org.openqa.selenium.support.FindBy;
 import static org.keycloak.testsuite.admin.Users.setPasswordFor;
 import static org.keycloak.testsuite.auth.page.AuthRealm.ADMIN;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWithLoginUrlOf;
 
 /**
  *
@@ -74,7 +74,7 @@ public abstract class AbstractConsoleTest extends AbstractAuthTest {
         testRealmAdminConsolePage.setAdminRealm(TEST);
     }
 
-    @Before
+    @BeforeEach
     public void beforeConsoleTest() {
         // Safari driver seemingly doesn't comply with WebDriver specs.
         // driver.manage().deleteAllCookies() seems to delete all cookies regardless the path, i.e. when we delete cookies

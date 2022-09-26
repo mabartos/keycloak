@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.broker;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.keycloak.protocol.oidc.mappers.OIDCAttributeMapperHelper;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.ProtocolMapperRepresentation;
@@ -65,7 +65,7 @@ public class KcOidcBrokerSubMatchIntrospectionTest extends AbstractBrokerTest {
         errorPage.assertCurrent();
     }
 
-    @Ignore
+    @Disabled
     @Override
     public void loginWithExistingUser() {
     }

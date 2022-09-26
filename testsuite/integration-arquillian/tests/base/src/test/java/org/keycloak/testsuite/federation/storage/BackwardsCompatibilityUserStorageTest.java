@@ -27,8 +27,8 @@ import java.util.List;
 import javax.ws.rs.core.Response;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.common.Profile;
 import org.keycloak.common.Profile.Feature;
@@ -54,9 +54,9 @@ import org.keycloak.testsuite.pages.LoginConfigTotpPage;
 import org.keycloak.testsuite.pages.LoginPage;
 import org.keycloak.testsuite.pages.LoginTotpPage;
 
-import org.junit.BeforeClass;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlDoesntStartWith;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import org.junit.jupiter.api.BeforeAll;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlDoesntStartWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 
 /**
  * Test that userStorage implementation created in previous version is still compatible with latest Keycloak version
@@ -86,12 +86,12 @@ public class BackwardsCompatibilityUserStorageTest extends AbstractAuthTest {
 
     private TimeBasedOTP totp = new TimeBasedOTP();
 
-    @BeforeClass
+    @BeforeAll
     public static void checkNotMapStorage() {
         ProfileAssume.assumeFeatureDisabled(Feature.MAP_STORAGE);
     }
 
-    @Before
+    @BeforeEach
     public void addProvidersBeforeTest() throws URISyntaxException, IOException {
         ComponentRepresentation memProvider = new ComponentRepresentation();
         memProvider.setName("backwards-compatibility");
@@ -142,7 +142,7 @@ public class BackwardsCompatibilityUserStorageTest extends AbstractAuthTest {
         Response response = testRealmResource().users().create(user);
         String userId = ApiUtil.getCreatedId(response);
 
-        Assert.assertEquals(backwardsCompProviderId, new StorageId(userId).getProviderId());
+        Assertions.assertEquals(backwardsCompProviderId, new StorageId(userId).getProviderId());
 
         // Update his password
         CredentialRepresentation passwordRep = new CredentialRepresentation();
@@ -184,7 +184,7 @@ public class BackwardsCompatibilityUserStorageTest extends AbstractAuthTest {
         loginTotpPage.assertCurrent();
         loginTotpPage.login("7123456");
         assertCurrentUrlDoesntStartWith(testRealmAccountPage);
-        Assert.assertNotNull(loginTotpPage.getInputError());
+        Assertions.assertNotNull(loginTotpPage.getInputError());
 
         // Authenticate as the user with correct OTP
         loginTotpPage.login(totp.generateTOTP(totpSecret));
@@ -247,7 +247,7 @@ public class BackwardsCompatibilityUserStorageTest extends AbstractAuthTest {
 
         // Disable OTP credential for the user through REST endpoint
         UserRepresentation userRep = user.toRepresentation();
-        Assert.assertNames(userRep.getDisableableCredentialTypes(), CredentialModel.OTP);
+        Assertions.assertNames(userRep.getDisableableCredentialTypes(), CredentialModel.OTP);
 
         user.disableCredentialType(Collections.singletonList(CredentialModel.OTP));
 
@@ -267,7 +267,7 @@ public class BackwardsCompatibilityUserStorageTest extends AbstractAuthTest {
 
         // Uses same parameters as admin console when searching users
         List<UserRepresentation> users = testRealmResource().users().search("searching", 0, 20, true);
-        Assert.assertNames(users, "searching");
+        Assertions.assertNames(users, "searching");
     }
 
     // return created totpSecret
@@ -298,7 +298,7 @@ public class BackwardsCompatibilityUserStorageTest extends AbstractAuthTest {
         testingClient.server().run(session -> {
             RealmModel realm1 = session.realms().getRealmByName("test");
             UserModel user1 = session.users().getUserByUsername(realm1, "otp1");
-            Assert.assertEquals(0, user1.credentialManager().getStoredCredentialsStream().count());
+            Assertions.assertEquals(0, user1.credentialManager().getStoredCredentialsStream().count());
         });
     }
 
@@ -308,6 +308,6 @@ public class BackwardsCompatibilityUserStorageTest extends AbstractAuthTest {
                     .getProviderFactory(UserStorageProvider.class, BackwardsCompatibilityUserStorageFactory.PROVIDER_ID);
             return storageFactory.hasUserOTP("otp1");
         }, Boolean.class);
-        Assert.assertEquals(expectedUserHasOTP, hasUserOTP);
+        Assertions.assertEquals(expectedUserHasOTP, hasUserOTP);
     }
 }

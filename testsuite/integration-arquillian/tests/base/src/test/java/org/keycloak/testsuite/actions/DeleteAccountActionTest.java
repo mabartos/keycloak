@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Objects;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.authentication.requiredactions.DeleteAccount;
 import org.keycloak.events.EventType;
@@ -44,7 +44,7 @@ public class DeleteAccountActionTest extends AbstractTestRealmKeycloakTest {
   public void configureTestRealm(RealmRepresentation testRealm) {
   }
 
-  @Before
+  @BeforeEach
   public void setUpAction() {
     UserRepresentation user = ActionUtil.findUserWithAdminClient(adminClient, "test-user@localhost");
     UserBuilder.edit(user).requiredAction(DeleteAccount.PROVIDER_ID);
@@ -62,7 +62,7 @@ public class DeleteAccountActionTest extends AbstractTestRealmKeycloakTest {
 
     loginPage.login("test-user@localhost", "password");
 
-    Assert.assertTrue(deleteAccountPage.isCurrent());
+    Assertions.assertTrue(deleteAccountPage.isCurrent());
 
     deleteAccountPage.clickConfirmAction();
 
@@ -70,7 +70,7 @@ public class DeleteAccountActionTest extends AbstractTestRealmKeycloakTest {
 
     List<UserRepresentation> users = testRealm().users().search("test-user@localhost");
 
-    Assert.assertEquals(users.size(), 0);
+    Assertions.assertEquals(users.size(), 0);
   }
 
   @Test
@@ -80,9 +80,9 @@ public class DeleteAccountActionTest extends AbstractTestRealmKeycloakTest {
 
     loginPage.login("test-user@localhost", "password");
 
-    Assert.assertTrue(errorPage.isCurrent());
+    Assertions.assertTrue(errorPage.isCurrent());
 
-    Assert.assertEquals(errorPage.getError(), "You do not have enough permissions to delete your own account, contact admin.");
+    Assertions.assertEquals(errorPage.getError(), "You do not have enough permissions to delete your own account, contact admin.");
   }
 
 

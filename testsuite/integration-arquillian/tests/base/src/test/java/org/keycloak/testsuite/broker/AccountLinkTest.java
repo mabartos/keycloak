@@ -19,9 +19,9 @@ package org.keycloak.testsuite.broker;
 import java.util.Collections;
 import javax.ws.rs.core.Response;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
@@ -51,10 +51,10 @@ import org.keycloak.testsuite.pages.UpdateAccountInformationPage;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.storage.UserStorageProviderModel.IMPORT_ENABLED;
 import static org.keycloak.testsuite.admin.ApiUtil.createUserAndResetPasswordWithAdminClient;
 import static org.keycloak.testsuite.admin.ApiUtil.createUserWithAdminClient;
@@ -96,7 +96,7 @@ public class AccountLinkTest extends AbstractKeycloakTest {
 
     }
 
-    @Before
+    @BeforeEach
     public void beforeBrokerTest() {
         if (testContext.isInitialized()) {
             return;
@@ -189,7 +189,7 @@ public class AccountLinkTest extends AbstractKeycloakTest {
         BrokerTestTools.createKcOidcBroker(adminClient, CHILD_IDP, testIdpToDelete);
 
         // Create user federation
-        Assume.assumeTrue("User cache disabled.", isUserCacheEnabled());
+        Assumptions.assumeTrue("User cache disabled.", isUserCacheEnabled());
 
         ComponentRepresentation memProvider = new ComponentRepresentation();
         memProvider.setName("memory");
@@ -212,7 +212,7 @@ public class AccountLinkTest extends AbstractKeycloakTest {
         userRepresentation.setEnabled(true);
         userRepresentation.setFederationLink(memProviderId);
         String userId = createUserWithAdminClient(realm, userRepresentation);
-        Assert.assertFalse(StorageId.isLocalStorage(userId));
+        Assertions.assertFalse(StorageId.isLocalStorage(userId));
 
         // Link identity provider and federated user
         FederatedIdentityRepresentation identity = FederatedIdentityBuilder.create()
@@ -223,17 +223,17 @@ public class AccountLinkTest extends AbstractKeycloakTest {
 
         UserResource userResource = realm.users().get(userId);
         Response response = userResource.addFederatedIdentity(testIdpToDelete, identity);
-        Assert.assertEquals("status", 204, response.getStatus());
+        Assertions.assertEquals("status", 204, response.getStatus());
 
         userResource = realm.users().get(userId);
-        Assert.assertFalse(userResource.getFederatedIdentity().isEmpty());
+        Assertions.assertFalse(userResource.getFederatedIdentity().isEmpty());
 
         // Delete the identity provider
         realm.identityProviders().get(testIdpToDelete).remove();
 
         // Check that links to federated identity has been deleted
         userResource = realm.users().get(userId);
-        Assert.assertTrue(userResource.getFederatedIdentity().isEmpty());
+        Assertions.assertTrue(userResource.getFederatedIdentity().isEmpty());
 
         getTestingClient().server(CHILD_IDP).run((RunOnServer) session -> {
             RealmModel realm1 = session.getContext().getRealm();

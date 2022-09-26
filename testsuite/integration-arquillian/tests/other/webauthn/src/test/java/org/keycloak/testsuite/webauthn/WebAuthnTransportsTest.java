@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.webauthn;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.arquillian.annotation.IgnoreBrowserDriver;
 import org.keycloak.testsuite.webauthn.pages.WebAuthnAuthenticatorsList;
 import org.openqa.selenium.firefox.FirefoxDriver;

@@ -17,10 +17,10 @@
 
 package org.keycloak.testsuite.model;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.util.Time;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.KeycloakSession;
@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;;
 import org.keycloak.models.Constants;
 import org.keycloak.testsuite.util.InfinispanTestTimeServiceRule;
 
@@ -58,7 +58,7 @@ public class AuthenticationSessionProviderTest extends AbstractTestRealmKeycloak
     public InfinispanTestTimeServiceRule ispnTestTimeService = new InfinispanTestTimeServiceRule(this);
 
 
-    @Before
+    @BeforeEach
     public void before() {
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealmByName("test");
@@ -68,7 +68,7 @@ public class AuthenticationSessionProviderTest extends AbstractTestRealmKeycloak
         });
     }
 
-    @After
+    @AfterEach
     public void after() {
         testingClient.server().run(session -> {
             RealmModel realm = session.realms().getRealm(realmId);

@@ -1,8 +1,8 @@
 package org.keycloak.testsuite.springboot;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 
 public class BasicSpringBootTest extends AbstractSpringBootTest {
@@ -24,7 +24,7 @@ public class BasicSpringBootTest extends AbstractSpringBootTest {
 
     private static final String INCORRECT_ROLE = "wrong-admin";
 
-    @Before
+    @BeforeEach
     public void addIncorrectUser() {
         RolesResource rolesResource = adminClient.realm(REALM_NAME).roles();
 
@@ -37,7 +37,7 @@ public class BasicSpringBootTest extends AbstractSpringBootTest {
         testRealmLoginPage.setAuthRealm(REALM_NAME);
     }
 
-    @After
+    @AfterEach
     public void removeUser() {
         UserRepresentation user = ApiUtil.findUserByUsername(adminClient.realm(REALM_NAME), USER_LOGIN_2);
 

@@ -17,9 +17,9 @@
 package org.keycloak.testsuite.webauthn;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.authentication.authenticators.browser.PasswordFormFactory;
 import org.keycloak.authentication.authenticators.browser.UsernameFormFactory;
@@ -72,7 +72,7 @@ public class AppInitiatedActionWebAuthnTest extends AbstractAppInitiatedActionTe
     @Page
     WebAuthnRegisterPage webAuthnRegisterPage;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUpVirtualAuthenticator() {
         if (!isDriverFirefox(driver)) {
@@ -80,7 +80,7 @@ public class AppInitiatedActionWebAuthnTest extends AbstractAppInitiatedActionTe
         }
     }
 
-    @After
+    @AfterEach
     @Override
     public void removeVirtualAuthenticator() {
         if (!isDriverFirefox(driver)) {
@@ -116,7 +116,7 @@ public class AppInitiatedActionWebAuthnTest extends AbstractAppInitiatedActionTe
         testRealm.setRequiredActions(actions);
     }
 
-    @Before
+    @BeforeEach
     public void setUpWebAuthnFlow() {
         final String newFlowAlias = "browserWebAuthnAIA";
         final String webAuthnAuthProvider = isPasswordless() ? WebAuthnPasswordlessAuthenticatorFactory.PROVIDER_ID : WebAuthnAuthenticatorFactory.PROVIDER_ID;

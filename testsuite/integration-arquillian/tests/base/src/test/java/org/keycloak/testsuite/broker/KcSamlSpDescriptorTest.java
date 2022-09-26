@@ -3,7 +3,7 @@ package org.keycloak.testsuite.broker;
 import com.google.common.collect.ImmutableMap;
 
 import org.apache.tools.ant.filters.StringInputStream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.broker.provider.ConfigConstants;
 import org.keycloak.broker.saml.SAMLIdentityProviderConfig;
 import org.keycloak.broker.saml.mappers.AttributeToRoleMapper;

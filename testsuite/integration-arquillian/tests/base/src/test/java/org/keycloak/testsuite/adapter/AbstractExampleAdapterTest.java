@@ -22,7 +22,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.importer.ZipImporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.keycloak.testsuite.utils.arquillian.DeploymentArchiveProcessorUtils;
 
 import java.io.File;
@@ -45,11 +45,11 @@ public abstract class AbstractExampleAdapterTest extends AbstractAdapterTest {
 
     static {
         EXAMPLES_HOME = System.getProperty("examples.home", null);
-        Assert.assertNotNull("Property ${examples.home} must bet set.", EXAMPLES_HOME);
+        Assertions.assertNotNull("Property ${examples.home} must bet set.", EXAMPLES_HOME);
         System.out.println(EXAMPLES_HOME);
 
         EXAMPLES_VERSION_SUFFIX = System.getProperty("examples.version.suffix", null);
-        Assert.assertNotNull("Property ${examples.version.suffix} must bet set.", EXAMPLES_VERSION_SUFFIX);
+        Assertions.assertNotNull("Property ${examples.version.suffix} must bet set.", EXAMPLES_VERSION_SUFFIX);
         System.out.println(EXAMPLES_VERSION_SUFFIX);
 
         EXAMPLES_HOME_DIR = EXAMPLES_HOME + "/example-realms";

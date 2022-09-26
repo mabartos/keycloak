@@ -19,7 +19,7 @@ package org.keycloak.testsuite.pages;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.keycloak.common.util.Retry;
 import org.keycloak.testsuite.util.UIUtils;
 import org.keycloak.testsuite.util.WaitUtils;
@@ -90,9 +90,9 @@ public class LoginTotpPage extends LanguageComboboxAwarePage {
     public void assertOtpCredentialSelectorAvailability(boolean expectedAvailability) {
         try {
             driver.findElement(By.className("pf-c-tile"));
-            Assert.assertTrue(expectedAvailability);
+            Assertions.assertTrue(expectedAvailability);
         } catch (NoSuchElementException nse) {
-            Assert.assertFalse(expectedAvailability);
+            Assertions.assertFalse(expectedAvailability);
         }
     }
 

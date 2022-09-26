@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.events;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractKeycloakTest;
 import org.keycloak.testsuite.client.resources.TestingResource;
@@ -44,7 +44,7 @@ public abstract class AbstractEventsTest extends AbstractKeycloakTest {
         testRealms.add(RealmBuilder.create().name(REALM_NAME_2).build());
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         realmId = adminClient.realm(REALM_NAME_1).toRepresentation().getId();
         realmId2 = adminClient.realm(REALM_NAME_2).toRepresentation().getId();

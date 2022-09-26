@@ -18,10 +18,10 @@
 package org.keycloak.testsuite.events;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.events.EventStoreProvider;
 import org.keycloak.events.EventType;
 import org.keycloak.representations.idm.EventRepresentation;
@@ -54,7 +54,7 @@ public class EventStoreProviderTest extends AbstractEventsTest {
         }
     }
 
-    @After
+    @AfterEach
     public void after() {
         testing().clearEventStore();
     }
@@ -77,24 +77,24 @@ public class EventStoreProviderTest extends AbstractEventsTest {
         testing().onEvent(create(oldest, EventType.LOGIN, realmId, "clientId2", "userId", "127.0.0.1", "error"));
         testing().onEvent(create(EventType.LOGIN, realmId, "clientId", "userId2", "127.0.0.1", "error"));
 
-        Assert.assertEquals(5, testing().queryEvents(null, null, "clientId", null, null, null, null, null, null).size());
-        Assert.assertEquals(5, testing().queryEvents(realmId, null, null, null, null, null, null, null, null).size());
-        Assert.assertEquals(4, testing().queryEvents(null, toList(EventType.LOGIN), null, null, null, null, null, null, null).size());
-        Assert.assertEquals(6, testing().queryEvents(null, toList(EventType.LOGIN, EventType.REGISTER), null, null, null, null, null, null, null).size());
-        Assert.assertEquals(4, testing().queryEvents(null, null, null, "userId", null, null, null, null, null).size());
+        Assertions.assertEquals(5, testing().queryEvents(null, null, "clientId", null, null, null, null, null, null).size());
+        Assertions.assertEquals(5, testing().queryEvents(realmId, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(4, testing().queryEvents(null, toList(EventType.LOGIN), null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(6, testing().queryEvents(null, toList(EventType.LOGIN, EventType.REGISTER), null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(4, testing().queryEvents(null, null, null, "userId", null, null, null, null, null).size());
 
-        Assert.assertEquals(1, testing().queryEvents(null, toList(EventType.REGISTER), null, "userId", null, null, null, null, null).size());
+        Assertions.assertEquals(1, testing().queryEvents(null, toList(EventType.REGISTER), null, "userId", null, null, null, null, null).size());
 
-        Assert.assertEquals(2, testing().queryEvents(null, null, null, null, null, null, null, null, 2).size());
-        Assert.assertEquals(1, testing().queryEvents(null, null, null, null, null, null, null, 5, null).size());
+        Assertions.assertEquals(2, testing().queryEvents(null, null, null, null, null, null, null, null, 2).size());
+        Assertions.assertEquals(1, testing().queryEvents(null, null, null, null, null, null, null, 5, null).size());
 
-        Assert.assertEquals(newest, testing().queryEvents(null, null, null, null, null, null, null, null, 1).get(0).getTime());
-        Assert.assertEquals(oldest, testing().queryEvents(null, null, null, null, null, null, null, 5, 1).get(0).getTime());
+        Assertions.assertEquals(newest, testing().queryEvents(null, null, null, null, null, null, null, null, 1).get(0).getTime());
+        Assertions.assertEquals(oldest, testing().queryEvents(null, null, null, null, null, null, null, 5, 1).get(0).getTime());
 
         testing().clearEventStore(realmId);
         testing().clearEventStore(realmId2);
 
-        Assert.assertEquals(0, testing().queryEvents(null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(0, testing().queryEvents(null, null, null, null, null, null, null, null, null).size());
 
         String d1 = "2015-03-04";
         String d2 = "2015-03-05";
@@ -127,39 +127,39 @@ public class EventStoreProviderTest extends AbstractEventsTest {
         testing().onEvent(create(date4, EventType.UPDATE_PROFILE, realmId2, "clientId2", "userId2", "127.0.0.1", "error"));
         testing().onEvent(create(date4, EventType.UPDATE_EMAIL, realmId2, "clientId2", "userId2", "127.0.0.1", "error"));
 
-        Assert.assertEquals(6, testing().queryEvents(null, null, "clientId", null, null, null, null, null, null).size());
-        Assert.assertEquals(2, testing().queryEvents(null, null, "clientId2", null, null, null, null, null, null).size());
+        Assertions.assertEquals(6, testing().queryEvents(null, null, "clientId", null, null, null, null, null, null).size());
+        Assertions.assertEquals(2, testing().queryEvents(null, null, "clientId2", null, null, null, null, null, null).size());
 
-        Assert.assertEquals(6, testing().queryEvents(realmId, null, null, null, null, null, null, null, null).size());
-        Assert.assertEquals(2, testing().queryEvents(realmId2, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(6, testing().queryEvents(realmId, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(2, testing().queryEvents(realmId2, null, null, null, null, null, null, null, null).size());
 
-        Assert.assertEquals(4, testing().queryEvents(null, null, null, "userId", null, null, null, null, null).size());
-        Assert.assertEquals(4, testing().queryEvents(null, null, null, "userId2", null, null, null, null, null).size());
+        Assertions.assertEquals(4, testing().queryEvents(null, null, null, "userId", null, null, null, null, null).size());
+        Assertions.assertEquals(4, testing().queryEvents(null, null, null, "userId2", null, null, null, null, null).size());
 
-        Assert.assertEquals(2, testing().queryEvents(null, toList(EventType.LOGIN), null, null, null, null, null, null, null).size());
-        Assert.assertEquals(2, testing().queryEvents(null, toList(EventType.REGISTER), null, null, null, null, null, null, null).size());
-        Assert.assertEquals(4, testing().queryEvents(null, toList(EventType.LOGIN, EventType.REGISTER), null, null, null, null, null, null, null).size());
-        Assert.assertEquals(1, testing().queryEvents(null, toList(EventType.CODE_TO_TOKEN), null, null, null, null, null, null, null).size());
-        Assert.assertEquals(1, testing().queryEvents(null, toList(EventType.LOGOUT), null, null, null, null, null, null, null).size());
-        Assert.assertEquals(1, testing().queryEvents(null, toList(EventType.UPDATE_PROFILE), null, null, null, null, null, null, null).size());
-        Assert.assertEquals(1, testing().queryEvents(null, toList(EventType.UPDATE_EMAIL), null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(2, testing().queryEvents(null, toList(EventType.LOGIN), null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(2, testing().queryEvents(null, toList(EventType.REGISTER), null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(4, testing().queryEvents(null, toList(EventType.LOGIN, EventType.REGISTER), null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(1, testing().queryEvents(null, toList(EventType.CODE_TO_TOKEN), null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(1, testing().queryEvents(null, toList(EventType.LOGOUT), null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(1, testing().queryEvents(null, toList(EventType.UPDATE_PROFILE), null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(1, testing().queryEvents(null, toList(EventType.UPDATE_EMAIL), null, null, null, null, null, null, null).size());
 
-        Assert.assertEquals(8, testing().queryEvents(null, null, null, null, d1, null, null, null, null).size());
-        Assert.assertEquals(8, testing().queryEvents(null, null, null, null, null, d4, null, null, null).size());
+        Assertions.assertEquals(8, testing().queryEvents(null, null, null, null, d1, null, null, null, null).size());
+        Assertions.assertEquals(8, testing().queryEvents(null, null, null, null, null, d4, null, null, null).size());
 
-        Assert.assertEquals(4, testing().queryEvents(null, null, null, null, d3, null, null, null, null).size());
-        Assert.assertEquals(4, testing().queryEvents(null, null, null, null, null, d2, null, null, null).size());
+        Assertions.assertEquals(4, testing().queryEvents(null, null, null, null, d3, null, null, null, null).size());
+        Assertions.assertEquals(4, testing().queryEvents(null, null, null, null, null, d2, null, null, null).size());
 
-        Assert.assertEquals(0, testing().queryEvents(null, null, null, null, d7, null, null, null, null).size());
-        Assert.assertEquals(0, testing().queryEvents(null, null, null, null, null, d6, null, null, null).size());
+        Assertions.assertEquals(0, testing().queryEvents(null, null, null, null, d7, null, null, null, null).size());
+        Assertions.assertEquals(0, testing().queryEvents(null, null, null, null, null, d6, null, null, null).size());
 
-        Assert.assertEquals(8, testing().queryEvents(null, null, null, null, d1, d4, null, null, null).size());
-        Assert.assertEquals(6, testing().queryEvents(null, null, null, null, d2, d4, null, null, null).size());
-        Assert.assertEquals(4, testing().queryEvents(null, null, null, null, d1, d2, null, null, null).size());
-        Assert.assertEquals(4, testing().queryEvents(null, null, null, null, d3, d4, null, null, null).size());
+        Assertions.assertEquals(8, testing().queryEvents(null, null, null, null, d1, d4, null, null, null).size());
+        Assertions.assertEquals(6, testing().queryEvents(null, null, null, null, d2, d4, null, null, null).size());
+        Assertions.assertEquals(4, testing().queryEvents(null, null, null, null, d1, d2, null, null, null).size());
+        Assertions.assertEquals(4, testing().queryEvents(null, null, null, null, d3, d4, null, null, null).size());
 
-        Assert.assertEquals(0, testing().queryEvents(null, null, null, null, d5, d6, null, null, null).size());
-        Assert.assertEquals(0, testing().queryEvents(null, null, null, null, d7, d8, null, null, null).size());
+        Assertions.assertEquals(0, testing().queryEvents(null, null, null, null, d5, d6, null, null, null).size());
+        Assertions.assertEquals(0, testing().queryEvents(null, null, null, null, d7, d8, null, null, null).size());
     }
 
     @Test
@@ -172,7 +172,7 @@ public class EventStoreProviderTest extends AbstractEventsTest {
 
         testing().clearEventStore(realmId);
 
-        Assert.assertEquals(1, testing().queryEvents(null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(1, testing().queryEvents(null, null, null, null, null, null, null, null, null).size());
     }
 
     @Test
@@ -190,7 +190,7 @@ public class EventStoreProviderTest extends AbstractEventsTest {
 
     @Test
     public void clearOld() {
-        Assume.assumeTrue("Map storage event store provider does not support changing expiration of existing events", keycloakUsingProviderWithId(EventStoreProvider.class, "jpa"));
+        Assumptions.assumeTrue("Map storage event store provider does not support changing expiration of existing events", keycloakUsingProviderWithId(EventStoreProvider.class, "jpa"));
         testing().onEvent(create(System.currentTimeMillis() - 300000, EventType.LOGIN, realmId, "clientId", "userId", "127.0.0.1", "error"));
         testing().onEvent(create(System.currentTimeMillis() - 200000, EventType.LOGIN, realmId, "clientId", "userId", "127.0.0.1", "error"));
         testing().onEvent(create(System.currentTimeMillis(), EventType.LOGIN, realmId, "clientId", "userId", "127.0.0.1", "error"));
@@ -205,7 +205,7 @@ public class EventStoreProviderTest extends AbstractEventsTest {
 
         // The first 2 events from realmId will be deleted
         testing().clearExpiredEvents();
-        Assert.assertEquals(4, testing().queryEvents(null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(4, testing().queryEvents(null, null, null, null, null, null, null, null, null).size());
 
         // Set expiration of events for realmId2 as well
         RealmRepresentation realm2 = realmsResouce().realm(REALM_NAME_2).toRepresentation();
@@ -214,12 +214,12 @@ public class EventStoreProviderTest extends AbstractEventsTest {
 
         // The first event from realmId2 will be deleted now
         testing().clearExpiredEvents();
-        Assert.assertEquals(3, testing().queryEvents(null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(3, testing().queryEvents(null, null, null, null, null, null, null, null, null).size());
 
         // set time offset to the future. The remaining 2 events from realmId and 1 event from realmId2 should be expired now
         setTimeOffset(150);
         testing().clearExpiredEvents();
-        Assert.assertEquals(0, testing().queryEvents(null, null, null, null, null, null, null, null, null).size());
+        Assertions.assertEquals(0, testing().queryEvents(null, null, null, null, null, null, null, null, null).size());
 
         // Revert expirations
         realm.setEventsExpiration(0);

@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.admin;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.ClientInitialAccessResource;
 import org.keycloak.client.registration.ClientRegistrationException;
 import org.keycloak.common.util.Time;
@@ -35,10 +35,10 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.hamcrest.MatcherAssert.assertThat;;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
@@ -47,7 +47,7 @@ public class InitialAccessTokenResourceTest extends AbstractAdminTest {
 
     private ClientInitialAccessResource resource;
 
-    @Before
+    @BeforeEach
     public void before() {
         resource = realm.clientInitialAccess();
     }
@@ -116,7 +116,7 @@ public class InitialAccessTokenResourceTest extends AbstractAdminTest {
                 .map(initialAccessPresentation -> initialAccessPresentation.getId())
                 .collect(Collectors.toList());
 
-        Assert.assertNames(remainingIds, response2.getId(), response4.getId());
+        Assertions.assertNames(remainingIds, response2.getId(), response4.getId());
 
         setTimeOffset(2000);
 
@@ -124,7 +124,7 @@ public class InitialAccessTokenResourceTest extends AbstractAdminTest {
 
         list = resource.list();
         assertEquals(1, list.size());
-        Assert.assertEquals(list.get(0).getId(), response4.getId());
+        Assertions.assertEquals(list.get(0).getId(), response4.getId());
 
         // Cleanup
         realm.clientInitialAccess().delete(response4.getId());

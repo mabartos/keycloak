@@ -56,7 +56,7 @@ import org.keycloak.util.JsonSerialization;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public final class ClientPoliciesUtil {
 

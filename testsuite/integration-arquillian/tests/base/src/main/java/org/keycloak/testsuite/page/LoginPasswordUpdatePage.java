@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.page;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.keycloak.testsuite.pages.PageUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -59,7 +59,7 @@ public class LoginPasswordUpdatePage {
     }
 
     public void assertCurrent() {
-        Assert.assertEquals("Update password", PageUtils.getPageTitle(driver));
+        Assertions.assertEquals("Update password", PageUtils.getPageTitle(driver));
     }
 
     public void open() {

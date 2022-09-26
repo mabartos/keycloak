@@ -1,9 +1,9 @@
 package org.keycloak.testsuite.user;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.models.UserModel;
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.keycloak.testsuite.util.IOUtil.PROJECT_BUILD_DIRECTORY;
 
 /**
@@ -83,7 +83,7 @@ public class ManyUsersTest extends AbstractUserTest {
         return realmsResouce().realm(REALM);
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         log.infof("Reading users after create is %s", READ_USER_AFTER_CREATE ? "ENABLED" : "DISABLED");
 
@@ -121,7 +121,7 @@ public class ManyUsersTest extends AbstractUserTest {
         realmResource().addDefaultGroup(groupId);
     }
 
-    @After
+    @AfterEach
     public void after() {
         realmTimer.clearStats(true, true, false);
         usersTimer.clearStats();
@@ -182,7 +182,7 @@ public class ManyUsersTest extends AbstractUserTest {
             // Send additional request to read every user after he is created
             if (READ_USER_AFTER_CREATE) {
                 UserRepresentation returned = realmResource().users().get(createdUser.getId()).toRepresentation();
-                Assert.assertEquals(returned.getId(), createdUser.getId());
+                Assertions.assertEquals(returned.getId(), createdUser.getId());
             }
 
             // Send additional request to read social links of user

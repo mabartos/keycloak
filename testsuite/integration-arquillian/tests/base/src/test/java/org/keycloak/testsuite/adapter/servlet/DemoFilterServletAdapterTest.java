@@ -16,8 +16,8 @@
  */
 package org.keycloak.testsuite.adapter.servlet;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.keycloak.testsuite.arquillian.annotation.AppServerContainer;
 import org.keycloak.testsuite.utils.annotation.UseServletFilter;
 import org.keycloak.testsuite.utils.arquillian.ContainerConstants;
@@ -34,62 +34,62 @@ public class DemoFilterServletAdapterTest extends DemoServletsAdapterTest {
 
     @Test
     @Override
-    @Ignore(value = "Can't test because of the way filter works")
+    @Disabled(value = "Can't test because of the way filter works")
     public void testNullBearerTokenCustomErrorPage() {
     }
     
     @Test
     @Override
-    @Ignore(value = "Don't need to test this because HttpServletRequest.authenticate "
+    @Disabled(value = "Don't need to test this because HttpServletRequest.authenticate "
             + "doesn't make sense with filter implementation")
     public void testAuthenticated() {
     }
 
     @Test
     @Override
-    @Ignore
+    @Disabled
     public void testAuthenticatedWithCustomSessionConfig() {
 
     }
 
     @Test
     @Override
-    @Ignore
+    @Disabled
     public void testOIDCParamsForwarding() {
 
     }
 
     @Test
     @Override
-    @Ignore
+    @Disabled
     public void testOIDCUiLocalesParamForwarding() {
 
     }
     
     @Test
     @Override
-    @Ignore
+    @Disabled
     public void testTokenInCookieSSO() {
         
     }
     
     @Test
     @Override
-    @Ignore
+    @Disabled
     public void testInvalidTokenCookie() {
         
     }
     
     @Test
     @Override
-    @Ignore
+    @Disabled
     public void testTokenInCookieRefresh() {
         
     }
 
     @Test
     @Override
-    @Ignore
+    @Disabled
     public void testTokenInCookieSSORoot() {
 
     }

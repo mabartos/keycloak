@@ -53,16 +53,16 @@ public class KcOidcBrokerParameterForwardTest extends AbstractBrokerTest {
 
         waitForPage(driver, "sign in to", true);
 
-        Assert.assertThat("Driver should be on the provider realm page right now",
+        Assertions.assertThat("Driver should be on the provider realm page right now",
                 driver.getCurrentUrl(), containsString("/auth/realms/" + bc.providerRealmName() + "/"));
 
-        Assert.assertThat(FORWARDED_PARAMETER + "=" + FORWARDED_PARAMETER_VALUE + " should be part of the url",
+        Assertions.assertThat(FORWARDED_PARAMETER + "=" + FORWARDED_PARAMETER_VALUE + " should be part of the url",
                 driver.getCurrentUrl(), containsString(FORWARDED_PARAMETER + "=" + FORWARDED_PARAMETER_VALUE));
 
-        Assert.assertThat("\"" + PARAMETER_NOT_SET + "\"" + " should NOT be part of the url",
+        Assertions.assertThat("\"" + PARAMETER_NOT_SET + "\"" + " should NOT be part of the url",
                 driver.getCurrentUrl(), not(containsString(PARAMETER_NOT_SET)));
 
-        Assert.assertThat("\"" + PARAMETER_NOT_FORWARDED +"\"" + " should be NOT part of the url",
+        Assertions.assertThat("\"" + PARAMETER_NOT_FORWARDED +"\"" + " should be NOT part of the url",
                 driver.getCurrentUrl(), not(containsString(PARAMETER_NOT_FORWARDED)));
 
         loginPage.login(bc.getUserLogin(), bc.getUserPassword());
@@ -70,7 +70,7 @@ public class KcOidcBrokerParameterForwardTest extends AbstractBrokerTest {
 
         updateAccountInformationPage.assertCurrent();
 
-        Assert.assertThat("We must be on correct realm right now",
+        Assertions.assertThat("We must be on correct realm right now",
                 driver.getCurrentUrl(), containsString("/auth/realms/" + bc.consumerRealmName() + "/"));
 
         log.debug("Updating info on updateAccount page");
@@ -79,7 +79,7 @@ public class KcOidcBrokerParameterForwardTest extends AbstractBrokerTest {
         UsersResource consumerUsers = adminClient.realm(bc.consumerRealmName()).users();
 
         int userCount = consumerUsers.count();
-        Assert.assertTrue("There must be at least one user", userCount > 0);
+        Assertions.assertTrue("There must be at least one user", userCount > 0);
 
         List<UserRepresentation> users = consumerUsers.search("", 0, userCount);
 
@@ -91,7 +91,7 @@ public class KcOidcBrokerParameterForwardTest extends AbstractBrokerTest {
             }
         }
 
-        Assert.assertTrue("There must be user " + bc.getUserLogin() + " in realm " + bc.consumerRealmName(),
+        Assertions.assertTrue("There must be user " + bc.getUserLogin() + " in realm " + bc.consumerRealmName(),
                 isUserFound);
     }
 

@@ -64,8 +64,8 @@ import javax.xml.namespace.QName;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -143,7 +143,7 @@ public class BrokerTest extends AbstractSamlTest {
             reviewProfileAuthenticator = executions.stream()
               .filter(ex -> Objects.equals(ex.getProviderId(), IdpReviewProfileAuthenticatorFactory.PROVIDER_ID))
               .findFirst()
-              .orElseGet(() -> { Assert.fail("Could not find update profile in first broker login flow"); return null; });
+              .orElseGet(() -> { Assertions.fail("Could not find update profile in first broker login flow"); return null; });
 
             reviewProfileAuthenticator.setRequirement(Requirement.DISABLED.name());
             realm.flows().updateExecutions(firstBrokerLoginFlowAlias, reviewProfileAuthenticator);

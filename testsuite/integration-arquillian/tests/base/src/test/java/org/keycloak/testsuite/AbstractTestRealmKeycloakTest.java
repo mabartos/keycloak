@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.common.ClientConnection;
 import org.keycloak.common.util.Resteasy;
@@ -79,14 +79,14 @@ public abstract class AbstractTestRealmKeycloakTest extends AbstractKeycloakTest
 
 
     // Logout user after test
-    @After
+    @AfterEach
     public void deleteCookies() {
         deleteAllCookiesForRealm("test");
     }
 
     /**
      * This allows a subclass to change the configuration of the testRealm before
-     * it is imported.  This method will be called prior to any @Before methods
+     * it is imported.  This method will be called prior to any @BeforeEach methods
      * in the subclass.
      *
      * @param testRealm The realm read from /testrealm.json.
@@ -117,7 +117,7 @@ public abstract class AbstractTestRealmKeycloakTest extends AbstractKeycloakTest
         String code = new OAuthClient.AuthorizationEndpointResponse(oauth).getCode();
         OAuthClient.AccessTokenResponse response = oauth.doAccessTokenRequest(code, "password");
 
-        Assert.assertEquals(200, response.getStatusCode());
+        Assertions.assertEquals(200, response.getStatusCode());
 
         if (eventsField != null) {
             events.expectCodeToToken(codeId, sessionId).user(loginEvent.getUserId()).session(sessionId).assertEvent();

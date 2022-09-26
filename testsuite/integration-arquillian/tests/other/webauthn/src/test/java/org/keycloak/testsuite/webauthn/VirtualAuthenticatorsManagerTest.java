@@ -18,7 +18,7 @@ package org.keycloak.testsuite.webauthn;
 
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.arquillian.annotation.IgnoreBrowserDriver;
 import org.keycloak.testsuite.util.SecondBrowser;

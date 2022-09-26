@@ -3,10 +3,10 @@ package org.keycloak.testsuite.springboot;
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.hibernate.annotations.SelectBeforeUpdate;
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.common.Profile;
 import org.keycloak.events.Details;
@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.URLAssertions.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.pause;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 
@@ -41,8 +41,7 @@ import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 public class OfflineTokenSpringBootTest extends AbstractSpringBootTest {
     private static final String SERVLET_URL = BASE_URL + "/TokenServlet";
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     private AccountApplicationsPage accountAppPage;
@@ -50,7 +49,7 @@ public class OfflineTokenSpringBootTest extends AbstractSpringBootTest {
     @Page
     private OAuthGrantPage oauthGrantPage;
 
-    @Before
+    @BeforeEach
     public void setUpAuthRealm() {
         testRealmLoginPage.setAuthRealm(REALM_NAME);
     }

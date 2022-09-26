@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.admin.realm;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RoleResource;
 import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.admin.client.resource.UserResource;
@@ -58,12 +58,12 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.keycloak.models.Constants;
 
 /**
@@ -79,7 +79,7 @@ public class RealmRolesTest extends AbstractAdminTest {
     private Map<String, String> ids = new HashMap<>();
     private String clientUuid;
 
-    @Before
+    @BeforeEach
     public void before() {
         RoleRepresentation roleA = RoleBuilder.create().name("role-a").description("Role A").attributes(ROLE_A_ATTRIBUTES).build();
         RoleRepresentation roleB = RoleBuilder.create().name("role-b").description("Role B").build();
@@ -215,13 +215,13 @@ public class RealmRolesTest extends AbstractAdminTest {
         Set<RoleRepresentation> composites = resource.get("role-a").getRoleComposites();
 
         assertTrue(resource.get("role-a").toRepresentation().isComposite());
-        Assert.assertNames(composites, "role-b", "role-c");
+        Assertions.assertNames(composites, "role-b", "role-c");
 
         Set<RoleRepresentation> realmComposites = resource.get("role-a").getRealmRoleComposites();
-        Assert.assertNames(realmComposites, "role-b");
+        Assertions.assertNames(realmComposites, "role-b");
 
         Set<RoleRepresentation> clientComposites = resource.get("role-a").getClientRoleComposites(clientUuid);
-        Assert.assertNames(clientComposites, "role-c");
+        Assertions.assertNames(clientComposites, "role-c");
 
         resource.get("role-a").deleteComposites(l);
         assertAdminEvents.assertEvent(realmId, OperationType.DELETE, AdminEventPaths.roleResourceCompositesPath("role-a"), l, ResourceType.REALM_ROLE);

@@ -55,11 +55,11 @@ import org.jboss.modules.ModuleClassLoader;
 import org.jboss.modules.ModuleLoader;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.cluster.ClusterEvent;
 import org.keycloak.cluster.infinispan.WrapperClusterEvent;
@@ -111,12 +111,12 @@ public class MultiVersionClusterTest extends AbstractClusterTest {
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void enabled() {
-        Assume.assumeThat(System.getProperty("auth.server.legacy.version"), notNullValue());
+        Assumptions.assumeThat(System.getProperty("auth.server.legacy.version"), notNullValue());
     }
 
-    @Before
+    @BeforeEach
     @Override
     public void beforeClusterTest() {
         if (!initialized) {
@@ -130,7 +130,7 @@ public class MultiVersionClusterTest extends AbstractClusterTest {
         startBackendNode(currentNode);
     }
     
-    @After
+    @AfterEach
     public void after() {
         killBackendNode(legacyNode);
         killBackendNode(currentNode);

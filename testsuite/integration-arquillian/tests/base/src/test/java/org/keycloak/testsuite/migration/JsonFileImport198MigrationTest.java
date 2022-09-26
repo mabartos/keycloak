@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.migration;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.exportimport.util.ImportUtils;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.utils.io.IOUtil;

@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.webauthn;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.WebAuthnConstants;
 import org.keycloak.models.credential.WebAuthnCredentialModel;
 import org.keycloak.representations.idm.CredentialRepresentation;

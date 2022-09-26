@@ -1,9 +1,9 @@
 package org.keycloak.testsuite.console.realm;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.arquillian.annotation.DisableFeature;
@@ -14,9 +14,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.keycloak.testsuite.util.UIUtils.getTextFromElement;
-import static org.keycloak.testsuite.util.URLAssert.*;
+import static org.keycloak.testsuite.util.URLAssertions.*;
 
 /**
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
@@ -37,7 +37,7 @@ public class InternationalizationTest extends AbstractRealmTest {
     @FindBy(id = "kc-locale-dropdown")
     private LocaleDropdown localeDropdown;
 
-    @Before
+    @BeforeEach
     public void beforeInternationalizationTest() {
         RealmRepresentation realmRepresentation = testRealmResource().toRepresentation();
         realmRepresentation.setAccountTheme(THEME_NAME);
@@ -56,7 +56,7 @@ public class InternationalizationTest extends AbstractRealmTest {
         deleteAllCookiesForMasterRealm();
     }
 
-    @After
+    @AfterEach
     public void afterInternationalizationTest() {
         testContext.setAdminLoggedIn(false);
     }

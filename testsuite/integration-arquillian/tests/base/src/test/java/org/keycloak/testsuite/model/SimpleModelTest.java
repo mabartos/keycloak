@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.model;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.utils.KeycloakModelUtils;
@@ -47,7 +47,7 @@ public class SimpleModelTest extends AbstractKeycloakTest {
         log.infof("simpleModelTest");
         RealmModel realm = session.realms().getRealmByName("master");
 
-        Assert.assertNotNull("Master realm was not found!", realm);
+        Assertions.assertNotNull("Master realm was not found!", realm);
     }
 
 
@@ -68,7 +68,7 @@ public class SimpleModelTest extends AbstractKeycloakTest {
         KeycloakModelUtils.runJobInTransaction(session.getKeycloakSessionFactory(), (KeycloakSession session2) -> {
 
             RealmModel realm = session2.realms().getRealmByName("foo");
-            Assert.assertNotNull(realm);
+            Assertions.assertNotNull(realm);
 
             realm.setAttribute("bar", "baz");
 
@@ -78,10 +78,10 @@ public class SimpleModelTest extends AbstractKeycloakTest {
         KeycloakModelUtils.runJobInTransaction(session.getKeycloakSessionFactory(), (KeycloakSession session3) -> {
 
             RealmModel realm = session3.realms().getRealmByName("foo");
-            Assert.assertNotNull(realm);
+            Assertions.assertNotNull(realm);
 
             String attrValue = realm.getAttribute("bar");
-            Assert.assertEquals("baz", attrValue);
+            Assertions.assertEquals("baz", attrValue);
 
             realm.setAttribute("bar", "baz2");
 
@@ -92,10 +92,10 @@ public class SimpleModelTest extends AbstractKeycloakTest {
         KeycloakModelUtils.runJobInTransaction(session.getKeycloakSessionFactory(), (KeycloakSession session4) -> {
 
             RealmModel realm = session4.realms().getRealmByName("foo");
-            Assert.assertNotNull(realm);
+            Assertions.assertNotNull(realm);
 
             String attrValue = realm.getAttribute("bar");
-            Assert.assertEquals("baz", attrValue);
+            Assertions.assertEquals("baz", attrValue);
 
             new RealmManager(session4).removeRealm(realm);
         });
@@ -110,7 +110,7 @@ public class SimpleModelTest extends AbstractKeycloakTest {
         RealmModel realm = session.realms().getRealmByName("masterr");
 
         // This should fail and throw the AssertionError
-        Assert.assertNotNull("Master realm was not found!", realm);
+        Assertions.assertNotNull("Master realm was not found!", realm);
     }
 
 

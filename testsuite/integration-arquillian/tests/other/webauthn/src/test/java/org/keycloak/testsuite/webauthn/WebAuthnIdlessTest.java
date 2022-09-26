@@ -19,7 +19,7 @@ package org.keycloak.testsuite.webauthn;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.logging.Logger;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.keycloak.WebAuthnConstants;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.authentication.authenticators.browser.*;
@@ -64,8 +64,7 @@ import static org.openqa.selenium.virtualauthenticator.VirtualAuthenticatorOptio
 @IgnoreBrowserDriver(FirefoxDriver.class)
 public class WebAuthnIdlessTest extends AbstractWebAuthnVirtualTest {
 
-    @Rule
-    public AssertEvents events = new AssertEvents(this);
+    
 
     @Page
     protected AppPage appPage;

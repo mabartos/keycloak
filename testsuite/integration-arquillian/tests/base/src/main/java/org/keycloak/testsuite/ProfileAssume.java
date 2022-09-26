@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite;
 
-import org.junit.Assume;
+import org.junit.jupiter.api.Assumptions;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.info.ProfileInfoRepresentation;
@@ -54,26 +54,26 @@ public class ProfileAssume {
 
     public static void assumeFeatureEnabled(Profile.Feature feature) {
         updateProfile();
-        Assume.assumeTrue("Ignoring test as feature " + feature.name() + " is not enabled", isFeatureEnabled(feature));
+        Assumptions.assumeTrue("Ignoring test as feature " + feature.name() + " is not enabled", isFeatureEnabled(feature));
     }
 
     public static void assumeFeatureDisabled(Profile.Feature feature) {
-        Assume.assumeTrue("Ignoring test as feature " + feature.name() + " is enabled", !isFeatureEnabled(feature));
+        Assumptions.assumeTrue("Ignoring test as feature " + feature.name() + " is enabled", !isFeatureEnabled(feature));
     }
 
     public static void assumePreview() {
         updateProfile();
-        Assume.assumeTrue("Ignoring test as community/preview profile is not enabled", !profile.equals("product"));
+        Assumptions.assumeTrue("Ignoring test as community/preview profile is not enabled", !profile.equals("product"));
     }
 
     public static void assumePreviewDisabled() {
         updateProfile();
-        Assume.assumeFalse("Ignoring test as community/preview profile is enabled", !profile.equals("product"));
+        Assumptions.assumeFalse("Ignoring test as community/preview profile is enabled", !profile.equals("product"));
     }
 
     public static void assumeCommunity() {
         updateProfile();
-        Assume.assumeTrue("Ignoring test as community profile is not enabled", profile.equals("community"));
+        Assumptions.assumeTrue("Ignoring test as community profile is not enabled", profile.equals("community"));
     }
 
     public static boolean isFeatureEnabled(Profile.Feature feature) {

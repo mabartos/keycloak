@@ -17,8 +17,8 @@
 package org.keycloak.testsuite.i18n;
 
 import org.jboss.arquillian.graphene.page.Page;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.idm.ClientRepresentation;
@@ -46,15 +46,15 @@ public class AccountPageTest extends AbstractI18NTest {
     public void languageDropdown() {
         accountUpdateProfilePage.open();
         loginPage.login("login@test.com", "password");
-        Assert.assertTrue(accountUpdateProfilePage.isCurrent());
+        Assertions.assertTrue(accountUpdateProfilePage.isCurrent());
 
-        Assert.assertEquals("English", accountUpdateProfilePage.getLanguageDropdownText());
+        Assertions.assertEquals("English", accountUpdateProfilePage.getLanguageDropdownText());
 
         accountUpdateProfilePage.openLanguage("Deutsch");
-        Assert.assertEquals("Deutsch", accountUpdateProfilePage.getLanguageDropdownText());
+        Assertions.assertEquals("Deutsch", accountUpdateProfilePage.getLanguageDropdownText());
 
         accountUpdateProfilePage.openLanguage("English");
-        Assert.assertEquals("English", accountUpdateProfilePage.getLanguageDropdownText());
+        Assertions.assertEquals("English", accountUpdateProfilePage.getLanguageDropdownText());
         accountUpdateProfilePage.logout();
     }
 
@@ -65,19 +65,19 @@ public class AccountPageTest extends AbstractI18NTest {
         RealmResource testRealm = testRealm();
         List<ClientRepresentation> foundClients = testRealm.clients().findByClientId("var-named-test-app");
         if (foundClients.isEmpty()) {
-            Assert.fail("Unable to find var-named-test-app");
+            Assertions.fail("Unable to find var-named-test-app");
         }
         ClientRepresentation namedClient = foundClients.get(0);
 
         driver.navigate().to(accountUpdateProfilePage.getPath() + "?referrer=" + namedClient.getClientId());
         loginPage.login("test-user@localhost", "password");
-        Assert.assertTrue(accountUpdateProfilePage.isCurrent());
+        Assertions.assertTrue(accountUpdateProfilePage.isCurrent());
 
         accountUpdateProfilePage.openLanguage("Deutsch");
-        Assert.assertEquals("Deutsch", accountUpdateProfilePage.getLanguageDropdownText());
+        Assertions.assertEquals("Deutsch", accountUpdateProfilePage.getLanguageDropdownText());
 
         // When a client has a name provided as a variable, the name should be resolved using a localized bundle and available to the back link
-        Assert.assertEquals("Zur\u00FCck zu Test App Named - Clientkonto", accountUpdateProfilePage.getBackToApplicationLinkText());
-        Assert.assertEquals(namedClient.getBaseUrl(), accountUpdateProfilePage.getBackToApplicationLinkHref());
+        Assertions.assertEquals("Zur\u00FCck zu Test App Named - Clientkonto", accountUpdateProfilePage.getBackToApplicationLinkText());
+        Assertions.assertEquals(namedClient.getBaseUrl(), accountUpdateProfilePage.getBackToApplicationLinkHref());
     }
 }

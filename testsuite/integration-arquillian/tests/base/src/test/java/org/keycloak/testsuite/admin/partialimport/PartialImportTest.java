@@ -17,10 +17,11 @@
 package org.keycloak.testsuite.admin.partialimport;
 
 import java.io.IOException;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.IdentityProviderResource;
 import org.keycloak.admin.client.resource.RoleResource;
@@ -57,10 +58,10 @@ import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.keycloak.admin.client.resource.AuthorizationResource;
 import org.keycloak.common.constants.ServiceAccountConstants;
 import org.keycloak.partialimport.ResourceType;
@@ -77,9 +78,9 @@ import org.keycloak.util.JsonSerialization;
  *
  * @author Stan Silvert ssilvert@redhat.com (C) 2016 Red Hat Inc.
  */
+@ExtendWith(AssertAdminEvents.class)
 public class PartialImportTest extends AbstractAuthTest {
 
-    @Rule
     public AssertAdminEvents assertAdminEvents = new AssertAdminEvents(this);
 
     private static final int NUM_RESOURCE_TYPES = 6;
@@ -107,7 +108,7 @@ public class PartialImportTest extends AbstractAuthTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void initAdminEvents() {
         RealmRepresentation realmRep = RealmBuilder.edit(testRealmResource().toRepresentation()).testEventListener().build();
         realmId = realmRep.getId();
@@ -117,13 +118,13 @@ public class PartialImportTest extends AbstractAuthTest {
         piRep = new PartialImportRepresentation();
     }
 
-    @After
+    @AfterEach
     public void tearDownAdminEvents() {
         RealmRepresentation realmRep = RealmBuilder.edit(testRealmResource().toRepresentation()).removeTestEventListener().build();
         adminClient.realm(realmRep.getRealm()).update(realmRep);
     }
 
-    @Before
+    @BeforeEach
     public void createClientForClientRoles() {
         ClientRepresentation client = new ClientRepresentation();
         client.setClientId(CLIENT_ROLES_CLIENT);
@@ -137,7 +138,7 @@ public class PartialImportTest extends AbstractAuthTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void createClientWithServiceAccount() {
         ClientRepresentation client = new ClientRepresentation();
         client.setClientId(CLIENT_SERVICE_ACCOUNT);
@@ -154,7 +155,7 @@ public class PartialImportTest extends AbstractAuthTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void removeUsers() {
         List<UserRepresentation> toRemove = testRealmResource().users().search(USER_PREFIX, 0, NUM_ENTITIES);
         for (UserRepresentation user : toRemove) {
@@ -162,7 +163,7 @@ public class PartialImportTest extends AbstractAuthTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void removeGroups() {
         List<GroupRepresentation> toRemove = testRealmResource().groups().groups();
         for (GroupRepresentation group: toRemove) {
@@ -170,7 +171,7 @@ public class PartialImportTest extends AbstractAuthTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void removeClients() {
         List<ClientRepresentation> toRemove = testRealmResource().clients().findAll();
         for (ClientRepresentation client : toRemove) {
@@ -180,7 +181,7 @@ public class PartialImportTest extends AbstractAuthTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void removeProviders() {
         List<IdentityProviderRepresentation> toRemove = testRealmResource().identityProviders().findAll();
         for (IdentityProviderRepresentation idp : toRemove) {
@@ -188,7 +189,7 @@ public class PartialImportTest extends AbstractAuthTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void removeRealmRoles() {
         List<RoleRepresentation> toRemove = testRealmResource().roles().list();
         for (RoleRepresentation role : toRemove) {
@@ -198,7 +199,7 @@ public class PartialImportTest extends AbstractAuthTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void removeClientRoles() {
         List<RoleRepresentation> toRemove = clientRolesClient().roles().list();
         for (RoleRepresentation role : toRemove) {
@@ -392,9 +393,9 @@ public class PartialImportTest extends AbstractAuthTest {
         Set<String> userIds = new HashSet<>();
         for (int i=0 ; i<NUM_ENTITIES ; i++) {
             AdminEventRepresentation adminEvent = assertAdminEvents.poll();
-            Assert.assertEquals(realmId, adminEvent.getRealmId());
-            Assert.assertEquals(OperationType.CREATE.name(), adminEvent.getOperationType());
-            Assert.assertTrue(adminEvent.getResourcePath().startsWith("users/"));
+            Assertions.assertEquals(realmId, adminEvent.getRealmId());
+            Assertions.assertEquals(OperationType.CREATE.name(), adminEvent.getOperationType());
+            Assertions.assertTrue(adminEvent.getResourcePath().startsWith("users/"));
             String userId = adminEvent.getResourcePath().substring(6);
             userIds.add(userId);
         }
@@ -406,8 +407,8 @@ public class PartialImportTest extends AbstractAuthTest {
             String id = result.getId();
             UserResource userRsc = testRealmResource().users().get(id);
             UserRepresentation user = userRsc.toRepresentation();
-            Assert.assertThat(user.getUsername(), startsWith(USER_PREFIX));
-            Assert.assertThat(userIds, hasItem(id));
+            Assertions.assertThat(user.getUsername(), startsWith(USER_PREFIX));
+            Assertions.assertThat(userIds, hasItem(id));
         }
     }
 
@@ -460,9 +461,9 @@ public class PartialImportTest extends AbstractAuthTest {
         Set<String> userIds = new HashSet<>();
         for (int i=0 ; i<NUM_ENTITIES ; i++) {
             AdminEventRepresentation adminEvent = assertAdminEvents.poll();
-            Assert.assertEquals(realmId, adminEvent.getRealmId());
-            Assert.assertEquals(OperationType.CREATE.name(), adminEvent.getOperationType());
-            Assert.assertTrue(adminEvent.getResourcePath().startsWith("users/"));
+            Assertions.assertEquals(realmId, adminEvent.getRealmId());
+            Assertions.assertEquals(OperationType.CREATE.name(), adminEvent.getOperationType());
+            Assertions.assertTrue(adminEvent.getResourcePath().startsWith("users/"));
             String userId = adminEvent.getResourcePath().substring(6);
             userIds.add(userId);
         }
@@ -474,7 +475,7 @@ public class PartialImportTest extends AbstractAuthTest {
             UserResource userRsc = testRealmResource().users().get(id);
             UserRepresentation user = userRsc.toRepresentation();
             assertTrue(user.getUsername().startsWith(USER_PREFIX));
-            Assert.assertTrue(userIds.contains(id));
+            Assertions.assertTrue(userIds.contains(id));
         }
     }
 
@@ -508,20 +509,20 @@ public class PartialImportTest extends AbstractAuthTest {
                 ClientResource clientRsc = testRealmResource().clients().get(id);
                 ClientRepresentation client = clientRsc.toRepresentation();
                 assertTrue(client.getName().startsWith(CLIENT_PREFIX));
-                Assert.assertTrue(client.isServiceAccountsEnabled());
+                Assertions.assertTrue(client.isServiceAccountsEnabled());
                 if (ProfileAssume.isFeatureEnabled(AUTHORIZATION)) {
-                    Assert.assertTrue(client.getAuthorizationServicesEnabled());
+                    Assertions.assertTrue(client.getAuthorizationServicesEnabled());
                     AuthorizationResource authRsc = clientRsc.authorization();
                     ResourceServerRepresentation authRep = authRsc.exportSettings();
-                    Assert.assertNotNull(authRep);
-                    Assert.assertEquals(2, authRep.getResources().size());
-                    Assert.assertEquals(3, authRep.getPolicies().size());
+                    Assertions.assertNotNull(authRep);
+                    Assertions.assertEquals(2, authRep.getResources().size());
+                    Assertions.assertEquals(3, authRep.getPolicies().size());
                 } else {
-                    Assert.assertNull(client.getAuthorizationServicesEnabled());
+                    Assertions.assertNull(client.getAuthorizationServicesEnabled());
                 }
             } else {
                 UserResource userRsc = testRealmResource().users().get(result.getId());
-                Assert.assertTrue(userRsc.toRepresentation().getUsername().startsWith(
+                Assertions.assertTrue(userRsc.toRepresentation().getUsername().startsWith(
                         ServiceAccountConstants.SERVICE_ACCOUNT_USER_PREFIX + CLIENT_PREFIX));
             }
         }
@@ -767,7 +768,7 @@ public class PartialImportTest extends AbstractAuthTest {
         // check the service accounts are there
         for (int i = 0; i < NUM_ENTITIES; i++) {
             List<UserRepresentation> l = testRealmResource().users().search(ServiceAccountConstants.SERVICE_ACCOUNT_USER_PREFIX + CLIENT_PREFIX + i);
-            Assert.assertEquals(1, l.size());
+            Assertions.assertEquals(1, l.size());
         }
         // re-import without service accounts enabled
         piRep = new PartialImportRepresentation();
@@ -778,7 +779,7 @@ public class PartialImportTest extends AbstractAuthTest {
         // check the service accounts have been removed
         for (int i = 0; i < NUM_ENTITIES; i++) {
             List<UserRepresentation> l = testRealmResource().users().search(ServiceAccountConstants.SERVICE_ACCOUNT_USER_PREFIX + CLIENT_PREFIX + i);
-            Assert.assertEquals(0, l.size());
+            Assertions.assertEquals(0, l.size());
         }
     }
 
@@ -892,7 +893,7 @@ public class PartialImportTest extends AbstractAuthTest {
         piRep.setClients(Arrays.asList(client, client2));
 
         PartialImportResults result = doImport();
-        Assert.assertEquals(0, result.getOverwritten());
+        Assertions.assertEquals(0, result.getOverwritten());
     }
 
     @Test
@@ -900,7 +901,7 @@ public class PartialImportTest extends AbstractAuthTest {
         setOverwrite();
         piRep.setClients(Arrays.asList(testRealmResource().clients().findByClientId(CLIENT_SERVICE_ACCOUNT).get(0)));
 
-        Assert.assertEquals(1, doImport().getOverwritten());
+        Assertions.assertEquals(1, doImport().getOverwritten());
 
         ClientRepresentation client = testRealmResource().clients().findByClientId(CLIENT_SERVICE_ACCOUNT).get(0);
         testRealmResource().clients().get(client.getId()).getServiceAccountUser();

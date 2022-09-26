@@ -17,8 +17,8 @@
 
 package org.keycloak.testsuite.transactions;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractKeycloakTest;
 import java.util.List;
@@ -32,14 +32,14 @@ public class TransactionsTest extends AbstractKeycloakTest {
     public void testTransactionActive() {
         testingClient.server().run(
                 session -> {
-                    Assert.assertTrue(session.getTransactionManager().isActive());
+                    Assertions.assertTrue(session.getTransactionManager().isActive());
                     session.getTransactionManager().commit();
-                    Assert.assertFalse(session.getTransactionManager().isActive());
+                    Assertions.assertFalse(session.getTransactionManager().isActive());
 
                     session.getTransactionManager().begin();
-                    Assert.assertTrue(session.getTransactionManager().isActive());
+                    Assertions.assertTrue(session.getTransactionManager().isActive());
                     session.getTransactionManager().rollback();
-                    Assert.assertFalse(session.getTransactionManager().isActive());
+                    Assertions.assertFalse(session.getTransactionManager().isActive());
                 }
         );
     }
