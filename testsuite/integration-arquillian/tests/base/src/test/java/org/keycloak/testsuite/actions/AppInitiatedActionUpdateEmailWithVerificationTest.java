@@ -24,7 +24,7 @@ import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;

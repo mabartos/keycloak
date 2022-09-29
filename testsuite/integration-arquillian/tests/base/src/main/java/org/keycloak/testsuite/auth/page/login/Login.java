@@ -16,7 +16,8 @@
  */
 package org.keycloak.testsuite.auth.page.login;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
+import org.keycloak.testsuite.page.PageContext;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -31,6 +32,10 @@ public abstract class Login extends LoginBase {
     public static final String OIDC = "openid-connect";
     public static final String SAML = "saml";
     public static final String LOGIN_ACTION = "login-action";
+
+    public Login(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public UriBuilder createUriBuilder() {

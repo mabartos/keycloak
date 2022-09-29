@@ -109,6 +109,7 @@ import static org.keycloak.testsuite.util.ServerURLs.getAuthServerContextRoot;
 import static org.keycloak.testsuite.util.ServerURLs.removeDefaultPorts;
 import static org.keycloak.testsuite.util.UIUtils.clickLink;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilElementIsPresent;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
@@ -331,7 +332,8 @@ public class OAuthClient {
     public void linkUsers(String username, String password) {
         WaitUtils.waitForPageToLoad();
         WebElement linkAccountButton = driver.findElement(By.id("linkAccount"));
-        waitUntilElement(linkAccountButton).is().clickable();
+        waitUntilElementIsPresent(linkAccountButton);
+
         linkAccountButton.click();
 
         WaitUtils.waitForPageToLoad();
@@ -343,7 +345,8 @@ public class OAuthClient {
         passwordInput.sendKeys(password);
 
         WebElement loginButton = driver.findElement(By.id("kc-login"));
-        waitUntilElement(loginButton).is().clickable();
+        waitUntilElementIsPresent(loginButton);
+
         loginButton.click();
     }
 
@@ -398,7 +401,7 @@ public class OAuthClient {
         lastNameInput.sendKeys(lastName);
 
         WebElement submitButton = driver.findElement(By.cssSelector("input[type=\"submit\"]"));
-        waitUntilElement(submitButton).is().clickable();
+        waitUntilElementIsPresent(submitButton);
         submitButton.click();
     }
 

@@ -18,6 +18,7 @@
 package org.keycloak.testsuite.console.page;
 
 import org.keycloak.testsuite.console.page.fragment.RealmSelector;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -32,6 +33,10 @@ public class AdminConsoleRealmsRoot extends AdminConsole {
 
     @FindBy(xpath = "//tr[@data-ng-repeat='r in realms']//a[contains(@class,'ng-binding')]")
     private List<WebElement> realmLinks;
+
+    public AdminConsoleRealmsRoot(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public UriBuilder createUriBuilder() {

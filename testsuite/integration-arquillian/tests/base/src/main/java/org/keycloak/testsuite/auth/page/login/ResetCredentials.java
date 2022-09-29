@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.auth.page.login;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -31,6 +32,10 @@ import static org.keycloak.testsuite.util.UIUtils.getTextFromElement;
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
  */
 public class ResetCredentials extends LoginActions {
+
+    public ResetCredentials(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public UriBuilder createUriBuilder() {

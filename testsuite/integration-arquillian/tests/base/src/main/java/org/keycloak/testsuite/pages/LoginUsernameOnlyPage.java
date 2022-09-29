@@ -1,5 +1,6 @@
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.UIUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -15,6 +16,10 @@ public class LoginUsernameOnlyPage extends LoginPage {
 
     @FindBy(id = "input-error-username")
     private WebElement usernameError;
+
+    public LoginUsernameOnlyPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public void login(String username) {

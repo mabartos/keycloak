@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -30,6 +31,10 @@ public class IdpLinkEmailPage extends AbstractPage {
 
     @FindBy(linkText = "Click here")
     private WebElement resendEmailLink;
+
+    public IdpLinkEmailPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public boolean isCurrent() {

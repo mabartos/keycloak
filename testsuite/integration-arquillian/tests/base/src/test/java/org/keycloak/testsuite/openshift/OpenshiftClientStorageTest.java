@@ -20,7 +20,7 @@ package org.keycloak.testsuite.openshift;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;

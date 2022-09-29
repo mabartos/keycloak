@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.error;
 
 import org.hamcrest.CoreMatchers;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Test;
 import org.keycloak.common.util.KeycloakUriBuilder;
 import org.keycloak.representations.idm.RealmRepresentation;

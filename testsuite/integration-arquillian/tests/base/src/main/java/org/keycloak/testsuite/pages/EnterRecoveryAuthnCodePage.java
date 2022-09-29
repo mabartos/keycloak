@@ -1,5 +1,6 @@
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -23,6 +24,10 @@ public class EnterRecoveryAuthnCodePage extends LanguageComboboxAwarePage {
 
     @FindBy(className = "kc-feedback-text")
     private WebElement feedbackText;
+
+    public EnterRecoveryAuthnCodePage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public int getRecoveryAuthnCodeToEnterNumber() {
         String [] recoveryAuthnCodeLabelParts = recoveryAuthnCodeLabel.getText().split("#");

@@ -18,12 +18,13 @@
 package org.keycloak.testsuite.adapter.page;
 
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.graphene.findby.FindByJQuery;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.keycloak.testsuite.page.AbstractPageWithInjectedUrl;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.WaitUtils;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.net.URL;
 
@@ -39,30 +40,34 @@ public class AngularCorsProductTestApp extends AbstractPageWithInjectedUrl {
     @OperateOnDeployment(DEPLOYMENT_NAME)
     private URL url;
 
+    public AngularCorsProductTestApp(PageContext pageContext) {
+        super(pageContext);
+    }
+
     @Override
     public URL getInjectedUrl() {
         return url;
     }
 
-    @FindByJQuery("button:contains('Reload')")
+    @FindBy(xpath = "//button[@data-ng-click='reloadData()']")
     private WebElement reloadDataButton;
 
-    @FindByJQuery("button:contains('load Roles')")
+    @FindBy(xpath = "//button[@data-ng-click='loadRoles()']")
     private WebElement loadRolesButton;
 
-    @FindByJQuery("button:contains('Add Role')")
+    @FindBy(xpath = "//button[@data-ng-click='addRole()']")
     private WebElement addRoleButton;
 
-    @FindByJQuery("button:contains('Delete Role')")
+    @FindBy(xpath = "//button[@data-ng-click='deleteRole()']")
     private WebElement deleteRoleButton;
 
-    @FindByJQuery("button:contains('load available social providers')")
+    @FindBy(xpath = "//button[@data-ng-click='loadServerInfo()']")
     private WebElement loadAvailableSocialProvidersButton;
 
-    @FindByJQuery("button:contains('Load public realm info')")
+    @FindBy(xpath = "//button[@data-ng-click='loadPublicRealmInfo()']")
     private WebElement loadPublicRealmInfoButton;
 
-    @FindByJQuery("button:contains('Load version')")
+    @FindBy(xpath = "//button[@data-ng-click='loadVersion()']")
     private WebElement loadVersionButton;
 
     @FindBy(id = "output")
@@ -71,47 +76,49 @@ public class AngularCorsProductTestApp extends AbstractPageWithInjectedUrl {
     private WebElement headers;
 
     public void reloadData() {
-        WaitUtils.waitUntilElement(reloadDataButton).is().clickable();
+        WaitUtils.waitUntilElement(ExpectedConditions.elementToBeClickable(reloadDataButton));
         reloadDataButton.click();
     }
 
     public void loadRoles() {
-        WaitUtils.waitUntilElement(loadRolesButton).is().clickable();
+        WaitUtils.waitUntilElement(ExpectedConditions.elementToBeClickable(loadRolesButton));
         loadRolesButton.click();
     }
 
     public void addRole() {
-        WaitUtils.waitUntilElement(addRoleButton).is().clickable();
+        WaitUtils.waitUntilElement(ExpectedConditions.elementToBeClickable(addRoleButton));
         addRoleButton.click();
     }
 
     public void deleteRole() {
-        WaitUtils.waitUntilElement(deleteRoleButton).is().clickable();
+        WaitUtils.waitUntilElement(ExpectedConditions.elementToBeClickable(deleteRoleButton));
         deleteRoleButton.click();
     }
 
     public void loadAvailableSocialProviders() {
-        WaitUtils.waitUntilElement(loadAvailableSocialProvidersButton).is().clickable();
+        WaitUtils.waitUntilElement(ExpectedConditions.elementToBeClickable(loadAvailableSocialProvidersButton));
         loadAvailableSocialProvidersButton.click();
     }
 
     public void loadPublicRealmInfo() {
-        WaitUtils.waitUntilElement(loadPublicRealmInfoButton).is().clickable();
+        WaitUtils.waitUntilElement(ExpectedConditions.elementToBeClickable(loadPublicRealmInfoButton));
         loadPublicRealmInfoButton.click();
     }
 
     public void loadVersion() {
-        WaitUtils.waitUntilElement(loadVersionButton).is().clickable();
+        WaitUtils.waitUntilElement(ExpectedConditions.elementToBeClickable(loadVersionButton));
+
         loadVersionButton.click();
     }
 
     public WebElement getOutput() {
-        WaitUtils.waitUntilElement(outputArea).is().visible();
+        WaitUtils.waitUntilElement(ExpectedConditions.visibilityOf(outputArea));
+
         return outputArea;
     }
 
     public WebElement getHeaders() {
-        WaitUtils.waitUntilElement(headers).is().visible();
+        WaitUtils.waitUntilElement(ExpectedConditions.visibilityOf(headers));
         return headers;
     }
 

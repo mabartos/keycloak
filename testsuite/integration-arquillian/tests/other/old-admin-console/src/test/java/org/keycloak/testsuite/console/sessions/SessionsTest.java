@@ -17,7 +17,7 @@
  */
 package org.keycloak.testsuite.console.sessions;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.keycloak.testsuite.console.AbstractConsoleTest;

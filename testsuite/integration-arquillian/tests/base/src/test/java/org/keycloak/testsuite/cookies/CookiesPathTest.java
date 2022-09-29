@@ -16,7 +16,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpCoreContext;
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keycloak.common.Profile;

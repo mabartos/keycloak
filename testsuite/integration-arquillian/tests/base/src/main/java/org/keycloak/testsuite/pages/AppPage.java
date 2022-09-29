@@ -19,6 +19,7 @@ package org.keycloak.testsuite.pages;
 
 import org.keycloak.OAuth2Constants;
 import org.keycloak.protocol.oidc.OIDCLoginProtocolService;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -34,6 +35,10 @@ public class AppPage extends AbstractPage {
 
     @FindBy(id = "account")
     private WebElement accountLink;
+
+    public AppPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public void open() {

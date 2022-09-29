@@ -26,7 +26,7 @@ import static org.keycloak.representations.idm.CredentialRepresentation.PASSWORD
 import static org.keycloak.testsuite.admin.Users.setPasswordFor;
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;

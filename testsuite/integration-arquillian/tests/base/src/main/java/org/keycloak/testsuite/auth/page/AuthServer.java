@@ -17,6 +17,8 @@
 
 package org.keycloak.testsuite.auth.page;
 
+import org.keycloak.testsuite.page.PageContext;
+
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 
@@ -28,6 +30,14 @@ import java.net.URI;
  * @author tkyjovsk
  */
 public class AuthServer extends AuthServerContextRoot {
+
+    public AuthServer(){
+        super();
+    }
+
+    public AuthServer(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public UriBuilder createUriBuilder() {

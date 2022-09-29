@@ -19,7 +19,7 @@
 package org.keycloak.testsuite.x509;
 
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.jboss.logging.Logger;
 import org.junit.AfterClass;
 import org.junit.Assert;

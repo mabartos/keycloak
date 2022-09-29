@@ -19,6 +19,7 @@ package org.keycloak.testsuite.adapter.page;
 
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -35,6 +36,10 @@ public class InputPortal extends SAMLServlet {
     @ArquillianResource
     @OperateOnDeployment(DEPLOYMENT_NAME)
     private URL url;
+
+    public InputPortal(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public URL getInjectedUrl() {

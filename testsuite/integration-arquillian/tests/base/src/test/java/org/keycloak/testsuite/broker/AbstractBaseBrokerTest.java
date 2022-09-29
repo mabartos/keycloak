@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.broker;
 
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.After;
 import org.junit.Before;
 import org.keycloak.admin.client.resource.RealmResource;

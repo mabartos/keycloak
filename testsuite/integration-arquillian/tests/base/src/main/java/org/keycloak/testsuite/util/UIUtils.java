@@ -23,8 +23,8 @@ import java.util.function.Supplier;
 import static org.keycloak.testsuite.util.DroneUtils.getCurrentDriver;
 import static org.keycloak.testsuite.util.WaitUtils.log;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
-import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElementClassContains;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilElementIsPresent;
 
 /**
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
@@ -72,7 +72,7 @@ public final class UIUtils {
     public static void clickLink(WebElement element) {
         WebDriver driver = getCurrentDriver();
 
-        waitUntilElement(element).is().clickable();
+        waitUntilElementIsPresent(element);
 
         if (driver instanceof SafariDriver && !element.isDisplayed()) { // Safari sometimes thinks an element is not visible
                                                                         // even though it is. In this case we just move the cursor and click.
@@ -122,7 +122,7 @@ public final class UIUtils {
         String styleBckp = element.getAttribute("style");
 
         jsExecutor.executeScript("arguments[0].setAttribute('style', 'display:block !important');", element);
-        waitUntilElement(element).is().visible();
+        waitUntilElementIsPresent(element);
         element.sendKeys(keys);
         jsExecutor.executeScript("arguments[0].setAttribute('style', '" + styleBckp + "');", element);
     }

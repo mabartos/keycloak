@@ -19,6 +19,7 @@ package org.keycloak.testsuite.pages;
 
 import org.keycloak.models.Constants;
 import org.keycloak.services.resources.RealmsResource;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.DroneUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -60,6 +61,10 @@ public class AccountUpdateProfilePage extends AbstractAccountPage {
 
     @FindBy(className = "alert-error")
     private WebElement errorMessage;
+
+    public AccountUpdateProfilePage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public String getPath() {
         return RealmsResource.accountUrl(UriBuilder.fromUri(getAuthServerRoot())).build("test").toString();

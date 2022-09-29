@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.cluster;
 
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

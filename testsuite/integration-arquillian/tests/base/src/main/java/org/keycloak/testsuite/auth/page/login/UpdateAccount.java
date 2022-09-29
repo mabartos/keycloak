@@ -17,10 +17,11 @@
 
 package org.keycloak.testsuite.auth.page.login;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.auth.page.AccountFields;
+import org.keycloak.testsuite.page.PageContext;
 
 /**
  *
@@ -30,6 +31,10 @@ public class UpdateAccount extends RequiredActions {
 
     @Page
     private AccountFields accountFields;
+
+    public UpdateAccount(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public String getActionId() {

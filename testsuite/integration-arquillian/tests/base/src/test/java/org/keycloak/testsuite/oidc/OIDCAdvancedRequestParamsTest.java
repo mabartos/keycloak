@@ -20,7 +20,7 @@ package org.keycloak.testsuite.oidc;
 import com.google.common.collect.ImmutableMap;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -21,7 +21,7 @@
  */
 package org.keycloak.testsuite.console.page.clients.credentials;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.testsuite.console.page.clients.Client;
 
 /**

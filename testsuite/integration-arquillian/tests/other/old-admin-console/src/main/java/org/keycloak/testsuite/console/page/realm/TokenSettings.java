@@ -17,7 +17,7 @@
  */
 package org.keycloak.testsuite.console.page.realm;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.testsuite.page.Form;
 import org.keycloak.testsuite.util.UIUtils;
 import org.openqa.selenium.WebElement;

@@ -29,7 +29,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.jboss.arquillian.container.test.api.Deployer;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.BeforeClass;
 import org.junit.Test;

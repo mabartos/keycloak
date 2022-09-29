@@ -20,6 +20,7 @@ package org.keycloak.testsuite.auth.page;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.keycloak.testsuite.arquillian.annotation.AuthServerBrowserContext;
 import org.keycloak.testsuite.page.AbstractPageWithInjectedUrl;
+import org.keycloak.testsuite.page.PageContext;
 
 import java.net.URL;
 
@@ -36,9 +37,20 @@ public class AuthServerContextRoot extends AbstractPageWithInjectedUrl {
     @AuthServerBrowserContext
     private URL authServerContextRoot;
 
+    public AuthServerContextRoot(){
+        super();
+    }
+
+    public AuthServerContextRoot(PageContext pageContext) {
+        super(pageContext);
+    }
+
     @Override
-    public URL getInjectedUrl() {
-        return authServerContextRoot;
+    public URL getInjectedUrl()
+    {
+        System.out.println("HERE");
+        System.out.println(authServerContextRoot);
+        return pageContext.getSuiteContext().getAuthServerInfo().getBrowserContextRoot();
     }
 
 }

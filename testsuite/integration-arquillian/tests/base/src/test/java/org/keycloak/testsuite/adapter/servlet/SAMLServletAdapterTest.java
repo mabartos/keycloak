@@ -17,76 +17,6 @@
 
 package org.keycloak.testsuite.adapter.servlet;
 
-import static javax.ws.rs.core.Response.Status.OK;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.keycloak.OAuth2Constants.PASSWORD;
-import static org.keycloak.testsuite.admin.Users.getPasswordOf;
-import static org.keycloak.testsuite.admin.Users.setPasswordFor;
-import static org.keycloak.testsuite.auth.page.AuthRealm.DEMO;
-import static org.keycloak.testsuite.auth.page.AuthRealm.SAMLSERVLETDEMO;
-import static org.keycloak.testsuite.util.Matchers.bodyHC;
-import static org.keycloak.testsuite.util.Matchers.statusCodeIsHC;
-import static org.keycloak.testsuite.util.UIUtils.getRawPageSource;
-import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
-import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
-import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
-import java.net.URI;
-import java.net.URL;
-import java.security.KeyPair;
-import java.security.PublicKey;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateFactory;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriBuilderException;
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.SOAPHeader;
-import javax.xml.soap.SOAPHeaderElement;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -94,15 +24,12 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-
 import org.junit.Assert;
 import org.junit.Test;
-
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.admin.client.resource.ProtocolMappersResource;
 import org.keycloak.admin.client.resource.RoleScopeResource;
@@ -136,11 +63,41 @@ import org.keycloak.saml.processing.core.parsers.saml.SAMLParser;
 import org.keycloak.saml.processing.core.saml.v2.common.SAMLDocumentHolder;
 import org.keycloak.saml.processing.core.saml.v2.util.AssertionUtil;
 import org.keycloak.services.resources.RealmsResource;
-import org.keycloak.testsuite.adapter.page.*;
+import org.keycloak.testsuite.adapter.page.AdapterLogoutPage;
+import org.keycloak.testsuite.adapter.page.BadAssertionSalesPostSig;
+import org.keycloak.testsuite.adapter.page.BadClientSalesPostSigServlet;
+import org.keycloak.testsuite.adapter.page.BadRealmSalesPostSigServlet;
+import org.keycloak.testsuite.adapter.page.DifferentCookieNameServlet;
+import org.keycloak.testsuite.adapter.page.EcpSP;
+import org.keycloak.testsuite.adapter.page.Employee2Servlet;
+import org.keycloak.testsuite.adapter.page.EmployeeAcsServlet;
+import org.keycloak.testsuite.adapter.page.EmployeeDomServlet;
+import org.keycloak.testsuite.adapter.page.EmployeeRoleMappingServlet;
+import org.keycloak.testsuite.adapter.page.EmployeeServlet;
+import org.keycloak.testsuite.adapter.page.EmployeeSigFrontServlet;
+import org.keycloak.testsuite.adapter.page.EmployeeSigPostNoIdpKeyServlet;
+import org.keycloak.testsuite.adapter.page.EmployeeSigRedirNoIdpKeyServlet;
+import org.keycloak.testsuite.adapter.page.EmployeeSigRedirOptNoIdpKeyServlet;
+import org.keycloak.testsuite.adapter.page.EmployeeSigServlet;
+import org.keycloak.testsuite.adapter.page.InputPortal;
+import org.keycloak.testsuite.adapter.page.MissingAssertionSig;
+import org.keycloak.testsuite.adapter.page.MultiTenant1Saml;
+import org.keycloak.testsuite.adapter.page.MultiTenant2Saml;
+import org.keycloak.testsuite.adapter.page.SAMLServlet;
+import org.keycloak.testsuite.adapter.page.SalesMetadataServlet;
+import org.keycloak.testsuite.adapter.page.SalesPost2Servlet;
+import org.keycloak.testsuite.adapter.page.SalesPostAssertionAndResponseSig;
+import org.keycloak.testsuite.adapter.page.SalesPostAutodetectServlet;
+import org.keycloak.testsuite.adapter.page.SalesPostEncServlet;
+import org.keycloak.testsuite.adapter.page.SalesPostEncSignAssertionsOnlyServlet;
+import org.keycloak.testsuite.adapter.page.SalesPostPassiveServlet;
+import org.keycloak.testsuite.adapter.page.SalesPostServlet;
+import org.keycloak.testsuite.adapter.page.SalesPostSigEmailServlet;
+import org.keycloak.testsuite.adapter.page.SalesPostSigPersistentServlet;
+import org.keycloak.testsuite.adapter.page.SalesPostSigServlet;
+import org.keycloak.testsuite.adapter.page.SalesPostSigTransientServlet;
 import org.keycloak.testsuite.admin.ApiUtil;
 import org.keycloak.testsuite.arquillian.annotation.AppServerContainer;
-import org.keycloak.testsuite.util.ServerURLs;
-import org.keycloak.testsuite.utils.arquillian.ContainerConstants;
 import org.keycloak.testsuite.auth.page.login.Login;
 import org.keycloak.testsuite.auth.page.login.SAMLIDPInitiatedLogin;
 import org.keycloak.testsuite.auth.page.login.SAMLPostLoginTenant1;
@@ -155,19 +112,103 @@ import org.keycloak.testsuite.util.AdminClientUtil;
 import org.keycloak.testsuite.util.SamlClient;
 import org.keycloak.testsuite.util.SamlClient.Binding;
 import org.keycloak.testsuite.util.SamlClientBuilder;
+import org.keycloak.testsuite.util.ServerURLs;
 import org.keycloak.testsuite.util.UserBuilder;
 import org.keycloak.testsuite.util.WaitUtils;
+import org.keycloak.testsuite.utils.arquillian.ContainerConstants;
 import org.keycloak.testsuite.utils.io.IOUtil;
-
 import org.openqa.selenium.By;
-
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import org.xml.sax.SAXException;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriBuilderException;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPHeader;
+import javax.xml.soap.SOAPHeaderElement;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.net.URI;
+import java.net.URL;
+import java.security.KeyPair;
+import java.security.PublicKey;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.keycloak.OAuth2Constants.PASSWORD;
+import static org.keycloak.testsuite.admin.Users.getPasswordOf;
+import static org.keycloak.testsuite.admin.Users.setPasswordFor;
+import static org.keycloak.testsuite.auth.page.AuthRealm.DEMO;
+import static org.keycloak.testsuite.auth.page.AuthRealm.SAMLSERVLETDEMO;
+import static org.keycloak.testsuite.util.Matchers.bodyHC;
+import static org.keycloak.testsuite.util.Matchers.statusCodeIsHC;
+import static org.keycloak.testsuite.util.UIUtils.getRawPageSource;
+import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
+import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilBodyContains;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilBodyNotContains;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilElementIsPresent;
+import static org.openqa.selenium.support.ui.ExpectedConditions.textToBePresentInElementLocated;
 
 /**
  * @author mhajas
@@ -459,7 +500,9 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
 
     private void assertForbidden(AbstractPage page, String expectedNotContains) {
         page.navigateTo();
-        waitUntilElement(By.xpath("//body")).text().not().contains(expectedNotContains);
+
+        waitUntilBodyNotContains(expectedNotContains);
+
         //Different 403 status page on EAP and Wildfly
         Assert.assertTrue(driver.getPageSource().contains("Forbidden")
                 || driver.getPageSource().contains(FORBIDDEN_TEXT)
@@ -468,14 +511,14 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
 
     private void assertSuccessfullyLoggedIn(AbstractPage page, String expectedText) {
         page.navigateTo();
-        waitUntilElement(By.xpath("//body")).text().contains(expectedText);
+        waitUntilBodyContains(expectedText);
     }
 
     private void assertForbiddenLogin(AbstractPage page, String username, String password, Login loginPage, String expectedNotContains) {
         page.navigateTo();
         assertCurrentUrlStartsWith(loginPage);
         loginPage.form().login(username, password);
-        waitUntilElement(By.xpath("//body")).text().not().contains(expectedNotContains);
+        waitUntilBodyNotContains(expectedNotContains);
         //Different 403 status page on EAP and Wildfly
         Assert.assertTrue(driver.getPageSource().contains("Forbidden")
                 || driver.getPageSource().contains(FORBIDDEN_TEXT)
@@ -495,7 +538,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
         waitForPageToLoad();
         assertCurrentUrlStartsWith(loginPage);
         loginPage.form().login(user);
-        waitUntilElement(By.xpath("//body")).text().contains(expectedString);
+        waitUntilBodyContains(expectedString);
     }
 
     private void testSuccessfulAndUnauthorizedLogin(SAMLServlet page, Login loginPage) {
@@ -523,7 +566,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
         clientResource.update(client);
 
         salesPostSigServletPage.navigateTo();
-        waitUntilElement(By.xpath("//body")).text().contains("Login requester not enabled");
+        waitUntilBodyContains("Login requester not enabled");
 
         client.setEnabled(true);
         clientResource.update(client);
@@ -555,7 +598,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
         if (forbiddenIfNotAuthenticated) {
             assertOnForbiddenPage();
         } else {
-            waitUntilElement(By.xpath("//body")).text().contains("principal=null");
+            waitUntilBodyContains("principal=null");
         }
 
         checkLoggedOut(salesPostSigEmailServletPage, testRealmSAMLPostLoginPage);
@@ -564,7 +607,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
     @Test
     public void badClientSalesPostSigTest() {
         badClientSalesPostSigServletPage.navigateTo();
-        waitUntilElement(By.xpath("//body")).text().contains("Invalid requester");
+        waitUntilBodyContains("Invalid requester");
     }
 
     @Test
@@ -572,7 +615,8 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
         badRealmSalesPostSigServletPage.navigateTo();
         testRealmSAMLRedirectLoginPage.form().login(bburkeUser);
 
-        waitUntilElement(By.xpath("//body")).text().not().contains("principal=");
+        waitUntilBodyNotContains("principal=");
+
         //Different 403 status page on EAP and Wildfly
         Assert.assertTrue(driver.getPageSource().contains("Forbidden")
                 || driver.getPageSource().contains(FORBIDDEN_TEXT)
@@ -613,7 +657,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
             assertSuccessfulLogin(multiTenant1SamlPage, user1, tenant1RealmSAMLPostLoginPage, "principal=user-tenant1");
             // check the issuer is the correct tenant
             driver.navigate().to(multiTenant1SamlPage.getUriBuilder().clone().path("getAssertionIssuer").build().toASCIIString());
-            waitUntilElement(By.xpath("//body")).text().contains("/auth/realms/tenant1");
+            waitUntilBodyContains("/auth/realms/tenant1");
             // check logout
             multiTenant1SamlPage.logout();
             checkLoggedOut(multiTenant1SamlPage, tenant1RealmSAMLPostLoginPage);
@@ -637,7 +681,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
             assertSuccessfulLogin(multiTenant2SamlPage, user2, tenant2RealmSAMLPostLoginPage, "principal=user-tenant2");
             // check the issuer is the correct tenant
             driver.navigate().to(multiTenant2SamlPage.getUriBuilder().clone().path("getAssertionIssuer").build().toASCIIString());
-            waitUntilElement(By.xpath("//body")).text().contains("/auth/realms/tenant2");
+            waitUntilBodyContains("/auth/realms/tenant2");
             // check logout
             multiTenant2SamlPage.logout();
             checkLoggedOut(multiTenant2SamlPage, tenant2RealmSAMLPostLoginPage);
@@ -910,7 +954,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
         if (forbiddenIfNotAuthenticated) {
             assertOnForbiddenPage();
         } else {
-            waitUntilElement(By.xpath("//body")).text().contains("principal=null");
+            waitUntilBodyContains("principal=null");
         }
 
         assertSuccessfulLogin(salesPostServletPage, bburkeUser, testRealmSAMLPostLoginPage, "principal=bburke");
@@ -923,7 +967,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
         if (forbiddenIfNotAuthenticated) {
             assertOnForbiddenPage();
         } else {
-            waitUntilElement(By.xpath("//body")).text().contains("principal=null");
+            waitUntilBodyContains("principal=null");
         }
 
         assertForbiddenLogin(salesPostServletPage, "unauthorized", "password", testRealmSAMLPostLoginPage, "principal=");
@@ -1042,8 +1086,8 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
     public void salesPostSigPersistentTest() {
         salesPostSigPersistentServletPage.navigateTo();
         testRealmSAMLPostLoginPage.form().login(bburkeUser);
-        waitUntilElement(By.xpath("//body")).text().not().contains("bburke");
-        waitUntilElement(By.xpath("//body")).text().contains("principal=G-");
+        waitUntilBodyNotContains("bburke");
+        waitUntilBodyContains("principal=G-");
 
         salesPostSigPersistentServletPage.logout();
         checkLoggedOut(salesPostSigPersistentServletPage, testRealmSAMLPostLoginPage);
@@ -1057,8 +1101,8 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
     public void salesPostSigTransientTest() {
         salesPostSigTransientServletPage.navigateTo();
         testRealmSAMLPostLoginPage.form().login(bburkeUser);
-        waitUntilElement(By.xpath("//body")).text().not().contains("bburke");
-        waitUntilElement(By.xpath("//body")).text().contains("principal=G-");
+        waitUntilBodyNotContains("bburke");
+        waitUntilBodyContains("principal=G-");
 
         salesPostSigTransientServletPage.logout();
         checkLoggedOut(salesPostSigTransientServletPage, testRealmSAMLPostLoginPage);
@@ -1075,7 +1119,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
         samlidpInitiatedLoginPage.navigateTo();
         samlidpInitiatedLoginPage.form().login(bburkeUser);
 
-        waitUntilElement(By.xpath("//body")).text().contains("principal=bburke");
+        waitUntilBodyContains("principal=bburke");
 
         assertSuccessfullyLoggedIn(salesPostSigServletPage, "principal=bburke");
 
@@ -1090,7 +1134,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
         samlidpInitiatedLoginPage.navigateTo();
         samlidpInitiatedLoginPage.form().login("unauthorized", "password");
 
-        waitUntilElement(By.xpath("//body")).text().not().contains("bburke");
+        waitUntilBodyNotContains("bburke");
         //Different 403 status page on EAP and Wildfly
         Assert.assertTrue(driver.getPageSource().contains("Forbidden")
                 || driver.getPageSource().contains(FORBIDDEN_TEXT)
@@ -1110,13 +1154,15 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
         assertCurrentUrlStartsWith(testRealmSAMLPostLoginPage);
         testRealmLoginPage.form().login("bburke@redhat.com", "password");
         Assert.assertThat(URI.create(driver.getCurrentUrl()).getPath(), endsWith("secured/post"));
-        waitUntilElement(By.xpath("//body")).text().contains("parameter=hello");
+        waitUntilBodyContains("parameter=hello");
 
         // test that user principal and KeycloakSecurityContext available
         driver.navigate().to(inputPortalPage + "/insecure");
-        waitUntilElement(By.xpath("//body")).text().contains("Insecure Page");
+        waitUntilBodyContains("Insecure Page");
 
-        if (System.getProperty("insecure.user.principal.unsupported") == null) waitUntilElement(By.xpath("//body")).text().contains("UserPrincipal");
+        if (System.getProperty("insecure.user.principal.unsupported") == null) {
+            waitUntilBodyContains("UserPrincipal");
+        }
 
         // test logout
 
@@ -1141,7 +1187,8 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
         samlidpInitiatedLoginPage.form().login(bburkeUser);
         assertCurrentUrlStartsWith(salesPost2ServletPage);
         Assert.assertThat(URI.create(driver.getCurrentUrl()).getPath(), endsWith("foo"));
-        waitUntilElement(By.xpath("//body")).text().contains("principal=bburke");
+        waitUntilBodyContains("principal=bburke");
+
         salesPost2ServletPage.logout();
         checkLoggedOut(salesPost2ServletPage, testRealmSAMLPostLoginPage);
     }
@@ -1157,7 +1204,8 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
         assertCurrentUrlStartsWith(testRealmSAMLPostLoginPage);
         testRealmSAMLPostLoginPage.form().login("bburke", "password");
 
-        waitUntilElement(By.xpath("//body")).text().contains("Error info: SamlAuthenticationError [reason=INVALID_SIGNATURE");
+        waitUntilBodyContains("Error info: SamlAuthenticationError [reason=INVALID_SIGNATURE");
+
         Assert.assertEquals(driver.getCurrentUrl(), badAssertionSalesPostSigPage.getUriBuilder().clone().path("saml").build().toASCIIString());
     }
 
@@ -1167,7 +1215,8 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
         assertCurrentUrlStartsWith(testRealmSAMLPostLoginPage);
         testRealmSAMLPostLoginPage.form().login("bburke", "password");
 
-        waitUntilElement(By.xpath("//body")).text().contains("Error info: SamlAuthenticationError [reason=INVALID_SIGNATURE");
+        waitUntilBodyContains("Error info: SamlAuthenticationError [reason=INVALID_SIGNATURE");
+
         Assert.assertEquals(driver.getCurrentUrl(), missingAssertionSigPage.getUriBuilder().clone().path("saml").build().toASCIIString());
     }
 
@@ -1817,7 +1866,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
     }
 
     private void assertOnForbiddenPage() {
-        waitUntilElement(By.xpath("//body")).is().present();
+        waitUntilElementIsPresent(By.xpath("//body"));
 
         //Different 403 status page on EAP and Wildfly
         Assert.assertTrue(driver.getPageSource().contains("Forbidden")

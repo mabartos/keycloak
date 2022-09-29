@@ -18,6 +18,7 @@ package org.keycloak.testsuite.pages;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.keycloak.testsuite.util.UIUtils;
 import org.openqa.selenium.WebElement;
@@ -36,6 +37,10 @@ public class ErrorPage extends AbstractPage {
 
     @FindBy(id = "backToApplication")
     private WebElement backToApplicationLink;
+
+    public ErrorPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public String getError() {
         return UIUtils.getTextFromElement(errorMessage);

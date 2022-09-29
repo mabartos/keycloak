@@ -28,7 +28,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Before;
@@ -120,6 +120,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
@@ -130,7 +131,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.keycloak.testsuite.auth.page.AuthRealm.DEMO;
 import static org.keycloak.testsuite.util.AdminClientUtil.NUMBER_OF_CONNECTIONS;
@@ -139,6 +139,7 @@ import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
 import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilElementIsPresent;
 
 /**
  *
@@ -382,7 +383,7 @@ public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
             assertLogged();
             
             driver.navigate().to(customerPortal.logout().toASCIIString());
-            WaitUtils.waitUntilElement(By.id("customer_portal_logout")).is().present();
+            waitUntilElementIsPresent(By.id("customer_portal_logout"));
             customerPortal.navigateTo();
             assertCurrentUrlStartsWithLoginUrlOf(testRealmPage);
             
@@ -440,7 +441,7 @@ public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
     private void logoutFromCustomerCookiePortal() {
         String logout = customerCookiePortal.logoutURL();
         driver.navigate().to(logout);
-        WaitUtils.waitUntilElement(By.id("customer_portal_logout")).is().present();
+        waitUntilElementIsPresent(By.id("customer_portal_logout"));
         assertNull(driver.manage().getCookieNamed(AdapterConstants.KEYCLOAK_ADAPTER_STATE_COOKIE));
         customerCookiePortal.navigateTo();
         assertCurrentUrlStartsWithLoginUrlOf(testRealmPage);
@@ -554,8 +555,8 @@ public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
         // test logout
 
         driver.navigate().to(customerPortal + "/logout");
-        WaitUtils.waitUntilElement(By.id("customer_portal_logout")).is().present();
-        WaitUtils.waitUntilElement(By.id("customer_database_logout")).is().present();
+        waitUntilElementIsPresent(By.id("customer_portal_logout"));
+        waitUntilElementIsPresent(By.id("customer_database_logout"));
 
         customerPortal.navigateTo();
         assertCurrentUrlStartsWithLoginUrlOf(testRealmPage);
@@ -1414,7 +1415,7 @@ public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
     private void logoutFromCustomerCookiePortalRoot() {
         String logout = customerCookiePortalRoot.logoutURL();
         driver.navigate().to(logout);
-        WaitUtils.waitUntilElement(By.id("customer_portal_logout")).is().present();
+        waitUntilElementIsPresent(By.id("customer_portal_logout"));
         assertNull(driver.manage().getCookieNamed(AdapterConstants.KEYCLOAK_ADAPTER_STATE_COOKIE));
         customerCookiePortalRoot.navigateTo();
         assertCurrentUrlStartsWithLoginUrlOf(testRealmPage);

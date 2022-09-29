@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.auth.page;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -44,6 +45,14 @@ public class WelcomePage extends AuthServer {
 
     @FindBy(css = ".welcome-header h1")
     private WebElement welcomeMessage;
+
+    public WelcomePage(){
+        super();
+    }
+
+    public WelcomePage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public boolean isPasswordSet() {
         return !(driver.getPageSource().contains("Please create an initial admin user to get started.") ||

@@ -19,6 +19,7 @@ package org.keycloak.testsuite.auth.page;
 
 import org.keycloak.protocol.oidc.OIDCLoginProtocolService;
 import org.keycloak.testsuite.auth.page.login.PageWithLoginUrl;
+import org.keycloak.testsuite.page.PageContext;
 
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
@@ -43,7 +44,8 @@ public class AuthRealm extends AuthServer implements PageWithLoginUrl {
 
     public static final String ADMIN = "admin";
 
-    public AuthRealm() {
+    public AuthRealm(PageContext pageContext) {
+        super(pageContext);
         setUriParameter(AUTH_REALM, MASTER);
     }
 

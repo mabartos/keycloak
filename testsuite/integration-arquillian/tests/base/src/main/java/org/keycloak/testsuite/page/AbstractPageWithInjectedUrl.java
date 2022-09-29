@@ -30,6 +30,14 @@ import java.net.URL;
  */
 public abstract class AbstractPageWithInjectedUrl extends AbstractPage {
 
+    public AbstractPageWithInjectedUrl() {
+        super();
+    }
+
+    public AbstractPageWithInjectedUrl(PageContext pageContext) {
+        super(pageContext);
+    }
+
     public abstract URL getInjectedUrl();
 
     //EAP6 URL fix

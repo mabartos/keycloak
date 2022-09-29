@@ -25,17 +25,26 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.UriBuilder;
+
 import org.keycloak.testsuite.page.AbstractPageWithInjectedUrl;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.WaitUtils;
 
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 /**
  * @author mhajas
  */
 public abstract class SAMLServlet extends AbstractPageWithInjectedUrl {
+
+    public SAMLServlet(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void logout() {
         driver.navigate().to(getUriBuilder().clone().queryParam("GLO", "true").build().toASCIIString());
@@ -60,7 +69,8 @@ public abstract class SAMLServlet extends AbstractPageWithInjectedUrl {
         String toASCIIString = uriBuilder.path("setCheckRoles").queryParam("roles", roles).build().toASCIIString();
         driver.navigate().to(toASCIIString);
         waitForPageToLoad();
-        WaitUtils.waitUntilElement(By.tagName("body")).text().contains("These roles will be checked:");
+        final WebElement bodyElement = driver.findElement(By.tagName("body"));
+        waitUntilElement(ExpectedConditions.textToBePresentInElement(bodyElement, "These roles will be checked:"));
     }
 
     public List<String> rolesList() {

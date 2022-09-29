@@ -21,7 +21,7 @@ import static org.junit.Assert.assertFalse;
 import java.util.Arrays;
 import java.util.HashMap;
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;

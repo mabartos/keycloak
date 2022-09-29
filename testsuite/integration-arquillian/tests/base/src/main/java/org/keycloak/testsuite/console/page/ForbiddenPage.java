@@ -16,9 +16,15 @@
  */
 package org.keycloak.testsuite.console.page;
 
+import org.keycloak.testsuite.page.PageContext;
+
 import javax.ws.rs.core.UriBuilder;
 
 public class ForbiddenPage extends AdminConsole {
+
+    public ForbiddenPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public UriBuilder createUriBuilder() {

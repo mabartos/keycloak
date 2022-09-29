@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -31,6 +32,10 @@ public class ConsentPage extends AbstractPage {
 
     @FindBy(id = "kc-cancel")
     private WebElement cancelButton;
+
+    public ConsentPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void confirm() {
         submitButton.click();

@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.webauthn.pages;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.testsuite.pages.LanguageComboboxAwarePage;
 import org.keycloak.testsuite.util.WaitUtils;
 import org.openqa.selenium.WebElement;

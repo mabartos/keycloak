@@ -21,7 +21,7 @@ import org.keycloak.common.Profile.Feature;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Rule;
 import org.keycloak.representations.idm.ComponentRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;

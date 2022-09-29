@@ -18,6 +18,7 @@
 package org.keycloak.testsuite.pages;
 
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.DroneUtils;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.openqa.selenium.WebElement;
@@ -42,6 +43,10 @@ public class InfoPage extends LanguageComboboxAwarePage {
 
     @FindBy(linkText = "« Zpět na aplikaci")
     private WebElement backToApplicationCs;
+
+    public InfoPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public String getInfo() {
         return infoMessage.getText();

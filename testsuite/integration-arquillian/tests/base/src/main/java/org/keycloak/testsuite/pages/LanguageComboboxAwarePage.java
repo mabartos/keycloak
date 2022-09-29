@@ -18,6 +18,7 @@
 package org.keycloak.testsuite.pages;
 
 import org.junit.Assert;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.DroneUtils;
 import org.keycloak.testsuite.util.WaitUtils;
 import org.openqa.selenium.By;
@@ -50,6 +51,10 @@ public abstract class LanguageComboboxAwarePage extends AbstractPage {
 
     @FindBy(id = "account")
     private WebElement accountLink;
+
+    public LanguageComboboxAwarePage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public String getLanguageDropdownText() {
         return languageText.getText();

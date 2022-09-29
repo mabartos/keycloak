@@ -28,7 +28,7 @@ import org.keycloak.testsuite.utils.arquillian.ContainerConstants;
 import org.openqa.selenium.WebDriver;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 import static org.junit.Assert.assertTrue;

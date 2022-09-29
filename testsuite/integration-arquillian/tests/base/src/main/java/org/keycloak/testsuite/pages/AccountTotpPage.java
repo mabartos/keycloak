@@ -17,6 +17,7 @@
 package org.keycloak.testsuite.pages;
 
 import org.keycloak.services.resources.account.AccountFormService;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -47,6 +48,10 @@ public class AccountTotpPage extends AbstractAccountPage {
 
     @FindBy(id = "mode-manual")
     private WebElement manualLink;
+
+    public AccountTotpPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     private String getPath() {
         return AccountFormService.totpUrl(UriBuilder.fromUri(getAuthServerRoot())).build("test").toString();

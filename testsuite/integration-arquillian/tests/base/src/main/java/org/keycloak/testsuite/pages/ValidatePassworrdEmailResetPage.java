@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -38,6 +39,10 @@ public class ValidatePassworrdEmailResetPage extends AbstractPage {
 
     @FindBy(className = "alert-error")
     private WebElement emailErrorMessage;
+
+    public ValidatePassworrdEmailResetPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void submitCode(String code) {
         keyInput.sendKeys(code);

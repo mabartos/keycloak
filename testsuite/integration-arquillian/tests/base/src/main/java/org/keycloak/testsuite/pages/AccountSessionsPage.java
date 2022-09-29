@@ -18,6 +18,7 @@
 package org.keycloak.testsuite.pages;
 
 import org.keycloak.services.Urls;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -34,6 +35,10 @@ public class AccountSessionsPage extends AbstractAccountPage {
 
     @FindBy(id = "logout-all-sessions")
     private WebElement logoutAllLink;
+
+    public AccountSessionsPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
 
     public boolean isCurrent() {

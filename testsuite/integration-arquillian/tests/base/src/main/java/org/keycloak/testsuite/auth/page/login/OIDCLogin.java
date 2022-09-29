@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.auth.page.login;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.DroneUtils;
 
 /**
@@ -25,7 +26,8 @@ import org.keycloak.testsuite.util.DroneUtils;
  */
 public class OIDCLogin extends Login {
 
-    public OIDCLogin() {
+    public OIDCLogin(PageContext pageContext) {
+        super(pageContext);
         setProtocol(OIDC);
     }
 

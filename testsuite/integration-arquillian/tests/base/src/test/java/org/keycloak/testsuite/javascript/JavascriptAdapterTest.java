@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.javascript;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -62,6 +62,9 @@ import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlDoesntStartW
 import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilElementIsPresent;
+import static org.openqa.selenium.support.ui.ExpectedConditions.not;
+import static org.openqa.selenium.support.ui.ExpectedConditions.textToBePresentInElement;
 
 /**
  * @author mhajas
@@ -396,7 +399,7 @@ public class JavascriptAdapterTest extends AbstractJavascriptTest {
             testExecutor.logInAndInit(defaultArguments().implicitFlow(), testUser, this::assertInitAuth)
                   .addTimeSkew(-5); // Move in time instead of wait
 
-            waitUntilElement(eventsArea).text().contains("Access token expired");
+            waitUntilElement(textToBePresentInElement(eventsArea, "Access token expired"));
         } finally {
             // Get to origin state
             realm.setAccessTokenLifespanForImplicitFlow(storeAccesTokenLifespan);
@@ -600,7 +603,7 @@ public class JavascriptAdapterTest extends AbstractJavascriptTest {
         try {
             // The events element should contain "Auth logout" but we need to wait for it
             // and text().not().contains() doesn't wait. With KEYCLOAK-4179 it took some time for "Auth Logout" to be present
-            waitUntilElement(eventsArea).text().contains("Auth Logout");
+            waitUntilElement(textToBePresentInElement(eventsArea, "Auth Logout"));
 
             throw new RuntimeException("The events element shouldn't contain \"Auth Logout\" text");
         } catch (TimeoutException e) {
@@ -755,8 +758,8 @@ public class JavascriptAdapterTest extends AbstractJavascriptTest {
         testExecutor.init(JSObjectBuilder.create()
                         .add("refreshToken", refreshToken)
                 , (driver1, output, events) -> {
-            assertInitNotAuth(driver1, output, events);
-            waitUntilElement(events).text().not().contains("Auth Success");
+                    assertInitNotAuth(driver1, output, events);
+                    waitUntilElement(not(textToBePresentInElement(events, "Auth Success")));
         });
     }
 
@@ -774,10 +777,10 @@ public class JavascriptAdapterTest extends AbstractJavascriptTest {
                 "    }" +
                 ");"
                 , (driver1, output, events) -> {
-                    waitUntilElement(events).text().contains("First callback");
-                    waitUntilElement(events).text().contains("Second callback");
-                    waitUntilElement(events).text().not().contains("Auth Logout");
-                }
+                        waitUntilElement(textToBePresentInElement(events, "First callback"));
+                        waitUntilElement(textToBePresentInElement(events, "Second callback"));
+                        waitUntilElement(not(textToBePresentInElement(events, "Auth Logout")));
+                    }
             );
     }
 
@@ -835,7 +838,7 @@ public class JavascriptAdapterTest extends AbstractJavascriptTest {
 
         testExecutor.init(defaultArguments(), (driver1, output, events1) -> {
             assertInitAuth(driver1, output, events1);
-            waitUntilElement(events1).text().contains("AIA status: success");
+            waitUntilElement(textToBePresentInElement(events1, "AIA status: success"));
         });
     }
 
@@ -851,7 +854,7 @@ public class JavascriptAdapterTest extends AbstractJavascriptTest {
 
         testExecutor.init(defaultArguments(), (driver1, output, events1) -> {
             assertInitAuth(driver1, output, events1);
-            waitUntilElement(events1).text().contains("AIA status: cancelled");
+            waitUntilElement(textToBePresentInElement(events1, "AIA status: cancelled"));
         });
     }
 
@@ -914,7 +917,7 @@ public class JavascriptAdapterTest extends AbstractJavascriptTest {
 
     protected void navigateToTestApp(final String testAppUrl) {
         jsDriver.navigate().to(testAppUrl);
-        waitUntilElement(outputArea).is().present();
+        waitUntilElementIsPresent(outputArea);
         assertCurrentUrlStartsWith(testAppUrl, jsDriver);
     }
 }

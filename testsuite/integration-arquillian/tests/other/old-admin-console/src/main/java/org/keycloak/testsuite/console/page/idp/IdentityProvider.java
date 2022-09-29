@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.console.page.idp;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 
 /**
  * @author Vaclav Muzikar <vmuzikar@redhat.com>

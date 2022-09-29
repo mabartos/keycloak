@@ -18,6 +18,7 @@ package org.keycloak.testsuite.auth.page.login;
 
 import org.keycloak.common.util.CollectionUtil;
 import org.keycloak.models.AuthenticatedClientSessionModel;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.DroneUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -42,6 +43,10 @@ public class OAuthGrant extends RequiredActions {
 
     @FindBy(xpath = "//div[@id='kc-oauth']/ul/li/span")
     private List<WebElement> scopesToApprove;
+
+    public OAuthGrant(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public String getActionId() {

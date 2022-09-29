@@ -1,5 +1,6 @@
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -26,6 +27,10 @@ public class UpdateAccountInformationPage extends LanguageComboboxAwarePage {
     
     @FindBy(css = "input[type=\"submit\"]")
     private WebElement submitButton;
+
+    public UpdateAccountInformationPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void updateAccountInformation(String userName,
                                          String email,

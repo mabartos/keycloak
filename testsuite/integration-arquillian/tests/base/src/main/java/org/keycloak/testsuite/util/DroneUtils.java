@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.util;
 
 import org.jboss.arquillian.graphene.context.GrapheneContext;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.testsuite.page.AbstractPage;
 import org.openqa.selenium.WebDriver;
 import java.lang.reflect.Field;

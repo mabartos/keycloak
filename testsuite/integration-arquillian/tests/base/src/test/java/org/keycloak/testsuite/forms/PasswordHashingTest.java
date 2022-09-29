@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.forms;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Test;
 import org.keycloak.common.Profile;
 import org.keycloak.common.util.Base64;

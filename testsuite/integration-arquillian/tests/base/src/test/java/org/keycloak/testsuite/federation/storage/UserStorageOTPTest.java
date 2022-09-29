@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;

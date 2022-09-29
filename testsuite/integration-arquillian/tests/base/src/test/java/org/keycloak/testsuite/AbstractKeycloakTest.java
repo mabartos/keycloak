@@ -17,11 +17,12 @@
 package org.keycloak.testsuite;
 
 import io.appium.java_client.AppiumDriver;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.logging.Logger;
 import org.junit.After;
@@ -60,6 +61,7 @@ import org.keycloak.testsuite.auth.page.account.Account;
 import org.keycloak.testsuite.auth.page.login.OIDCLogin;
 import org.keycloak.testsuite.auth.page.login.UpdatePassword;
 import org.keycloak.testsuite.client.KeycloakTestingClient;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.pages.LoginPasswordUpdatePage;
 import org.keycloak.testsuite.util.CryptoInitRule;
 import org.keycloak.testsuite.util.DroneUtils;
@@ -132,6 +134,9 @@ public abstract class AbstractKeycloakTest {
     @ArquillianResource
     protected OAuthClient oauth;
 
+    protected PageContext pageContext;
+
+
     protected List<RealmRepresentation> testRealmReps;
 
     @Drone
@@ -166,6 +171,9 @@ public abstract class AbstractKeycloakTest {
 
     @Before
     public void beforeAbstractKeycloakTest() throws Exception {
+        this.pageContext = new PageContext(oauth, suiteContext, testContext, WebDriverManager.chromedriver().create());
+        //driver = WebDriverManager.getInstance(FirefoxDriver.class).create();
+
         adminClient = testContext.getAdminClient();
         if (adminClient == null || adminClient.isClosed()) {
             reconnectAdminClient();
@@ -330,6 +338,10 @@ public abstract class AbstractKeycloakTest {
                 log.warn("realm not found");
             }
         }
+    }
+
+    public PageContext getPageContext() {
+        return pageContext;
     }
 
     protected String getDefaultLocaleName(String realmName) {

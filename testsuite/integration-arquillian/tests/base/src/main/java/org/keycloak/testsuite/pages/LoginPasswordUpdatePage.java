@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -48,6 +49,10 @@ public class LoginPasswordUpdatePage extends LanguageComboboxAwarePage {
     
     @FindBy(name = "cancel-aia")
     private WebElement cancelAIAButton;
+
+    public LoginPasswordUpdatePage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void changePassword(String newPassword, String passwordConfirm) {
         newPasswordInput.sendKeys(newPassword);

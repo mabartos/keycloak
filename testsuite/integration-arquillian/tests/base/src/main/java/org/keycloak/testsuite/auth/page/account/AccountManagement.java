@@ -18,6 +18,7 @@ package org.keycloak.testsuite.auth.page.account;
 
 import org.jboss.arquillian.graphene.findby.FindByJQuery;
 import org.keycloak.testsuite.auth.page.AuthRealm;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.page.PageWithLogOutAction;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -26,6 +27,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
+import static org.openqa.selenium.support.ui.ExpectedConditions.textToBePresentInElement;
 
 /**
  *
@@ -33,6 +35,10 @@ import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
  * @author tkyjovsk
  */
 public class AccountManagement extends AuthRealm implements PageWithLogOutAction {
+
+    public AccountManagement(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public UriBuilder createUriBuilder() {
@@ -71,7 +77,7 @@ public class AccountManagement extends AuthRealm implements PageWithLogOutAction
     private WebElement error;
 
     public String getErrorMessage() {
-        waitUntilElement(error, "Error message should be present").is().present();
+        waitUntilElement(textToBePresentInElement(error, "Error message should be present"));
         return error.getText();
     }
 

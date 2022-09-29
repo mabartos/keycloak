@@ -17,14 +17,14 @@
 
 package org.keycloak.testsuite.pages;
 
-import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Assert;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.DroneUtils;
-import org.keycloak.testsuite.util.OAuthClient;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 
 import static org.keycloak.testsuite.util.UIUtils.clickLink;
 import static org.keycloak.testsuite.util.UIUtils.getTextFromElement;
@@ -33,9 +33,6 @@ import static org.keycloak.testsuite.util.UIUtils.getTextFromElement;
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
 public class LoginPage extends LanguageComboboxAwarePage {
-
-    @ArquillianResource
-    protected OAuthClient oauth;
 
     @FindBy(id = "username")
     protected WebElement usernameInput;
@@ -83,6 +80,9 @@ public class LoginPage extends LanguageComboboxAwarePage {
     @FindBy(className = "instruction")
     private WebElement instruction;
 
+    public LoginPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void login(String username, String password) {
         usernameInput.clear();

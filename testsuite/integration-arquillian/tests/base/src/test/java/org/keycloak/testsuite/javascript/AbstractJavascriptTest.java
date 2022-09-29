@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.javascript;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -41,6 +41,9 @@ import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_HOST2;
 import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilElementIsPresent;
+import static org.openqa.selenium.support.ui.ExpectedConditions.not;
+import static org.openqa.selenium.support.ui.ExpectedConditions.textToBePresentInElement;
 
 /**
  * @author mhajas
@@ -158,7 +161,7 @@ public abstract class AbstractJavascriptTest extends AbstractAuthTest {
 
     protected void assertInitAuth(WebDriver driver1, Object output, WebElement events) {
         buildFunction(this::assertOutputContains, "Init Success (Authenticated)").validate(driver1, output, events);
-        waitUntilElement(events).text().contains("Auth Success");
+        waitUntilElement(textToBePresentInElement(events, "Auth Success"));
     }
 
     protected void assertInitNotAuth(WebDriver driver1, Object output, WebElement events) {
@@ -166,12 +169,12 @@ public abstract class AbstractJavascriptTest extends AbstractAuthTest {
     }
 
     protected void assertOnLoginPage(WebDriver driver1, Object output, WebElement events) {
-        waitUntilElement(By.tagName("body")).is().present();
+        waitUntilElementIsPresent(By.tagName("body"));
         assertCurrentUrlStartsWith(jsDriverTestRealmLoginPage, driver1);
     }
 
     public void assertOutputWebElementContains(String value, WebDriver driver1, Object output, WebElement events) {
-        waitUntilElement((WebElement) output).text().contains(value);
+        waitUntilElement(textToBePresentInElement((WebElement) output, value));
     }
     
     public void assertLocaleCookie(String locale, WebDriver driver1, Object output, WebElement events) {
@@ -188,18 +191,18 @@ public abstract class AbstractJavascriptTest extends AbstractAuthTest {
 
     public void assertOutputContains(String value, WebDriver driver1, Object output, WebElement events) {
         if (output instanceof WebElement) {
-            waitUntilElement((WebElement) output).text().contains(value);
+            waitUntilElement(textToBePresentInElement((WebElement) output, value));
         } else {
-            Assert.assertThat((String) output, containsString(value));
+            assertThat((String) output, containsString(value));
         }
     }
 
     public void assertEventsWebElementContains(String value, WebDriver driver1, Object output, WebElement events) {
-        waitUntilElement(events).text().contains(value);
+        waitUntilElement(textToBePresentInElement(events, value));
     }
 
     public void assertEventsWebElementDoesntContain(String value, WebDriver driver1, Object output, WebElement events) {
-        waitUntilElement(events).text().not().contains(value);
+        waitUntilElement(not(textToBePresentInElement(events, value)));
     }
 
     public ResponseValidator assertResponseStatus(long status) {

@@ -16,12 +16,13 @@
  */
 package org.keycloak.testsuite.console.page;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.protocol.oidc.OIDCLoginProtocolService;
 import org.keycloak.testsuite.auth.page.AuthServer;
 import org.keycloak.testsuite.auth.page.login.PageWithLoginUrl;
 import org.keycloak.testsuite.console.page.fragment.Menu;
 import org.keycloak.testsuite.console.page.fragment.ModalDialog;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.page.PageWithLogOutAction;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -39,7 +40,8 @@ public class AdminConsole extends AuthServer implements PageWithLoginUrl, PageWi
 
     public static final String ADMIN_REALM = "adminRealm";
 
-    public AdminConsole() {
+    public AdminConsole(PageContext pageContext) {
+        super(pageContext);
         setUriParameter(ADMIN_REALM, MASTER);
     }
 

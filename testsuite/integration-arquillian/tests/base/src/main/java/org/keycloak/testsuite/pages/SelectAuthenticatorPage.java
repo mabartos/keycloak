@@ -3,6 +3,7 @@ package org.keycloak.testsuite.pages;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.DroneUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -32,6 +33,11 @@ public class SelectAuthenticatorPage extends LanguageComboboxAwarePage {
     public static final String SECURITY_KEY = "Security Key";
 
     public static final String RECOVERY_AUTHN_CODES = "Recovery Authentication Code";
+
+    public SelectAuthenticatorPage(PageContext pageContext) {
+        super(pageContext);
+    }
+
     /**
      * Return list of names like for example [ "Password", "Authenticator Application", "Security Key" ]
      */

@@ -17,6 +17,7 @@
 package org.keycloak.testsuite.pages;
 
 import org.junit.Assert;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -36,6 +37,10 @@ public class OAuth2DeviceVerificationPage extends LanguageComboboxAwarePage {
 
     @FindBy(className = "alert-error")
     private WebElement verifyErrorMessage;
+
+    public OAuth2DeviceVerificationPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void submit(String userCode) {
         userCodeInput.clear();

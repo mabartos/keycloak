@@ -17,7 +17,7 @@
  */
 package org.keycloak.testsuite.console.groups;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Before;
 import org.junit.Test;
 import org.keycloak.representations.idm.GroupRepresentation;

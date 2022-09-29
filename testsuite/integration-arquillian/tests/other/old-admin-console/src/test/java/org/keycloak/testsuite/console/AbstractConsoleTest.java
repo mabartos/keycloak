@@ -17,7 +17,7 @@
  */
 package org.keycloak.testsuite.console;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Before;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.idm.UserRepresentation;

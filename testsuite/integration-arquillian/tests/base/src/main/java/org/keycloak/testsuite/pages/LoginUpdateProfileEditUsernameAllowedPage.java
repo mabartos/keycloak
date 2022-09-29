@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -25,6 +26,10 @@ public class LoginUpdateProfileEditUsernameAllowedPage extends LoginUpdateProfil
 
     @FindBy(id = "username")
     private WebElement usernameInput;
+
+    public LoginUpdateProfileEditUsernameAllowedPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public Update prepareUpdate() {
         return new Update(this);

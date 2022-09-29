@@ -22,7 +22,7 @@ import static org.keycloak.testsuite.util.WaitUtils.pause;
 
 import java.io.IOException;
 import javax.mail.MessagingException;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Test;
 import org.keycloak.services.managers.AuthenticationSessionManager;
 import org.keycloak.services.util.CookieHelper;

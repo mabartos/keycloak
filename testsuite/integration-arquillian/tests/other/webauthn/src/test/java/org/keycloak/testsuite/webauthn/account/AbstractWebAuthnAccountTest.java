@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.webauthn.account;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.After;
 import org.junit.Before;
 import org.keycloak.authentication.authenticators.browser.UsernamePasswordFormFactory;

@@ -17,11 +17,14 @@
 
 package org.keycloak.testsuite.auth.page.login;
 
+import org.keycloak.testsuite.page.PageContext;
+
 /**
  * @author mhajas
  */
 public class SAMLRedirectLogin extends Login {
-    SAMLRedirectLogin() {
+    SAMLRedirectLogin(PageContext pageContext) {
+        super(pageContext);
         setProtocol(SAML);
     }
 }

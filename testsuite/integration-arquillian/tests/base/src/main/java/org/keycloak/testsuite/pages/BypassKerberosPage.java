@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -28,7 +29,11 @@ public class BypassKerberosPage extends AbstractPage {
     @FindBy(name = "continue")
     private WebElement continueButton;
 
-   public boolean isCurrent() {
+    public BypassKerberosPage(PageContext pageContext) {
+        super(pageContext);
+    }
+
+    public boolean isCurrent() {
         return driver.getTitle().equals("Sign in to test") || driver.getTitle().equals("Anmeldung bei test");
     }
 

@@ -17,8 +17,9 @@
 
 package org.keycloak.testsuite.auth.page.login;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.models.UserModel;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -58,6 +59,10 @@ public class OTPSetup extends RequiredActions {
 
     @FindBy(id = "kc-totp-counter")
     private WebElement otpCounter;
+
+    public OTPSetup(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void setTotp(String value) {
         form.setTotp(value);

@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.federation.storage;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;

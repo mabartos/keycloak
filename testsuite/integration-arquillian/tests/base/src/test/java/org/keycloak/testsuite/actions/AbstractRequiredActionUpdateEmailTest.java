@@ -18,7 +18,7 @@ package org.keycloak.testsuite.actions;
 
 import static org.junit.Assert.assertFalse;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;

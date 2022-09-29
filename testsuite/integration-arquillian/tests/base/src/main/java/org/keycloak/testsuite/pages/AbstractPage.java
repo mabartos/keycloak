@@ -21,10 +21,12 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Assert;
 import org.keycloak.common.util.KeycloakUriBuilder;
 import org.keycloak.testsuite.arquillian.SuiteContext;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.DroneUtils;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.keycloak.testsuite.util.WaitUtils;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.PageFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -42,6 +44,13 @@ public abstract class AbstractPage {
 
     @ArquillianResource
     protected OAuthClient oauth;
+
+    public AbstractPage(PageContext pageContext) {
+        this.suiteContext = pageContext.getSuiteContext();
+        this.driver = pageContext.getWebDriver();
+        this.oauth = pageContext.getOAuthClient();
+        PageFactory.initElements(driver, this);
+    }
 
     public void assertCurrent() {
         WaitUtils.waitForPageToLoad();

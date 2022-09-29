@@ -19,6 +19,7 @@ package org.keycloak.testsuite.pages;
 import static org.keycloak.testsuite.util.UIUtils.getTextFromElement;
 import static org.keycloak.testsuite.util.UIUtils.isElementVisible;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -36,6 +37,10 @@ public class EmailUpdatePage extends AbstractPage {
 
 	@FindBy(id = "input-error-email")
 	private WebElement emailError;
+
+	public EmailUpdatePage(PageContext pageContext) {
+		super(pageContext);
+	}
 
 	public void changeEmail(String newEmail) {
 		emailInput.clear();

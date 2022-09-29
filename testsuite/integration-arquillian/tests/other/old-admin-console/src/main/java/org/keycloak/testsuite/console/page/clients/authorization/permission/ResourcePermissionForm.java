@@ -18,7 +18,7 @@ package org.keycloak.testsuite.console.page.clients.authorization.permission;
 
 import static org.keycloak.testsuite.util.UIUtils.performOperationWithPageReload;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.representations.idm.authorization.AbstractPolicyRepresentation;
 import org.keycloak.representations.idm.authorization.ClientPolicyRepresentation;
 import org.keycloak.representations.idm.authorization.DecisionStrategy;

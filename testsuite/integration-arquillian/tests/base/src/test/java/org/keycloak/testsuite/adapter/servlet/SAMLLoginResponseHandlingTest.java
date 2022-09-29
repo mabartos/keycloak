@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.adapter.servlet;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
@@ -49,6 +49,8 @@ import static org.keycloak.testsuite.util.Matchers.statusCodeIsHC;
 import static org.keycloak.testsuite.util.UIUtils.getRawPageSource;
 import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilBodyContains;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilBodyNotContains;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
 
 /**
@@ -169,13 +171,13 @@ public class SAMLLoginResponseHandlingTest extends AbstractSAMLServletAdapterTes
         testRealmSAMLPostLoginPage.form().login("level2GroupUser", "password");
 
         driver.navigate().to(employee2ServletPage.getUriBuilder().clone().path("getAttributes").build().toURL());
-        waitUntilElement(By.xpath("//body")).text().contains("topAttribute: true");
-        waitUntilElement(By.xpath("//body")).text().contains("level2Attribute: true");
-        waitUntilElement(By.xpath("//body")).text().contains(X500SAMLProfileConstants.EMAIL.get() + ": level2@redhat.com");
-        waitUntilElement(By.xpath("//body")).text().not().contains("group: []");
-        waitUntilElement(By.xpath("//body")).text().not().contains("group: null");
-        waitUntilElement(By.xpath("//body")).text().not().contains("group: <br />");
-        waitUntilElement(By.xpath("//body")).text().contains("group: level2");
+        waitUntilBodyContains("topAttribute: true");
+        waitUntilBodyContains("level2Attribute: true");
+        waitUntilBodyContains(X500SAMLProfileConstants.EMAIL.get() + ": level2@redhat.com");
+        waitUntilBodyNotContains("group: []");
+        waitUntilBodyNotContains("group: null");
+        waitUntilBodyNotContains("group: <br />");
+        waitUntilBodyContains("group: level2");
 
         employee2ServletPage.logout();
         checkLoggedOut(employee2ServletPage, testRealmSAMLPostLoginPage);
@@ -187,10 +189,10 @@ public class SAMLLoginResponseHandlingTest extends AbstractSAMLServletAdapterTes
         testRealmSAMLPostLoginPage.form().login(bburkeUser);
 
         driver.navigate().to(employee2ServletPage.getUriBuilder().clone().path("getAttributes").build().toURL());
-        waitUntilElement(By.xpath("//body")).text().contains(X500SAMLProfileConstants.EMAIL.get() + ": bburke@redhat.com");
-        waitUntilElement(By.xpath("//body")).text().contains("friendly email: bburke@redhat.com");
-        waitUntilElement(By.xpath("//body")).text().contains("phone: 617");
-        waitUntilElement(By.xpath("//body")).text().not().contains("friendly phone:");
+        waitUntilBodyContains("X500SAMLProfileConstants.EMAIL.get() + \": bburke@redhat.com\"");
+        waitUntilBodyContains("friendly email: bburke@redhat.com");
+        waitUntilBodyContains("phone: 617");
+        waitUntilBodyNotContains("friendly phone:");
 
         driver.navigate().to(employee2ServletPage.getUriBuilder().clone().path("getAssertionFromDocument").build().toURL());
         waitForPageToLoad();
@@ -246,7 +248,7 @@ public class SAMLLoginResponseHandlingTest extends AbstractSAMLServletAdapterTes
         testRealmSAMLPostLoginPage.form().login(bburkeUser);
 
         driver.navigate().to(employee2ServletPage.getUriBuilder().clone().path("getAttributes").build().toURL());
-        waitUntilElement(By.xpath("//body")).text().contains("hardcoded-attribute: hard");
+        waitUntilBodyContains("hardcoded-attribute: hard");
         employee2ServletPage.checkRolesEndPoint(false);
         employee2ServletPage.logout();
         checkLoggedOut(employee2ServletPage, testRealmSAMLPostLoginPage);
@@ -257,7 +259,7 @@ public class SAMLLoginResponseHandlingTest extends AbstractSAMLServletAdapterTes
         assertCurrentUrlStartsWith(testRealmSAMLPostLoginPage);
         testRealmSAMLPostLoginPage.form().login(bburkeUser);
         driver.navigate().to(employee2ServletPage.getUriBuilder().clone().path("setCheckRoles").queryParam("roles", roles).build().toURL());
-        WaitUtils.waitUntilElement(By.tagName("body")).text().contains("These roles will be checked:");
+        waitUntilBodyContains("These roles will be checked:");
         employee2ServletPage.logout();
     }
 }

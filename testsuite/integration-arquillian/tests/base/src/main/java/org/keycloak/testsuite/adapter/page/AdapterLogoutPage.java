@@ -25,6 +25,7 @@ import java.net.URL;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.keycloak.testsuite.page.PageContext;
 
 /**
  * @author mhajas
@@ -39,6 +40,10 @@ public class AdapterLogoutPage extends AbstractPageWithInjectedUrl {
       + "</web-app>";
 
     private static final String LOGOUT_PAGE_HTML = "<html><body>Logged out</body></html>";
+
+    public AdapterLogoutPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public static final WebArchive createDeployment() {
         return ShrinkWrap.create(WebArchive.class, AdapterLogoutPage.DEPLOYMENT_NAME + ".war")

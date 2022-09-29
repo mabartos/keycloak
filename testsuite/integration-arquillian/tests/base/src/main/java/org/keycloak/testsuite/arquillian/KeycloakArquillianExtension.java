@@ -82,7 +82,7 @@ public class KeycloakArquillianExtension implements LoadableExtension {
 
         builder
                 .observer(KeycloakWebDriverConfigurator.class)
-                .observer(HtmlUnitScreenshots.class)
+               .observer(HtmlUnitScreenshots.class)
                 .observer(KeycloakDronePostSetup.class);
 
 

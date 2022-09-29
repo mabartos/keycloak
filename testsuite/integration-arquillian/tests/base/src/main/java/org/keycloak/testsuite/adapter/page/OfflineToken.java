@@ -2,7 +2,9 @@ package org.keycloak.testsuite.adapter.page;
 
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.net.URL;
 
@@ -20,6 +22,10 @@ public class OfflineToken extends AbstractShowTokensPage {
     @OperateOnDeployment(DEPLOYMENT_NAME)
     private URL url;
 
+    public OfflineToken(PageContext pageContext) {
+        super(pageContext);
+    }
+
     @Override
     public URL getInjectedUrl() {
         return url;
@@ -30,6 +36,6 @@ public class OfflineToken extends AbstractShowTokensPage {
         log.info("Logging out, navigating to: " + uri);
         driver.navigate().to(uri);
         pause(300); // this is needed for FF for some reason
-        waitUntilElement(By.tagName("body")).is().visible();
+        waitUntilElement(ExpectedConditions.visibilityOf(driver.findElement(By.tagName("body"))));
     }
 }

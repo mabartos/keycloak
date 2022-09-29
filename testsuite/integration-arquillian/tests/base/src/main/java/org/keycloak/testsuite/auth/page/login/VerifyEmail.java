@@ -17,6 +17,7 @@
 package org.keycloak.testsuite.auth.page.login;
 
 import org.keycloak.models.UserModel;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -34,6 +35,10 @@ public class VerifyEmail extends RequiredActions {
 
     @FindBy(xpath = "//div[@id='kc-content-wrapper']/p[contains(@class, 'instruction')][2]/a[text()='Click here']")
     private WebElement resendLink;
+
+    public VerifyEmail(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public String getActionId() {

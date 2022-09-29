@@ -19,6 +19,7 @@ package org.keycloak.testsuite.console.page.events;
 
 import org.keycloak.testsuite.console.page.fragment.OnOffSwitch;
 import org.keycloak.testsuite.page.Form;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.UIUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -26,12 +27,17 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.Select;
 
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilElementIsPresent;
 
 /**
  * @author tkyjovsk
  * @author mhajas
  */
 public class Config extends Events {
+
+    public Config(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public String getUriFragment() {
@@ -123,7 +129,7 @@ public class Config extends Events {
         }
         
         public void waitForClearEventsButtonPresent() {
-            waitUntilElement(clearLoginEventsButton).is().present();
+            waitUntilElementIsPresent(clearLoginEventsButton);
         }
     }
 }

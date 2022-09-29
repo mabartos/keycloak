@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.console.federation;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Test;
 import org.keycloak.models.LDAPConstants;
 import org.keycloak.representations.idm.ComponentRepresentation;

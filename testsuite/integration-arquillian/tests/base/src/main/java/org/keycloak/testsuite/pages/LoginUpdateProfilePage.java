@@ -20,7 +20,8 @@ package org.keycloak.testsuite.pages;
 import static org.keycloak.testsuite.util.UIUtils.clickLink;
 import static org.keycloak.testsuite.util.UIUtils.getTextFromElement;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.UIUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -55,6 +56,10 @@ public class LoginUpdateProfilePage extends AbstractPage {
 
     @FindBy(className = "alert-error")
     private WebElement loginAlertErrorMessage;
+
+    public LoginUpdateProfilePage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void update(String firstName, String lastName) {
         prepareUpdate().firstName(firstName).lastName(lastName).submit();

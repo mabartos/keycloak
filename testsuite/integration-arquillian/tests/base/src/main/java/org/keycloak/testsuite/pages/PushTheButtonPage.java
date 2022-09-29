@@ -18,6 +18,7 @@
 
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.DroneUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -32,6 +33,10 @@ public class PushTheButtonPage extends AbstractPage {
 
     @FindBy(name = "submit1")
     private WebElement submitButton;
+
+    public PushTheButtonPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public void open() {

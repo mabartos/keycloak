@@ -3,7 +3,7 @@ package org.keycloak.testsuite.ui.account2;
 import com.google.common.collect.Lists;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.After;
 import org.junit.FixMethodOrder;
 import org.junit.Test;

@@ -18,10 +18,11 @@ package org.keycloak.testsuite.adapter.page;
 
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.keycloak.testsuite.auth.page.login.OIDCLogin;
 import org.keycloak.testsuite.page.AbstractPageWithInjectedUrl;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.JavascriptBrowser;
 import org.keycloak.testsuite.util.UIUtils;
 import org.keycloak.testsuite.util.URLUtils;
@@ -33,6 +34,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.net.URL;
 
@@ -41,6 +43,10 @@ import static org.keycloak.testsuite.util.UIUtils.clickLink;
 import static org.keycloak.testsuite.util.WaitUtils.pause;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
+import static org.openqa.selenium.support.ui.ExpectedConditions.attributeContains;
+import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
+import static org.openqa.selenium.support.ui.ExpectedConditions.not;
+import static org.openqa.selenium.support.ui.ExpectedConditions.textToBePresentInElement;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Igor</a>
@@ -86,6 +92,10 @@ public class PhotozClientAuthzTestApp extends AbstractPageWithInjectedUrl {
 
     private JavascriptTestExecutorWithAuthorization testExecutor;
     private String apiUrl;
+
+    public PhotozClientAuthzTestApp(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void setTestExecutorPlayground(JavascriptTestExecutorWithAuthorization executor, String apiUrl) {
         testExecutor = executor;
@@ -141,7 +151,7 @@ public class PhotozClientAuthzTestApp extends AbstractPageWithInjectedUrl {
 
     public void logOut() {
         navigateTo();
-        waitUntilElement(signOutButton).is().clickable(); // Sometimes doesn't work in PhantomJS!
+        waitUntilElement(elementToBeClickable(signOutButton));
         clickLink(signOutButton);
     }
     
@@ -166,11 +176,11 @@ public class PhotozClientAuthzTestApp extends AbstractPageWithInjectedUrl {
     }
 
     private void waitForDenial() {
-        waitUntilElement(output).text().contains("You can not access");
+        waitUntilElement(textToBePresentInElement(output, "You can not access"));
     }
 
     private void waitForNotDenial() {
-        waitUntilElement(output).text().not().contains("You can not access");
+        waitUntilElement(not(textToBePresentInElement(output, "You can not access")));
     }
 
     public void viewAllAlbums() {
@@ -203,14 +213,14 @@ public class PhotozClientAuthzTestApp extends AbstractPageWithInjectedUrl {
     public void accountMyResources() {
         accountPage();
         WebElement myResources = driver.findElement(By.xpath("//a[text() = 'My Resources']"));
-        waitUntilElement(myResources).is().clickable();
+        waitUntilElement(elementToBeClickable(myResources));
         myResources.click();
     }
 
     public void accountMyResource(String name) {
         accountMyResources();
         WebElement myResource = driver.findElement(By.id("detail-" + name));
-        waitUntilElement(myResource).is().clickable();
+        waitUntilElement(elementToBeClickable(myResource));
         myResource.click();
     }
 
@@ -221,14 +231,14 @@ public class PhotozClientAuthzTestApp extends AbstractPageWithInjectedUrl {
 
     public void grantResource(String name, String requester) {
         WebElement grantResource = driver.findElement(By.id("grant-" + name + "-" + requester));
-        waitUntilElement(grantResource).is().clickable();
+        waitUntilElement(elementToBeClickable(grantResource));
         grantResource.click();
     }
 
     public void accountGrantRemoveScope(String name, String requester, String scope) {
         accountMyResources();
         WebElement grantRemoveScope = driver.findElement(By.id("grant-remove-scope-" + name + "-" + requester + "-" + scope));
-        waitUntilElement(grantRemoveScope).is().clickable();
+        waitUntilElement(elementToBeClickable(grantRemoveScope));
         grantRemoveScope.click();
     }
 
@@ -239,7 +249,7 @@ public class PhotozClientAuthzTestApp extends AbstractPageWithInjectedUrl {
 
     public void revokeResource(String name, String requester) {
         WebElement revokeResource = driver.findElement(By.id("revoke-" + name + "-" + requester));
-        waitUntilElement(revokeResource).is().clickable();
+        waitUntilElement(elementToBeClickable(revokeResource));
         revokeResource.click();
     }
 
@@ -252,7 +262,7 @@ public class PhotozClientAuthzTestApp extends AbstractPageWithInjectedUrl {
         accountMyResource(name);
         
         WebElement shareRemoveScope = driver.findElement(By.id("share-remove-scope-" + name + "-" + scope));
-        waitUntilElement(shareRemoveScope).is().clickable();
+        waitUntilElement(elementToBeClickable(shareRemoveScope));
         shareRemoveScope.click();
 
         shareResource(user);
@@ -262,10 +272,10 @@ public class PhotozClientAuthzTestApp extends AbstractPageWithInjectedUrl {
         WebElement userIdInput = driver.findElement(By.id("user_id"));
         UIUtils.setTextInputValue(userIdInput, user);
         pause(200); // We need to wait a bit for the form to "accept" the input (otherwise it registers the input as empty)
-        waitUntilElement(userIdInput).attribute(UIUtils.VALUE_ATTR_NAME).contains(user);
+        waitUntilElement(attributeContains(userIdInput, UIUtils.VALUE_ATTR_NAME, user));
 
         WebElement shareButton = driver.findElement(By.id("share-button"));
-        waitUntilElement(shareButton).is().clickable();
+        waitUntilElement(elementToBeClickable(shareButton));
         shareButton.click();
     }
     
@@ -276,7 +286,7 @@ public class PhotozClientAuthzTestApp extends AbstractPageWithInjectedUrl {
     public void accountDenyResource(String name) {
         accountMyResource(name);
         WebElement denyLink = driver.findElement(By.linkText("Deny"));
-        waitUntilElement(denyLink).is().clickable();
+        waitUntilElement(elementToBeClickable(denyLink));
         denyLink.click();
         waitForPageToLoad();
     }

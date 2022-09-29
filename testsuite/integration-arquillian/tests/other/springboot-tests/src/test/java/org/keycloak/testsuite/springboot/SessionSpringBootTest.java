@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.springboot;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

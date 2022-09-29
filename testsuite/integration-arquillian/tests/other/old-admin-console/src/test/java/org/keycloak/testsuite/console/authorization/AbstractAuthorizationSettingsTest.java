@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.keycloak.common.Profile.Feature.AUTHORIZATION;
 import static org.keycloak.testsuite.auth.page.login.Login.OIDC;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.keycloak.representations.idm.ClientRepresentation;

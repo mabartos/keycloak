@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.console.page;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.UIUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -27,6 +28,7 @@ import java.util.Optional;
 
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilElementIsPresent;
 
 /**
  *
@@ -36,7 +38,8 @@ public class AdminConsoleRealm extends AdminConsoleRealmsRoot {
 
     public static final String CONSOLE_REALM = "consoleRealm";
 
-    public AdminConsoleRealm() {
+    public AdminConsoleRealm(PageContext pageContext) {
+        super(pageContext);
         setUriParameter(CONSOLE_REALM, TEST);
     }
 
@@ -58,7 +61,7 @@ public class AdminConsoleRealm extends AdminConsoleRealmsRoot {
     private ConfigureMenu configureMenu;
 
     public ConfigureMenu configure() {
-        waitUntilElement(By.xpath("//div[./h2[text()='Configure']]")).is().present();
+        waitUntilElementIsPresent(By.xpath("//div[./h2[text()='Configure']]"));
         return configureMenu;
     }
 
@@ -141,7 +144,7 @@ public class AdminConsoleRealm extends AdminConsoleRealmsRoot {
     protected ManageMenu manageMenu;
 
     public ManageMenu manage() {
-        waitUntilElement(By.xpath("//div[./h2[text()='Manage']]")).is().present();
+        waitUntilElementIsPresent(By.xpath("//div[./h2[text()='Manage']]"));
         return manageMenu;
     }
 

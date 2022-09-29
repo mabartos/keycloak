@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.UIUtils;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -46,6 +47,10 @@ public class LoginPasswordResetPage extends LanguageComboboxAwarePage {
 
     @FindBy(id = "kc-info-wrapper")
     private WebElement infoWrapper;
+
+    public LoginPasswordResetPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void changePassword() {
         submitButton.click();

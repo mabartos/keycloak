@@ -20,7 +20,7 @@ package org.keycloak.testsuite.adapter.example.cors;
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jetbrains.annotations.Nullable;
@@ -51,13 +51,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static junit.framework.TestCase.assertNotNull;
+
 import org.junit.Assume;
 import org.keycloak.testsuite.util.DroneUtils;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static org.keycloak.testsuite.utils.io.IOUtil.loadRealm;
 import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
+import static org.openqa.selenium.support.ui.ExpectedConditions.not;
+import static org.openqa.selenium.support.ui.ExpectedConditions.textToBePresentInElement;
 
 /**
  * Tests CORS functionality in adapters.
@@ -142,32 +147,35 @@ public class CorsExampleAdapterTest extends AbstractExampleAdapterTest {
 
         assertCurrentUrlStartsWith(jsDriverAngularCorsProductPage);
         jsDriverAngularCorsProductPage.reloadData();
-        waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().contains("iphone");
-        waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().contains("ipad");
-        waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().contains("ipod");
-        waitUntilElement(jsDriverAngularCorsProductPage.getHeaders()).text().contains("\"x-custom1\":\"some-value\"");
-        waitUntilElement(jsDriverAngularCorsProductPage.getHeaders()).text().contains("\"www-authenticate\":\"some-value\"");
+
+        WebElement output = jsDriverAngularCorsProductPage.getOutput();
+        waitUntilElement(textToBePresentInElement(output, "iphone"));
+        waitUntilElement(textToBePresentInElement(output, "ipad"));
+        waitUntilElement(textToBePresentInElement(output, "ipod"));
+        waitUntilElement(textToBePresentInElement(output, "\"x-custom1\":\"some-value\""));
+        waitUntilElement(textToBePresentInElement(output, "\"www-authenticate\":\"some-value\""));
 
         jsDriverAngularCorsProductPage.loadRoles();
-        waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().contains("user");
+        waitUntilElement(textToBePresentInElement(jsDriverAngularCorsProductPage.getOutput(), "user"));
 
         jsDriverAngularCorsProductPage.addRole();
-        waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().contains("stuff");
+        waitUntilElement(textToBePresentInElement(jsDriverAngularCorsProductPage.getOutput(), "stuff"));
 
         jsDriverAngularCorsProductPage.deleteRole();
-        waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().not().contains("stuff");
+        waitUntilElement(not(textToBePresentInElement(jsDriverAngularCorsProductPage.getOutput(), "stuff")));
 
         jsDriverAngularCorsProductPage.loadAvailableSocialProviders();
-        waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().contains("twitter");
-        waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().contains("google");
-        waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().contains("linkedin");
-        waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().contains("facebook");
-        waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().contains("stackoverflow");
-        waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().contains("github");
-        waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().contains("microsoft");
+        output = jsDriverAngularCorsProductPage.getOutput();
+        waitUntilElement(textToBePresentInElement(output, "twitter"));
+        waitUntilElement(textToBePresentInElement(output, "google"));
+        waitUntilElement(textToBePresentInElement(output, "linkedin"));
+        waitUntilElement(textToBePresentInElement(output, "facebook"));
+        waitUntilElement(textToBePresentInElement(output, "stackoverflow"));
+        waitUntilElement(textToBePresentInElement(output, "github"));
+        waitUntilElement(textToBePresentInElement(output, "microsoft"));
 
         jsDriverAngularCorsProductPage.loadPublicRealmInfo();
-        waitUntilElement(jsDriverAngularCorsProductPage.getOutput()).text().contains("Realm name: cors");
+        waitUntilElement(textToBePresentInElement(output, "Realm name: cors"));
 
         String serverVersion = getAuthServerVersion();
         assertNotNull(serverVersion);

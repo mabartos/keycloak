@@ -17,11 +17,14 @@
 
 package org.keycloak.testsuite.auth.page.login;
 
+import org.keycloak.testsuite.page.PageContext;
+
 /**
  * @author rmartinc
  */
 public class SAMLPostLoginTenant1 extends Login {
-    SAMLPostLoginTenant1() {
+    SAMLPostLoginTenant1(PageContext pageContext) {
+        super(pageContext);
         setProtocol(LOGIN_ACTION);
         setAuthRealm("tenant1");
     }

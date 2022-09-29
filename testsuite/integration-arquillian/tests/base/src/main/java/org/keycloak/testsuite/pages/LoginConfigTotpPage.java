@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.UIUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -56,6 +57,10 @@ public class LoginConfigTotpPage extends AbstractPage {
 
     @FindBy(id = "input-error-otp-label")
     private WebElement totpInputLabelError;
+
+    public LoginConfigTotpPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void configure(String totp) {
         totpInput.sendKeys(totp);

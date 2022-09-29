@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -30,6 +31,10 @@ public class ProceedPage extends AbstractPage {
 
     @FindBy(linkText = "» Click here to proceed")
     private WebElement proceedLink;
+
+    public ProceedPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public String getInfo() {
         return infoMessage.getText();

@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.auth.page.login;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.UIUtils;
 import org.keycloak.testsuite.util.URLUtils;
 import org.openqa.selenium.NoSuchElementException;
@@ -40,6 +41,10 @@ public class OneTimeCode extends Authenticate {
 
     @FindBy(id = "input-error-otp-code")
     private WebElement totpInputCodeError;
+
+    public OneTimeCode(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public String getOtpLabel() {
         return getTextFromElement(otpInputLabel);

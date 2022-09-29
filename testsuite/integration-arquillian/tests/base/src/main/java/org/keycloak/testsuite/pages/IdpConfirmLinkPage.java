@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -33,6 +34,10 @@ public class IdpConfirmLinkPage extends LanguageComboboxAwarePage {
 
     @FindBy(className = "alert-error")
     private WebElement message;
+
+    public IdpConfirmLinkPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public boolean isCurrent() {

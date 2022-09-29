@@ -19,6 +19,7 @@ package org.keycloak.testsuite.adapter.page;
 
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.keycloak.testsuite.page.PageContext;
 
 import java.net.URL;
 
@@ -31,6 +32,10 @@ public class BadAssertionSalesPostSig extends SAMLServlet {
     @ArquillianResource
     @OperateOnDeployment(DEPLOYMENT_NAME)
     private URL url;
+
+    public BadAssertionSalesPostSig(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public URL getInjectedUrl() {

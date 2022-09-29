@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.adapter;
 
 import org.apache.commons.io.IOUtils;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;

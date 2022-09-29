@@ -19,7 +19,7 @@ package org.keycloak.testsuite.console.page.clients.authorization.scope;
 import static org.keycloak.testsuite.util.UIUtils.clickLink;
 import static org.openqa.selenium.By.tagName;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.representations.idm.authorization.ScopeRepresentation;
 import org.keycloak.testsuite.console.page.fragment.ModalDialog;
 import org.keycloak.testsuite.page.Form;

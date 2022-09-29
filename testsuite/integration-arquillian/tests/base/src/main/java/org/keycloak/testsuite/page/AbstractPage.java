@@ -37,13 +37,22 @@ import org.junit.Assert;
 public abstract class AbstractPage {
 
     protected final Logger log = Logger.getLogger(this.getClass());
-    
+
     private final Map<String, Object> uriParameters = new HashMap<>();
 
     @Drone
     protected WebDriver driver;
 
     private UriBuilder builder;
+    protected PageContext pageContext;
+
+    public AbstractPage(){
+
+    }
+
+    public AbstractPage(PageContext pageContext) {
+        this.pageContext = pageContext;
+    }
 
     public WebDriver getDriver() {
         return driver;

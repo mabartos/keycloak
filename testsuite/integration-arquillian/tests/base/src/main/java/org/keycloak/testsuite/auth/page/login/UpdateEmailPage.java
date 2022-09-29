@@ -20,6 +20,7 @@ import static org.keycloak.testsuite.util.UIUtils.clickLink;
 import static org.keycloak.testsuite.util.UIUtils.getTextFromElement;
 
 import org.keycloak.models.UserModel;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -37,6 +38,10 @@ public class UpdateEmailPage extends RequiredActions {
 
     @FindBy(css = "input[type='submit']")
     private WebElement submitActionButton;
+
+    public UpdateEmailPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public String getActionId() {

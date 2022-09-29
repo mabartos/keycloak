@@ -20,6 +20,7 @@ package org.keycloak.testsuite.adapter.page;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.RefreshToken;
 import org.keycloak.testsuite.page.AbstractPageWithInjectedUrl;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.util.JsonSerialization;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -43,6 +44,10 @@ public abstract class AbstractShowTokensPage extends AbstractPageWithInjectedUrl
 
     @FindBy(id = "refreshTokenString")
     private WebElement refreshTokenString;
+
+    public AbstractShowTokensPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public AccessToken getAccessToken() {
         try {

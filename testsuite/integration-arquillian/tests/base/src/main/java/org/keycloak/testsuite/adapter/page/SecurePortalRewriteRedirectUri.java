@@ -22,6 +22,7 @@ import java.net.URL;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.keycloak.testsuite.page.AbstractPageWithInjectedUrl;
+import org.keycloak.testsuite.page.PageContext;
 
 /**
  *
@@ -34,6 +35,10 @@ public class SecurePortalRewriteRedirectUri extends AbstractPageWithInjectedUrl 
     @ArquillianResource
     @OperateOnDeployment(DEPLOYMENT_NAME)
     private URL url;
+
+    public SecurePortalRewriteRedirectUri(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public URL getInjectedUrl() {

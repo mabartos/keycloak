@@ -19,9 +19,10 @@ package org.keycloak.testsuite.pages;
 import static org.junit.Assert.assertTrue;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.testsuite.adapter.page.AppServerContextRoot;
 import org.keycloak.testsuite.auth.page.login.OIDCLogin;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.DroneUtils;
 import org.keycloak.testsuite.util.JavascriptBrowser;
 import org.keycloak.testsuite.util.URLUtils;
@@ -45,6 +46,10 @@ public class AppServerWelcomePage extends AppServerContextRoot {
 
     @FindBy(xpath = "//div[text() = 'Logout']")
     private WebElement logoutLink;
+
+    public AppServerWelcomePage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public boolean isCurrent() {

@@ -23,7 +23,7 @@ import org.openqa.selenium.support.FindBy;
 import java.util.List;
 
 import static org.keycloak.testsuite.util.UIUtils.clickLink;
-import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilElementIsPresent;
 
 /**
  *
@@ -54,7 +54,7 @@ public class Menu {
     }
 
     public String getCurrentRealm() {
-        waitUntilElement(By.cssSelector(MENU_LOCATOR)).is().present();
+        waitUntilElementIsPresent(By.cssSelector(MENU_LOCATOR));
         return toggle.get(1).getText();
     }
 
@@ -68,7 +68,8 @@ public class Menu {
                 menuOrder = 0;
                 break;
         }
-        waitUntilElement(By.cssSelector(MENU_LOCATOR)).is().present();
+
+        waitUntilElementIsPresent(By.cssSelector(MENU_LOCATOR));
         if (!menuList.get(menuOrder).isDisplayed()) {
             toggle.get(menuOrder).click();
         }

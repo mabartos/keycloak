@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.keys;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Rule;
 import org.junit.Test;
 import org.keycloak.common.util.MultivaluedHashMap;

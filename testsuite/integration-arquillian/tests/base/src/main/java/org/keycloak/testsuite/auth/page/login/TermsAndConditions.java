@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.auth.page.login;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -35,6 +36,10 @@ public class TermsAndConditions extends RequiredActions {
 
     @FindBy(id = "kc-terms-text")
     private WebElement textElem;
+
+    public TermsAndConditions(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public String getActionId() {

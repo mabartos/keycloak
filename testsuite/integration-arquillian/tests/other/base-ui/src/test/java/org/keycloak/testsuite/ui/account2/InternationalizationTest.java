@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.ui.account2;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Before;
 import org.junit.Test;
 import org.keycloak.models.UserModel;

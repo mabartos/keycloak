@@ -38,7 +38,7 @@ import org.keycloak.testsuite.utils.io.IOUtil;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import static org.keycloak.testsuite.adapter.AbstractServletsAdapterTest.samlServletDeployment;
 import org.keycloak.testsuite.adapter.page.SalesPostClockSkewServlet;
 import static org.keycloak.testsuite.util.SamlClient.Binding.POST;

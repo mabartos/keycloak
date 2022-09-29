@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.auth.page.login;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -32,6 +33,10 @@ public class LoginError extends LoginBase {
 
     @FindBy(id = "backToApplication")
     private WebElement backToApplicationLink;
+
+    public LoginError(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public String getErrorMessage() {
         return getTextFromElement(errorMessage);

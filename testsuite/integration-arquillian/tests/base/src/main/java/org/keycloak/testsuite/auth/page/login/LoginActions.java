@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.auth.page.login;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.URLUtils;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -29,6 +30,10 @@ import static org.keycloak.testsuite.util.UIUtils.clickLink;
  * @author tkyjovsk
  */
 public class LoginActions extends LoginBase {
+
+    public LoginActions(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public UriBuilder createUriBuilder() {

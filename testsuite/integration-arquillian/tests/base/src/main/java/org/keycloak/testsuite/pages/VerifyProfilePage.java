@@ -17,8 +17,9 @@
 
 package org.keycloak.testsuite.pages;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.testsuite.auth.page.AccountFields;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.UIUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -51,6 +52,10 @@ public class VerifyProfilePage extends AbstractPage {
 
     @FindBy(className = "alert-error")
     private WebElement loginAlertErrorMessage;
+
+    public VerifyProfilePage(PageContext pageContext) {
+        super(pageContext);
+    }
 
 
     public void update(String firstName, String lastName) {

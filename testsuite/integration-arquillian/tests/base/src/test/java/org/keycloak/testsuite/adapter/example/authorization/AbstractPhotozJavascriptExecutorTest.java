@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.adapter.example.authorization;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -19,11 +19,13 @@ import org.keycloak.testsuite.util.javascript.ResponseValidator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
 import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilElementIsPresent;
 
 /**
  * @author mhajas
@@ -75,7 +77,7 @@ public abstract class AbstractPhotozJavascriptExecutorTest extends AbstractExamp
 
     public void assertOutputContains(String value, WebDriver driver1, Object output, WebElement events) {
         if (output instanceof WebElement) {
-            waitUntilElement((WebElement) output).text().contains(value);
+            waitUntilElement(ExpectedConditions.textToBePresentInElement((WebElement) output,value));
         } else {
             Assert.assertThat((String) output, containsString(value));
         }
@@ -94,7 +96,7 @@ public abstract class AbstractPhotozJavascriptExecutorTest extends AbstractExamp
     }
 
     protected void assertOnLoginPage(WebDriver driver1, Object output, WebElement events) {
-        waitUntilElement(By.tagName("body")).is().present();
+        waitUntilElementIsPresent(By.tagName("body"));
         try {
             assertCurrentUrlStartsWith(jsDriverTestRealmLoginPage, driver1);
         } catch (AssertionError e) {

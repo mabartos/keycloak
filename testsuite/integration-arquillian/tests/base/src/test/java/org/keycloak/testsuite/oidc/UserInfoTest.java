@@ -18,7 +18,7 @@ package org.keycloak.testsuite.oidc;
 
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

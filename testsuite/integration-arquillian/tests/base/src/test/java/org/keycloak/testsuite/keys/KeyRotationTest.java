@@ -19,7 +19,7 @@ package org.keycloak.testsuite.keys;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Rule;
 import org.junit.Test;
 import org.keycloak.client.registration.Auth;

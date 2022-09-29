@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.keys;
 
 import org.apache.commons.io.IOUtils;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;

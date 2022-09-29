@@ -23,6 +23,7 @@ import java.net.URL;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.keycloak.testsuite.page.AbstractPageWithInjectedUrl;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.URLUtils;
 
 public class CustomerCookiePortalRoot extends AbstractPageWithInjectedUrl {
@@ -32,6 +33,10 @@ public class CustomerCookiePortalRoot extends AbstractPageWithInjectedUrl {
     @ArquillianResource
     @OperateOnDeployment(DEPLOYMENT_NAME)
     private URL url;
+
+    public CustomerCookiePortalRoot(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public URL getInjectedUrl() {

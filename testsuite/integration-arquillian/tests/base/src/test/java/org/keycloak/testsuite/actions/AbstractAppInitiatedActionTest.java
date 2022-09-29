@@ -18,7 +18,7 @@ package org.keycloak.testsuite.actions;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Rule;
 import org.keycloak.protocol.oidc.OIDCLoginProtocolService;
 import org.keycloak.testsuite.AbstractTestRealmKeycloakTest;

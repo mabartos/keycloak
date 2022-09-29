@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.keycloak.common.util.Retry;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.UIUtils;
 import org.keycloak.testsuite.util.WaitUtils;
 import org.openqa.selenium.By;
@@ -47,6 +48,10 @@ public class LoginTotpPage extends LanguageComboboxAwarePage {
 
     @FindBy(id = "input-error-otp-code")
     private WebElement totpInputCodeError;
+
+    public LoginTotpPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void login(String totp) {
         otpInput.clear();

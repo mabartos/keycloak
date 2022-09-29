@@ -23,8 +23,10 @@ import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.auth.page.login.SAMLPostLogin;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.WaitUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 /**
  * A {@code Page} for the {@code EmployeeRoleMapping} application.
@@ -41,6 +43,10 @@ public class EmployeeRoleMappingServlet extends SAMLServlet {
 
     private SAMLPostLogin loginPage;
     private UserRepresentation user;
+
+    public EmployeeRoleMappingServlet(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public URL getInjectedUrl() {
@@ -75,7 +81,7 @@ public class EmployeeRoleMappingServlet extends SAMLServlet {
             // authenticates user before calling setCheckRoles on the servlet - required in filter tests.
             driver.navigate().to(getUriBuilder().clone().path("setCheckRoles").queryParam("roles", roles).build().toASCIIString());
             loginPage.form().login(user);
-            WaitUtils.waitUntilElement(By.tagName("body")).text().contains("These roles will be checked:");
+            WaitUtils.waitUntilElement(ExpectedConditions.textToBePresentInElementLocated(By.tagName("body"),"These roles will be checked:"));
             this.logout();
         } else {
             super.setRolesToCheck(roles);
@@ -88,7 +94,7 @@ public class EmployeeRoleMappingServlet extends SAMLServlet {
             // authenticates user before calling setCheckRoles on the servlet - required in filter tests.
             driver.navigate().to(getUriBuilder().clone().path((value ? "" : "un") + "checkRoles").build().toASCIIString());
             loginPage.form().login(user);
-            WaitUtils.waitUntilElement(By.tagName("body")).text().contains("Roles will " + (value ? "" : "not ") +  "be checked");
+            WaitUtils.waitUntilElement(ExpectedConditions.textToBePresentInElementLocated(By.tagName("body"),"Roles will " + (value ? "" : "not ") +  "be checked"));
             this.logout();
         } else {
             super.checkRolesEndPoint(value);

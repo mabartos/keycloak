@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.ui.account2.page;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.testsuite.ui.account2.page.fragment.ContentAlert;
 import org.keycloak.testsuite.ui.account2.page.fragment.ContinueCancelModal;
 import org.keycloak.testsuite.ui.account2.page.fragment.LoggedInPageHeader;

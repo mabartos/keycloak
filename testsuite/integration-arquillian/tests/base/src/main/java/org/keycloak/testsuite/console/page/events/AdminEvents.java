@@ -19,6 +19,7 @@ package org.keycloak.testsuite.console.page.events;
 
 import org.keycloak.testsuite.console.page.fragment.DataTable;
 import org.keycloak.testsuite.page.Form;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.UIUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -29,6 +30,10 @@ import org.openqa.selenium.support.FindBy;
  * @author mhajas
  */
 public class AdminEvents extends Events {
+
+    public AdminEvents(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public String getUriFragment() {

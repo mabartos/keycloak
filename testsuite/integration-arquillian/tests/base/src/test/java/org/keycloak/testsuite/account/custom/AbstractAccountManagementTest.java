@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.account.custom;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Before;
 import org.keycloak.testsuite.AbstractAuthTest;
 import org.keycloak.testsuite.auth.page.account.AccountManagement;

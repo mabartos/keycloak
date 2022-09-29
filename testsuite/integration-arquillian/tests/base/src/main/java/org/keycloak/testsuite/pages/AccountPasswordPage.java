@@ -17,6 +17,7 @@
 package org.keycloak.testsuite.pages;
 
 import org.keycloak.services.resources.account.AccountFormService;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -43,6 +44,10 @@ public class AccountPasswordPage extends AbstractAccountPage {
     private WebElement errorMessage;
 
     private String realmName = "test";
+
+    public AccountPasswordPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void changePassword(String password, String newPassword, String passwordConfirm) {
         passwordInput.sendKeys(password);

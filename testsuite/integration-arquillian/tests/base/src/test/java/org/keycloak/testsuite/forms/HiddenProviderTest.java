@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.forms;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Assert;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;

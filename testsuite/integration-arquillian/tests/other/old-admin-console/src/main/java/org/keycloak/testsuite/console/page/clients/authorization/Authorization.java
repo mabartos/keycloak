@@ -18,7 +18,7 @@ package org.keycloak.testsuite.console.page.clients.authorization;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.fragment.Root;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.testsuite.console.page.clients.Client;
 import org.keycloak.testsuite.console.page.clients.authorization.permission.Permissions;
 import org.keycloak.testsuite.console.page.clients.authorization.policy.Policies;

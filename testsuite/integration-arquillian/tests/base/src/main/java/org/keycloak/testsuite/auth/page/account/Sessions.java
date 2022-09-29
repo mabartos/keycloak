@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.auth.page.account;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -31,6 +32,10 @@ import static org.keycloak.testsuite.util.UIUtils.clickLink;
  * @author <a href="mailto:pmensik@redhat.com">Petr Mensik</a>
  */
 public class Sessions extends AccountManagement {
+
+    public Sessions(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public UriBuilder createUriBuilder() {

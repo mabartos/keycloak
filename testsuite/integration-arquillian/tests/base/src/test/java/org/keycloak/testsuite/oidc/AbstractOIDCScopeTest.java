@@ -20,7 +20,7 @@ package org.keycloak.testsuite.oidc;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Rule;
 import org.keycloak.events.Details;
 import org.keycloak.representations.AccessToken;

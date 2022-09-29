@@ -17,15 +17,18 @@
 
 package org.keycloak.testsuite.auth.page.login;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.testsuite.auth.page.AuthRealm;
 import org.keycloak.testsuite.console.page.fragment.LocaleDropdown;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 import static org.keycloak.testsuite.util.UIUtils.getTextFromElement;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilElementIsNotPresent;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilElementIsPresent;
 
 /**
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
@@ -44,6 +47,10 @@ public abstract class LoginBase extends AuthRealm {
     private LocaleDropdown localeDropdown;
 
     protected String keycloakThemeCssName;
+
+    public LoginBase(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public FeedbackMessage feedbackMessage() {
         return feedbackMessage;
@@ -65,11 +72,11 @@ public abstract class LoginBase extends AuthRealm {
     }
 
     public void waitForKeycloakThemeNotPresent() {
-        waitUntilElement(getKeycloakThemeLocator()).is().not().present();
+        waitUntilElementIsNotPresent(getKeycloakThemeLocator());
     }
 
     public void waitForKeycloakThemePresent() {
-        waitUntilElement(getKeycloakThemeLocator()).is().present();
+        waitUntilElementIsPresent(getKeycloakThemeLocator());
     }
 
     public void setKeycloakThemeCssName(String name) {

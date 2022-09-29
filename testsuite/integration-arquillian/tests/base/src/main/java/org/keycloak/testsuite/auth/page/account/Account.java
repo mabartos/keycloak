@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.auth.page.account;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.URLUtils;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -37,6 +38,10 @@ public class Account extends AccountManagement {
 
     @FindBy(id = "firstName")
     private WebElement firstName;
+
+    public Account(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public String getUsername() {
         return username.getAttribute("value");

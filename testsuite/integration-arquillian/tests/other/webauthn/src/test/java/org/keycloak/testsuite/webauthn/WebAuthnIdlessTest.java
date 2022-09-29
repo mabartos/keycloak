@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.webauthn;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.jboss.logging.Logger;
 import org.junit.Rule;
 import org.junit.Test;

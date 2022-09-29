@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -32,6 +33,10 @@ public class LoginRecoverUsernamePage extends AbstractPage {
 
     @FindBy(className = "alert-error")
     private WebElement emailErrorMessage;
+
+    public LoginRecoverUsernamePage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void recoverUsername(String email) {
         emailInput.sendKeys(email);

@@ -41,7 +41,7 @@
         <cache.server.java.home>${java.home}</cache.server.java.home>
 
         <!--component versions-->
-        <arquillian-core.version>1.6.0.Final</arquillian-core.version>
+        <arquillian-core.version>1.7.0.Alpha12</arquillian-core.version>
         <!--the version of shrinkwrap_resolver should align with the version in arquillian-bom-->
         <shrinkwrap-resolver.version>3.1.4</shrinkwrap-resolver.version>
         <selenium.version>3.14.0</selenium.version>
@@ -166,6 +166,11 @@
                 <version>${shrinkwrap-resolver.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.github.bonigarcia</groupId>
+                <artifactId>webdrivermanager</artifactId>
+                <version>5.3.0</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.arquillian.extension</groupId>

@@ -2,6 +2,7 @@ package org.keycloak.testsuite.auth.page.login;
 
 import org.keycloak.authentication.requiredactions.DeleteAccount;
 import org.keycloak.testsuite.auth.page.AuthRealm;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -15,6 +16,10 @@ public class DeleteAccountActionConfirmPage extends RequiredActions {
 
   @FindBy(css = "input[type='submit']")
   WebElement confirmActionButton;
+
+  public DeleteAccountActionConfirmPage(PageContext pageContext) {
+    super(pageContext);
+  }
 
   @Override
   public String getActionId() {

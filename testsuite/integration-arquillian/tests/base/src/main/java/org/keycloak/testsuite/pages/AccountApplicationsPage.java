@@ -18,6 +18,7 @@
 package org.keycloak.testsuite.pages;
 
 import org.keycloak.services.Urls;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -33,6 +34,10 @@ import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
  */
 public class AccountApplicationsPage extends AbstractAccountPage {
+
+    public AccountApplicationsPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public boolean isCurrent() {

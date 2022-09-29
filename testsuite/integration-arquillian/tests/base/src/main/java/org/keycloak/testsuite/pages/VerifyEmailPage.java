@@ -18,6 +18,7 @@
 package org.keycloak.testsuite.pages;
 
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -32,6 +33,10 @@ public class VerifyEmailPage extends AbstractPage {
 
     @FindBy(linkText = "Click here")
     private WebElement resendEmailLink;
+
+    public VerifyEmailPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public void open() {

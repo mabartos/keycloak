@@ -14,7 +14,7 @@ import java.util.List;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.jboss.logging.Logger;
 import org.junit.After;
 import org.junit.Before;

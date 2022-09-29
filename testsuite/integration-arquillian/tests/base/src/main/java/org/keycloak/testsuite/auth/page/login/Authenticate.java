@@ -17,6 +17,8 @@
 
 package org.keycloak.testsuite.auth.page.login;
 
+import org.keycloak.testsuite.page.PageContext;
+
 import javax.ws.rs.core.UriBuilder;
 
 /**
@@ -24,6 +26,10 @@ import javax.ws.rs.core.UriBuilder;
  * @author tkyjovsk
  */
 public abstract class Authenticate extends LoginActions {
+    public Authenticate(PageContext pageContext) {
+        super(pageContext);
+    }
+
     @Override
     public UriBuilder createUriBuilder() {
         return super.createUriBuilder().path("authenticate");

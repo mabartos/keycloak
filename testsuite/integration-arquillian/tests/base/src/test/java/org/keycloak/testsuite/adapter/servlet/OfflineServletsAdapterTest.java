@@ -4,7 +4,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.util.List;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,7 +44,9 @@ import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlDoesntStartW
 import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.WaitUtils.pause;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
-import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilBodyContains;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilBodyNotContains;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilElementIsPresent;
 
 /**
  * @author <a href="mailto:bruno@abstractj.org">Bruno Oliveira</a>.
@@ -93,6 +95,10 @@ public class OfflineServletsAdapterTest extends AbstractServletsAdapterTest {
         testRealms.add(IOUtil.loadRealm("/adapter-test/offline-client/offlinerealm.json"));
     }
 
+    private void waitUntilPageIsPresent(){
+        waitUntilElementIsPresent(By.xpath("//body"));
+    }
+
     @Test
     public void testServlet() {
         try {
@@ -103,7 +109,7 @@ public class OfflineServletsAdapterTest extends AbstractServletsAdapterTest {
             oauth.clientId("offline-client");
 
             driver.navigate().to(servletUri);
-            waitUntilElement(By.tagName("body")).is().visible();
+            waitUntilPageIsPresent();
 
             loginPage.assertCurrent();
             loginPage.login(DEFAULT_USERNAME, DEFAULT_PASSWORD);
@@ -159,7 +165,7 @@ public class OfflineServletsAdapterTest extends AbstractServletsAdapterTest {
                     .build().toString();
 
             driver.navigate().to(servletUri);
-            waitUntilElement(By.tagName("body")).is().visible();
+            waitUntilPageIsPresent();
 
             loginPage.assertCurrent();
             loginPage.login(DEFAULT_USERNAME, DEFAULT_PASSWORD);
@@ -213,7 +219,7 @@ public class OfflineServletsAdapterTest extends AbstractServletsAdapterTest {
             loginPage.login(DEFAULT_USERNAME, DEFAULT_PASSWORD);
 
             oauthGrantPage.assertCurrent();
-            waitUntilElement(By.xpath("//body")).text().not().contains("Offline access");
+            waitUntilBodyNotContains("Offline access");
             oauthGrantPage.cancel();
 
             // Assert grant page has 'Offline Access' role now
@@ -221,11 +227,11 @@ public class OfflineServletsAdapterTest extends AbstractServletsAdapterTest {
                     .queryParam(OAuth2Constants.SCOPE, OAuth2Constants.OFFLINE_ACCESS)
                     .build().toString();
             driver.navigate().to(servletUri);
-            waitUntilElement(By.tagName("body")).is().visible();
+            waitUntilPageIsPresent();
 
             loginPage.login(DEFAULT_USERNAME, DEFAULT_PASSWORD);
             oauthGrantPage.assertCurrent();
-            waitUntilElement(By.xpath("//body")).text().contains(OAuthGrantPage.OFFLINE_ACCESS_CONSENT_TEXT);
+            waitUntilBodyContains(OAuthGrantPage.OFFLINE_ACCESS_CONSENT_TEXT);
 
             oauthGrantPage.accept();
 

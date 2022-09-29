@@ -18,6 +18,7 @@
 package org.keycloak.testsuite.pages;
 
 import org.keycloak.services.Urls;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -33,7 +34,9 @@ public class AccountFederatedIdentityPage extends AbstractAccountPage {
     @FindBy(className = "alert-error")
     private WebElement errorMessage;
 
-    public AccountFederatedIdentityPage() {};
+    public AccountFederatedIdentityPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     private String realmName = "test";
 

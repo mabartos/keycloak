@@ -1,5 +1,6 @@
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -19,6 +20,10 @@ public class SetupRecoveryAuthnCodesPage extends LanguageComboboxAwarePage {
 
     @FindBy(id="kcRecoveryCodesConfirmationCheck")
     private WebElement kcRecoveryCodesConfirmationCheck;
+
+    public SetupRecoveryAuthnCodesPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void clickSaveRecoveryAuthnCodesButton() {
         kcRecoveryCodesConfirmationCheck.click();

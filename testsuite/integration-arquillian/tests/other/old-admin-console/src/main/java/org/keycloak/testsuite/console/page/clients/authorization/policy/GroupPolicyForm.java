@@ -17,7 +17,7 @@
 package org.keycloak.testsuite.console.page.clients.authorization.policy;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.representations.idm.authorization.GroupPolicyRepresentation;
 import org.keycloak.representations.idm.authorization.Logic;
 import org.keycloak.testsuite.console.page.fragment.ModalDialog;

@@ -16,8 +16,9 @@
  */
 package org.keycloak.testsuite.auth.page.account;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.testsuite.auth.page.PasswordFields;
+import org.keycloak.testsuite.page.PageContext;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -26,6 +27,10 @@ import javax.ws.rs.core.UriBuilder;
  * @author Petr Mensik
  */
 public class ChangePassword extends AccountManagement {
+
+    public ChangePassword(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public UriBuilder createUriBuilder() {

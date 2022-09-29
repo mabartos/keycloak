@@ -18,6 +18,7 @@
 
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -33,6 +34,10 @@ public class LogoutConfirmPage extends LanguageComboboxAwarePage {
 
     @FindBy(linkText = "« Back to Application")
     private WebElement backToApplicationLink;
+
+    public LogoutConfirmPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public boolean isCurrent() {

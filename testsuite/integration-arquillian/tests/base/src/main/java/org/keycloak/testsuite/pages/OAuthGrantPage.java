@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -45,6 +46,10 @@ public class OAuthGrantPage extends LanguageComboboxAwarePage {
     private WebElement acceptButton;
     @FindBy(css = "input[name=\"cancel\"]")
     private WebElement cancelButton;
+
+    public OAuthGrantPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
 
     public void accept(){

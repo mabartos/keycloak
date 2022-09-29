@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -34,6 +35,10 @@ public abstract class AbstractAccountPage extends AbstractPage {
 
     @FindBy(id = "kc-locale-dropdown")
     private WebElement localeDropdown;
+
+    public AbstractAccountPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void logout() {
         logoutLink.click();

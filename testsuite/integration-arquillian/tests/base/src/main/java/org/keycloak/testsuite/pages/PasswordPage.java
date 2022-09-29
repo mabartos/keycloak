@@ -1,6 +1,7 @@
 package org.keycloak.testsuite.pages;
 
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.keycloak.testsuite.util.UIUtils;
 import org.openqa.selenium.By;
@@ -32,6 +33,10 @@ public class PasswordPage extends LanguageComboboxAwarePage {
 
     @FindBy(linkText = "Forgot Password?")
     private WebElement resetPasswordLink;
+
+    public PasswordPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
 
     public void login(String password) {

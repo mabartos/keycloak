@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.console.realm;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.After;
 import org.junit.Test;
 import org.keycloak.authentication.authenticators.client.ClientIdAndSecretAuthenticator;

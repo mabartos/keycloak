@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.console.page.realm;
 
 import org.jboss.arquillian.graphene.findby.FindByJQuery;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.testsuite.console.page.fragment.OnOffSwitch;
 import org.keycloak.testsuite.page.Form;
 import org.keycloak.testsuite.util.UIUtils;

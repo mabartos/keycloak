@@ -17,6 +17,8 @@
 
 package org.keycloak.testsuite.console.page;
 
+import org.keycloak.testsuite.page.PageContext;
+
 import javax.ws.rs.core.UriBuilder;
 
 import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
@@ -30,7 +32,8 @@ public class AdminConsoleCreate extends AdminConsole {
 
     public static final String ENTITY = "entity";
 
-    public AdminConsoleCreate() {
+    public AdminConsoleCreate(PageContext pageContext) {
+        super(pageContext);
         setUriParameter(CONSOLE_REALM, TEST);
     }
     

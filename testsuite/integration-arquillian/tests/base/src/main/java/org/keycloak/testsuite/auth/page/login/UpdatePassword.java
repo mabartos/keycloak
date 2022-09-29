@@ -17,9 +17,10 @@
 
 package org.keycloak.testsuite.auth.page.login;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.models.UserModel;
 import org.keycloak.testsuite.auth.page.PasswordFields;
+import org.keycloak.testsuite.page.PageContext;
 
 /**
  *
@@ -29,6 +30,10 @@ public class UpdatePassword extends RequiredActions {
 
     @Page
     private PasswordFields passwordFields;
+
+    public UpdatePassword(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public String getActionId() {

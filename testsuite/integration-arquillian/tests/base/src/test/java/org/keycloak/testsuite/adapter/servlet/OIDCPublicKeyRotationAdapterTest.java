@@ -31,7 +31,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Before;
@@ -72,6 +72,7 @@ import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
 import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
 import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilElementIsPresent;
 
 /**
  * Tests related to public key rotation for OIDC adapter
@@ -346,7 +347,7 @@ public class OIDCPublicKeyRotationAdapterTest extends AbstractServletsAdapterTes
                 .queryParam(AdapterActionsFilter.RESET_DEPLOYMENT_PARAM, "true")
                 .build().toString();
         driver.navigate().to(timeOffsetUri);
-        waitUntilElement(By.tagName("body")).is().visible();
+        waitUntilElementIsPresent(By.xpath("//body"));
     }
 
 

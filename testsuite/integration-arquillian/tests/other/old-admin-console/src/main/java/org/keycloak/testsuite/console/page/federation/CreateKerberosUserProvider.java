@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.console.page.federation;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.keycloak.testsuite.console.page.AdminConsoleCreate;
 
 /**

@@ -18,6 +18,7 @@
 package org.keycloak.testsuite.pages;
 
 import org.keycloak.services.Urls;
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -28,6 +29,10 @@ import java.util.List;
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
 public class AccountLogPage extends AbstractAccountPage {
+
+    public AccountLogPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public boolean isCurrent() {
         return driver.getTitle().contains("Account Management") && driver.getCurrentUrl().endsWith("/account/log");

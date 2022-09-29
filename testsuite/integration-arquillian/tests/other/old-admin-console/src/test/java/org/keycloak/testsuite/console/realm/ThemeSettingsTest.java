@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.console.realm;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Before;
 import org.junit.Test;
 import org.keycloak.testsuite.console.page.realm.ThemeSettings;

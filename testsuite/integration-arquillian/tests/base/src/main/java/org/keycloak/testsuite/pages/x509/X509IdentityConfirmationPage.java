@@ -19,6 +19,7 @@
 package org.keycloak.testsuite.pages.x509;
 
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.pages.AbstractPage;
 import org.keycloak.testsuite.pages.LanguageComboboxAwarePage;
 import org.keycloak.testsuite.util.OAuthClient;
@@ -62,6 +63,10 @@ public class X509IdentityConfirmationPage extends LanguageComboboxAwarePage {
 
     @FindBy(id = "certificate_subjectDN")
     private WebElement certificateSubjectDistinguishedName;
+
+    public X509IdentityConfirmationPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void confirm() {
         confirmButton.click();

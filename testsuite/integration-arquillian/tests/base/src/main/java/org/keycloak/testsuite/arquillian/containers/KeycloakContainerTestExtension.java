@@ -49,6 +49,7 @@ import org.jboss.arquillian.test.impl.enricher.resource.ArquillianResourceTestEn
 import org.jboss.arquillian.test.spi.TestEnricher;
 import org.jboss.arquillian.test.spi.enricher.resource.ResourceProvider;
 import org.keycloak.testsuite.arquillian.ModelTestExecutor;
+import org.keycloak.testsuite.page.KeycloakPageObjectInitializer;
 
 /**
  * KeycloakContainerTestExtension
@@ -113,6 +114,7 @@ public class KeycloakContainerTestExtension implements LoadableExtension {
             .observer(DeploymentCommandObserver.class)
             .observer(ContainerCommandObserver.class)
             .observer(RemoteResourceCommandObserver.class)
-            .observer(KeycloakContainerFeaturesController.class);
+            .observer(KeycloakContainerFeaturesController.class)
+            .observer(KeycloakPageObjectInitializer.class);
     }
 }

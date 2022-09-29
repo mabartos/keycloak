@@ -17,7 +17,7 @@
 package org.keycloak.testsuite.adapter.example.authorization;
 
 import org.jboss.arquillian.container.test.api.Deployer;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -49,6 +49,8 @@ import java.util.List;
 import static org.junit.Assert.assertFalse;
 import static org.keycloak.common.Profile.Feature.AUTHORIZATION;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilBodyContains;
+import static org.keycloak.testsuite.util.WaitUtils.waitUntilBodyNotContains;
 import static org.keycloak.testsuite.utils.io.IOUtil.loadJson;
 import static org.keycloak.testsuite.utils.io.IOUtil.loadRealm;
 import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
@@ -155,11 +157,11 @@ public abstract class AbstractBaseServletAuthzAdapterTest extends AbstractExampl
     }
 
     protected void assertWasDenied() {
-        waitUntilElement(By.tagName("body")).text().contains("You can not access this resource.");
+        waitUntilBodyContains("You can not access this resource.");
     }
 
     protected void assertWasNotDenied() {
-        waitUntilElement(By.tagName("body")).text().not().contains("You can not access this resource.");
+        waitUntilBodyNotContains("You can not access this resource.");
     }
 
     protected URL getResourceServerUrl() {

@@ -20,6 +20,7 @@ package org.keycloak.testsuite.adapter.page;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.keycloak.testsuite.page.AbstractPageWithInjectedUrl;
+import org.keycloak.testsuite.page.PageContext;
 
 import java.net.URL;
 
@@ -30,6 +31,10 @@ public class CustomerPortalNoConf extends AbstractPageWithInjectedUrl {
     @ArquillianResource
     @OperateOnDeployment(DEPLOYMENT_NAME)
     private URL url;
+
+    public CustomerPortalNoConf(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public URL getInjectedUrl() {

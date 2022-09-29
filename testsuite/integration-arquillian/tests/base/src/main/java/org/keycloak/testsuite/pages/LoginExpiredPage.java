@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.pages;
 
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -32,6 +33,10 @@ public class LoginExpiredPage extends AbstractPage {
 
     @FindBy(id = "loginContinueLink")
     private WebElement loginContinueLink;
+
+    public LoginExpiredPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
 
     public void clickLoginRestartLink() {

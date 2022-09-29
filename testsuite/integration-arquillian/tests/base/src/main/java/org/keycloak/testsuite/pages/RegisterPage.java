@@ -17,11 +17,12 @@
 
 package org.keycloak.testsuite.pages;
 
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Assert;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.testsuite.auth.page.AccountFields;
 import org.keycloak.testsuite.auth.page.PasswordFields;
+import org.keycloak.testsuite.page.PageContext;
 import org.keycloak.testsuite.util.UIUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -71,6 +72,10 @@ public class RegisterPage extends AbstractPage {
 
     @FindBy(linkText = "« Back to Login")
     private WebElement backToLoginLink;
+
+    public RegisterPage(PageContext pageContext) {
+        super(pageContext);
+    }
 
     public void register(String firstName, String lastName, String email, String username, String password, String passwordConfirm) {
         register(firstName, lastName, email, username, password, passwordConfirm, null);

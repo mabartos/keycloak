@@ -19,7 +19,7 @@ package org.keycloak.testsuite.actions;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.authentication.actiontoken.verifyemail.VerifyEmailActionToken;
-import org.jboss.arquillian.graphene.page.Page;
+import org.keycloak.testsuite.page.Page;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;

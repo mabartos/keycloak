@@ -16,7 +16,6 @@
  */
 package org.keycloak.testsuite.console.page.fragment;
 
-import org.jboss.arquillian.graphene.fragment.Root;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -27,9 +26,6 @@ import static org.keycloak.testsuite.util.UIUtils.isElementVisible;
  * @author Petr Mensik
  */
 public class OnOffSwitch {
-
-    @Root
-    private WebElement root;
 
     @FindBy(tagName = "input")
     private WebElement inputTag;

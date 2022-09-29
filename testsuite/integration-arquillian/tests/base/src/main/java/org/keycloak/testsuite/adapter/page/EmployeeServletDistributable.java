@@ -21,6 +21,8 @@ import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.test.api.ArquillianResource;
 
 import java.net.URL;
+
+import org.keycloak.testsuite.page.PageContext;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -33,9 +35,8 @@ public class EmployeeServletDistributable extends SAMLServlet {
     @OperateOnDeployment(DEPLOYMENT_NAME)
     private URL url;
 
-    public EmployeeServletDistributable(WebDriver driver) {
-        super();
-        this.driver = driver;
+    public EmployeeServletDistributable(PageContext pageContext) {
+        super(pageContext);
     }
 
     @Override

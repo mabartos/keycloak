@@ -16,6 +16,8 @@
  */
 package org.keycloak.testsuite.auth.page.account;
 
+import org.keycloak.testsuite.page.PageContext;
+
 import javax.ws.rs.core.UriBuilder;
 
 /**
@@ -23,6 +25,10 @@ import javax.ws.rs.core.UriBuilder;
  * @author tkyjovsk
  */
 public class Autheticator extends AccountManagement {
+
+    public Autheticator(PageContext pageContext) {
+        super(pageContext);
+    }
 
     @Override
     public UriBuilder createUriBuilder() {
