@@ -73,6 +73,14 @@ public class KeycloakQuarkusServerDeployableContainer extends AbstractQuarkusDep
         commands.add(getCommand());
         commands.add("-v");
         commands.add(command);
+
+        final StoreProvider storeProvider = StoreProvider.getCurrentProvider();
+
+        // Test
+        commands.add(getCommand());
+        commands.add("build");
+        commands.add("&&");
+
         addFeaturesOption(commands);
         if (args != null) {
             commands.addAll(Arrays.asList(args));
