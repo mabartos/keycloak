@@ -17,12 +17,14 @@
 
 package org.keycloak.operator.controllers;
 
+import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.EnvVarBuilder;
 import io.fabric8.kubernetes.api.model.ExecActionBuilder;
 import io.fabric8.kubernetes.api.model.VolumeBuilder;
 import io.fabric8.kubernetes.api.model.VolumeMountBuilder;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.quarkus.logging.Log;
 import org.keycloak.common.util.CollectionUtil;
 import org.keycloak.operator.Constants;
 import org.keycloak.operator.crds.v2alpha1.deployment.Keycloak;
@@ -32,19 +34,23 @@ import org.keycloak.operator.crds.v2alpha1.deployment.ValueOrSecret;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static org.keycloak.operator.controllers.KeycloakDeployment.getEnvVarName;
+
 /**
- * Configuration for the KeycloakDeployment
+ * Configuration of the Keycloak Quarkus Distribution
  */
-public class KeycloakDeploymentConfig {
+public class KeycloakDistConfigurator {
     private final Keycloak keycloakCR;
     private final StatefulSet deployment;
     private final KubernetesClient client;
 
-    public KeycloakDeploymentConfig(Keycloak keycloakCR, StatefulSet deployment, KubernetesClient client) {
+    public KeycloakDistConfigurator(Keycloak keycloakCR, StatefulSet deployment, KubernetesClient client) {
         this.keycloakCR = keycloakCR;
         this.deployment = deployment;
         this.client = client;
@@ -53,17 +59,12 @@ public class KeycloakDeploymentConfig {
     /**
      * Specify first-class citizens fields which should not be added as general server configuration property
      */
-    private final static List<String> FIRST_CLASS_FIELDS = List.of(
-            "hostname",
-            "tlsSecret",
-            "features",
-            "features-disabled"
-    );
+    private final Set<String> firstClassConfigOptions = new HashSet<>();
 
     /**
      * Configure configuration properties for the KeycloakDeployment
      */
-    protected void configureProperties() {
+    public void configureDistOptions() {
         configureHostname();
         configureTLS();
         configureFeatures();
@@ -74,15 +75,64 @@ public class KeycloakDeploymentConfig {
      *
      * @param status Keycloak Status builder
      */
-    protected void validateProperties(KeycloakStatusBuilder status) {
+    public void validateOptions(KeycloakStatusBuilder status) {
         assumeFirstClassCitizens(status);
+    }
+
+    protected void mapOptionFromString(String targetOptionName, Supplier<String> valueSupplier) {
+        firstClassConfigOptions.add(targetOptionName);
+
+        String value = null;
+        try {
+            value = valueSupplier.get();
+        }
+        catch (NullPointerException e) {
+            // noop
+        }
+
+        if (value == null || value.trim().isEmpty()) {
+            Log.debugf("No value provided for %s", targetOptionName);
+            return;
+        }
+
+        var kcContainer = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
+        var envVars = kcContainer.getEnv();
+        if (envVars == null) {
+            envVars = new ArrayList<>();
+            kcContainer.setEnv(envVars);
+        }
+
+        EnvVar envVar = new EnvVarBuilder()
+                        .withName(getEnvVarName(targetOptionName))
+                        .withValue(value)
+                        .build();
+        envVars.add(envVar);
+    }
+
+    protected void mapOptionFromBoolean(String targetOptionName, Supplier<List<Boolean>> valueSupplier) {
+        mapOptionFromString(targetOptionName, () -> {
+            var val = valueSupplier.get();
+            return val == null ? null : String.valueOf(val); // to avoid "null" as a String
+        });
+    }
+
+    protected void mapOptionFromInteger(String targetOptionName, Supplier<List<Integer>> valueSupplier) {
+        mapOptionFromString(targetOptionName, () -> {
+            var val = valueSupplier.get();
+            return val == null ? null : String.valueOf(val); // to avoid "null" as a String
+        });
+    }
+
+    protected void mapOptionFromList(String targetOptionName, Supplier<List<String>> valueSupplier) {
+        mapOptionFromString(targetOptionName, () -> String.join(",", valueSupplier.get()));
     }
 
     /* ---------- Configuration of first-class citizen fields ---------- */
 
     public void configureHostname() {
+        this.mapOptionFromString("hostname", () -> keycloakCR.getSpec().getHostname());
+
         var kcContainer = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
-        var hostname = keycloakCR.getSpec().getHostname();
         var envVars = kcContainer.getEnv();
         if (keycloakCR.getSpec().isHostnameDisabled()) {
             var disableStrictHostname = List.of(
@@ -96,14 +146,6 @@ public class KeycloakDeploymentConfig {
                             .build());
 
             envVars.addAll(disableStrictHostname);
-        } else {
-            var enabledStrictHostname = List.of(
-                    new EnvVarBuilder()
-                            .withName("KC_HOSTNAME")
-                            .withValue(hostname)
-                            .build());
-
-            envVars.addAll(enabledStrictHostname);
         }
     }
 
@@ -187,27 +229,8 @@ public class KeycloakDeploymentConfig {
     }
 
     public void configureFeatures() {
-        var featureSpec = keycloakCR.getSpec().getFeatureSpec();
-        if (featureSpec == null) return;
-
-        var kcContainer = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
-        var envVars = kcContainer.getEnv();
-        var enabledFeatures = featureSpec.getEnabledFeatures();
-        var disabledFeatures = featureSpec.getDisabledFeatures();
-
-        if (CollectionUtil.isNotEmpty(enabledFeatures)) {
-            envVars.add(new EnvVarBuilder()
-                    .withName("KC_FEATURES")
-                    .withValue(CollectionUtil.join(enabledFeatures, ","))
-                    .build());
-        }
-
-        if (CollectionUtil.isNotEmpty(disabledFeatures)) {
-            envVars.add(new EnvVarBuilder()
-                    .withName("KC_FEATURES_DISABLED")
-                    .withValue(CollectionUtil.join(disabledFeatures, ","))
-                    .build());
-        }
+        mapOptionFromList("features", () -> keycloakCR.getSpec().getFeatureSpec().getEnabledFeatures());
+        mapOptionFromList("features-disabled", () -> keycloakCR.getSpec().getFeatureSpec().getDisabledFeatures());
     }
 
     /* ---------- END of configuration of first-class citizen fields ---------- */
@@ -263,7 +286,7 @@ public class KeycloakDeploymentConfig {
                 .map(ValueOrSecret::getName)
                 .collect(Collectors.toSet());
 
-        final var sameItems = CollectionUtil.intersection(serverConfigNames, FIRST_CLASS_FIELDS);
+        final var sameItems = CollectionUtil.intersection(serverConfigNames, firstClassConfigOptions);
         if (CollectionUtil.isNotEmpty(sameItems)) {
             status.addWarningMessage("You need to specify these fields as the first-class citizen of the CR: "
                     + CollectionUtil.join(sameItems, ","));

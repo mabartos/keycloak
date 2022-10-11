@@ -49,7 +49,7 @@ import static io.smallrye.config.common.utils.StringUtil.replaceNonAlphanumericB
 public class KeycloakDeployment extends OperatorManagedResource implements StatusUpdater<KeycloakStatusBuilder> {
 
     private final Config operatorConfig;
-    private final KeycloakDeploymentConfig deploymentConfig;
+    private final KeycloakDistConfigurator distConfigurator;
 
     private final Keycloak keycloakCR;
     private final StatefulSet existingDeployment;
@@ -75,7 +75,7 @@ public class KeycloakDeployment extends OperatorManagedResource implements Statu
         }
 
         this.baseDeployment = createBaseDeployment();
-        this.deploymentConfig = createDeploymentConfig();
+        this.distConfigurator = configureDist();
     }
 
     @Override
@@ -394,9 +394,9 @@ public class KeycloakDeployment extends OperatorManagedResource implements Statu
         return baseDeployment;
     }
 
-    private KeycloakDeploymentConfig createDeploymentConfig() {
-        final KeycloakDeploymentConfig config = new KeycloakDeploymentConfig(keycloakCR, baseDeployment, client);
-        config.configureProperties();
+    private KeycloakDistConfigurator configureDist() {
+        final KeycloakDistConfigurator config = new KeycloakDistConfigurator(keycloakCR, baseDeployment, client);
+        config.configureDistOptions();
         mergePodTemplate(baseDeployment.getSpec().getTemplate());
         return config;
     }
@@ -485,7 +485,7 @@ public class KeycloakDeployment extends OperatorManagedResource implements Statu
             status.addRollingUpdateMessage("Rolling out deployment update");
         }
 
-        deploymentConfig.validateProperties(status);
+        distConfigurator.validateOptions(status);
     }
 
     public Set<String> getConfigSecretsNames() {

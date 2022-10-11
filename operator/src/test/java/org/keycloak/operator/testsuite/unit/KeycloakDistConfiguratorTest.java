@@ -25,7 +25,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 import org.keycloak.common.util.CollectionUtil;
 import org.keycloak.common.util.ObjectUtil;
-import org.keycloak.operator.controllers.KeycloakDeploymentConfig;
+import org.keycloak.operator.controllers.KeycloakDistConfigurator;
 import org.keycloak.operator.crds.v2alpha1.deployment.Keycloak;
 import org.keycloak.operator.testsuite.utils.K8sUtils;
 
@@ -35,7 +35,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
-public class KeycloakDeploymentConfigTest {
+public class KeycloakDistConfiguratorTest {
 
     @Test
     public void enabledFeatures() {
@@ -52,7 +52,7 @@ public class KeycloakDeploymentConfigTest {
 
         final Keycloak keycloak = K8sUtils.getResourceFromFile("/test-serialization-keycloak-cr.yml", Keycloak.class);
         final StatefulSet deployment = getBasicKcDeployment();
-        final KeycloakDeploymentConfig deploymentConfig = new KeycloakDeploymentConfig(keycloak, deployment, null);
+        final KeycloakDistConfigurator deploymentConfig = new KeycloakDistConfigurator(keycloak, deployment, null);
 
         final Container container = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
         assertThat(container).isNotNull();
