@@ -26,6 +26,7 @@ import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.quarkus.logging.Log;
 import org.keycloak.common.util.CollectionUtil;
+import org.keycloak.common.util.ObjectUtil;
 import org.keycloak.operator.Constants;
 import org.keycloak.operator.crds.v2alpha1.deployment.Keycloak;
 import org.keycloak.operator.crds.v2alpha1.deployment.KeycloakStatusBuilder;
@@ -34,6 +35,7 @@ import org.keycloak.operator.crds.v2alpha1.deployment.ValueOrSecret;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -79,58 +81,10 @@ public class KeycloakDistConfigurator {
         assumeFirstClassCitizens(status);
     }
 
-    protected void mapOptionFromString(String targetOptionName, Supplier<String> valueSupplier) {
-        firstClassConfigOptions.add(targetOptionName);
-
-        String value = null;
-        try {
-            value = valueSupplier.get();
-        }
-        catch (NullPointerException e) {
-            // noop
-        }
-
-        if (value == null || value.trim().isEmpty()) {
-            Log.debugf("No value provided for %s", targetOptionName);
-            return;
-        }
-
-        var kcContainer = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
-        var envVars = kcContainer.getEnv();
-        if (envVars == null) {
-            envVars = new ArrayList<>();
-            kcContainer.setEnv(envVars);
-        }
-
-        EnvVar envVar = new EnvVarBuilder()
-                        .withName(getEnvVarName(targetOptionName))
-                        .withValue(value)
-                        .build();
-        envVars.add(envVar);
-    }
-
-    protected void mapOptionFromBoolean(String targetOptionName, Supplier<List<Boolean>> valueSupplier) {
-        mapOptionFromString(targetOptionName, () -> {
-            var val = valueSupplier.get();
-            return val == null ? null : String.valueOf(val); // to avoid "null" as a String
-        });
-    }
-
-    protected void mapOptionFromInteger(String targetOptionName, Supplier<List<Integer>> valueSupplier) {
-        mapOptionFromString(targetOptionName, () -> {
-            var val = valueSupplier.get();
-            return val == null ? null : String.valueOf(val); // to avoid "null" as a String
-        });
-    }
-
-    protected void mapOptionFromList(String targetOptionName, Supplier<List<String>> valueSupplier) {
-        mapOptionFromString(targetOptionName, () -> String.join(",", valueSupplier.get()));
-    }
-
     /* ---------- Configuration of first-class citizen fields ---------- */
 
     public void configureHostname() {
-        this.mapOptionFromString("hostname", () -> keycloakCR.getSpec().getHostname());
+        this.mapOption("hostname", () -> keycloakCR.getSpec().getHostname());
 
         var kcContainer = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
         var envVars = kcContainer.getEnv();
@@ -229,11 +183,47 @@ public class KeycloakDistConfigurator {
     }
 
     public void configureFeatures() {
-        mapOptionFromList("features", () -> keycloakCR.getSpec().getFeatureSpec().getEnabledFeatures());
-        mapOptionFromList("features-disabled", () -> keycloakCR.getSpec().getFeatureSpec().getDisabledFeatures());
+        mapOptionFromCollection("features", () -> keycloakCR.getSpec().getFeatureSpec().getEnabledFeatures());
+        mapOptionFromCollection("features-disabled", () -> keycloakCR.getSpec().getFeatureSpec().getDisabledFeatures());
     }
 
     /* ---------- END of configuration of first-class citizen fields ---------- */
+
+    protected <T> void mapOption(String targetOptionName, Supplier<T> valueSupplier) {
+        firstClassConfigOptions.add(targetOptionName);
+
+        T value = null;
+        try {
+            value = valueSupplier.get();
+        } catch (NullPointerException e) {
+            // noop
+        }
+
+        if (value == null) {
+            Log.debugf("No value provided for %s", targetOptionName);
+            return;
+        }
+
+        var kcContainer = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
+        var envVars = kcContainer.getEnv();
+        if (envVars == null) {
+            envVars = new ArrayList<>();
+            kcContainer.setEnv(envVars);
+        }
+
+        EnvVar envVar = new EnvVarBuilder()
+                .withName(getEnvVarName(targetOptionName))
+                .withValue(String.valueOf(value))
+                .build();
+        envVars.add(envVar);
+    }
+
+    protected <T> void mapOptionFromCollection(String targetOptionName, Supplier<Collection<T>> collectionSupplier) {
+        mapOption(targetOptionName, () -> {
+            var values = collectionSupplier.get().stream().map(String::valueOf).collect(Collectors.toSet());
+            return CollectionUtil.join(values, ",");
+        });
+    }
 
     protected String readConfigurationValue(String key) {
         if (keycloakCR != null &&
