@@ -32,6 +32,8 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.keycloak.operator.Constants;
 import org.keycloak.operator.controllers.KeycloakDistConfigurator;
 import org.keycloak.operator.crds.v2alpha1.deployment.KeycloakStatusCondition;
+import org.keycloak.operator.crds.v2alpha1.deployment.spec.HostnameSpecBuilder;
+import org.keycloak.operator.crds.v2alpha1.deployment.spec.HttpSpecBuilder;
 import org.keycloak.operator.testsuite.utils.K8sUtils;
 import org.keycloak.operator.controllers.KeycloakAdminSecret;
 import org.keycloak.operator.controllers.KeycloakService;
@@ -257,7 +259,12 @@ public class KeycloakDeploymentTest extends BaseOperatorTest {
     public void testHostnameStrictDisabled() {
         try {
             var kc = getDefaultKeycloakDeployment();
-            kc.getSpec().setHostname(Constants.INSECURE_DISABLE);
+            var hostnameSpec = new HostnameSpecBuilder()
+                    .withStrict(false)
+                    .withStrictBackchannel(false)
+                    .build();
+            kc.getSpec().setHostnameSpec(hostnameSpec);
+
             deployKeycloak(k8sclient, kc, true);
 
             var service = new KeycloakService(k8sclient, kc);
@@ -284,9 +291,17 @@ public class KeycloakDeploymentTest extends BaseOperatorTest {
             final int httpsPort = 8543;
             final int httpPort = 8180;
             var kc = getDefaultKeycloakDeployment();
-            kc.getSpec().setHostname(Constants.INSECURE_DISABLE);
-            kc.getSpec().getHttpSpec().setHttpsPort(httpsPort);
-            kc.getSpec().getHttpSpec().setHttpPort(httpPort);
+
+            var httpSpec = new HttpSpecBuilder().withHttpPort(httpPort)
+                    .withHttpsPort(httpsPort)
+                    .build();
+            var hostnameSpec = new HostnameSpecBuilder().withStrict(false)
+                    .withStrictBackchannel(false)
+                    .build();
+
+            kc.getSpec().setHttpSpec(httpSpec);
+            kc.getSpec().setHostnameSpec(hostnameSpec);
+
             deployKeycloak(k8sclient, kc, true);
 
             assertKeycloakAccessibleViaService(kc, true, httpsPort);
@@ -302,11 +317,20 @@ public class KeycloakDeploymentTest extends BaseOperatorTest {
             final int httpsPort = 8543;
             final int httpPort = 8180;
             var kc = getDefaultKeycloakDeployment();
-            kc.getSpec().setHostname(Constants.INSECURE_DISABLE);
-            kc.getSpec().getHttpSpec().setHttpsPort(httpsPort);
-            kc.getSpec().getHttpSpec().setHttpPort(httpPort);
-            kc.getSpec().getHttpSpec().setTlsSecret(null);
-            kc.getSpec().getHttpSpec().setHttpEnabled(true);
+
+            var httpSpec = new HttpSpecBuilder().withHttpPort(httpPort)
+                    .withHttpsPort(httpsPort)
+                    .withTlsSecret(null)
+                    .withHttpEnabled(true)
+                    .build();
+
+            var hostnameSpec = new HostnameSpecBuilder().withStrict(false)
+                    .withStrictBackchannel(false)
+                    .build();
+
+            kc.getSpec().setHttpSpec(httpSpec);
+            kc.getSpec().setHostnameSpec(hostnameSpec);
+
             deployKeycloak(k8sclient, kc, true);
 
             assertKeycloakAccessibleViaService(kc, false, httpPort);

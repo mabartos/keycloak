@@ -26,6 +26,7 @@ import org.keycloak.operator.crds.v2alpha1.deployment.spec.FeatureSpec;
 import org.keycloak.operator.crds.v2alpha1.deployment.spec.HttpSpec;
 import org.keycloak.operator.crds.v2alpha1.deployment.spec.UnsupportedSpec;
 import org.keycloak.operator.crds.v2alpha1.deployment.spec.TransactionsSpec;
+import org.keycloak.operator.crds.v2alpha1.deployment.spec.HostnameSpec;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -44,11 +45,6 @@ public class KeycloakSpec {
     @JsonPropertyDescription("Configuration of the Keycloak server.\n" +
             "expressed as a keys (reference: https://www.keycloak.org/server/all-config) and values that can be either direct values or references to secrets.")
     private List<ValueOrSecret> serverConfiguration; // can't use Set due to a bug in Sundrio https://github.com/sundrio/sundrio/issues/316
-
-    @NotNull
-    @JsonPropertyDescription("Hostname for the Keycloak server.\n" +
-            "The special value `" + Constants.INSECURE_DISABLE + "` disables the hostname strict resolution.")
-    private String hostname;
 
     @JsonProperty("http")
     @JsonPropertyDescription("In this section you can configure Keycloak features related to HTTP and HTTPS")
@@ -70,18 +66,9 @@ public class KeycloakSpec {
     @JsonPropertyDescription("In this section you can find all properties related to the settings of transaction behavior.")
     private TransactionsSpec transactionsSpec;
 
-    public String getHostname() {
-        return hostname;
-    }
-
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
-    }
-
-    @JsonIgnore
-    public boolean isHostnameDisabled() {
-        return this.hostname.equals(Constants.INSECURE_DISABLE);
-    }
+    @JsonProperty("hostname")
+    @JsonPropertyDescription("In this section you can configure Keycloak hostname and related properties.")
+    private HostnameSpec hostnameSpec;
 
     public HttpSpec getHttpSpec() {
         return httpSpec;
@@ -121,6 +108,14 @@ public class KeycloakSpec {
 
     public void setTransactionsSpec(TransactionsSpec transactionsSpec) {
         this.transactionsSpec = transactionsSpec;
+    }
+
+    public HostnameSpec getHostnameSpec() {
+        return hostnameSpec;
+    }
+
+    public void setHostnameSpec(HostnameSpec hostnameSpec) {
+        this.hostnameSpec = hostnameSpec;
     }
 
     public int getInstances() {

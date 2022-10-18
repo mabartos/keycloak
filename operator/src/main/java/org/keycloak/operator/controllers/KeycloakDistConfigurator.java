@@ -30,6 +30,7 @@ import org.keycloak.operator.crds.v2alpha1.deployment.Keycloak;
 import org.keycloak.operator.crds.v2alpha1.deployment.KeycloakStatusBuilder;
 import org.keycloak.operator.crds.v2alpha1.deployment.ValueOrSecret;
 import org.keycloak.operator.crds.v2alpha1.deployment.spec.FeatureSpec;
+import org.keycloak.operator.crds.v2alpha1.deployment.spec.HostnameSpec;
 import org.keycloak.operator.crds.v2alpha1.deployment.spec.HttpSpec;
 import org.keycloak.operator.crds.v2alpha1.deployment.spec.TransactionsSpec;
 
@@ -80,35 +81,34 @@ public class KeycloakDistConfigurator {
      * @param status Keycloak Status builder
      */
     public void validateOptions(KeycloakStatusBuilder status) {
-        assumeFirstClassCitizens(status);
+        validateFirstClassCitizens(status);
+
+        validateHostname(status);
     }
 
     /* ---------- Configuration of first-class citizen fields ---------- */
 
     public void configureHostname() {
-        var kcContainer = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
-        var hostname = keycloakCR.getSpec().getHostname();
-        var envVars = kcContainer.getEnv();
-        if (keycloakCR.getSpec().isHostnameDisabled()) {
-            var disableStrictHostname = List.of(
-                    new EnvVarBuilder()
-                            .withName("KC_HOSTNAME_STRICT")
-                            .withValue("false")
-                            .build(),
-                    new EnvVarBuilder()
-                            .withName("KC_HOSTNAME_STRICT_BACKCHANNEL")
-                            .withValue("false")
-                            .build());
+        optionMapper(keycloakCR.getSpec().getHostnameSpec())
+                .mapOption("hostname", HostnameSpec::getHostname)
+                .mapOption("hostname-url", HostnameSpec::getUrl)
+                .mapOption("hostname-port", HostnameSpec::getPort)
+                .mapOption("hostname-admin", HostnameSpec::getAdmin)
+                .mapOption("hostname-admin-url", HostnameSpec::getAdminUrl)
+                .mapOption("hostname-strict", HostnameSpec::isStrict)
+                .mapOption("hostname-strict-backchannel", HostnameSpec::isStrictBackchannel);
+    }
 
-            envVars.addAll(disableStrictHostname);
-        } else {
-            var enabledStrictHostname = List.of(
-                    new EnvVarBuilder()
-                            .withName("KC_HOSTNAME")
-                            .withValue(hostname)
-                            .build());
+    public void validateHostname(KeycloakStatusBuilder status) {
+        if (keycloakCR.getSpec().isDisableDefaultIngress()) return;
 
-            envVars.addAll(enabledStrictHostname);
+        var hostnameSpec = keycloakCR.getSpec().getHostnameSpec();
+        if (hostnameSpec != null && hostnameSpec.getPort() != null) {
+            var specifiedPort = hostnameSpec.getPort();
+
+            if (specifiedPort != 80 && specifiedPort != 443) {
+                status.addWarningMessage("The default Ingress might not work with hostname-port set to non-standard value.");
+            }
         }
     }
 
@@ -172,7 +172,7 @@ public class KeycloakDistConfigurator {
      *
      * @param status                    Status of the deployment
      */
-    protected void assumeFirstClassCitizens(KeycloakStatusBuilder status) {
+    public void validateFirstClassCitizens(KeycloakStatusBuilder status) {
         final var serverConfigNames = keycloakCR
                 .getSpec()
                 .getServerConfiguration()

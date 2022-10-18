@@ -23,11 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.keycloak.operator.crds.v2alpha1.deployment.Keycloak;
 import org.keycloak.operator.crds.v2alpha1.deployment.spec.FeatureSpec;
 import org.keycloak.operator.crds.v2alpha1.deployment.spec.TransactionsSpec;
+import org.keycloak.operator.crds.v2alpha1.deployment.spec.HostnameSpec;
 
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -37,7 +40,7 @@ public class CRSerializationTest {
     public void testDeserialization() {
         Keycloak keycloak = Serialization.unmarshal(this.getClass().getResourceAsStream("/test-serialization-keycloak-cr.yml"), Keycloak.class);
 
-        assertEquals("my-hostname", keycloak.getSpec().getHostname());
+        assertEquals("my-hostname", keycloak.getSpec().getHostnameSpec().getHostname());
         assertEquals("my-image", keycloak.getSpec().getImage());
         assertEquals("my-tls-secret", keycloak.getSpec().getHttpSpec().getTlsSecret());
         assertTrue(keycloak.getSpec().isDisableDefaultIngress());
@@ -49,7 +52,7 @@ public class CRSerializationTest {
     }
 
     @Test
-    public void featureSpecificationDeserialization(){
+    public void featureSpecification() {
         Keycloak keycloak = Serialization.unmarshal(this.getClass().getResourceAsStream("/test-serialization-keycloak-cr.yml"), Keycloak.class);
 
         final FeatureSpec featureSpec = keycloak.getSpec().getFeatureSpec();
@@ -66,4 +69,31 @@ public class CRSerializationTest {
         assertThat(disabledFeatures.get(1), CoreMatchers.is("step-up-authentication"));
     }
 
+    @Test
+    public void hostnameSpecification() {
+        Keycloak keycloak = Serialization.unmarshal(this.getClass().getResourceAsStream("/test-serialization-keycloak-cr.yml"), Keycloak.class);
+
+        HostnameSpec hostnameSpec = keycloak.getSpec().getHostnameSpec();
+        assertThat(hostnameSpec, notNullValue());
+
+        assertThat(hostnameSpec.getHostname(), is("my-hostname"));
+        assertThat(hostnameSpec.getUrl(), is("https://www.my-hostname.org:8448/something"));
+        assertThat(hostnameSpec.getPort(), is(8448));
+        assertThat(hostnameSpec.getAdmin(), is("my-admin-hostname"));
+        assertThat(hostnameSpec.getAdminUrl(), is("https://www.my-admin-hostname.org:8448/something"));
+        assertThat(hostnameSpec.isStrict(), is(true));
+        assertThat(hostnameSpec.isStrictBackchannel(), is(true));
+
+        keycloak = Serialization.unmarshal(this.getClass().getResourceAsStream("/empty-podtemplate-keycloak.yml"), Keycloak.class);
+
+        hostnameSpec = keycloak.getSpec().getHostnameSpec();
+        assertThat(hostnameSpec, notNullValue());
+        assertThat(hostnameSpec.getHostname(), is("example.com"));
+        assertThat(hostnameSpec.getUrl(), nullValue());
+        assertThat(hostnameSpec.getPort(), nullValue());
+        assertThat(hostnameSpec.getAdmin(), nullValue());
+        assertThat(hostnameSpec.getAdminUrl(), nullValue());
+        assertThat(hostnameSpec.isStrict(), nullValue());
+        assertThat(hostnameSpec.isStrictBackchannel(), nullValue());
+    }
 }

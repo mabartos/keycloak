@@ -99,8 +99,8 @@ public class KeycloakIngress extends OperatorManagedResource implements StatusUp
                 .endSpec()
                 .build();
 
-        if (!keycloak.getSpec().isHostnameDisabled()) {
-            ingress.getSpec().getRules().get(0).setHost(keycloak.getSpec().getHostname());
+        if (keycloak.getSpec().getHostnameSpec() != null && keycloak.getSpec().getHostnameSpec().getHostname() != null) {
+            ingress.getSpec().getRules().get(0).setHost(keycloak.getSpec().getHostnameSpec().getHostname());
         }
 
         return ingress;

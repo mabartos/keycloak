@@ -24,6 +24,7 @@ import io.restassured.RestAssured;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.keycloak.operator.Constants;
+import org.keycloak.operator.crds.v2alpha1.deployment.spec.HostnameSpecBuilder;
 import org.keycloak.operator.testsuite.utils.K8sUtils;
 import org.keycloak.operator.controllers.KeycloakIngress;
 
@@ -38,9 +39,13 @@ public class KeycloakIngressTest extends BaseOperatorTest {
     @Test
     public void testIngressOnHTTP() {
         var kc = K8sUtils.getDefaultKeycloakDeployment();
-        kc.getSpec().setHostname(Constants.INSECURE_DISABLE);
         kc.getSpec().getHttpSpec().setTlsSecret(null);
         kc.getSpec().getHttpSpec().setHttpEnabled(true);
+        var hostnameSpec = new HostnameSpecBuilder()
+                .withStrict(false)
+                .withStrictBackchannel(false)
+                .build();
+        kc.getSpec().setHostnameSpec(hostnameSpec);
         K8sUtils.deployKeycloak(k8sclient, kc, true);
 
         Awaitility.await()
@@ -69,7 +74,12 @@ public class KeycloakIngressTest extends BaseOperatorTest {
     @Test
     public void testIngressOnHTTPS() {
         var kc = K8sUtils.getDefaultKeycloakDeployment();
-        kc.getSpec().setHostname(Constants.INSECURE_DISABLE);
+        var hostnameSpec = new HostnameSpecBuilder()
+                .withStrict(false)
+                .withStrictBackchannel(false)
+                .build();
+        kc.getSpec().setHostnameSpec(hostnameSpec);
+
         K8sUtils.deployKeycloak(k8sclient, kc, true);
 
         Awaitility.await()
@@ -100,7 +110,9 @@ public class KeycloakIngressTest extends BaseOperatorTest {
     @Test
     public void testIngressHostname() {
         var kc = K8sUtils.getDefaultKeycloakDeployment();
-        kc.getSpec().setHostname("foo.bar");
+        var hostnameSpec = new HostnameSpecBuilder().withHostname("foo.bar").build();
+        kc.getSpec().setHostnameSpec(hostnameSpec);
+
         K8sUtils.deployKeycloak(k8sclient, kc, true);
 
         var ingress = new KeycloakIngress(k8sclient, kc);
