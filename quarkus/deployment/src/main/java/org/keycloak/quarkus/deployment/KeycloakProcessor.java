@@ -72,7 +72,7 @@ import io.quarkus.hibernate.orm.deployment.AdditionalJpaModelBuildItem;
 import io.quarkus.hibernate.orm.deployment.HibernateOrmConfig;
 import io.quarkus.hibernate.orm.deployment.PersistenceXmlDescriptorBuildItem;
 import io.quarkus.hibernate.orm.deployment.integration.HibernateOrmIntegrationRuntimeConfiguredBuildItem;
-import io.quarkus.resteasy.server.common.deployment.ResteasyDeploymentCustomizerBuildItem;
+import io.quarkus.runtime.LaunchMode;
 import io.quarkus.runtime.configuration.ProfileManager;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
 import io.quarkus.vertx.http.runtime.HttpBuildTimeConfig;
@@ -138,6 +138,7 @@ import org.keycloak.representations.provider.ScriptProviderMetadata;
 import org.keycloak.quarkus.runtime.integration.web.NotFoundHandler;
 import org.keycloak.services.ServicesLogger;
 import org.keycloak.theme.ClasspathThemeProviderFactory;
+import org.keycloak.services.resources.KeycloakApplication;
 import org.keycloak.theme.ClasspathThemeResourceProviderFactory;
 import org.keycloak.theme.FolderThemeProviderFactory;
 import org.keycloak.theme.JarThemeProviderFactory;
@@ -559,17 +560,8 @@ class KeycloakProcessor {
     }
 
     @BuildStep
-    void configureResteasy(BuildProducer<ResteasyDeploymentCustomizerBuildItem> deploymentCustomizerProducer) {
-        deploymentCustomizerProducer.produce(new ResteasyDeploymentCustomizerBuildItem(new Consumer<ResteasyDeployment>() {
-            @Override
-            public void accept(ResteasyDeployment resteasyDeployment) {
-                // we need to explicitly set the application to avoid errors at build time due to the application
-                // from keycloak-services also being added to the index
-                resteasyDeployment.setApplicationClass(QuarkusKeycloakApplication.class.getName());
-                // we need to disable the sanitizer to avoid escaping text/html responses from the server
-                resteasyDeployment.setProperty(ResteasyContextParameters.RESTEASY_DISABLE_HTML_SANITIZER, Boolean.TRUE);
-            }
-        }));
+    void configureResteasy(CombinedIndexBuildItem index, BuildProducer<BuildTimeConditionBuildItem> buildTimeConditionBuildItemBuildProducer) {
+        buildTimeConditionBuildItemBuildProducer.produce(new BuildTimeConditionBuildItem(index.getIndex().getClassByName(DotName.createSimple(KeycloakApplication.class.getName())), false));
     }
 
     @Consume(KeycloakSessionFactoryPreInitBuildItem.class)

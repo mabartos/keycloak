@@ -17,6 +17,7 @@
 package org.keycloak.quarkus.runtime.services.resources;
 
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.keycloak.common.ClientConnection;
 import org.keycloak.common.Profile;
@@ -89,7 +90,8 @@ public class QuarkusWelcomeResource {
     @GET
     @Produces(MediaType.TEXT_HTML_UTF_8)
     public Response getWelcomePage() throws URISyntaxException {
-        String requestUri = session.getContext().getUri().getRequestUri().toString();
+        //String requestUri = session.getContext().getUri().getRequestUri().toString();
+        String requestUri = ResteasyContext.getContextData(KeycloakSession.class).getContext().getUri().getRequestUri().toString();
         if (!requestUri.endsWith("/")) {
             return Response.seeOther(new URI(requestUri + "/")).build();
         } else {
