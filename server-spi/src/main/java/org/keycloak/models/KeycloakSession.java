@@ -18,6 +18,8 @@
 package org.keycloak.models;
 
 import org.keycloak.component.ComponentModel;
+import org.keycloak.models.async.DatastoreAsyncProvider;
+import org.keycloak.models.async.UserAsyncProvider;
 import org.keycloak.provider.InvalidationHandler.InvalidableObjectType;
 import org.keycloak.provider.Provider;
 import org.keycloak.services.clientpolicy.ClientPolicyManager;
@@ -36,6 +38,8 @@ public interface KeycloakSession {
     KeycloakContext getContext();
 
     KeycloakTransactionManager getTransactionManager();
+
+    DatastoreAsyncProvider asyncStore();
 
     /**
      * Get dedicated provider instance of provider type clazz that was created for this session.  If one hasn't been created yet,

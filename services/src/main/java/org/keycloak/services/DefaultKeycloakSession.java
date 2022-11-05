@@ -39,6 +39,7 @@ import org.keycloak.models.UserCredentialManager;
 import org.keycloak.models.UserLoginFailureProvider;
 import org.keycloak.models.UserProvider;
 import org.keycloak.models.UserSessionProvider;
+import org.keycloak.models.async.DatastoreAsyncProvider;
 import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.provider.Provider;
 import org.keycloak.provider.ProviderFactory;
@@ -76,6 +77,7 @@ public class DefaultKeycloakSession implements KeycloakSession {
     private final Map<String, Object> attributes = new HashMap<>();
     private final Map<InvalidableObjectType, Set<Object>> invalidationMap = new HashMap<>();
     private DatastoreProvider datastoreProvider;
+    private DatastoreAsyncProvider datastoreAsyncProvider;
     @Deprecated
     private UserCredentialManager userCredentialStorageManager;
     private UserSessionProvider sessionProvider;
@@ -161,6 +163,14 @@ public class DefaultKeycloakSession implements KeycloakSession {
     @Override
     public KeycloakTransactionManager getTransactionManager() {
         return transactionManager;
+    }
+
+    @Override
+    public DatastoreAsyncProvider asyncStore() {
+        if (this.datastoreAsyncProvider == null) {
+            this.datastoreAsyncProvider = getProvider(DatastoreAsyncProvider.class);
+        }
+        return this.datastoreAsyncProvider;
     }
 
     @Override

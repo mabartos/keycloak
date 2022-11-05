@@ -278,6 +278,7 @@
         <module>authz</module>
         <module>misc</module>
         <module>quarkus</module>
+        <module>reactive</module>
     </modules>
 
     <dependencyManagement>
@@ -1330,6 +1331,11 @@
             <dependency>
                 <groupId>org.keycloak</groupId>
                 <artifactId>keycloak-saml-core-public</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak</groupId>
+                <artifactId>keycloak-reactive</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
