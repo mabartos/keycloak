@@ -83,11 +83,11 @@
         <#if realm.password && social.providers??>
             <div id="kc-social-providers" class="${properties.kcFormSocialAccountSectionClass!}">
                 <hr/>
-                <h4>${msg("identity-provider-login-label")}</h4>
+                <h5>OR<#--${msg("identity-provider-login-label")}--></h5>
 
                 <ul class="${properties.kcFormSocialAccountListClass!} <#if social.providers?size gt 3>${properties.kcFormSocialAccountListGridClass!}</#if>">
                     <#list social.providers as p>
-                        <a id="social-${p.alias}" class="${properties.kcFormSocialAccountListButtonClass!} <#if social.providers?size gt 3>${properties.kcFormSocialAccountGridItem!}</#if>"
+                       <#-- <a id="social-${p.alias}" class="${properties.kcFormSocialAccountListButtonClass!} <#if social.providers?size gt 3>${properties.kcFormSocialAccountGridItem!}</#if>"
                                 type="button" href="${p.loginUrl}">
                             <#if p.iconClasses?has_content>
                                 <i class="${properties.kcCommonLogoIdP!} ${p.iconClasses!}" aria-hidden="true"></i>
@@ -95,7 +95,7 @@
                             <#else>
                                 <span class="${properties.kcFormSocialAccountNameClass!}">${p.displayName!}</span>
                             </#if>
-                        </a>
+                        </a>-->
                         <button
                                 class="pf-c-button pf-m-secondary pf-m-block button-face pf-m-small"
                                 type="button">

@@ -23,8 +23,13 @@ p.instruction {
     margin: 5px 0;
 }
 
+.pf-c-form-control{
+    border-radius: 5px;
+}
+
 .pf-c-button{
     padding: var(--pf-global--spacer--sm);
+    border-radius: 5px;
 }
 
 .pf-c-button.pf-m-control {
@@ -168,6 +173,7 @@ div.kc-logo-text span {
     padding: 15px 35px;
     background-color: #F0F0F0;
     box-shadow: inset 0 0 5px 0 rgba(0,0,0,0.3);
+    border-radius: 0 0 5px 5px;
 }
 
 #kc-form-options span {
@@ -517,6 +523,7 @@ ul#kc-totp-supported-apps {
     max-width: 400px;
     border-top: 4px solid;
     border-color: var(--pf-global--primary-color--100);
+    border-radius: 5px;
 }
 
 /*phone*/
