@@ -96,6 +96,16 @@
                                 <span class="${properties.kcFormSocialAccountNameClass!}">${p.displayName!}</span>
                             </#if>
                         </a>
+                        <button
+                                class="pf-c-button pf-m-secondary pf-m-block button-face pf-m-small"
+                                type="button">
+                            <span class="pf-c-button__icon pf-m-start ${properties.kcCommonLogoIdP!}">
+                                <i class="fa fa-facebook" aria-hidden="true"></i>
+                            </span>
+                            <span class="kc-social-icon-text kc-social-gray">
+                                Sign in with ${p.displayName!}
+                            </span>
+                        </button>
                     </#list>
                 </ul>
             </div>
