@@ -16,10 +16,12 @@
  */
 package org.keycloak.authentication.actiontoken.execactions;
 
+import org.keycloak.TokenVerifier;
 import org.keycloak.TokenVerifier.Predicate;
 import org.keycloak.authentication.RequiredActionFactory;
 import org.keycloak.authentication.RequiredActionProvider;
 import org.keycloak.authentication.actiontoken.*;
+import org.keycloak.authentication.requiredactions.util.RequiredActionsValidator;
 import org.keycloak.events.Errors;
 import org.keycloak.events.EventType;
 import org.keycloak.forms.login.LoginFormsProvider;
@@ -66,7 +68,8 @@ public class ExecuteActionsActionTokenHandler extends AbstractActionTokenHandler
             Messages.INVALID_REDIRECT_URI
           ),
 
-          verifyEmail(tokenContext)
+          verifyEmail(tokenContext),
+          verifyRequiredActions(tokenContext)
         );
     }
 
@@ -101,7 +104,7 @@ public class ExecuteActionsActionTokenHandler extends AbstractActionTokenHandler
             authSession.setClientNote(OIDCLoginProtocol.REDIRECT_URI_PARAM, redirectUri);
         }
 
-        token.getRequiredActions().stream().forEach(authSession::addRequiredAction);
+        token.getRequiredActions().forEach(authSession::addRequiredAction);
 
         UserModel user = tokenContext.getAuthenticationSession().getAuthenticatedUser();
         // verify user email as we know it is valid as this entry point would never have gotten here.
@@ -129,5 +132,10 @@ public class ExecuteActionsActionTokenHandler extends AbstractActionTokenHandler
           .noneMatch(RequiredActionFactory::isOneTimeAction);
     }
 
-
+    // Verify required actions included in the token are valid
+    protected TokenVerifier.Predicate<ExecuteActionsActionToken> verifyRequiredActions(ActionTokenContext<ExecuteActionsActionToken> tokenContext) {
+        return TokenUtils.checkThat(t -> RequiredActionsValidator.validRequiredActions(tokenContext.getSession(), t.getRequiredActions()),
+                Errors.RESOLVE_REQUIRED_ACTIONS, Messages.INVALID_TOKEN_REQUIRED_ACTIONS
+        );
+    }
 }

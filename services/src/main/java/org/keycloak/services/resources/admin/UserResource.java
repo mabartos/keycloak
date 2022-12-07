@@ -20,8 +20,10 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.keycloak.authentication.RequiredActionProvider;
 import org.keycloak.authentication.actiontoken.execactions.ExecuteActionsActionToken;
+import org.keycloak.authentication.requiredactions.util.RequiredActionsValidator;
 import org.keycloak.common.ClientConnection;
 import org.keycloak.common.Profile;
+import org.keycloak.common.util.CollectionUtil;
 import org.keycloak.common.util.Time;
 import org.keycloak.credential.CredentialModel;
 import org.keycloak.email.EmailException;
@@ -90,7 +92,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -758,7 +759,7 @@ public class UserResource {
 
 
     /**
-     * Send a update account email to the user
+     * Send an email to the user with a link they can click to execute particular actions.
      *
      * An email contains a link the user can click to perform a set of required actions.
      * The redirectUri and clientId parameters are optional. If no redirect is given, then there will
@@ -768,7 +769,7 @@ public class UserResource {
      * @param redirectUri Redirect uri
      * @param clientId Client id
      * @param lifespan Number of seconds after which the generated token expires
-     * @param actions required actions the user needs to complete
+     * @param actions Required actions the user needs to complete
      * @return
      */
     @Path("execute-actions-email")
@@ -781,41 +782,40 @@ public class UserResource {
         auth.users().requireManage(user);
 
         if (user.getEmail() == null) {
-            return ErrorResponse.error("User email missing", Status.BAD_REQUEST);
+            return ErrorResponse.badRequest("User email missing");
         }
 
         if (!user.isEnabled()) {
-            throw new WebApplicationException(
-                ErrorResponse.error("User is disabled", Status.BAD_REQUEST));
+            return ErrorResponse.badRequest("User is disabled");
         }
 
         if (redirectUri != null && clientId == null) {
-            throw new WebApplicationException(
-                ErrorResponse.error("Client id missing", Status.BAD_REQUEST));
+            return ErrorResponse.badRequest("Client id missing");
         }
 
         if (clientId == null) {
             clientId = Constants.ACCOUNT_MANAGEMENT_CLIENT_ID;
         }
 
+        if (CollectionUtil.isNotEmpty(actions) && !RequiredActionsValidator.validRequiredActions(session, actions)) {
+            return ErrorResponse.badRequest("Provided invalid required actions");
+        }
+
         ClientModel client = realm.getClientByClientId(clientId);
         if (client == null) {
             logger.debugf("Client %s doesn't exist", clientId);
-            throw new WebApplicationException(
-                ErrorResponse.error("Client doesn't exist", Status.BAD_REQUEST));
+            return ErrorResponse.badRequest("Client doesn't exist");
         }
         if (!client.isEnabled()) {
             logger.debugf("Client %s is not enabled", clientId);
-            throw new WebApplicationException(
-                    ErrorResponse.error("Client is not enabled", Status.BAD_REQUEST));
+            return ErrorResponse.badRequest("Client is not enabled");
         }
 
         String redirect;
         if (redirectUri != null) {
             redirect = RedirectUtils.verifyRedirectUri(session, redirectUri, client);
             if (redirect == null) {
-                throw new WebApplicationException(
-                    ErrorResponse.error("Invalid redirect uri.", Status.BAD_REQUEST));
+                return ErrorResponse.badRequest("Invalid redirect uri");
             }
         }
 

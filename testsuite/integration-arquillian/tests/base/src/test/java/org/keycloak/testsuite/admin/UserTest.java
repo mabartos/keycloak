@@ -92,6 +92,7 @@ import javax.mail.internet.MimeMessage;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
@@ -111,6 +112,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -1518,6 +1520,17 @@ public class UserTest extends AbstractAdminTest {
         assertEquals(expectedValue, attrValues.get(0));
     }
 
+    private void assertBadRequestException(WebApplicationException e, String expectedMessage) {
+        assertEquals(400, e.getResponse().getStatus());
+        final ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
+
+        assertThat(error, notNullValue());
+        assertThat(error.getErrorMessage(), notNullValue());
+        assertThat(error.getErrorMessage(), is(expectedMessage));
+
+        assertAdminEvents.assertEmpty();
+    }
+
     @Test
     public void sendResetPasswordEmail() {
         UserRepresentation userRep = new UserRepresentation();
@@ -1527,16 +1540,14 @@ public class UserTest extends AbstractAdminTest {
 
         UserResource user = realm.users().get(id);
         List<String> actions = new LinkedList<>();
+
         try {
             user.executeActionsEmail(actions);
             fail("Expected failure");
         } catch (ClientErrorException e) {
-            assertEquals(400, e.getResponse().getStatus());
-
-            ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("User email missing", error.getErrorMessage());
-            assertAdminEvents.assertEmpty();
+            assertBadRequestException(e, "User email missing");
         }
+
         try {
             userRep = user.toRepresentation();
             userRep.setEmail("user1@localhost");
@@ -1546,24 +1557,31 @@ public class UserTest extends AbstractAdminTest {
             user.executeActionsEmail(actions);
             fail("Expected failure");
         } catch (ClientErrorException e) {
-            assertEquals(400, e.getResponse().getStatus());
-
-            ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("User is disabled", error.getErrorMessage());
-            assertAdminEvents.assertEmpty();
+            assertBadRequestException(e, "User is disabled");
         }
+
         try {
             userRep.setEnabled(true);
             updateUser(user, userRep);
 
-            user.executeActionsEmail("invalidClientId", "invalidUri", actions);
+            user.executeActionsEmail(Arrays.asList(
+                    UserModel.RequiredAction.UPDATE_PASSWORD.name(),
+                    "invalid\"<img src=\"alert(0)\">")
+            );
             fail("Expected failure");
         } catch (ClientErrorException e) {
-            assertEquals(400, e.getResponse().getStatus());
+            assertBadRequestException(e, "Provided invalid required actions");
+        }
 
-            ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("Client doesn't exist", error.getErrorMessage());
-            assertAdminEvents.assertEmpty();
+        try {
+            user.executeActionsEmail(
+                    "invalidClientId",
+                    "invalidUri",
+                    Collections.singletonList(UserModel.RequiredAction.UPDATE_PASSWORD.name())
+            );
+            fail("Expected failure");
+        } catch (ClientErrorException e) {
+            assertBadRequestException(e, "Client doesn't exist");
         }
     }
 
@@ -1985,10 +2003,7 @@ public class UserTest extends AbstractAdminTest {
             user.executeActionsEmail("myclient", "http://unregistered-uri.com/", actions);
             fail("Expected failure");
         } catch (ClientErrorException e) {
-            assertEquals(400, e.getResponse().getStatus());
-
-            ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("Invalid redirect uri.", error.getErrorMessage());
+            assertBadRequestException(e, "Invalid redirect uri");
         }
 
 
@@ -2055,10 +2070,7 @@ public class UserTest extends AbstractAdminTest {
             user.executeActionsEmail("myclient", "http://unregistered-uri.com/", lifespan, actions);
             fail("Expected failure");
         } catch (ClientErrorException e) {
-            assertEquals(400, e.getResponse().getStatus());
-
-            ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("Invalid redirect uri.", error.getErrorMessage());
+            assertBadRequestException(e, "Invalid redirect uri");
         }
 
 
@@ -2120,11 +2132,9 @@ public class UserTest extends AbstractAdminTest {
             user.sendVerifyEmail();
             fail("Expected failure");
         } catch (ClientErrorException e) {
-            assertEquals(400, e.getResponse().getStatus());
-
-            ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("User email missing", error.getErrorMessage());
+            assertBadRequestException(e, "User email missing");
         }
+
         try {
             userRep = user.toRepresentation();
             userRep.setEmail("user1@localhost");
@@ -2134,12 +2144,9 @@ public class UserTest extends AbstractAdminTest {
             user.sendVerifyEmail();
             fail("Expected failure");
         } catch (ClientErrorException e) {
-            assertEquals(400, e.getResponse().getStatus());
-
-            ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("User is disabled", error.getErrorMessage());
-            assertAdminEvents.assertEmpty();
+            assertBadRequestException(e, "User is disabled");
         }
+
         try {
             userRep.setEnabled(true);
             updateUser(user, userRep);
@@ -2147,11 +2154,7 @@ public class UserTest extends AbstractAdminTest {
             user.sendVerifyEmail("invalidClientId");
             fail("Expected failure");
         } catch (ClientErrorException e) {
-            assertEquals(400, e.getResponse().getStatus());
-
-            ErrorRepresentation error = e.getResponse().readEntity(ErrorRepresentation.class);
-            Assert.assertEquals("Client doesn't exist", error.getErrorMessage());
-            assertAdminEvents.assertEmpty();
+            assertBadRequestException(e, "Client doesn't exist");
         }
 
         user.sendVerifyEmail();

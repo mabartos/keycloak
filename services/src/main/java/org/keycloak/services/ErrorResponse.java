@@ -32,6 +32,10 @@ public class ErrorResponse {
         return ErrorResponse.error(message, Response.Status.CONFLICT);
     }
 
+    public static Response badRequest(String message) {
+        return ErrorResponse.error(message, Response.Status.BAD_REQUEST);
+    }
+
     public static Response error(String message, Response.Status status) {
         return ErrorResponse.error(message, null, status);
     }
