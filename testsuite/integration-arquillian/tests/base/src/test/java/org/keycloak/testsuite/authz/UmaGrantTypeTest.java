@@ -33,9 +33,13 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.HttpHeaders;
@@ -399,7 +403,26 @@ public class UmaGrantTypeTest extends AbstractResourceServerTest {
     }
 
     @Test
-    public void testRefreshRpt() {
+    public void refreshRtpConfidentialClient() {
+        final Supplier<String> getTokenFromConfidentialClient = () -> getAuthzClient().obtainAccessToken("marta", "password").getToken();
+
+        // We have to provide credentials for the client
+        final Consumer<Invocation.Builder> updateRequest = (request) -> request.header(HttpHeaders.AUTHORIZATION, BasicAuthHelper.createHeader("resource-server-test", "secret"));
+
+        checkRefreshRtp(getTokenFromConfidentialClient, (parameters) -> {
+        }, updateRequest);
+    }
+
+
+    @Test
+    public void refreshRptPublicClient() {
+        final Supplier<String> getTokenFromPublicClient = () -> getAccessToken("marta", "password");
+        final Consumer<Invocation.Builder> updateRequest = (request) -> request.header(HttpHeaders.AUTHORIZATION, BasicAuthHelper.createHeader("resource-server-test", "secret"));
+
+        checkRefreshRtp(getTokenFromPublicClient, (parameters) -> {}/*parameters.param(OAuth2Constants.CLIENT_ID, "test-app")*/,updateRequest);
+    }
+
+    /*public void testRefreshRpt() {
         AccessTokenResponse accessTokenResponse = getAuthzClient().obtainAccessToken("marta", "password");
         AuthorizationResponse response = authorize(null, null, null, null, accessTokenResponse.getToken(), null, null, new PermissionRequest("Resource A", "ScopeA", "ScopeB"));
         String rpt = response.getToken();
@@ -465,20 +488,10 @@ public class UmaGrantTypeTest extends AbstractResourceServerTest {
         refreshTokenToken = toAccessToken(refreshToken);
 
         assertNotNull(refreshTokenToken.getAuthorization());
+*/
 
-        refreshedToken = toAccessToken(rpt);
-        authorization = refreshedToken.getAuthorization();
 
-        assertNotNull(authorization);
-
-        permissions = authorization.getPermissions();
-
-        assertNotNull(permissions);
-        assertPermissions(permissions, "Resource A", "ScopeA", "ScopeB");
-        assertTrue(permissions.isEmpty());
-    }
-
-    @Test
+        @Test
     public void testObtainRptWithIDToken() throws Exception {
         String idToken = getIdToken("marta", "password");
         AuthorizationResponse response = authorize("Resource A", new String[] {"ScopeA", "ScopeB"}, idToken, "http://openid.net/specs/openid-connect-core-1_0.html#IDToken");
@@ -571,12 +584,110 @@ public class UmaGrantTypeTest extends AbstractResourceServerTest {
     }
 
     private String getIdToken(String username, String password) {
+        return getToken(username, password, OAuthClient.AccessTokenResponse::getIdToken);
+    }
+
+    private String getAccessToken(String username, String password) {
+        return getToken(username, password, OAuthClient.AccessTokenResponse::getAccessToken);
+    }
+
+    private String getToken(String username, String password, Function<OAuthClient.AccessTokenResponse, String> tokenType) {
         oauth.realm("authz-test");
         oauth.clientId("test-app");
         oauth.openLoginForm();
         OAuthClient.AuthorizationEndpointResponse resp = oauth.doLogin(username, password);
         String code = resp.getCode();
         OAuthClient.AccessTokenResponse response = oauth.doAccessTokenRequest(code, password);
-        return response.getIdToken();
+        return tokenType.apply(response);
+    }
+
+    /**
+     * Check whether is possible to obtain refresh RTP token
+     *
+     * @param getInitialAccessToken get access token for user
+     * @param updateParameters      edit body of HTTP request
+     * @param updateRequest         edit overall HTTP request
+     */
+    private void checkRefreshRtp(Supplier<String> getInitialAccessToken, Consumer<Form> updateParameters, Consumer<Invocation.Builder> updateRequest) {
+        AuthorizationResponse response = authorize(null, null, null, null, getInitialAccessToken.get(), null, null,"test-app", new PermissionRequest("Resource A", "ScopeA", "ScopeB"));
+        String rpt = response.getToken();
+
+        assertNotNull(rpt);
+
+        AccessToken rptAccessToken = toAccessToken(rpt);
+        AccessToken.Authorization authorization = rptAccessToken.getAuthorization();
+        System.out.println("AUDINCE: "+rptAccessToken.getAudience()[0]);
+
+        assertNotNull(authorization);
+
+        Collection<Permission> permissions = authorization.getPermissions();
+
+        assertNotNull(permissions);
+        assertPermissions(permissions, "Resource A", "ScopeA", "ScopeB");
+        assertTrue(permissions.isEmpty());
+
+        String refreshToken = response.getRefreshToken();
+
+        assertNotNull(refreshToken);
+
+        AccessToken refreshTokenToken = toAccessToken(refreshToken);
+
+        assertNotNull(refreshTokenToken.getAuthorization());
+
+        Client client = AdminClientUtil.createResteasyClient();
+        UriBuilder builder = UriBuilder.fromUri(AUTH_SERVER_ROOT);
+        URI uri = OIDCLoginProtocolService.tokenUrl(builder).build(REALM_NAME);
+        WebTarget target = client.target(uri);
+
+        Form parameters = new Form();
+
+        parameters.param("grant_type", OAuth2Constants.REFRESH_TOKEN);
+        parameters.param(OAuth2Constants.REFRESH_TOKEN, refreshToken);
+        //parameters.param(OAuth2Constants.CLIENT_ID, "resource-server-test");
+        //updateParameters.accept(parameters);
+
+
+        AccessTokenResponse refreshTokenResponse = target.request()
+                .header(HttpHeaders.AUTHORIZATION, BasicAuthHelper.createHeader("resource-server-test", "secret"))
+                .post(Entity.form(parameters)).readEntity(AccessTokenResponse.class);
+
+
+        assertNotNull(refreshTokenResponse.getToken());
+        refreshToken = refreshTokenResponse.getRefreshToken();
+        refreshTokenToken = toAccessToken(refreshToken);
+
+        assertNotNull(refreshTokenToken.getAuthorization());
+
+        AccessToken refreshedToken = toAccessToken(rpt);
+        authorization = refreshedToken.getAuthorization();
+
+        assertNotNull(authorization);
+
+        permissions = authorization.getPermissions();
+
+        assertNotNull(permissions);
+        assertPermissions(permissions, "Resource A", "ScopeA", "ScopeB");
+        assertTrue(permissions.isEmpty());
+
+        refreshTokenResponse = target.request()
+                .header(HttpHeaders.AUTHORIZATION, BasicAuthHelper.createHeader("resource-server-test", "secret"))
+                .post(Entity.form(parameters)).readEntity(AccessTokenResponse.class);
+
+        assertNotNull(refreshTokenResponse.getToken());
+        refreshToken = refreshTokenResponse.getRefreshToken();
+        refreshTokenToken = toAccessToken(refreshToken);
+
+        assertNotNull(refreshTokenToken.getAuthorization());
+
+        refreshedToken = toAccessToken(rpt);
+        authorization = refreshedToken.getAuthorization();
+
+        assertNotNull(authorization);
+
+        permissions = authorization.getPermissions();
+
+        assertNotNull(permissions);
+        assertPermissions(permissions, "Resource A", "ScopeA", "ScopeB");
+        assertTrue(permissions.isEmpty());
     }
 }

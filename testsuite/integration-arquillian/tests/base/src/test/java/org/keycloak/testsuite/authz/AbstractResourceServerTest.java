@@ -114,6 +114,10 @@ public abstract class AbstractResourceServerTest extends AbstractAuthzTest {
     }
 
     protected AuthorizationResponse authorize(String userName, String password, String[] additionalScopes, String rpt, String accessToken, String claimToken, String tokenFormat, PermissionRequest... permissions) {
+        return authorize(userName, password, additionalScopes, rpt, accessToken, claimToken, tokenFormat, null, permissions);
+    }
+
+    protected AuthorizationResponse authorize(String userName, String password, String[] additionalScopes, String rpt, String accessToken, String claimToken, String tokenFormat, String audience, PermissionRequest... permissions) {
         ProtectionResource protection;
 
         if (userName != null) {
@@ -142,6 +146,10 @@ public abstract class AbstractResourceServerTest extends AbstractAuthzTest {
         authorizationRequest.setRpt(rpt);
         authorizationRequest.setClaimTokenFormat(tokenFormat);
         authorizationRequest.setClaimToken(claimToken);
+
+        if (audience != null) {
+            authorizationRequest.setAudience(audience);
+        }
 
         org.keycloak.authorization.client.resource.AuthorizationResource authorization;
 
