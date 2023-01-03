@@ -45,9 +45,9 @@ import org.keycloak.quarkus.runtime.cli.ExecutionExceptionHandler;
 import org.keycloak.quarkus.runtime.cli.Picocli;
 import org.keycloak.common.Version;
 import org.keycloak.quarkus.runtime.cli.command.Start;
+import org.keycloak.quarkus.runtime.integration.QuarkusKeycloakSessionFactory;
 import org.keycloak.services.ServicesLogger;
 import org.keycloak.services.managers.ApplianceBootstrap;
-import org.keycloak.services.resources.KeycloakApplication;
 
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
@@ -158,7 +158,7 @@ public class KeycloakMain implements QuarkusApplication {
             return;
         }
 
-        KeycloakSessionFactory sessionFactory = KeycloakApplication.getSessionFactory();
+        KeycloakSessionFactory sessionFactory = QuarkusKeycloakSessionFactory.getInstance();
         KeycloakSession session = sessionFactory.create();
         KeycloakTransactionManager transaction = session.getTransactionManager();
 

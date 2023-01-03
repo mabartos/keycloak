@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.keycloak.quarkus.runtime.integration;
+package org.keycloak.quarkus.runtime.integration.jaxrs;
 
-import org.keycloak.models.KeycloakSession;
-import org.keycloak.quarkus.runtime.integration.resteasy.QuarkusKeycloakContext;
-import org.keycloak.services.DefaultKeycloakContext;
-import org.keycloak.services.DefaultKeycloakSession;
-import org.keycloak.services.DefaultKeycloakSessionFactory;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
+import javax.ws.rs.ext.Provider;
+import org.keycloak.services.util.ObjectMapperResolver;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-public final class QuarkusKeycloakSession extends DefaultKeycloakSession {
+@Provider
+@ApplicationScoped
+public class QuarkusObjectMapperResolver extends ObjectMapperResolver {
 
-    public QuarkusKeycloakSession(DefaultKeycloakSessionFactory factory) {
-        super(factory);
-    }
-
-    @Override
-    protected DefaultKeycloakContext createKeycloakContext(KeycloakSession session) {
-        return new QuarkusKeycloakContext(session);
+    @Produces
+    public ObjectMapper getObjectMapper() {
+        return mapper;
     }
 }

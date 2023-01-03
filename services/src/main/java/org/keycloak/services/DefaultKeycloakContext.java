@@ -32,7 +32,6 @@ import org.keycloak.sessions.AuthenticationSessionModel;
 import org.keycloak.urls.UrlType;
 
 import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Locale;

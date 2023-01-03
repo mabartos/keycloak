@@ -42,7 +42,6 @@ import io.vertx.ext.web.RoutingContext;
  * callbacks are not designed to run blocking code. If the session is eventually closed here is because Resteasy was not executed.
  *
  * @see org.keycloak.quarkus.runtime.integration.jaxrs.TransactionalResponseInterceptor
- * @see org.keycloak.quarkus.runtime.integration.jaxrs.TransactionalResponseFilter
  */
 public class QuarkusRequestFilter implements Handler<RoutingContext>, TransactionalSessionHandler {
 

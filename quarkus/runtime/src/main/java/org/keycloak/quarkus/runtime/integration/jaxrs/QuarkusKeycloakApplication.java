@@ -17,26 +17,44 @@
 
 package org.keycloak.quarkus.runtime.integration.jaxrs;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import jakarta.enterprise.event.Observes;
 import jakarta.ws.rs.ApplicationPath;
+import org.keycloak.common.crypto.CryptoIntegration;
 import org.keycloak.exportimport.ExportImportManager;
 import org.keycloak.models.utils.PostMigrationEvent;
+import org.keycloak.platform.Platform;
 import org.keycloak.quarkus.runtime.integration.QuarkusKeycloakSessionFactory;
+import org.keycloak.quarkus.runtime.integration.QuarkusPlatform;
 import org.keycloak.services.resources.KeycloakApplication;
 import org.keycloak.quarkus.runtime.services.resources.QuarkusWelcomeResource;
 import org.keycloak.services.resources.WelcomeResource;
 
+import io.quarkus.runtime.ShutdownEvent;
+import io.quarkus.runtime.StartupEvent;
+import io.smallrye.common.annotation.Blocking;
+
 @ApplicationPath("/")
+@Blocking
 public class QuarkusKeycloakApplication extends KeycloakApplication {
 
-    private static boolean filterSingletons(Object o) {
-        return !WelcomeResource.class.isInstance(o);
+    void onStartupEvent(@Observes StartupEvent event) {
+        QuarkusPlatform platform = (QuarkusPlatform) Platform.getPlatform();
+        platform.started();
+        QuarkusPlatform.exitOnError();
+        startup();
+    }
+
+    void onShutdownEvent(@Observes ShutdownEvent event) {
+        shutdown();
     }
 
     @Override
     protected void startup() {
+        CryptoIntegration.init(KeycloakApplication.class.getClassLoader());
         QuarkusKeycloakSessionFactory instance = QuarkusKeycloakSessionFactory.getInstance();
         sessionFactory = instance;
         instance.init();
@@ -56,12 +74,20 @@ public class QuarkusKeycloakApplication extends KeycloakApplication {
 
     @Override
     public Set<Object> getSingletons() {
-        Set<Object> singletons = super.getSingletons().stream()
-                .filter(QuarkusKeycloakApplication::filterSingletons)
-                .collect(Collectors.toSet());
+        return Collections.emptySet();
+    }
 
-        singletons.add(new QuarkusWelcomeResource());
+    @Override
+    public Set<Class<?>> getClasses() {
+        Set<Class<?>> classes = new HashSet<>(super.getClasses());
 
-        return singletons;
+        classes.remove(WelcomeResource.class);
+        classes.add(QuarkusWelcomeResource.class);
+
+        classes.add(QuarkusObjectMapperResolver.class);
+        classes.add(CloseSessionHandler.class);
+        classes.add(StreamingOutputMessageBodyWriter.class);
+
+        return classes;
     }
 }

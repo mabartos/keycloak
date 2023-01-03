@@ -71,7 +71,6 @@ import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -97,14 +96,13 @@ public class KeycloakApplication extends Application {
 
             logger.debugv("PlatformProvider: {0}", platform.getClass().getName());
             logger.debugv("RestEasy provider: {0}", Resteasy.getProvider().getClass().getName());
-            CryptoIntegration.init(KeycloakApplication.class.getClassLoader());
 
             loadConfig();
 
-            singletons.add(new RobotsResource());
-            singletons.add(new RealmsResource());
+            classes.add(RobotsResource.class);
+            classes.add(RealmsResource.class);
             if (Profile.isFeatureEnabled(Profile.Feature.ADMIN_API)) {
-                singletons.add(new AdminRoot());
+                classes.add(AdminRoot.class);
             }
             classes.add(ThemeResource.class);
 
@@ -117,7 +115,7 @@ public class KeycloakApplication extends Application {
             classes.add(KcUnrecognizedPropertyExceptionHandler.class);
 
             singletons.add(new ObjectMapperResolver());
-            singletons.add(new WelcomeResource());
+            classes.add(WelcomeResource.class);
 
             platform.onStartup(this::startup);
             platform.onShutdown(this::shutdown);
@@ -129,6 +127,7 @@ public class KeycloakApplication extends Application {
     }
 
     protected void startup() {
+        CryptoIntegration.init(KeycloakApplication.class.getClassLoader());
         KeycloakApplication.sessionFactory = createSessionFactory();
 
         ExportImportManager[] exportImportManager = new ExportImportManager[1];
