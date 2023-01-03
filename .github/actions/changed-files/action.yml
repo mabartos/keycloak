@@ -22,23 +22,33 @@ runs:
       run: |
         BASE_REF=${{ github.base_ref }}
         
+        get_diff () {
+          git diff --name-only origin/${{ github.base_ref }}
+        } 
+        
         changed () {
-          git diff --name-only origin/${{ github.base_ref }} | grep -E "$1" &>/dev/null && echo true || echo false
+          get_diff | grep -E "$1" &>/dev/null && echo true || echo false
+        }
+        
+        changed_only () {
+          changed $1 && get_diff | grep -vE "$1" &>/dev/null && echo false || echo true
         }
         
         if [ "$BASE_REF" != "" ]; then
-          echo "Checking changes against orgin/$BASE_REF"
+          echo "Checking changes against origin/$BASE_REF"
           git fetch origin
         
           JAVA=`changed '^.*/.*.java$'`
           THEMES=`changed '^themes/src/main/.*$'`
           JS_ADAPTER=`changed '^adapters/oidc/js/.*$'`
+          ONLY_DOCS=`changed_only '^docs/.*$'`
         else
           echo "Not a pull request, marking everything as changed"
         
           JAVA=true
           THEMES=true
-          JS_ADAPTER=true        
+          JS_ADAPTER=true
+          ONLY_DOCS=false      
         fi
         
         echo "Java changed:       $JAVA"
@@ -48,3 +58,4 @@ runs:
         echo "java=$JAVA" >> $GITHUB_OUTPUT
         echo "themes=$THEMES" >> $GITHUB_OUTPUT
         echo "js-adapter=$JS_ADAPTER" >> $GITHUB_OUTPUT
+        echo "only_docs=ONLY_DOCS" >> $GITHUB_OUTPUT
