@@ -17,7 +17,7 @@
 
 package org.keycloak.quarkus.runtime.integration.resteasy;
 
-import static javax.ws.rs.HttpMethod.POST;
+import static jakarta.ws.rs.HttpMethod.POST;
 
 import java.util.ArrayList;
 import java.util.List;

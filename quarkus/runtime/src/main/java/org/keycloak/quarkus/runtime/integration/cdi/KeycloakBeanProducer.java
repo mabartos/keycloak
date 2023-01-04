@@ -17,9 +17,9 @@
 
 package org.keycloak.quarkus.runtime.integration.cdi;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Produces;
 import org.keycloak.common.util.Resteasy;
 import org.keycloak.models.KeycloakSession;
 

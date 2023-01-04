@@ -31,19 +31,9 @@ public class QuarkusLifecycleObserver {
         QuarkusPlatform platform = (QuarkusPlatform) Platform.getPlatform();
         platform.started();
         QuarkusPlatform.exitOnError();
-        Runnable startupHook = platform.startupHook;
-
-        if (startupHook != null) {
-            startupHook.run();
-        }
     }
 
     void onShutdownEvent(@Observes ShutdownEvent event) {
-
-        Runnable shutdownHook = ((QuarkusPlatform) Platform.getPlatform()).shutdownHook;
-
-        if (shutdownHook != null)
-            shutdownHook.run();
 
     }
 }

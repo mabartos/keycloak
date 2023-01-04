@@ -19,7 +19,7 @@ package org.keycloak.quarkus.runtime.integration.resteasy;
 
 import static org.keycloak.common.util.Resteasy.clearContextData;
 
-import javax.ws.rs.container.CompletionCallback;
+import jakarta.ws.rs.container.CompletionCallback;
 import org.jboss.resteasy.reactive.server.core.ResteasyReactiveRequestContext;
 import org.jboss.resteasy.reactive.server.spi.ServerRestHandler;
 import org.keycloak.models.KeycloakSession;

@@ -1445,6 +1445,16 @@
                 <artifactId>keycloak-admin-ui</artifactId>
                 <version>${keycloak.admin-ui.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-resteasy-reactive-deployment</artifactId>
+                <version>${quarkus.version}</version>
+            </dependency><dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-resteasy-reactive-jackson-deployment</artifactId>
+                <version>${quarkus.version}</version>
+            </dependency>
+
 
             <!-- Openshift -->
             <dependency>
