@@ -33,7 +33,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.operator.sdk.version>4.0.4</quarkus.operator.sdk.version>
-        <quarkus.version>2.13.3.Final</quarkus.version>
+        <quarkus.version>3.0.0.Alpha2</quarkus.version>
         <quarkus.container-image.group>keycloak</quarkus.container-image.group>
         <quarkus.jib.base-jvm-image>registry.access.redhat.com/ubi8/openjdk-11-runtime</quarkus.jib.base-jvm-image>
     </properties>
