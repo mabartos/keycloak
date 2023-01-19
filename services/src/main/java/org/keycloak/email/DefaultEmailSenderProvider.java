@@ -17,8 +17,8 @@
 
 package org.keycloak.email;
 
-import com.sun.mail.smtp.SMTPMessage;
 import org.jboss.logging.Logger;
+import org.keycloak.common.util.Encode;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.UserModel;
 import org.keycloak.services.ServicesLogger;
@@ -27,14 +27,16 @@ import org.keycloak.truststore.JSSETruststoreConfigurator;
 import org.keycloak.vault.VaultStringSecret;
 
 import jakarta.mail.Address;
-import jakarta.mail.MessagingException;
 import jakarta.mail.Multipart;
 import jakarta.mail.Session;
+import jakarta.mail.Message;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.internet.MimeMessage;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.UnsupportedEncodingException;
@@ -42,6 +44,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.keycloak.utils.StringUtil.isNotBlank;
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
@@ -63,9 +66,7 @@ public class DefaultEmailSenderProvider implements EmailSenderProvider {
 
     @Override
     public void send(Map<String, String> config, String address, String subject, String textBody, String htmlBody) throws EmailException {
-        Transport transport = null;
         try {
-
             Properties props = new Properties();
 
             if (config.containsKey("host")) {
@@ -123,43 +124,40 @@ public class DefaultEmailSenderProvider implements EmailSenderProvider {
                 multipart.addBodyPart(htmlPart);
             }
 
-            SMTPMessage msg = new SMTPMessage(session);
+            Message msg = new MimeMessage(session);
             msg.setFrom(toInternetAddress(from, fromDisplayName));
 
             msg.setReplyTo(new Address[]{toInternetAddress(from, fromDisplayName)});
-            if (replyTo != null && !replyTo.isEmpty()) {
+
+            if (isNotBlank(replyTo)) {
                 msg.setReplyTo(new Address[]{toInternetAddress(replyTo, replyToDisplayName)});
             }
-            if (envelopeFrom != null && !envelopeFrom.isEmpty()) {
-                msg.setEnvelopeFrom(envelopeFrom);
+
+            if (isNotBlank(envelopeFrom)) {
+                props.setProperty("mail.smtp.from", envelopeFrom);
             }
 
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(address));
             msg.setHeader("To", address);
-            msg.setSubject(subject, "utf-8");
+
+            msg.setSubject(Encode.urlEncode(subject));
             msg.setContent(multipart);
             msg.saveChanges();
             msg.setSentDate(new Date());
 
-            transport = session.getTransport("smtp");
             if (auth) {
                 try (VaultStringSecret vaultStringSecret = this.session.vault().getStringSecret(config.get("password"))) {
-                    transport.connect(config.get("user"), vaultStringSecret.get().orElse(config.get("password")));
+                    final String username = config.get("user");
+                    final String password = vaultStringSecret.get().orElse(config.get("password"));
+
+                    Transport.send(msg, InternetAddress.parse(address), username, password);
                 }
             } else {
-                transport.connect();
+                Transport.send(msg, InternetAddress.parse(address));
             }
-            transport.sendMessage(msg, new InternetAddress[]{new InternetAddress(address)});
         } catch (Exception e) {
             ServicesLogger.LOGGER.failedToSendEmail(e);
             throw new EmailException(e);
-        } finally {
-            if (transport != null) {
-                try {
-                    transport.close();
-                } catch (MessagingException e) {
-                    logger.warn("Failed to close transport", e);
-                }
-            }
         }
     }
 

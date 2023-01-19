@@ -89,6 +89,8 @@
         <!--JAKARTA-->
         <jakarta.persistence.version>3.1.0</jakarta.persistence.version>
         <jakarta.mail.version>2.1.1</jakarta.mail.version>
+        <jakarta.mail.angus.version>1.1.0</jakarta.mail.angus.version>
+        <angus.activation.version>1.1.0</angus.activation.version>
         <jakarta.servlet.version>6.0.0</jakarta.servlet.version>
         <jakarta.ws.rs.version>3.1.0</jakarta.ws.rs.version>
         <jakarta.xml.ws.version>4.0.0</jakarta.xml.ws.version>
@@ -168,6 +170,7 @@
         <oracle-jdbc.version>21.5.0.0</oracle-jdbc.version>
 
         <!-- Test -->
+        <!--<greenmail.version>3.0.0</greenmail.version>-->
         <greenmail.version>2.0.0-alpha-3</greenmail.version>
         <hamcrest.version>2.2</hamcrest.version>
         <jmeter.version>2.10</jmeter.version>
@@ -393,6 +396,16 @@
                 <groupId>jakarta.mail</groupId>
                 <artifactId>jakarta.mail-api</artifactId>
                 <version>${jakarta.mail.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.angus</groupId>
+                <artifactId>jakarta.mail</artifactId>
+                <version>${jakarta.mail.angus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.angus</groupId>
+                <artifactId>angus-activation</artifactId>
+                <version>${angus.activation.version}</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.ws.rs</groupId>
