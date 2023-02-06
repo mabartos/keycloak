@@ -27,16 +27,18 @@
     <packaging>jar</packaging>
     <name>App Server - Undertow</name>
 
+    <properties>
+        <undertow.version>2.2.2.Final</undertow.version>
+    </properties>
+
     <dependencies>
         <dependency>
-            <groupId>org.keycloak.testsuite</groupId>
-            <artifactId>keycloak-undertow-adapter-jakarta</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-undertow-adapter</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.keycloak.testsuite</groupId>
-            <artifactId>keycloak-saml-undertow-adapter-jakarta</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-saml-undertow-adapter</artifactId>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
@@ -59,10 +61,26 @@
         <dependency>
             <groupId>org.jboss.arquillian.container</groupId>
             <artifactId>undertow-embedded</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.undertow</groupId>
+                    <artifactId>undertow-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.undertow</groupId>
+                    <artifactId>undertow-servlet</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-servlet</artifactId>
+            <version>${undertow.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-core</artifactId>
+            <version>${undertow.version}</version>
         </dependency>
 
 

@@ -28,7 +28,7 @@ import org.keycloak.testsuite.utils.arquillian.ContainerConstants;
 @AppServerContainer(ContainerConstants.APP_SERVER_EAP6)
 @AppServerContainer(ContainerConstants.APP_SERVER_EAP71)
 @UseServletFilter(filterName = "oidc-filter", filterClass = "org.keycloak.adapters.servlet.KeycloakOIDCFilter",
-        filterDependency = "org.keycloak:keycloak-servlet-filter-adapter", skipPattern = "/error.html")
+        filterDependency = "org.keycloak.testsuite:keycloak-servlet-filter-adapter-jakarta", skipPattern = "/error.html")
 public class DemoFilterServletAdapterTest extends DemoServletsAdapterTest {
 
 
