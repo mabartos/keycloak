@@ -19,30 +19,31 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <artifactId>keycloak-testsuite-pom</artifactId>
-        <groupId>org.keycloak</groupId>
+        <artifactId>integration-arquillian-servers-integration</artifactId>
+        <groupId>org.keycloak.testsuite</groupId>
         <version>999-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>keycloak-testsuite-utils</artifactId>
-    <name>Keycloak TestSuite Utils</name>
+    <artifactId>keycloak-testsuite-utils-jakarta</artifactId>
+    <name>Keycloak TestSuite Utils (JakartaEE)</name>
     <description />
 
     <properties>
         <keycloak.additionalClasspathElement>NON_EXISTENT_PATH_OVERRIDE_ON_COMMAND_LINE</keycloak.additionalClasspathElement>
+
+        <jakarta-transformer-sources>${project.basedir}/../../../../utils/</jakarta-transformer-sources>
+        <jakarta-transformer-target>${project.basedir}</jakarta-transformer-target>
     </properties>
 
 
     <dependencies>
-        <!--<dependency>
-            <groupId>jakarta.mail</groupId>
-            <artifactId>jakarta.mail-api</artifactId>
-        </dependency>-->
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
@@ -75,10 +76,11 @@
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-rest-admin-ui-ext</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-admin-client</artifactId>
+            <artifactId>keycloak-admin-client-jakarta</artifactId>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
@@ -96,17 +98,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jboss.spec.javax.transaction</groupId>
-            <artifactId>jboss-transaction-api_1.3_spec</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.spec.javax.servlet</groupId>
-            <artifactId>jboss-servlet-api_3.0_spec</artifactId>
-            <scope>provided</scope>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -133,12 +130,12 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-undertow</artifactId>
-            <version>${resteasy.legacy.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.undertow</groupId>
-            <artifactId>undertow-servlet</artifactId>
-            <version>${undertow.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.undertow</groupId>
+                    <artifactId>undertow-servlet-jakarta</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -173,8 +170,14 @@
             <artifactId>keycloak-kerberos-federation</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-undertow-adapter</artifactId>
+            <groupId>org.keycloak.testsuite</groupId>
+            <artifactId>keycloak-undertow-adapter-jakarta</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-servlet</artifactId>
+            <version>${undertow-jakarta.version}</version>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
@@ -245,7 +248,7 @@
         </dependency>
         <dependency>
             <groupId>org.infinispan</groupId>
-            <artifactId>infinispan-core</artifactId>
+            <artifactId>infinispan-core-jakarta</artifactId>
         </dependency>
         <dependency>
             <groupId>org.infinispan</groupId>
@@ -301,8 +304,73 @@
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.keycloak.testsuite</groupId>
+            <artifactId>undertow-request-filter</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.spec.javax.servlet</groupId>
+            <artifactId>jboss-servlet-api_3.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>transform</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <property name="plugin_classpath" refid="maven.plugin.classpath" />
+                                <java classname="org.eclipse.transformer.jakarta.JakartaTransformer">
+                                    <arg value="-o" />
+                                    <arg value="${jakarta-transformer-sources}" />
+                                    <arg value="${jakarta-transformer-target}/tmp" />
+                                    <classpath>
+                                        <pathelement path="${plugin_classpath}" />
+                                    </classpath>
+                                </java>
+                                <touch>
+                                    <fileset dir="${jakarta-transformer-target}"/>
+                                </touch>
+                                <copy todir="${jakarta-transformer-target}" overwrite="false">
+                                    <fileset dir="${jakarta-transformer-target}/tmp"/>
+                                </copy>
+                                <delete dir="${jakarta-transformer-target}/tmp"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.eclipse.transformer</groupId>
+                        <artifactId>org.eclipse.transformer.cli</artifactId>
+                        <version>0.2.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant-contrib</groupId>
+                        <artifactId>ant-contrib</artifactId>
+                        <version>1.0b3</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>ant</groupId>
+                                <artifactId>ant</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
 
     <profiles>
 

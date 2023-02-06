@@ -1,0 +1,4 @@
+/src/main/java/org/keycloak/testsuite/*
+/src/main/resources
+/src/test/
+!/src/main/java/org/keycloak/testsuite/MailServer.java

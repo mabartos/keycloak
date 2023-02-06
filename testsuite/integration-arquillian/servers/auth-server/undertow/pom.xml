@@ -30,6 +30,8 @@
 
     <properties>
         <common.resources>${basedir}/../common</common.resources>
+        <resteasy.undertow.version>4.7.7.Final</resteasy.undertow.version>
+        <undertow.version>2.2.2.Final</undertow.version>
     </properties>
 
     <dependencies>
@@ -51,6 +53,10 @@
             <artifactId>undertow-embedded</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-servlet</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core</artifactId>
             <scope>provided</scope>
@@ -66,9 +72,17 @@
             <type>pom</type>
         </dependency>
         <dependency>
-            <groupId>org.keycloak.testsuite</groupId>
-            <artifactId>keycloak-undertow-adapter-jakarta</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-undertow-adapter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.spec.javax.servlet</groupId>
+            <artifactId>jboss-servlet-api_3.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.spec.javax.ws.rs</groupId>
+            <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
         </dependency>
         <dependency>
             <groupId>org.keycloak.testsuite</groupId>

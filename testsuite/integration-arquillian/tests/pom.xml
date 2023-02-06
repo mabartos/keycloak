@@ -285,7 +285,8 @@
                                 <artifactItems>
                                     <artifactItem>
                                         <groupId>org.keycloak.testsuite</groupId>
-                                        <artifactId>integration-arquillian-servers-auth-server-undertow</artifactId>
+                                        <artifactId>integration-arquillian-servers-auth-server-undertow-jakarta
+                                        </artifactId>
                                         <version>${project.version}</version>
                                         <type>jar</type>
                                         <outputDirectory>${containers.home}/auth-server-undertow</outputDirectory>
@@ -759,6 +760,23 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>auth-server-undertow-legacy</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.keycloak.testsuite</groupId>
+                    <artifactId>integration-arquillian-servers-auth-server-undertow</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>jakarta.servlet</groupId>
+                    <artifactId>jakarta.servlet-api</artifactId>
+                    <version>${jakarta.servlet.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
+
         <profile>
             <id>auth-server-quarkus</id>
             <properties>
@@ -1783,12 +1801,6 @@
                 </dependency>
 
                 <!--UNDERTOW-->
-
-                <dependency>
-                    <groupId>org.keycloak.testsuite</groupId>
-                    <artifactId>integration-arquillian-servers-auth-server-undertow</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
 
                 <dependency>
                     <groupId>org.jboss.resteasy</groupId>

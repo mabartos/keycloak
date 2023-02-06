@@ -36,7 +36,16 @@
 
     <modules>
         <module>services</module>
-        <module>undertow</module>
+        <module>undertow-jakarta</module>
         <module>quarkus</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>auth-server-undertow-legacy</id>
+            <modules>
+                <module>undertow</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>
