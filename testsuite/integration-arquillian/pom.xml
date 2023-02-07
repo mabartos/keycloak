@@ -322,6 +322,7 @@
         <module>servers</module>
         <module>tests</module>
         <module>util</module>
+        <module>util-jakarta</module>
     </modules>
     
     <profiles>

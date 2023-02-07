@@ -1692,7 +1692,7 @@
 
                 <dependency>
                     <groupId>org.keycloak.testsuite</groupId>
-                    <artifactId>integration-arquillian-util</artifactId>
+                    <artifactId>integration-arquillian-util-jakarta</artifactId>
                     <version>${project.version}</version>
                 </dependency>
 
