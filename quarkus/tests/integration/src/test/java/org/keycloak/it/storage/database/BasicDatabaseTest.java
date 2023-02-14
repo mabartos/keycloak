@@ -17,15 +17,20 @@
 
 package org.keycloak.it.storage.database;
 
+import io.quarkus.test.junit.main.Launch;
+import io.quarkus.test.junit.main.LaunchResult;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.keycloak.it.junit5.extension.CLIResult;
+import org.keycloak.it.junit5.extension.WithDatabase;
 import org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand;
 
-import io.quarkus.test.junit.main.Launch;
-import io.quarkus.test.junit.main.LaunchResult;
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public abstract class BasicDatabaseTest {
@@ -38,7 +43,7 @@ public abstract class BasicDatabaseTest {
     }
 
     @Test
-    @Launch({ "start", AbstractStartCommand.OPTIMIZED_BUILD_OPTION_LONG,"--http-enabled=true", "--hostname-strict=false", "--db-username=wrong" })
+    @Launch({"start", AbstractStartCommand.OPTIMIZED_BUILD_OPTION_LONG, "--http-enabled=true", "--hostname-strict=false", "--db-username=wrong"})
     void testWrongUsername(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;
         cliResult.assertMessage("ERROR: Failed to obtain JDBC connection");
@@ -48,7 +53,20 @@ public abstract class BasicDatabaseTest {
     protected abstract void assertWrongUsername(CLIResult cliResult);
 
     @Test
-    @Launch({ "start", AbstractStartCommand.OPTIMIZED_BUILD_OPTION_LONG,"--http-enabled=true", "--hostname-strict=false", "--db-password=wrong" })
+    @Launch({"show-config"})
+    void testConfigurationItem(LaunchResult result) {
+        Optional<WithDatabase> withDatabase = Optional.ofNullable(getClass().getAnnotation(WithDatabase.class));
+
+        if (withDatabase.isPresent()) {
+            final String dbVendor = withDatabase.get().alias();
+            assertThat(result.getOutput(), containsString(String.format("%s (PersistedConfigSource)", dbVendor)));
+        } else {
+            assertThat(result.getOutput(), containsString("dev-file"));
+        }
+    }
+
+    @Test
+    @Launch({"start", AbstractStartCommand.OPTIMIZED_BUILD_OPTION_LONG, "--http-enabled=true", "--hostname-strict=false", "--db-password=wrong"})
     void testWrongPassword(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;
         cliResult.assertMessage("ERROR: Failed to obtain JDBC connection");
