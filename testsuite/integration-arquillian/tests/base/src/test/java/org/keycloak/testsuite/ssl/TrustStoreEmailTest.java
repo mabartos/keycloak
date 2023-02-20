@@ -18,6 +18,7 @@ package org.keycloak.testsuite.ssl;
 
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.keycloak.common.Profile;
@@ -36,8 +37,9 @@ import org.keycloak.testsuite.auth.page.AuthRealm;
 import org.keycloak.testsuite.auth.page.account.AccountManagement;
 import org.keycloak.testsuite.auth.page.login.OIDCLogin;
 import org.keycloak.testsuite.auth.page.login.VerifyEmail;
+import org.keycloak.testsuite.util.GreenMailRule;
+import org.keycloak.testsuite.util.GreenMailServer;
 import org.keycloak.testsuite.util.MailServerConfiguration;
-import org.keycloak.testsuite.util.SslMailServer;
 
 import static org.junit.Assert.assertEquals;
 import static org.keycloak.testsuite.util.MailAssert.assertEmailAndGetUrl;
@@ -65,11 +67,13 @@ public class TrustStoreEmailTest extends AbstractTestRealmKeycloakTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
+    private GreenMailServer mailServer;
+
     @Override
     public void configureTestRealm(RealmRepresentation testRealm) {
         log.info("enable verify email and configure smtp server to run with ssl in test realm");
 
-        testRealm.setSmtpServer(SslMailServer.getServerConfiguration());
+        testRealm.setSmtpServer(new GreenMailServer(true).getServerConfiguration());
         testRealm.setVerifyEmail(true);
     }
 
@@ -85,15 +89,19 @@ public class TrustStoreEmailTest extends AbstractTestRealmKeycloakTest {
 
     @After
     public void afterTrustStoreEmailTest() {
-        SslMailServer.stop();
+        if (mailServer != null) {
+            mailServer.stop();
+        }
     }
-
 
     @Test
     public void verifyEmailWithSslEnabled() {
         UserRepresentation user = ApiUtil.findUserByUsername(testRealm(), "test-user@localhost");
+        System.setProperty("mail.socket.debug", "true");
 
-        SslMailServer.startWithSsl(this.getClass().getClassLoader().getResource(SslMailServer.PRIVATE_KEY).getFile());
+        mailServer = new GreenMailServer(true);
+        mailServer.startWithSsl(this.getClass().getClassLoader().getResource(GreenMailServer.PRIVATE_KEY).getFile());
+
         accountManagement.navigateTo();
         testRealmLoginPage.form().login(user.getUsername(), "password");
 
@@ -104,6 +112,8 @@ public class TrustStoreEmailTest extends AbstractTestRealmKeycloakTest {
                 .detail(Details.EMAIL, "test-user@localhost")
                 .removeDetail(Details.REDIRECT_URI)
                 .assertEvent();
+        sendEvent.getDetails().keySet().forEach(System.err::println);
+        sendEvent.getDetails().values().forEach(System.err::println);
         String mailCodeId = sendEvent.getDetails().get(Details.CODE_ID);
 
         assertEquals("You need to verify your email address to activate your account.",
@@ -143,7 +153,9 @@ public class TrustStoreEmailTest extends AbstractTestRealmKeycloakTest {
     public void verifyEmailWithSslWrongCertificate() throws Exception {
         UserRepresentation user = ApiUtil.findUserByUsername(testRealm(), "test-user@localhost");
 
-        SslMailServer.startWithSsl(this.getClass().getClassLoader().getResource(SslMailServer.INVALID_KEY).getFile());
+        mailServer = new GreenMailServer();
+        mailServer.startWithSsl(this.getClass().getClassLoader().getResource(GreenMailServer.INVALID_KEY).getFile());
+
         accountManagement.navigateTo();
         loginPage.form().login(user.getUsername(), "password");
 
@@ -157,7 +169,7 @@ public class TrustStoreEmailTest extends AbstractTestRealmKeycloakTest {
                 .assertEvent();
 
         // Email wasn't send
-        Assert.assertNull(SslMailServer.getLastReceivedMessage());
+        Assert.assertNull(mailServer.getLastReceivedMessage());
 
         // Email wasn't send, but we won't notify end user about that. Admin is aware due to the error in the logs and the SEND_VERIFY_EMAIL_ERROR event.
         assertEquals("You need to verify your email address to activate your account.",
@@ -173,7 +185,9 @@ public class TrustStoreEmailTest extends AbstractTestRealmKeycloakTest {
         testRealm().update(realmRep);
 
         try {
-            SslMailServer.startWithSsl(this.getClass().getClassLoader().getResource(SslMailServer.PRIVATE_KEY).getFile());
+            mailServer = new GreenMailServer();
+            mailServer.startWithSsl(this.getClass().getClassLoader().getResource(GreenMailServer.PRIVATE_KEY).getFile());
+
             accountManagement.navigateTo();
             loginPage.form().login(user.getUsername(), "password");
 
@@ -187,7 +201,7 @@ public class TrustStoreEmailTest extends AbstractTestRealmKeycloakTest {
                     .assertEvent();
 
             // Email wasn't send
-            Assert.assertNull(SslMailServer.getLastReceivedMessage());
+            Assert.assertNull(mailServer.getLastReceivedMessage());
 
             // Email wasn't send, but we won't notify end user about that. Admin is aware due to the error in the logs and the SEND_VERIFY_EMAIL_ERROR event.
             assertEquals("You need to verify your email address to activate your account.",

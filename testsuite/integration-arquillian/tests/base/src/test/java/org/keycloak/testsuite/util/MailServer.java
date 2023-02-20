@@ -17,17 +17,13 @@
 
 package org.keycloak.testsuite.util;
 
-import com.icegreen.greenmail.util.GreenMail;
-import com.icegreen.greenmail.util.ServerSetup;
-import org.jboss.logging.Logger;
-
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMessage.RecipientType;
 import jakarta.mail.internet.MimeMultipart;
+import org.jboss.logging.Logger;
+
 import java.io.IOException;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.net.SocketException;
 
 import static org.keycloak.testsuite.util.MailServerConfiguration.HOST;
 import static org.keycloak.testsuite.util.MailServerConfiguration.PORT;
@@ -35,8 +31,8 @@ import static org.keycloak.testsuite.util.MailServerConfiguration.PORT;
 public class MailServer {
 
     private static final Logger log = Logger.getLogger(MailServer.class);
-    
-    private static GreenMail greenMail;
+
+    private static GreenMailServer greenMail;
 
     public static void main(String[] args) throws Exception {
         MailServer.start();
@@ -69,42 +65,23 @@ public class MailServer {
     }
 
     public static void start() {
-        ServerSetup setup = new ServerSetup(Integer.parseInt(PORT), HOST, "smtp");
-
-        greenMail = new GreenMail(setup);
+        greenMail = new GreenMailServer(Integer.parseInt(PORT), HOST);
         greenMail.start();
 
         log.info("Started mail server (" + HOST + ":" + PORT + ")");
     }
 
     public static void stop() {
-        if (greenMail != null) {
-            log.info("Stopping mail server (localhost:3025)");
-            // Suppress error from GreenMail on shutdown
-            Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-                @Override
-                public void uncaughtException(Thread t, Throwable e) {
-                    if (!(e.getCause() instanceof SocketException && e.getStackTrace()[0].getClassName()
-                            .equals("com.icegreen.greenmail.smtp.SmtpHandler"))) {
-                        log.error("Exception in thread \"" + t.getName() + "\" ");
-                        log.error(e.getMessage(), e);
-                    }
-                }
-            });
-            greenMail.stop();
-        }
+        greenMail.stop();
     }
 
     public static void createEmailAccount(String email, String password) {
         log.debug("Creating email account " + email);
-        greenMail.setUser(email, password);
+        greenMail.credentials(email, password);
     }
     
     public static MimeMessage getLastReceivedMessage() throws InterruptedException {
-        if (greenMail.waitForIncomingEmail(1)) {
-            return greenMail.getReceivedMessages()[greenMail.getReceivedMessages().length - 1];
-        }
-        return null;
+        return greenMail.getLastReceivedMessage();
     }
 
     public static MimeMessage[] getReceivedMessages() {

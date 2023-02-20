@@ -38,7 +38,7 @@ public class MailAssert {
         try {
             MimeMessage message;
             if (sslEnabled){
-                message= SslMailServer.getLastReceivedMessage();
+                message = new GreenMailServer().getLastReceivedMessage();
             } else {
                 message = MailServer.getLastReceivedMessage();
             }            
