@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 @AppServerContainer(ContainerConstants.APP_SERVER_EAP6)
 @AppServerContainer(ContainerConstants.APP_SERVER_EAP71)
 @UseServletFilter(filterName = "oidc-filter", filterClass = "org.keycloak.adapters.servlet.KeycloakOIDCFilter",
-        filterDependency = "org.keycloak:keycloak-servlet-filter-adapter", skipPattern = "/error.html",
+        filterDependency = "org.keycloak:keycloak-servlet-filter-adapter-jakarta", skipPattern = "/error.html",
         idMapper = "org.keycloak.testsuite.adapter.spi.TestSessionIdMapper")
 public class DemoFilterServletAdapterTestForCustomizedIdMapper extends AbstractServletsAdapterTest {
 

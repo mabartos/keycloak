@@ -1,0 +1,2 @@
+/src/main/java/org/keycloak/adapters/servlet/*
+!/src/main/java/org/keycloak/adapters/servlet/FilterSessionStoreWrapper.java

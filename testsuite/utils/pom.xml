@@ -194,8 +194,9 @@
             <artifactId>keycloak-saml-servlet-filter-adapter</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-servlet-filter-adapter</artifactId>
+            <groupId>org.keycloak.testsuite</groupId>
+            <artifactId>keycloak-servlet-filter-adapter-jakarta</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.keycloak.testsuite</groupId>

@@ -173,12 +173,7 @@ public class FilterSessionStore implements AdapterSessionStore {
 
                     if (needRequestRestore && body != null) {
                         final ByteArrayInputStream is = new ByteArrayInputStream(body);
-                        return new ServletInputStream() {
-                            @Override
-                            public int read() throws IOException {
-                                return is.read();
-                            }
-                        };
+                        return FilterSessionStoreWrapper.servletInputStream(is);
                     }
                     return super.getInputStream();
                 }
