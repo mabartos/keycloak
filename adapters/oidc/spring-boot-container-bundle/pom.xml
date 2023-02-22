@@ -9,6 +9,11 @@
     </parent>
     <artifactId>spring-boot-container-bundle</artifactId>
     <packaging>jar</packaging>
+
+    <properties>
+        <undertow.version>${undertow-legacy.version}</undertow.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.keycloak</groupId>

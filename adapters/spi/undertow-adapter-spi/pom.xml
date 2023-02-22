@@ -31,6 +31,7 @@
     <description/>
 
     <properties>
+        <undertow.version>${undertow-legacy.version}</undertow.version>
         <keycloak.osgi.export>
             org.keycloak.adapters.undertow.*
         </keycloak.osgi.export>

@@ -108,6 +108,17 @@
         <property name="deploymentExportPath">target/deployments</property>
     </engine>
 
+    <container qualifier="app-server-undertow" mode="manual" default="true">
+        <configuration>
+            <property name="enabled">${app.server.undertow}</property>
+            <property name="bindAddress">0.0.0.0</property>
+            <property name="adapterImplClass">org.keycloak.testsuite.arquillian.undertow.UndertowAppServer</property>
+            <property name="bindHttpPort">${app.server.http.port}</property>
+            <property name="bindHttpsPort">${app.server.https.port}</property>
+            <property name="remoteMode">${undertow.remote}</property>
+        </configuration>
+    </container>
+
     <container qualifier="auth-server-undertow" mode="manual" default="true">
         <configuration>
             <property name="enabled">${auth.server.undertow} &amp;&amp; ! ${auth.server.crossdc}</property>

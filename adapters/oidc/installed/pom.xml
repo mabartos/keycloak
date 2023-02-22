@@ -30,6 +30,10 @@
     <name>Keycloak Installed Application</name>
     <description/>
 
+    <properties>
+        <undertow.version>${undertow-legacy.version}</undertow.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.keycloak</groupId>
