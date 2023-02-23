@@ -126,9 +126,7 @@ public final class Picocli {
     private static boolean shouldSkipRebuild(List<String> cliArgs) {
         return cliArgs.contains("--help")
                 || cliArgs.contains("-h")
-                || cliArgs.contains("--help-all")
-                || cliArgs.contains(Export.NAME)
-                || cliArgs.contains(Import.NAME);
+                || cliArgs.contains("--help-all");
     }
 
     public static boolean requiresReAugmentation(CommandLine cmd) {
@@ -376,6 +374,11 @@ public final class Picocli {
 
             addOptionsToCli(command, includeBuildTime, includeRuntime);
         }
+    }
+
+    private enum CommandReaugmentation{
+
+
     }
 
     private static CommandSpec getCurrentCommandSpec(List<String> cliArgs, CommandSpec spec) {
