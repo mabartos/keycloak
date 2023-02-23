@@ -29,6 +29,7 @@
 
     <properties>
         <undertow.version>${undertow-legacy.version}</undertow.version>
+        <undertow.ss.version>2.2.21.Final</undertow.ss.version>
         <resteasy.undertow.version>${resteasy-legacy.version}</resteasy.undertow.version>
     </properties>
 
@@ -67,8 +68,10 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.jboss.resteasy</groupId>
+            <groupId>org.jboss.resteasy.</groupId>
             <artifactId>resteasy-undertow</artifactId>
+            <scope>compile</scope>
+            <version>4.7.7.Final</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.arquillian.container</groupId>
@@ -87,9 +90,16 @@
             <artifactId>jboss-servlet-api_3.0_spec</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.undertow</groupId>
+            <groupId>io.undertow.</groupId>
             <artifactId>undertow-servlet</artifactId>
-            <scope>provided</scope>
+            <scope>compile</scope>
+            <version>${undertow.ss.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.undertow.</groupId>
+            <artifactId>undertow-core</artifactId>
+            <scope>compile</scope>
+            <version>${undertow.ss.version}</version>
         </dependency>
 
 

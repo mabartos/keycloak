@@ -151,11 +151,6 @@
         </dependency>
         <dependency>
             <groupId>org.keycloak.testsuite</groupId>
-            <artifactId>integration-arquillian-util</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.keycloak.testsuite</groupId>
             <artifactId>integration-arquillian-servers-app-server-undertow</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
