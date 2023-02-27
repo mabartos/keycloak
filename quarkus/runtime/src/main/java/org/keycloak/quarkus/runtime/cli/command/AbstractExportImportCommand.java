@@ -22,6 +22,8 @@ import org.keycloak.quarkus.runtime.Environment;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
+import static org.keycloak.exportimport.ExportImportConfig.ACTION_EXPORT;
+
 public abstract class AbstractExportImportCommand extends AbstractStartCommand implements Runnable {
 
     private final String action;
@@ -46,14 +48,17 @@ public abstract class AbstractExportImportCommand extends AbstractStartCommand i
     public void run() {
         System.setProperty("keycloak.migration.action", action);
 
-        if (toDir != null) {
-            System.setProperty("keycloak.migration.provider", "dir");
-            System.setProperty("keycloak.migration.dir", toDir);
-        } else if (toFile != null) {
-            System.setProperty("keycloak.migration.provider", "singleFile");
-            System.setProperty("keycloak.migration.file", toFile);
-        } else {
-            executionError(spec.commandLine(), "Must specify either --dir or --file options.");
+        if (!(action.equals(ACTION_EXPORT))) {
+            // for export, the properties are no longer needed and will be passed by the property mappers
+            if (toDir != null) {
+                System.setProperty("keycloak.migration.provider", "dir");
+                System.setProperty("keycloak.migration.dir", toDir);
+            } else if (toFile != null) {
+                System.setProperty("keycloak.migration.provider", "singleFile");
+                System.setProperty("keycloak.migration.file", toFile);
+            } else {
+                executionError(spec.commandLine(), "Must specify either --dir or --file options.");
+            }
         }
 
         Environment.setProfile(Environment.IMPORT_EXPORT_MODE);
