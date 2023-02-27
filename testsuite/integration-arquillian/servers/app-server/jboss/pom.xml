@@ -750,6 +750,8 @@
         <profile>
             <id>app-server-wildfly</id>
             <activation>
+                <!-- WildFly used as the default app server for now -->
+                <activeByDefault>true</activeByDefault>
                 <property>
                     <name>app.server</name>
                     <value>wildfly</value>

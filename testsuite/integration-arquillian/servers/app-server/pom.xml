@@ -39,8 +39,21 @@
         <module>app-server-spi</module>
         <module>jboss</module>
         <module>tomcat</module>
-        <module>undertow</module>
         <module>jetty</module>
     </modules>
+
+    <profiles>
+        <!-- WildFly used as the default app server for now -->
+        <!-- Not possible executing tests with different versions of Undertow for auth and app server -->
+        <profile>
+            <id>app-server-undertow</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>undertow</module>
+            </modules>
+        </profile>
+    </profiles>
 
 </project>
