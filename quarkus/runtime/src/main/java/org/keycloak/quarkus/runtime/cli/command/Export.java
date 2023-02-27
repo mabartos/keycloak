@@ -18,6 +18,8 @@
 package org.keycloak.quarkus.runtime.cli.command;
 
 import static org.keycloak.exportimport.ExportImportConfig.ACTION_EXPORT;
+import static org.keycloak.exportimport.ExportImportConfig.USERS_EXPORT_STRATEGY;
+import static org.keycloak.exportimport.ExportImportConfig.USERS_PER_FILE;
 
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -55,14 +57,10 @@ public final class Export extends AbstractExportImportCommand implements Runnabl
 
     @Override
     protected void doBeforeRun() {
-        if (realm != null) {
-            System.setProperty("keycloak.migration.realmName", realm);
-        }
-
-        System.setProperty("keycloak.migration.usersExportStrategy", users.toUpperCase());
+        System.setProperty(USERS_EXPORT_STRATEGY, users.toUpperCase());
 
         if (usersPerFile != null) {
-            System.setProperty("keycloak.migration.usersPerFile", usersPerFile.toString());
+            System.setProperty(USERS_PER_FILE, usersPerFile.toString());
         }
     }
 }

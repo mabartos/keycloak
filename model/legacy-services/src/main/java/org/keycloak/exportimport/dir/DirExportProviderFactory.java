@@ -23,8 +23,10 @@ import org.keycloak.exportimport.ExportProvider;
 import org.keycloak.exportimport.ExportProviderFactory;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
+import org.keycloak.provider.ProviderConfigProperty;
+import org.keycloak.provider.ProviderConfigurationBuilder;
 
-import java.io.File;
+import java.util.List;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
@@ -32,20 +34,24 @@ import java.io.File;
 public class DirExportProviderFactory implements ExportProviderFactory {
 
     public static final String PROVIDER_ID = "dir";
+    public static final String DIR = "dir";
+    public static final String REALM_ID = "realmId";
+    private Config.Scope config;
 
     @Override
     public ExportProvider create(KeycloakSession session) {
-        String dir = ExportImportConfig.getDir();
-        return dir!=null ? new DirExportProvider(new File(dir)) : new DirExportProvider();
+        String dir = config.get(DIR, System.getProperty(ExportImportConfig.DIR));
+        String realmId = config.get(REALM_ID, System.getProperty(ExportImportConfig.REALM_NAME));
+        return new DirExportProvider(session.getKeycloakSessionFactory()).withDir(dir).withRealmId(realmId);
     }
 
     @Override
     public void init(Config.Scope config) {
+        this.config = config;
     }
 
     @Override
     public void postInit(KeycloakSessionFactory factory) {
-
     }
 
     @Override
@@ -56,4 +62,23 @@ public class DirExportProviderFactory implements ExportProviderFactory {
     public String getId() {
         return PROVIDER_ID;
     }
+
+    @Override
+    public List<ProviderConfigProperty> getConfigMetadata() {
+        return ProviderConfigurationBuilder.create()
+                .property()
+                .name(REALM_ID)
+                .type("string")
+                .helpText("Realm to export")
+                .add()
+
+                .property()
+                .name(DIR)
+                .type("string")
+                .helpText("Directory to export to")
+                .add()
+
+                .build();
+    }
+
 }

@@ -19,6 +19,7 @@ package org.keycloak.exportimport;
 
 
 import org.jboss.logging.Logger;
+import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.models.KeycloakSessionTask;
@@ -35,6 +36,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.keycloak.exportimport.ExportImportConfig.PROVIDER;
+import static org.keycloak.exportimport.ExportImportConfig.PROVIDER_DEFAULT;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
@@ -61,6 +65,7 @@ public class ExportImportManager {
         String exportImportAction = ExportImportConfig.getAction();
 
         if (ExportImportConfig.ACTION_EXPORT.equals(exportImportAction)) {
+            providerId = Config.scope("export").get("exporter", System.getProperty(PROVIDER, PROVIDER_DEFAULT));
             exportProvider = session.getProvider(ExportProvider.class, providerId);
             if (exportProvider == null) {
                 throw new RuntimeException("Export provider '" + providerId + "' not found");
@@ -161,16 +166,9 @@ public class ExportImportManager {
 
     public void runExport() {
         try {
-            if (realmName == null) {
-                ServicesLogger.LOGGER.fullModelExportRequested();
-                exportProvider.exportModel(sessionFactory);
-            } else {
-                ServicesLogger.LOGGER.realmExportRequested(realmName);
-                exportProvider.exportRealm(sessionFactory, realmName);
-            }
-            ServicesLogger.LOGGER.exportSuccess();
+            exportProvider.exportModel();
         } catch (IOException e) {
-            throw new RuntimeException("Failed to run export");
+            throw new RuntimeException("Failed to run export", e);
         }
     }
 
