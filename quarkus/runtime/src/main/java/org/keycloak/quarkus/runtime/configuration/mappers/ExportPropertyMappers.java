@@ -44,7 +44,7 @@ final class ExportPropertyMappers {
             return Optional.of("singleFile");
         }
         ConfigValue dirConfigValue = context.proceed("kc.spi-export-dir-dir");
-        if (dirConfigValue.getValue() != null) {
+        if (dirConfigValue != null && dirConfigValue.getValue() != null) {
             return Optional.of("dir");
         }
         return Optional.empty();
