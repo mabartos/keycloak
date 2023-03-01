@@ -67,7 +67,7 @@ public class ExportModelTest extends KeycloakModelTest {
             Files.delete(singleFileExport);
 
             CONFIG.spi("export")
-                    .config("provider", SingleFileExportProviderFactory.PROVIDER_ID);
+                    .config("exporter", SingleFileExportProviderFactory.PROVIDER_ID);
             CONFIG.spi("export")
                     .provider(SingleFileExportProviderFactory.PROVIDER_ID)
                     .config(SingleFileExportProviderFactory.FILE, singleFileExport.toAbsolutePath().toString());
@@ -86,7 +86,7 @@ public class ExportModelTest extends KeycloakModelTest {
             Assert.assertTrue(Files.exists(singleFileExport));
         } finally {
             CONFIG.spi("export")
-                    .config("provider", null);
+                    .config("exporter", null);
             CONFIG.spi("export")
                     .provider(SingleFileExportProviderFactory.PROVIDER_ID)
                     .config(SingleFileExportProviderFactory.FILE, null);
@@ -109,7 +109,7 @@ public class ExportModelTest extends KeycloakModelTest {
             Files.delete(dirExport);
 
             CONFIG.spi("export")
-                    .config("provider", DirExportProviderFactory.PROVIDER_ID);
+                    .config("exporter", DirExportProviderFactory.PROVIDER_ID);
             CONFIG.spi("export")
                     .provider(DirExportProviderFactory.PROVIDER_ID)
                     .config(DirExportProviderFactory.DIR, dirExport.toAbsolutePath().toString());
@@ -128,7 +128,7 @@ public class ExportModelTest extends KeycloakModelTest {
             Assert.assertTrue(Files.exists(dirExport.resolve(REALM_NAME + "-realm.json")));
         } finally {
             CONFIG.spi("export")
-                    .config("provider", null);
+                    .config("exporter", null);
             CONFIG.spi("export")
                     .provider(DirExportProviderFactory.PROVIDER_ID)
                     .config(DirExportProviderFactory.DIR, null);
