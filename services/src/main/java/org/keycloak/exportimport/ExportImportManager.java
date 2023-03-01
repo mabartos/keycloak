@@ -67,7 +67,7 @@ public class ExportImportManager {
         if (ExportImportConfig.ACTION_EXPORT.equals(exportImportAction)) {
             // Future Refactoring: If the system properties are no longer needed for integration tests, refactor to use
             // a default provider in its standard way.
-            // Setting this to "provider" doesn't work yet when instrumenting Keycloak as it leads to
+            // Setting this to "provider" doesn't work yet when instrumenting Keycloak with Quarkus as it leads to
             // "java.lang.NullPointerException: Cannot invoke "String.indexOf(String)" because "value" is null"
             // when calling "Config.getProvider()" from "KeycloakProcessor.loadFactories()"
             providerId = Config.scope("export").get("exporter", System.getProperty(PROVIDER, PROVIDER_DEFAULT));
