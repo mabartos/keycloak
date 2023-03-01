@@ -33,7 +33,7 @@ final class ExportPropertyMappers {
     public static PropertyMapper<?>[] getMappers() {
         return new PropertyMapper[] {
                 fromOption(ExportOptions.FILE)
-                        .to("kc.spi-export-provider")
+                        .to("kc.spi-export-exporter")
                         .transformer(ExportPropertyMappers::transformExporter)
                         .paramLabel("file")
                         .build(),
