@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * Construct a {@link SingleFileExportProvider} to be used to export one or more realms.
+ * For the sake of testing in the legacy testing setup, configurations can be overwritten via system properties.
+ *
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
  */
 public class SingleFileExportProviderFactory implements ExportProviderFactory {
@@ -42,9 +45,9 @@ public class SingleFileExportProviderFactory implements ExportProviderFactory {
 
     @Override
     public ExportProvider create(KeycloakSession session) {
-        String fileName = config.get(FILE, System.getProperty(ExportImportConfig.FILE));
+        String fileName = System.getProperty(ExportImportConfig.FILE, config.get(FILE));
         Objects.requireNonNull(fileName, "file name not configured");
-        String realmName = config.get(REALM_NAME, System.getProperty(ExportImportConfig.REALM_NAME));
+        String realmName = System.getProperty(ExportImportConfig.REALM_NAME, config.get(REALM_NAME));
         return new SingleFileExportProvider(session.getKeycloakSessionFactory()).withFile(new File(fileName)).withRealmName(realmName);
     }
 

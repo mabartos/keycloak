@@ -33,6 +33,9 @@ import static org.keycloak.exportimport.ExportImportConfig.DEFAULT_USERS_EXPORT_
 import static org.keycloak.exportimport.ExportImportConfig.DEFAULT_USERS_PER_FILE;
 
 /**
+ * Construct a {@link DirExportProviderFactory} to be used to export one or more realms.
+ * For the sake of testing in the legacy testing setup, configurations can be overwritten via system properties.
+ *
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
  */
 public class DirExportProviderFactory implements ExportProviderFactory {
@@ -46,14 +49,14 @@ public class DirExportProviderFactory implements ExportProviderFactory {
 
     @Override
     public ExportProvider create(KeycloakSession session) {
-        String dir = config.get(DIR, System.getProperty(ExportImportConfig.DIR));
-        String realmName = config.get(REALM_NAME, System.getProperty(ExportImportConfig.REALM_NAME));
-        String usersExportStrategy = config.get(USERS_EXPORT_STRATEGY, System.getProperty(ExportImportConfig.USERS_EXPORT_STRATEGY, DEFAULT_USERS_EXPORT_STRATEGY.toString()));
-        String usersPerFile = config.get(USERS_PER_FILE, System.getProperty(ExportImportConfig.USERS_PER_FILE, String.valueOf(DEFAULT_USERS_PER_FILE)));
+        String dir = System.getProperty(ExportImportConfig.DIR, config.get(DIR));
+        String realmName = System.getProperty(ExportImportConfig.REALM_NAME, config.get(REALM_NAME));
+        String usersExportStrategy = System.getProperty(ExportImportConfig.USERS_EXPORT_STRATEGY, config.get(USERS_EXPORT_STRATEGY, DEFAULT_USERS_EXPORT_STRATEGY.toString()));
+        String usersPerFile = System.getProperty(ExportImportConfig.USERS_PER_FILE, config.get(USERS_PER_FILE, String.valueOf(DEFAULT_USERS_PER_FILE)));
         return new DirExportProvider(session.getKeycloakSessionFactory())
                 .withDir(dir)
                 .withRealmName(realmName)
-                .withUsersExportStrategy(Enum.valueOf(UsersExportStrategy.class, usersExportStrategy))
+                .withUsersExportStrategy(Enum.valueOf(UsersExportStrategy.class, usersExportStrategy.toUpperCase()))
                 .withUsersPerFile(Integer.parseInt(usersPerFile.trim()));
     }
 
