@@ -46,11 +46,11 @@ final class ExportPropertyMappers {
                         .paramLabel("dir")
                         .build(),
                 fromOption(ExportOptions.REALM)
-                        .to("kc.spi-export-single-file-realm-id")
+                        .to("kc.spi-export-single-file-realm-name")
                         .paramLabel("realm")
                         .build(),
                 fromOption(ExportOptions.REALM)
-                        .to("kc.spi-export-dir-realm-id")
+                        .to("kc.spi-export-dir-realm-name")
                         .paramLabel("realm")
                         .build(),
                 fromOption(ExportOptions.USERS)
