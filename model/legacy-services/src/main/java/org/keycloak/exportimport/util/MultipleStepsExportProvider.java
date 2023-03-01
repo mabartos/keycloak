@@ -18,7 +18,6 @@
 package org.keycloak.exportimport.util;
 
 import org.jboss.logging.Logger;
-import org.keycloak.exportimport.ExportImportConfig;
 import org.keycloak.exportimport.ExportProvider;
 import org.keycloak.exportimport.UsersExportStrategy;
 import org.keycloak.models.KeycloakSession;
@@ -38,13 +37,15 @@ import java.util.stream.Collectors;
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
  */
-public abstract class MultipleStepsExportProvider implements ExportProvider {
+public abstract class MultipleStepsExportProvider<T extends MultipleStepsExportProvider<?>> implements ExportProvider {
 
     protected final Logger logger = Logger.getLogger(getClass());
 
     protected final KeycloakSessionFactory factory;
 
     private String realmId;
+    private int usersPerFile;
+    private UsersExportStrategy usersExportStrategy;
 
     public MultipleStepsExportProvider(KeycloakSessionFactory factory) {
         this.factory = factory;
@@ -65,17 +66,26 @@ public abstract class MultipleStepsExportProvider implements ExportProvider {
         ServicesLogger.LOGGER.exportSuccess();
     }
 
-    public ExportProvider withRealmId(String realmName) {
+    public T withRealmName(String realmName) {
         this.realmId = realmName;
-        return this;
+        return (T) this;
     }
+
+    public T withUsersPerFile(int usersPerFile) {
+        this.usersPerFile = usersPerFile;
+        return (T) this;
+    }
+
+    public T withUsersExportStrategy(UsersExportStrategy usersExportStrategy) {
+        this.usersExportStrategy = usersExportStrategy;
+        return (T) this;
+    }
+
     public void exportRealm(String realmName) {
         exportRealmImpl(realmName);
     }
 
     protected void exportRealmImpl(final String realmName) {
-        final UsersExportStrategy usersExportStrategy = ExportImportConfig.getUsersExportStrategy();
-        final int usersPerFile = ExportImportConfig.getUsersPerFile();
         final UsersHolder usersHolder = new UsersHolder();
         final boolean exportUsersIntoRealmFile = usersExportStrategy == UsersExportStrategy.REALM_FILE;
         FederatedUsersHolder federatedUsersHolder = new FederatedUsersHolder();

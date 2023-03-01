@@ -28,6 +28,7 @@ import org.keycloak.provider.ProviderConfigurationBuilder;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
@@ -36,14 +37,15 @@ public class SingleFileExportProviderFactory implements ExportProviderFactory {
 
     public static final String PROVIDER_ID = "singleFile";
     public static final String FILE = "file";
-    public static final String REALM_ID = "realmId";
+    public static final String REALM_NAME = "realmName";
     private Config.Scope config;
 
     @Override
     public ExportProvider create(KeycloakSession session) {
         String fileName = config.get(FILE, System.getProperty(ExportImportConfig.FILE));
-        String realmId = config.get(REALM_ID, System.getProperty(ExportImportConfig.REALM_NAME));
-        return new SingleFileExportProvider(session.getKeycloakSessionFactory()).withFile(new File(fileName)).withRealmId(realmId);
+        Objects.requireNonNull(fileName, "file name not configured");
+        String realmName = config.get(REALM_NAME, System.getProperty(ExportImportConfig.REALM_NAME));
+        return new SingleFileExportProvider(session.getKeycloakSessionFactory()).withFile(new File(fileName)).withRealmName(realmName);
     }
 
     @Override
@@ -68,7 +70,7 @@ public class SingleFileExportProviderFactory implements ExportProviderFactory {
     public List<ProviderConfigProperty> getConfigMetadata() {
         return ProviderConfigurationBuilder.create()
                 .property()
-                .name(REALM_ID)
+                .name(REALM_NAME)
                 .type("string")
                 .helpText("Realm to export")
                 .add()

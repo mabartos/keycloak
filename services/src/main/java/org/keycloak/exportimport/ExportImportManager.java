@@ -65,7 +65,9 @@ public class ExportImportManager {
         String exportImportAction = ExportImportConfig.getAction();
 
         if (ExportImportConfig.ACTION_EXPORT.equals(exportImportAction)) {
-            providerId = Config.scope("export").get("exporter", System.getProperty(PROVIDER, PROVIDER_DEFAULT));
+            // Future Refactoring: If the system properties are no longer needed for integration tests, refactor to use
+            // a default provider in its standard way.
+            providerId = Config.scope("export").get("provider", System.getProperty(PROVIDER, PROVIDER_DEFAULT));
             exportProvider = session.getProvider(ExportProvider.class, providerId);
             if (exportProvider == null) {
                 throw new RuntimeException("Export provider '" + providerId + "' not found");

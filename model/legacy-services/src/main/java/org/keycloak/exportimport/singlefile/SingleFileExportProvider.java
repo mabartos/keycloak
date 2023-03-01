@@ -34,6 +34,7 @@ import org.keycloak.services.util.ObjectMapperResolver;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -46,7 +47,7 @@ public class SingleFileExportProvider implements ExportProvider {
     private File file;
 
     private final KeycloakSessionFactory factory;
-    private String realmId;
+    private String realmName;
 
     public SingleFileExportProvider(KeycloakSessionFactory factory) {
         this.factory = factory;
@@ -59,9 +60,9 @@ public class SingleFileExportProvider implements ExportProvider {
 
     @Override
     public void exportModel() {
-        if (realmId != null) {
-            ServicesLogger.LOGGER.realmExportRequested(realmId);
-            exportRealm(realmId);
+        if (realmName != null) {
+            ServicesLogger.LOGGER.realmExportRequested(realmName);
+            exportRealm(realmName);
         } else {
             ServicesLogger.LOGGER.fullModelExportRequested();
             logger.infof("Exporting model into file %s", this.file.getAbsolutePath());
@@ -86,6 +87,7 @@ public class SingleFileExportProvider implements ExportProvider {
             @Override
             protected void runExportImportTask(KeycloakSession session) throws IOException {
                 RealmModel realm = session.realms().getRealmByName(realmName);
+                Objects.requireNonNull(realm, "realm not found by realm name '" + realmName + "'");
                 RealmRepresentation realmRep = ExportUtils.exportRealm(session, realm, true, true);
                 writeToFile(realmRep);
             }
@@ -109,8 +111,8 @@ public class SingleFileExportProvider implements ExportProvider {
         getObjectMapper().writeValue(stream, reps);
     }
 
-    public ExportProvider withRealmId(String realmId) {
-        this.realmId = realmId;
+    public ExportProvider withRealmName(String realmName) {
+        this.realmName = realmName;
         return this;
     }
 }

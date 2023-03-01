@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
  */
-public class DirExportProvider extends MultipleStepsExportProvider {
+public class DirExportProvider extends MultipleStepsExportProvider<DirExportProvider> {
     
     private String dir; 
     

@@ -21,12 +21,16 @@ import org.keycloak.Config;
 import org.keycloak.exportimport.ExportImportConfig;
 import org.keycloak.exportimport.ExportProvider;
 import org.keycloak.exportimport.ExportProviderFactory;
+import org.keycloak.exportimport.UsersExportStrategy;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.provider.ProviderConfigurationBuilder;
 
 import java.util.List;
+
+import static org.keycloak.exportimport.ExportImportConfig.DEFAULT_USERS_EXPORT_STRATEGY;
+import static org.keycloak.exportimport.ExportImportConfig.DEFAULT_USERS_PER_FILE;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
@@ -35,14 +39,22 @@ public class DirExportProviderFactory implements ExportProviderFactory {
 
     public static final String PROVIDER_ID = "dir";
     public static final String DIR = "dir";
-    public static final String REALM_ID = "realmId";
+    public static final String REALM_NAME = "realmName";
+    public static final String USERS_EXPORT_STRATEGY = "usersExportStrategy";
+    public static final String USERS_PER_FILE = "usersPerFile";
     private Config.Scope config;
 
     @Override
     public ExportProvider create(KeycloakSession session) {
         String dir = config.get(DIR, System.getProperty(ExportImportConfig.DIR));
-        String realmId = config.get(REALM_ID, System.getProperty(ExportImportConfig.REALM_NAME));
-        return new DirExportProvider(session.getKeycloakSessionFactory()).withDir(dir).withRealmId(realmId);
+        String realmName = config.get(REALM_NAME, System.getProperty(ExportImportConfig.REALM_NAME));
+        String usersExportStrategy = config.get(USERS_EXPORT_STRATEGY, System.getProperty(ExportImportConfig.USERS_EXPORT_STRATEGY, DEFAULT_USERS_EXPORT_STRATEGY.toString()));
+        String usersPerFile = config.get(USERS_PER_FILE, System.getProperty(ExportImportConfig.USERS_PER_FILE, String.valueOf(DEFAULT_USERS_PER_FILE)));
+        return new DirExportProvider(session.getKeycloakSessionFactory())
+                .withDir(dir)
+                .withRealmName(realmName)
+                .withUsersExportStrategy(Enum.valueOf(UsersExportStrategy.class, usersExportStrategy))
+                .withUsersPerFile(Integer.parseInt(usersPerFile.trim()));
     }
 
     @Override
@@ -67,7 +79,7 @@ public class DirExportProviderFactory implements ExportProviderFactory {
     public List<ProviderConfigProperty> getConfigMetadata() {
         return ProviderConfigurationBuilder.create()
                 .property()
-                .name(REALM_ID)
+                .name(REALM_NAME)
                 .type("string")
                 .helpText("Realm to export")
                 .add()
@@ -76,6 +88,20 @@ public class DirExportProviderFactory implements ExportProviderFactory {
                 .name(DIR)
                 .type("string")
                 .helpText("Directory to export to")
+                .add()
+
+                .property()
+                .name(USERS_EXPORT_STRATEGY)
+                .type("string")
+                .helpText("Users export strategy")
+                .defaultValue(DEFAULT_USERS_EXPORT_STRATEGY)
+                .add()
+
+                .property()
+                .name(USERS_PER_FILE)
+                .type("int")
+                .helpText("Users per exported file")
+                .defaultValue(DEFAULT_USERS_PER_FILE)
                 .add()
 
                 .build();
