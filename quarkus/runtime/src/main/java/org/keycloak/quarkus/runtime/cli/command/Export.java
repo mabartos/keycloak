@@ -55,12 +55,4 @@ public final class Export extends AbstractExportImportCommand implements Runnabl
         super(ACTION_EXPORT);
     }
 
-    @Override
-    protected void doBeforeRun() {
-        System.setProperty(USERS_EXPORT_STRATEGY, users.toUpperCase());
-
-        if (usersPerFile != null) {
-            System.setProperty(USERS_PER_FILE, usersPerFile.toString());
-        }
-    }
 }
