@@ -18,8 +18,6 @@
 package org.keycloak.quarkus.runtime.cli.command;
 
 import static org.keycloak.exportimport.ExportImportConfig.ACTION_EXPORT;
-import static org.keycloak.exportimport.ExportImportConfig.USERS_EXPORT_STRATEGY;
-import static org.keycloak.exportimport.ExportImportConfig.USERS_PER_FILE;
 
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
