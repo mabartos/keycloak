@@ -22,6 +22,6 @@ import picocli.CommandLine.Command;
 @Command(name = "tools",
         description = "Utilities for use and interaction with the server.",
         subcommands = {Completion.class})
-public class Tools {
+public class Tools extends AbstractCommand {
 
 }

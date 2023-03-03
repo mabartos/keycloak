@@ -50,6 +50,8 @@ import java.util.stream.Collectors;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.keycloak.config.MultiOption;
 import org.keycloak.config.OptionCategory;
+import org.keycloak.quarkus.runtime.Environment;
+import org.keycloak.quarkus.runtime.cli.command.AbstractCommand;
 import org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand;
 import org.keycloak.quarkus.runtime.cli.command.Build;
 import org.keycloak.quarkus.runtime.cli.command.Export;
@@ -63,13 +65,12 @@ import org.keycloak.quarkus.runtime.configuration.PersistedConfigSource;
 import org.keycloak.quarkus.runtime.configuration.QuarkusPropertiesConfigSource;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper;
-import org.keycloak.quarkus.runtime.Environment;
 
 import io.smallrye.config.ConfigValue;
 import picocli.CommandLine;
+import picocli.CommandLine.Model.ArgGroupSpec;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Model.OptionSpec;
-import picocli.CommandLine.Model.ArgGroupSpec;
 
 public final class Picocli {
 
@@ -155,7 +156,7 @@ public final class Picocli {
         parseConfigArgs(new BiConsumer<String, String>() {
             @Override
             public void accept(String key, String value) {
-                PropertyMapper mapper = PropertyMappers.getMapper(key);
+                PropertyMapper<?> mapper = PropertyMappers.getMapper(key);
 
                 if (mapper != null && mapper.isBuildTime()) {
                     return;
@@ -250,7 +251,7 @@ public final class Picocli {
             String runtimeValue = getRuntimeProperty(propertyName).orElse(null);
 
             if (runtimeValue == null && isNotBlank(persistedValue)) {
-                PropertyMapper mapper = PropertyMappers.getMapper(propertyName);
+                PropertyMapper<?> mapper = PropertyMappers.getMapper(propertyName);
 
                 if (mapper != null && persistedValue.equals(mapper.getDefaultValue().map(Object::toString).orElse(null))) {
                     // same as default
@@ -343,20 +344,34 @@ public final class Picocli {
                     .build());
         }
 
-        addCommandOptions(cliArgs, getCurrentCommandSpec(cliArgs, spec));
-
-        if (isRebuildCheck()) {
-            // build command should be available when running re-aug
-            addCommandOptions(cliArgs, spec.subcommands().get(Build.NAME).getCommandSpec());
-        }
-
+        // Initialize CLI
         CommandLine cmd = new CommandLine(spec);
-
         cmd.setExecutionExceptionHandler(new ExecutionExceptionHandler());
         cmd.setParameterExceptionHandler(new ShortErrorMessageHandler());
         cmd.setHelpFactory(new HelpFactory());
         cmd.getHelpSectionMap().put(SECTION_KEY_COMMAND_LIST, new SubCommandListRenderer());
         cmd.setErr(new PrintWriter(System.err, true));
+
+        final CommandLine currentCmdLine = getCurrentCommandLine(cliArgs, spec);
+        final AbstractCommand currentCommand = getCurrentCommand(currentCmdLine);
+
+        if (currentCmdLine == null || currentCommand == null) {
+            final ExecutionExceptionHandler errorHandler = new ExecutionExceptionHandler();
+            final PrintWriter errStream = new PrintWriter(System.err, true);
+            errorHandler.error(errStream, "Provided command does NOT exist or does NOT implement 'AbstractCommand' class", null);
+            exitOnFailure(-1, cmd);
+        }
+
+        assert currentCommand != null;
+
+        // Add property mappers associated to particular commands
+        PropertyMappers.addMappers(currentCommand.getMappers());
+        addCommandOptions(cliArgs, currentCmdLine.getCommandSpec());
+
+        if (isRebuildCheck()) {
+            // build command should be available when running re-aug
+            addCommandOptions(cliArgs, spec.subcommands().get(Build.NAME).getCommandSpec());
+        }
 
         return cmd;
     }
@@ -378,29 +393,37 @@ public final class Picocli {
         }
     }
 
-    private static CommandSpec getCurrentCommandSpec(List<String> cliArgs, CommandSpec spec) {
+    private static CommandLine getCurrentCommandLine(List<String> cliArgs, CommandSpec spec) {
         for (String arg : cliArgs) {
             CommandLine command = spec.subcommands().get(arg);
 
             if (command != null) {
-                return command.getCommandSpec();
+                return command;
             }
         }
 
         return null;
     }
 
+    private static AbstractCommand getCurrentCommand(CommandLine command) {
+        if (command != null && command.getCommand() instanceof AbstractCommand) {
+            return command.getCommand();
+        } else {
+            return null;
+        }
+    }
+
     private static void addOptionsToCli(CommandSpec commandSpec, boolean includeBuildTime, boolean includeRuntime) {
-        Map<OptionCategory, List<PropertyMapper>> mappers = new EnumMap<>(OptionCategory.class);
+        Map<OptionCategory, List<PropertyMapper<?>>> mappers = new EnumMap<>(OptionCategory.class);
 
         if (includeRuntime) {
             mappers.putAll(PropertyMappers.getRuntimeMappers());
         }
 
         if (includeBuildTime) {
-            for (Map.Entry<OptionCategory, List<PropertyMapper>> entry : PropertyMappers.getBuildTimeMappers()
+            for (Map.Entry<OptionCategory, List<PropertyMapper<?>>> entry : PropertyMappers.getBuildTimeMappers()
                     .entrySet()) {
-                List<PropertyMapper> result = new ArrayList<>(mappers.getOrDefault(entry.getKey(), Collections.emptyList()));
+                List<PropertyMapper<?>> result = new ArrayList<>(mappers.getOrDefault(entry.getKey(), Collections.emptyList()));
 
                 result.addAll(entry.getValue());
 
@@ -411,21 +434,9 @@ public final class Picocli {
         addMappedOptionsToArgGroups(commandSpec, mappers);
     }
 
-    private static void addMappedOptionsToArgGroups(CommandSpec cSpec, Map<OptionCategory, List<PropertyMapper>> propertyMappers) {
-        for(OptionCategory category : OptionCategory.values()) {
-            if (cSpec.name().equals(Export.NAME)) {
-                // The export command should show only export options
-                if (category != OptionCategory.EXPORT) {
-                    continue;
-                }
-            } else {
-                // No other command should have the export options
-                if (category == OptionCategory.EXPORT) {
-                    continue;
-                }
-            }
-
-            List<PropertyMapper> mappersInCategory = propertyMappers.get(category);
+    private static void addMappedOptionsToArgGroups(CommandSpec cSpec, Map<OptionCategory, List<PropertyMapper<?>>> propertyMappers) {
+        for (OptionCategory category : OptionCategory.values()) {
+            List<PropertyMapper<?>> mappersInCategory = propertyMappers.get(category);
 
             if (mappersInCategory == null) {
                 //picocli raises an exception when an ArgGroup is empty, so ignore it when no mappings found for a category.
@@ -437,7 +448,7 @@ public final class Picocli {
                     .order(category.getOrder())
                     .validate(false);
 
-            for (PropertyMapper mapper: mappersInCategory) {
+            for (PropertyMapper<?> mapper : mappersInCategory) {
                 String name = mapper.getCliFormat();
                 String description = mapper.getDescription();
 
