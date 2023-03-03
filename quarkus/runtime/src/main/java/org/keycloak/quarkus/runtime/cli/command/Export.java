@@ -29,26 +29,6 @@ public final class Export extends AbstractExportImportCommand implements Runnabl
 
     public static final String NAME = "export";
 
-    @Option(names = "--users",
-            arity = "1",
-            description = "Set how users should be exported. Possible values are: skip, realm_file, same_file, different_files.",
-            paramLabel = "<strategy>",
-            defaultValue = "different_files")
-    String users;
-
-    @Option(names = "--users-per-file",
-            arity = "1",
-            description = "Set the number of users per file. It’s used only if --users=different_files.",
-            paramLabel = "<number>",
-            defaultValue = "50")
-    Integer usersPerFile;
-
-    @Option(names = "--realm",
-            arity = "1",
-            description = "Set the name of the realm to export. If not set, all realms are going to be exported.",
-            paramLabel = "<realm>")
-    String realm;
-
     public Export() {
         super(ACTION_EXPORT);
     }

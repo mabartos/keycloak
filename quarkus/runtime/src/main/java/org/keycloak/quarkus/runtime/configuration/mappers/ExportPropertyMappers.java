@@ -55,11 +55,11 @@ final class ExportPropertyMappers {
                         .build(),
                 fromOption(ExportOptions.USERS)
                         .to("kc.spi-export-dir-users-export-strategy")
-                        .paramLabel("realm")
+                        .paramLabel("strategy")
                         .build(),
                 fromOption(ExportOptions.USERS_PER_FILE)
                         .to("kc.spi-export-dir-users-per-file")
-                        .paramLabel("realm")
+                        .paramLabel("number")
                         .build()
         };
     }

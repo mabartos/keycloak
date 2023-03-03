@@ -20,34 +20,36 @@ package org.keycloak.config;
 public class ExportOptions {
 
     public static final Option<String> FILE = new OptionBuilder<>("file", String.class)
-            .category(OptionCategory.GENERAL)
-            .hidden()
-            .buildTime(false)
-            .build();
-
-    public static final Option<String> REALM = new OptionBuilder<>("realm", String.class)
-            .category(OptionCategory.GENERAL)
-            .hidden()
+            .category(OptionCategory.EXPORT)
+            .hidden() // hidden for now until we refactor the import command
             .buildTime(false)
             .build();
 
     public static final Option<String> DIR = new OptionBuilder<>("dir", String.class)
-            .category(OptionCategory.GENERAL)
-            .hidden()
+            .category(OptionCategory.EXPORT)
+            .hidden() // hidden for now until we refactor the import command
+            .buildTime(false)
+            .build();
+
+    public static final Option<String> REALM = new OptionBuilder<>("realm", String.class)
+            .category(OptionCategory.EXPORT)
+            .description("Set the name of the realm to export. If not set, all realms are going to be exported.")
             .buildTime(false)
             .build();
 
     public static final Option<String> USERS_PER_FILE = new OptionBuilder<>("users-per-file", String.class)
-            .category(OptionCategory.GENERAL)
-            .hidden()
+            .category(OptionCategory.EXPORT)
             .defaultValue("50")
+            .description("Set the number of users per file. It is used only if 'users' is set to 'different_files'.")
             .buildTime(false)
             .build();
 
     public static final Option<String> USERS = new OptionBuilder<>("users", String.class)
-            .category(OptionCategory.GENERAL)
-            .hidden()
+            .category(OptionCategory.EXPORT)
             .defaultValue("different_files")
+            .description("Set how users should be exported.")
+            // see UsersExportStrategy
+            .expectedValues("skip", "realm_file", "same_file", "different_files")
             .buildTime(false)
             .build();
 
