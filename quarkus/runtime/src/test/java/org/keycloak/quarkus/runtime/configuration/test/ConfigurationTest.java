@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import io.quarkus.hibernate.orm.runtime.dialect.QuarkusH2Dialect;
-import io.quarkus.hibernate.orm.runtime.dialect.QuarkusPostgreSQL10Dialect;
+import org.hibernate.dialect.PostgreSQLDialect;
 import io.quarkus.runtime.LaunchMode;
 import io.smallrye.config.SmallRyeConfig;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -277,7 +277,7 @@ public class ConfigurationTest {
     public void testDatabaseKindProperties() {
         System.setProperty(CLI_ARGS, "--db=postgres" + ARG_SEPARATOR + "--db-url=jdbc:postgresql://localhost/keycloak");
         SmallRyeConfig config = createConfig();
-        assertEquals("io.quarkus.hibernate.orm.runtime.dialect.QuarkusPostgreSQL10Dialect",
+        assertEquals("org.hibernate.dialect.PostgreSQLDialect",
             config.getConfigValue("quarkus.hibernate-orm.dialect").getValue());
         assertEquals("jdbc:postgresql://localhost/keycloak", config.getConfigValue("quarkus.datasource.jdbc.url").getValue());
         assertEquals("postgresql", config.getConfigValue("quarkus.datasource.db-kind").getValue());
@@ -287,7 +287,7 @@ public class ConfigurationTest {
     public void testDefaultDbPropertiesGetApplied() {
         System.setProperty(CLI_ARGS, "--db=postgres" + ARG_SEPARATOR + "--db-url-host=myhost" + ARG_SEPARATOR + "--db-url-database=kcdb" + ARG_SEPARATOR + "--db-url-properties=?foo=bar");
         SmallRyeConfig config = createConfig();
-        assertEquals("io.quarkus.hibernate.orm.runtime.dialect.QuarkusPostgreSQL10Dialect",
+        assertEquals("org.hibernate.dialect.PostgreSQLDialect",
                 config.getConfigValue("quarkus.hibernate-orm.dialect").getValue());
         assertEquals("jdbc:postgresql://myhost:5432/kcdb?foo=bar", config.getConfigValue("quarkus.datasource.jdbc.url").getValue());
         assertEquals("postgresql", config.getConfigValue("quarkus.datasource.db-kind").getValue());
@@ -297,7 +297,7 @@ public class ConfigurationTest {
     public void testRemoveSpaceFromValue() {
         System.setProperty(CLI_ARGS, "--db=postgres      ");
         SmallRyeConfig config = createConfig();
-        assertEquals("io.quarkus.hibernate.orm.runtime.dialect.QuarkusPostgreSQL10Dialect",
+        assertEquals("org.hibernate.dialect.PostgreSQLDialect",
                 config.getConfigValue("quarkus.hibernate-orm.dialect").getValue());
         assertEquals("postgres", config.getConfigValue("quarkus.datasource.db-kind").getRawValue());
     }
@@ -347,7 +347,7 @@ public class ConfigurationTest {
         System.setProperty(CLI_ARGS, "--db=postgres");
         config = createConfig();
         assertEquals("jdbc:postgresql://localhost:5432/keycloak?test=test&test1=test1", config.getConfigValue("quarkus.datasource.jdbc.url").getValue());
-        assertEquals(QuarkusPostgreSQL10Dialect.class.getName(), config.getConfigValue("quarkus.hibernate-orm.dialect").getValue());
+        assertEquals(PostgreSQLDialect.class.getName(), config.getConfigValue("quarkus.hibernate-orm.dialect").getValue());
         assertEquals(PGXADataSource.class.getName(), config.getConfigValue("quarkus.datasource.jdbc.driver").getValue());
 
         System.setProperty(CLI_ARGS, "--db-schema=test-schema");
