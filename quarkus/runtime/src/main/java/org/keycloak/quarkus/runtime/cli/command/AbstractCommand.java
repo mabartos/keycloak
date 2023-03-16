@@ -41,17 +41,10 @@ public abstract class AbstractCommand {
     }
 
     /**
-     * Returns true if this command should include runtime options for the CLI.
+     * Returns an information related to execution time of options present in command
      */
-    public boolean includeRuntime() {
-        return false;
-    }
-
-    /**
-     * Returns true if this command should include build time options for the CLI.
-     */
-    public boolean includeBuildTime() {
-        return false;
+    public OptionsExecutionTime optionsExecutionTime() {
+        return OptionsExecutionTime.NONE;
     }
 
     /**
@@ -59,5 +52,19 @@ public abstract class AbstractCommand {
      */
     public List<OptionCategory> getOptionCategories() {
         return Arrays.asList(OptionCategory.values());
+    }
+
+    /**
+     * Specify what type of execution the command support
+     * RUNTIME -
+     * BUILD -
+     * DEPENDENT -
+     * NONE -
+     */
+    public enum OptionsExecutionTime {
+        RUNTIME,
+        BUILD,
+        DEPENDENT,
+        NONE
     }
 }

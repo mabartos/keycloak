@@ -93,7 +93,7 @@ public final class Start extends AbstractStartCommand implements Runnable {
     }
 
     @Override
-    public boolean includeRuntime() {
-        return true;
+    public OptionsExecutionTime optionsExecutionTime() {
+        return OptionsExecutionTime.DEPENDENT;
     }
 }

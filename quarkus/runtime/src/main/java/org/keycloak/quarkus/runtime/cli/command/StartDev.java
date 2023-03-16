@@ -59,7 +59,7 @@ public final class StartDev extends AbstractStartCommand implements Runnable {
     }
 
     @Override
-    public boolean includeRuntime() {
-        return true;
+    public OptionsExecutionTime optionsExecutionTime() {
+        return OptionsExecutionTime.DEPENDENT;
     }
 }

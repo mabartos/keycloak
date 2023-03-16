@@ -19,7 +19,6 @@ package org.keycloak.quarkus.runtime.cli;
 
 import static org.keycloak.quarkus.runtime.Environment.isRebuildCheck;
 import static org.keycloak.quarkus.runtime.Environment.isRebuilt;
-import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.*;
 import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.AUTO_BUILD_OPTION_LONG;
 import static org.keycloak.quarkus.runtime.configuration.ConfigArgsConfigSource.parseConfigArgs;
 import static org.keycloak.quarkus.runtime.configuration.Configuration.OPTION_PART_SEPARATOR;
@@ -50,6 +49,7 @@ import java.util.stream.Collectors;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.keycloak.config.MultiOption;
 import org.keycloak.config.OptionCategory;
+import org.keycloak.quarkus.runtime.Environment;
 import org.keycloak.quarkus.runtime.cli.command.AbstractCommand;
 import org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand;
 import org.keycloak.quarkus.runtime.cli.command.Build;
@@ -62,15 +62,19 @@ import org.keycloak.quarkus.runtime.cli.command.StartDev;
 import org.keycloak.quarkus.runtime.configuration.ConfigArgsConfigSource;
 import org.keycloak.quarkus.runtime.configuration.PersistedConfigSource;
 import org.keycloak.quarkus.runtime.configuration.QuarkusPropertiesConfigSource;
-import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper;
-import org.keycloak.quarkus.runtime.Environment;
+import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
 
 import io.smallrye.config.ConfigValue;
 import picocli.CommandLine;
+import picocli.CommandLine.Model.ArgGroupSpec;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Model.OptionSpec;
-import picocli.CommandLine.Model.ArgGroupSpec;
+
+import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.AUTO_BUILD_OPTION_SHORT;
+import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.DEFAULT_WARN_MESSAGE_REPEATED_AUTO_BUILD_OPTION;
+import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.OPTIMIZED_BUILD_OPTION_LONG;
+import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.OptionsExecutionTime;
 
 public final class Picocli {
 
@@ -364,21 +368,28 @@ public final class Picocli {
 
     private static void addCommandOptions(List<String> cliArgs, CommandLine command) {
         if (command != null) {
+            OptionsExecutionTime optionsExecutionTime = OptionsExecutionTime.NONE;
             boolean includeBuildTime = false;
             boolean includeRuntime = false;
 
             if (command.getCommand() instanceof AbstractCommand) {
                 AbstractCommand abstractStartCommand = command.getCommand();
-                includeRuntime = abstractStartCommand.includeRuntime();
-                includeBuildTime = abstractStartCommand.includeBuildTime();
+                optionsExecutionTime = abstractStartCommand.optionsExecutionTime();
             }
 
-            if (!includeBuildTime && !includeRuntime) {
-                return;
-            } else if (includeRuntime && !includeBuildTime && (Start.NAME.equals(command.getCommandName())) || StartDev.NAME.equals(command.getCommandName())) {
-                includeBuildTime = isRebuilt() || !cliArgs.contains(OPTIMIZED_BUILD_OPTION_LONG);
-            } else if (includeBuildTime && !includeRuntime) {
-                includeRuntime = isRebuildCheck();
+            switch (optionsExecutionTime) {
+                case NONE:
+                    return;
+                case BUILD:
+                    includeBuildTime = true;
+                    includeRuntime = isRebuildCheck();
+                    break;
+                case RUNTIME:
+                    includeRuntime = true;
+                    break;
+                case DEPENDENT:
+                    includeRuntime = true;
+                    includeBuildTime = isRebuilt() || !cliArgs.contains(OPTIMIZED_BUILD_OPTION_LONG);
             }
 
             addOptionsToCli(command, includeBuildTime, includeRuntime);

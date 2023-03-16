@@ -55,7 +55,7 @@ public abstract class AbstractExportImportCommand extends AbstractStartCommand i
     }
 
     @Override
-    public boolean includeRuntime() {
-        return true;
+    public OptionsExecutionTime optionsExecutionTime() {
+        return OptionsExecutionTime.RUNTIME;
     }
 }

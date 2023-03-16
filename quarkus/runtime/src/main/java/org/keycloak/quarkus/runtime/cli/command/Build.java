@@ -86,8 +86,8 @@ public final class Build extends AbstractCommand implements Runnable {
     }
 
     @Override
-    public boolean includeBuildTime() {
-        return true;
+    public OptionsExecutionTime optionsExecutionTime() {
+        return OptionsExecutionTime.BUILD;
     }
 
     public List<OptionCategory> getOptionCategories() {
