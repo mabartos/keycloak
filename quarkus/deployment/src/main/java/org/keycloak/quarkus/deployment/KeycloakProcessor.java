@@ -21,7 +21,6 @@ import static org.keycloak.quarkus.runtime.KeycloakRecorder.DEFAULT_HEALTH_ENDPO
 import static org.keycloak.quarkus.runtime.KeycloakRecorder.DEFAULT_METRICS_ENDPOINT;
 import static org.keycloak.quarkus.runtime.Providers.getProviderManager;
 import static org.keycloak.quarkus.runtime.configuration.Configuration.getKcConfigValue;
-import static org.keycloak.quarkus.runtime.configuration.Configuration.getOptionalKcBooleanValue;
 import static org.keycloak.quarkus.runtime.configuration.Configuration.getOptionalKcValue;
 import static org.keycloak.quarkus.runtime.configuration.Configuration.getOptionalValue;
 import static org.keycloak.quarkus.runtime.configuration.Configuration.getPropertyNames;
@@ -124,7 +123,6 @@ import org.keycloak.authorization.policy.provider.js.DeployedScriptPolicyFactory
 import org.keycloak.common.Profile;
 import org.keycloak.common.util.StreamUtil;
 import org.keycloak.config.DatabaseOptions;
-import org.keycloak.config.TransactionOptions;
 import org.keycloak.connections.jpa.DefaultJpaConnectionProviderFactory;
 import org.keycloak.connections.jpa.updater.liquibase.LiquibaseJpaUpdaterProviderFactory;
 import org.keycloak.connections.jpa.updater.liquibase.conn.DefaultLiquibaseConnectionProvider;
@@ -322,6 +320,12 @@ class KeycloakProcessor {
         if (storage != null && Objects.equals(storage.getValue(), StorageOptions.StorageType.jpa.name())) {
             // if JPA map storage is enabled, pass on the property to 'EventListenerIntegrator' to activate the necessary event listeners for JPA map storage
             unitProperties.setProperty(EventListenerIntegrator.JPA_MAP_STORAGE_ENABLED, Boolean.TRUE.toString());
+        } else {
+            // With the update to Hibernate 6.2.CR3, when updating multiple entities with a composite key and non-primitive parameters,
+            // this started to fail with the legacy store. As a workaround, ordering updates is disabled.
+            // This might have a negative performance impact for batch updates, and should therefore be reverted.
+            // https://github.com/keycloak/keycloak/issues/19321
+            unitProperties.setProperty(AvailableSettings.ORDER_UPDATES, Boolean.FALSE.toString());
         }
 
         unitProperties.setProperty(AvailableSettings.QUERY_STARTUP_CHECKING, Boolean.FALSE.toString());
