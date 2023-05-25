@@ -140,6 +140,19 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak.testsuite</groupId>
+            <artifactId>keycloak-undertow-adapter-jakarta</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.keycloak.testsuite</groupId>
             <artifactId>integration-arquillian-util</artifactId>
             <version>${project.version}</version>
@@ -495,26 +508,6 @@
             </build>
         </profile>
         <profile>
-            <id>app-server-undertow</id>
-            <activation>
-                <property>
-                    <name>app.server</name>
-                    <value>undertow</value>
-                </property>
-            </activation>
-            <properties>
-                <app.server>undertow</app.server> <!--in case the profile is called directly-->
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>org.keycloak.testsuite</groupId>
-                    <artifactId>integration-arquillian-servers-app-server-undertow</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
             <id>app-server-wildfly</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -533,6 +526,16 @@
                     <artifactId>integration-arquillian-servers-app-server-wildfly</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.keycloak</groupId>
+                            <artifactId>keycloak-undertow-adapter</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>org.keycloak</groupId>
+                            <artifactId>keycloak-wildfly-elytron-oidc-adapter</artifactId>
+                        </exclusion>
+                    </exclusions>
                 </dependency>
                 <!--required by creaper-core-->
                 <dependency>
