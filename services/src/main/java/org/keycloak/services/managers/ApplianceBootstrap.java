@@ -37,22 +37,25 @@ import org.keycloak.services.ServicesLogger;
 public class ApplianceBootstrap {
 
     private final KeycloakSession session;
+    private RealmModel realm;
 
     public ApplianceBootstrap(KeycloakSession session) {
         this.session = session;
     }
 
-    public boolean isNewInstall() {
-        if (session.realms().getRealmByName(Config.getAdminRealm()) != null) {
-            return false;
-        } else {
-            return true;
+    private RealmModel getRealm() {
+        if (realm == null) {
+            realm = session.realms().getRealmByName(Config.getAdminRealm());
         }
+        return realm;
+    }
+
+    public boolean isNewInstall() {
+        return getRealm() == null;
     }
 
     public boolean isNoMasterUser() {
-        RealmModel realm = session.realms().getRealmByName(Config.getAdminRealm());
-        return session.users().getUsersCount(realm) == 0;
+        return session.users().getUsersCount(getRealm()) == 0;
     }
 
     public boolean createMasterRealm() {
@@ -89,12 +92,13 @@ public class ApplianceBootstrap {
         session.getContext().setRealm(realm);
         DefaultKeyProviders.createProviders(realm);
 
+        this.realm = realm;
+
         return true;
     }
 
     public void createMasterRealmUser(String username, String password) {
-        RealmModel realm = session.realms().getRealmByName(Config.getAdminRealm());
-        session.getContext().setRealm(realm);
+        session.getContext().setRealm(getRealm());
 
         if (session.users().getUsersCount(realm) > 0) {
             ServicesLogger.LOGGER.addAdminUserFailedAdminExists(Config.getAdminRealm());
