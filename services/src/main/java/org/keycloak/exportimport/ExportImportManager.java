@@ -25,6 +25,7 @@ import org.keycloak.models.KeycloakSessionTask;
 import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.provider.ProviderFactory;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -107,52 +108,53 @@ public class ExportImportManager {
 
     public void runImportAtStartup(String dir) throws IOException {
         ExportImportConfig.setReplacePlaceholders(true);
-        ExportImportConfig.setAction("import");
+        try (Closeable ignored = ExportImportConfig.setAction("import")) {
 
-        Stream<ProviderFactory> factories = sessionFactory.getProviderFactoriesStream(ImportProvider.class);
+            Stream<ProviderFactory> factories = sessionFactory.getProviderFactoriesStream(ImportProvider.class);
 
-        for (ProviderFactory factory : factories.collect(Collectors.toList())) {
-            String providerId = factory.getId();
+            for (ProviderFactory factory : factories.collect(Collectors.toList())) {
+                String providerId = factory.getId();
 
-            if ("dir".equals(providerId)) {
-                ExportImportConfig.setDir(dir);
-                ImportProvider importProvider = session.getProvider(ImportProvider.class, providerId);
-                importProvider.importModel();
-            } else if ("singleFile".equals(providerId)) {
-                Set<String> filesToImport = new HashSet<>();
+                if ("dir".equals(providerId)) {
+                    ExportImportConfig.setDir(dir);
+                    ImportProvider importProvider = session.getProvider(ImportProvider.class, providerId);
+                    importProvider.importModel();
+                } else if ("singleFile".equals(providerId)) {
+                    Set<String> filesToImport = new HashSet<>();
 
-                File[] files = Paths.get(dir).toFile().listFiles();
-                Objects.requireNonNull(files, "directory not found");
-                for (File file : files) {
-                    Path filePath = file.toPath();
+                    File[] files = Paths.get(dir).toFile().listFiles();
+                    Objects.requireNonNull(files, "directory not found");
+                    for (File file : files) {
+                        Path filePath = file.toPath();
 
-                    if (!(Files.exists(filePath) && Files.isRegularFile(filePath) && filePath.toString().endsWith(".json"))) {
-                        logger.debugf("Ignoring import file because it is not a valid file: %s", file);
-                        continue;
-                    }
-
-                    String fileName = file.getName();
-
-                    if (fileName.contains("-realm.json") || fileName.contains("-users-")) {
-                        continue;
-                    }
-
-                    filesToImport.add(file.getAbsolutePath());
-                }
-
-                for (String file : filesToImport) {
-                    ExportImportConfig.setFile(file);
-                    KeycloakModelUtils.runJobInTransaction(sessionFactory, new KeycloakSessionTask() {
-                        @Override
-                        public void run(KeycloakSession session) {
-                            ImportProvider importProvider = session.getProvider(ImportProvider.class, providerId);
-                            try {
-                                importProvider.importModel();
-                            } catch (IOException cause) {
-                                throw new RuntimeException(cause);
-                            }
+                        if (!(Files.exists(filePath) && Files.isRegularFile(filePath) && filePath.toString().endsWith(".json"))) {
+                            logger.debugf("Ignoring import file because it is not a valid file: %s", file);
+                            continue;
                         }
-                    });
+
+                        String fileName = file.getName();
+
+                        if (fileName.contains("-realm.json") || fileName.contains("-users-")) {
+                            continue;
+                        }
+
+                        filesToImport.add(file.getAbsolutePath());
+                    }
+
+                    for (String file : filesToImport) {
+                        ExportImportConfig.setFile(file);
+                        KeycloakModelUtils.runJobInTransaction(sessionFactory, new KeycloakSessionTask() {
+                            @Override
+                            public void run(KeycloakSession session) {
+                                ImportProvider importProvider = session.getProvider(ImportProvider.class, providerId);
+                                try {
+                                    importProvider.importModel();
+                                } catch (IOException cause) {
+                                    throw new RuntimeException(cause);
+                                }
+                            }
+                        });
+                    }
                 }
             }
         }
