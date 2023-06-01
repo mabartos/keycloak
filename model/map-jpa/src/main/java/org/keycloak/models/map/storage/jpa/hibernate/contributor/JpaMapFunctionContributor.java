@@ -26,6 +26,7 @@ import org.hibernate.type.BasicTypeReference;
 import org.hibernate.type.SqlTypes;
 import org.hibernate.type.StandardBasicTypes;
 import org.jboss.logging.Logger;
+import org.keycloak.common.util.Environment;
 import org.keycloak.models.map.storage.jpa.hibernate.jsonb.JsonbType;
 
 /**
@@ -37,6 +38,7 @@ public class JpaMapFunctionContributor implements FunctionContributor {
 
     @Override
     public void contributeFunctions(FunctionContributions fc) {
+        //TODO Why is it executed with legacy store?
 
         fc.getFunctionRegistry().registerPattern("->>", "?1->>?2", getBasicType(fc, StandardBasicTypes.STRING));
         fc.getFunctionRegistry().registerPattern("->", "?1->?2", getJsonbBasicType(fc));

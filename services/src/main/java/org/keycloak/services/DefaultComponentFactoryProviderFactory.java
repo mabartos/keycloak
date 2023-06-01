@@ -85,6 +85,11 @@ public class DefaultComponentFactoryProviderFactory implements ComponentFactoryP
     }
 
     @Override
+    public boolean initAtRuntime(){
+        return true;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T extends Provider> ProviderFactory<T> getProviderFactory(Class<T> clazz, String realmId, String componentId, Function<KeycloakSessionFactory, ComponentModel> modelGetter) {
         ProviderFactory res = componentsMap.get().get(componentId);

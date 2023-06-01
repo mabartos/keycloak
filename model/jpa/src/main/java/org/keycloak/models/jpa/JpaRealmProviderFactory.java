@@ -55,6 +55,11 @@ public class JpaRealmProviderFactory implements RealmProviderFactory, ProviderEv
     }
 
     @Override
+    public boolean initAtRuntime(){
+        return true;
+    }
+
+    @Override
     public String getId() {
         return PROVIDER_ID;
     }

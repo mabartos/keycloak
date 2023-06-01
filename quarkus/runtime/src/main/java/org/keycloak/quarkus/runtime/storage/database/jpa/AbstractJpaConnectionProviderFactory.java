@@ -21,6 +21,7 @@ import java.lang.annotation.Annotation;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
+
 import jakarta.enterprise.inject.Instance;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -73,6 +74,11 @@ public abstract class AbstractJpaConnectionProviderFactory implements JpaConnect
         if (entityManagerFactory != null) {
             entityManagerFactory.close();
         }
+    }
+
+    @Override
+    public boolean initAtRuntime() {
+        return true;
     }
 
     protected abstract EntityManagerFactory getEntityManagerFactory();

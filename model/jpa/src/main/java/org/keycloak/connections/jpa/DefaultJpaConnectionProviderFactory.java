@@ -147,6 +147,11 @@ public class DefaultJpaConnectionProviderFactory implements JpaConnectionProvide
 
     }
 
+    @Override
+    public boolean initAtRuntime(){
+        return true;
+    }
+
     protected void checkJtaEnabled(KeycloakSessionFactory factory) {
         jtaLookup = (JtaTransactionManagerLookup) factory.getProviderFactory(JtaTransactionManagerLookup.class);
         if (jtaLookup != null) {

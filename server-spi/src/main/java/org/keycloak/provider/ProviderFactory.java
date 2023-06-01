@@ -67,4 +67,8 @@ public interface ProviderFactory<T extends Provider> {
     default List<ProviderConfigProperty> getConfigMetadata() {
         return Collections.emptyList();
     }
+
+    default boolean initAtRuntime(){
+        return false;
+    }
 }

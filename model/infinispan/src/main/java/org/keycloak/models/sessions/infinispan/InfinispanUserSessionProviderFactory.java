@@ -150,6 +150,11 @@ public class InfinispanUserSessionProviderFactory implements UserSessionProvider
         });
     }
 
+    @Override
+    public boolean initAtRuntime(){
+        return true;
+    }
+
     // Max count of worker errors. Initialization will end with exception when this number is reached
     private int getMaxErrors() {
         return config.getInt("maxErrors", 20);

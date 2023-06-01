@@ -92,4 +92,9 @@ public class InfinispanSingleUseObjectProviderFactory implements SingleUseObject
     public int order() {
         return PROVIDER_PRIORITY;
     }
+
+    @Override
+    public boolean initAtRuntime(){
+        return true;
+    }
 }

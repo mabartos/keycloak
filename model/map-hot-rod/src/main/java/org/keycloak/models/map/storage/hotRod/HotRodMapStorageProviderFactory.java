@@ -189,6 +189,11 @@ public class HotRodMapStorageProviderFactory implements AmphibianProviderFactory
     }
 
     @Override
+    public boolean initAtRuntime(){
+        return true;
+    }
+
+    @Override
     public String getId() {
         return PROVIDER_ID;
     }

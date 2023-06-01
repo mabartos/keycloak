@@ -85,6 +85,23 @@ public final class QuarkusKeycloakSessionFactory extends DefaultKeycloakSessionF
                 }
             }
         }
+
+        for (Spi spi : spis) {
+            for (Map<String, Class<? extends ProviderFactory>> factoryClazz : factories.get(spi).values()) {
+                for (Map.Entry<String, Class<? extends ProviderFactory>> entry : factoryClazz.entrySet()) {
+                    ProviderFactory factory = preConfiguredProviders.get(entry.getKey());
+
+                    if (factory == null) {
+                        factory = lookupProviderFactory(entry.getValue());
+                    }
+
+                    if (!factory.initAtRuntime()) {
+                        factory.postInit(this);
+                    }
+                }
+            }
+        }
+
     }
 
     private QuarkusKeycloakSessionFactory() {
@@ -101,7 +118,7 @@ public final class QuarkusKeycloakSessionFactory extends DefaultKeycloakSessionF
         }
         for (Map<String, ProviderFactory> f : factoriesMap.values()) {
             for (ProviderFactory factory : f.values()) {
-                if (factory != componentFactoryPF) {
+                if (factory != componentFactoryPF && factory.initAtRuntime()) {
                     factory.postInit(this);
                 }
             }

@@ -65,6 +65,11 @@ public class LegacyDatastoreProviderFactory implements DatastoreProviderFactory,
     }
 
     @Override
+    public boolean initAtRuntime(){
+        return true;
+    }
+
+    @Override
     public void close() {
         onClose.run();
     }
