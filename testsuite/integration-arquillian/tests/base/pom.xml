@@ -188,11 +188,6 @@
             <artifactId>jakarta.ws.rs-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.wildfly.core</groupId>
-            <artifactId>wildfly-controller-client</artifactId>
-            <version>${wildfly.core.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>org.jboss.spec.javax.servlet</groupId>
