@@ -44,7 +44,7 @@ import io.quarkus.deployment.builditem.ShutdownContextBuildItem;
 public class CacheBuildSteps {
 
     @Consume(KeycloakSessionFactoryPreInitBuildItem.class)
-    @Record(ExecutionTime.RUNTIME_INIT)
+    @Record(ExecutionTime.STATIC_INIT)
     @BuildStep(onlyIf = IsLegacyStoreEnabled.class)
     void configureInfinispan(KeycloakRecorder recorder, BuildProducer<SyntheticBeanBuildItem> syntheticBeanBuildItems, ShutdownContextBuildItem shutdownContext) {
         String configFile = getConfigValue("kc.spi-connections-infinispan-quarkus-config-file").getValue();

@@ -17,44 +17,60 @@
 
 package org.keycloak.quarkus.runtime;
 
-import java.lang.annotation.Annotation;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.function.BiConsumer;
-import java.util.function.Predicate;
-
 import io.agroal.api.AgroalDataSource;
 import io.quarkus.agroal.DataSource;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.InstanceHandle;
 import io.quarkus.hibernate.orm.runtime.integration.HibernateOrmIntegrationRuntimeInitListener;
-import liquibase.Scope;
-
-import org.hibernate.cfg.AvailableSettings;
-import org.infinispan.manager.DefaultCacheManager;
+import io.quarkus.runtime.RuntimeValue;
+import io.quarkus.runtime.ShutdownContext;
+import io.quarkus.runtime.annotations.Recorder;
+import io.smallrye.config.ConfigValue;
 import io.vertx.ext.web.RoutingContext;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.spi.PersistenceUnitTransactionType;
+import liquibase.Scope;
+import liquibase.servicelocator.ServiceLocator;
+import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
+import org.infinispan.manager.DefaultCacheManager;
+import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.AnnotationTarget;
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.IndexView;
 import org.keycloak.Config;
 import org.keycloak.common.Profile;
 import org.keycloak.common.crypto.CryptoIntegration;
 import org.keycloak.common.crypto.CryptoProvider;
 import org.keycloak.common.crypto.FipsMode;
+import org.keycloak.config.DatabaseOptions;
+import org.keycloak.config.StorageOptions;
+import org.keycloak.models.map.storage.jpa.EventListenerIntegrator;
+import org.keycloak.provider.Provider;
+import org.keycloak.provider.ProviderFactory;
+import org.keycloak.provider.Spi;
 import org.keycloak.quarkus.runtime.configuration.Configuration;
 import org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider;
 import org.keycloak.quarkus.runtime.integration.QuarkusKeycloakSessionFactory;
 import org.keycloak.quarkus.runtime.integration.web.QuarkusRequestFilter;
 import org.keycloak.quarkus.runtime.storage.database.liquibase.FastServiceLocator;
-import org.keycloak.provider.Provider;
-import org.keycloak.provider.ProviderFactory;
-import org.keycloak.provider.Spi;
 import org.keycloak.quarkus.runtime.storage.legacy.infinispan.CacheManagerFactory;
 import org.keycloak.theme.ClasspathThemeProviderFactory;
 
-import io.quarkus.runtime.RuntimeValue;
-import io.quarkus.runtime.ShutdownContext;
-import io.quarkus.runtime.annotations.Recorder;
-import liquibase.servicelocator.ServiceLocator;
+import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
+
+import static org.keycloak.quarkus.runtime.configuration.Configuration.getKcConfigValue;
+import static org.keycloak.quarkus.runtime.configuration.Configuration.getOptionalKcValue;
+import static org.keycloak.quarkus.runtime.configuration.Configuration.getOptionalValue;
 
 @Recorder
 public class KeycloakRecorder {
@@ -82,6 +98,56 @@ public class KeycloakRecorder {
             Map<String, ProviderFactory> preConfiguredProviders,
             List<ClasspathThemeProviderFactory.ThemesRepresentation> themes, boolean reaugmented) {
         QuarkusKeycloakSessionFactory.setInstance(new QuarkusKeycloakSessionFactory(factories, defaultProviders, preConfiguredProviders, themes, reaugmented));
+    }
+
+    public void createSessionFactory(
+            Map<Spi, Map<Class<? extends Provider>, Map<String, Class<? extends ProviderFactory>>>> factories,
+            Map<Class<? extends Provider>, String> defaultProviders,
+            Map<String, ProviderFactory> preConfiguredProviders,
+            List<ClasspathThemeProviderFactory.ThemesRepresentation> themes,
+            boolean reaugmented) {
+        QuarkusKeycloakSessionFactory.setInstance(new QuarkusKeycloakSessionFactory(factories, defaultProviders, preConfiguredProviders, themes, reaugmented));
+    }
+
+    public void configureDefaultPersistenceUnitEntities(RuntimeValue<ParsedPersistenceXmlDescriptor> descriptor,
+                                                        IndexView index,
+                                                        List<String> userManagedEntities) {
+        Collection<AnnotationInstance> annotations = index.getAnnotations(DotName.createSimple(Entity.class.getName()));
+
+        for (AnnotationInstance annotation : annotations) {
+            AnnotationTarget target = annotation.target();
+            String targetName = target.asClass().name().toString();
+
+            if (!userManagedEntities.contains(targetName)
+                    && (!targetName.startsWith("org.keycloak") || targetName.startsWith("org.keycloak.testsuite"))) {
+                descriptor.getValue().addClasses(targetName);
+            }
+        }
+    }
+
+    public void configureDefaultPersistenceUnitProperties(RuntimeValue<ParsedPersistenceXmlDescriptor> descriptorValue) {
+        final ParsedPersistenceXmlDescriptor descriptor = descriptorValue.getValue();
+        Properties unitProperties = descriptor.getProperties();
+
+        final Optional<String> dialect = getOptionalKcValue(DatabaseOptions.DB_DIALECT.getKey());
+        dialect.ifPresent(d -> unitProperties.setProperty(AvailableSettings.DIALECT, d));
+
+        final Optional<String> defaultSchema = getOptionalKcValue(DatabaseOptions.DB_SCHEMA.getKey());
+        defaultSchema.ifPresent(ds -> unitProperties.setProperty(AvailableSettings.DEFAULT_SCHEMA, ds));
+
+        unitProperties.setProperty(AvailableSettings.JAKARTA_TRANSACTION_TYPE, PersistenceUnitTransactionType.JTA.name());
+        descriptor.setTransactionType(PersistenceUnitTransactionType.JTA);
+
+        final Optional<String> lockTimeoutConfigValue = getOptionalValue("spi-map-storage-jpa-lock-timeout");
+        lockTimeoutConfigValue.ifPresent(v -> unitProperties.setProperty(AvailableSettings.JAKARTA_LOCK_TIMEOUT, v));
+
+        final ConfigValue storage = getKcConfigValue(StorageOptions.STORAGE.getKey());
+        if (storage != null && Objects.equals(storage.getValue(), StorageOptions.StorageType.jpa.name())) {
+            // if JPA map storage is enabled, pass on the property to 'EventListenerIntegrator' to activate the necessary event listeners for JPA map storage
+            unitProperties.setProperty(EventListenerIntegrator.JPA_MAP_STORAGE_ENABLED, Boolean.TRUE.toString());
+        }
+
+        unitProperties.setProperty(AvailableSettings.QUERY_STARTUP_CHECKING, Boolean.FALSE.toString());
     }
 
     public RuntimeValue<CacheManagerFactory> createCacheInitializer(String config, boolean metricsEnabled, ShutdownContext shutdownContext) {

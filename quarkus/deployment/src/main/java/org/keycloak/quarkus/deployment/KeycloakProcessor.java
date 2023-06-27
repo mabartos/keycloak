@@ -25,6 +25,7 @@ import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.Consume;
 import io.quarkus.deployment.annotations.ExecutionTime;
+import io.quarkus.deployment.annotations.Produce;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.BootstrapConfigSetupCompleteBuildItem;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
@@ -44,6 +45,8 @@ import io.quarkus.vertx.http.deployment.FilterBuildItem;
 import io.quarkus.vertx.http.deployment.NonApplicationRootPathBuildItem;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
 import io.smallrye.config.ConfigValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.spi.PersistenceUnitTransactionType;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 import org.hibernate.jpa.boot.internal.PersistenceXmlParser;
@@ -112,8 +115,6 @@ import org.keycloak.util.JsonSerialization;
 import org.keycloak.vault.FilesKeystoreVaultProviderFactory;
 import org.keycloak.vault.FilesPlainTextVaultProviderFactory;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.spi.PersistenceUnitTransactionType;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -216,22 +217,21 @@ class KeycloakProcessor {
 
     @Record(ExecutionTime.STATIC_INIT)
     @BuildStep
-    ConfigBuildItem initConfig(KeycloakRecorder recorder) {
+    @Produce(ConfigBuildItem.class)
+    void initConfig(KeycloakRecorder recorder) {
         Config.init(new MicroProfileConfigProvider());
         recorder.initConfig();
-        return new ConfigBuildItem();
     }
 
     @Record(ExecutionTime.STATIC_INIT)
     @BuildStep
     @Consume(ConfigBuildItem.class)
-    ProfileBuildItem configureProfile(KeycloakRecorder recorder) {
+    @Produce(ProfileBuildItem.class)
+    void configureProfile(KeycloakRecorder recorder) {
         Profile profile = getCurrentOrCreateFeatureProfile();
 
         // record the features so that they are not calculated again at runtime
         recorder.configureProfile(profile.getName(), profile.getFeatures());
-
-        return new ProfileBuildItem();
     }
 
     /**
@@ -243,7 +243,6 @@ class KeycloakProcessor {
      * file so that we can build the application with whatever dialect we want. In addition to the dialect, we should also be 
      * allowed to set any additional defaults that we think that makes sense.
      *
-     * @param config
      * @param descriptors
      */
     @BuildStep(onlyIf = {IsJpaStoreEnabled.class})
@@ -296,6 +295,12 @@ class KeycloakProcessor {
                     Thread.currentThread().getContextClassLoader().getResource("default-map-jpa-persistence.xml"));
         }
 
+        final String dbVendor = Configuration.getOptionalValue(NS_KEYCLOAK_PREFIX.concat(DatabaseOptions.DB.getKey())).orElse("h2");
+
+        for (Entry<Object, Object> query : loadSpecificNamedQueries(dbVendor.toLowerCase()).entrySet()) {
+            descriptor.getProperties().setProperty(QUERY_PROPERTY_PREFIX + query.getKey(), query.getValue().toString());
+        }
+
         producer.produce(new PersistenceXmlDescriptorBuildItem(descriptor));
     }
 
@@ -334,8 +339,20 @@ class KeycloakProcessor {
         }
     }
 
+    @Record(ExecutionTime.STATIC_INIT)
+    @BuildStep
+    @Consume(ProviderFactoriesBuildItem.class)
+    @Consume(ThemesBuildItem.class)
+    @Produce(KeycloakSessionFactoryPreInitBuildItem.class)
+    void configureKeycloakSessionFactory(KeycloakRecorder recorder,
+                                         ProviderFactoriesBuildItem factories,
+                                         ThemesBuildItem themesBuildItem
+    ) {
+        recorder.createSessionFactory(factories.getFactories(), factories.getDefaultProviders(), factories.getPreConfiguredProviders(), themesBuildItem.getThemes(), Environment.isRebuild());
+    }
+
     private void configureDefaultPersistenceUnitEntities(ParsedPersistenceXmlDescriptor descriptor, CombinedIndexBuildItem indexBuildItem,
-            List<String> userManagedEntities) {
+                                                         List<String> userManagedEntities) {
         IndexView index = indexBuildItem.getIndex();
         Collection<AnnotationInstance> annotations = index.getAnnotations(DotName.createSimple(Entity.class.getName()));
 
@@ -355,13 +372,9 @@ class KeycloakProcessor {
      * providers at this stage we are also able to perform a more dynamic configuration based on the default providers.
      *
      * <p>User-defined providers are going to be loaded at startup</p>
-     *
-     * @param recorder
      */
-    @Record(ExecutionTime.STATIC_INIT)
     @BuildStep
-    @Consume(ProfileBuildItem.class)
-    KeycloakSessionFactoryPreInitBuildItem configureKeycloakSessionFactory(KeycloakRecorder recorder, List<PersistenceXmlDescriptorBuildItem> descriptors) {
+    ProviderFactoriesBuildItem obtainKeycloakSessionFactory(List<PersistenceXmlDescriptorBuildItem> descriptors) {
         Map<Spi, Map<Class<? extends Provider>, Map<String, Class<? extends ProviderFactory>>>> factories = new HashMap<>();
         Map<Class<? extends Provider>, String> defaultProviders = new HashMap<>();
         Map<String, ProviderFactory> preConfiguredProviders = new HashMap<>();
@@ -389,12 +402,11 @@ class KeycloakProcessor {
             }
         }
 
-        recorder.configSessionFactory(factories, defaultProviders, preConfiguredProviders, loadThemesFromClassPath(), Environment.isRebuild());
-
-        return new KeycloakSessionFactoryPreInitBuildItem();
+        return new ProviderFactoriesBuildItem(factories, defaultProviders, preConfiguredProviders);
     }
 
-    private List<ClasspathThemeProviderFactory.ThemesRepresentation> loadThemesFromClassPath() {
+    @BuildStep
+    private ThemesBuildItem loadThemesFromClassPath() {
         try {
             List<ClasspathThemeProviderFactory.ThemesRepresentation> themes = new ArrayList<>();
             Enumeration<URL> resources = Thread.currentThread().getContextClassLoader().getResources(KEYCLOAK_THEMES_JSON);
@@ -403,7 +415,7 @@ class KeycloakProcessor {
                 themes.add(JsonSerialization.readValue(resources.nextElement().openStream(), ClasspathThemeProviderFactory.ThemesRepresentation.class));
             }
 
-            return themes;
+            return new ThemesBuildItem(themes);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load themes", e);
         }
@@ -861,5 +873,10 @@ class KeycloakProcessor {
         }
 
         throw new RuntimeException("No default datasource found. The server datasource must be the default datasource.");
+    }
+
+    // If no default datasource is found, RuntimeException is thrown
+    private static void assertDefaultDataSource(List<JdbcDataSourceBuildItem> jdbcDataSources) {
+        getDefaultDataSource(jdbcDataSources);
     }
 }

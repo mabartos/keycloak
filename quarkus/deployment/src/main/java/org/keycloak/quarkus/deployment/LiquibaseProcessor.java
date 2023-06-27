@@ -1,5 +1,27 @@
 package org.keycloak.quarkus.deployment;
 
+import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.annotations.Consume;
+import io.quarkus.deployment.annotations.ExecutionTime;
+import io.quarkus.deployment.annotations.Record;
+import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
+import liquibase.database.Database;
+import liquibase.lockservice.LockService;
+import liquibase.parser.ChangeLogParser;
+import liquibase.parser.core.xml.XMLChangeLogSAXParser;
+import liquibase.servicelocator.LiquibaseService;
+import liquibase.sqlgenerator.SqlGenerator;
+import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.ClassInfo;
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.IndexView;
+import org.keycloak.config.DatabaseOptions;
+import org.keycloak.config.StorageOptions;
+import org.keycloak.connections.jpa.updater.liquibase.lock.DummyLockService;
+import org.keycloak.models.map.storage.jpa.liquibase.lockservice.KeycloakLockService;
+import org.keycloak.quarkus.runtime.KeycloakRecorder;
+import org.keycloak.quarkus.runtime.configuration.Configuration;
+
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,42 +32,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.quarkus.agroal.spi.JdbcDataSourceBuildItem;
-import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
-import org.jboss.jandex.AnnotationInstance;
-import org.jboss.jandex.ClassInfo;
-import org.jboss.jandex.DotName;
-import org.jboss.jandex.IndexView;
-import org.keycloak.config.StorageOptions;
-import org.keycloak.connections.jpa.updater.liquibase.lock.DummyLockService;
-
-import io.quarkus.deployment.annotations.BuildStep;
-import io.quarkus.deployment.annotations.ExecutionTime;
-import io.quarkus.deployment.annotations.Record;
-import liquibase.database.Database;
-import liquibase.lockservice.LockService;
-import liquibase.parser.ChangeLogParser;
-import liquibase.parser.core.xml.XMLChangeLogSAXParser;
-import liquibase.servicelocator.LiquibaseService;
-import liquibase.sqlgenerator.SqlGenerator;
-import org.keycloak.models.map.storage.jpa.liquibase.lockservice.KeycloakLockService;
-import org.keycloak.quarkus.runtime.KeycloakRecorder;
-
 import static org.keycloak.config.StorageOptions.STORAGE;
-import static org.keycloak.quarkus.deployment.KeycloakProcessor.getDefaultDataSource;
+import static org.keycloak.config.database.Database.Vendor.H2;
 import static org.keycloak.quarkus.runtime.configuration.Configuration.getOptionalValue;
 import static org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX;
 
 class LiquibaseProcessor {
 
-    @Record(ExecutionTime.STATIC_INIT)
     @BuildStep
-    void configure(KeycloakRecorder recorder, List<JdbcDataSourceBuildItem> jdbcDataSources, CombinedIndexBuildItem indexBuildItem) {
+    LiquibaseServicesBuildItem parse(CombinedIndexBuildItem indexBuildItem) {
         DotName liquibaseServiceName = DotName.createSimple(LiquibaseService.class.getName());
         Map<String, List<String>> services = new HashMap<>();
         IndexView index = indexBuildItem.getIndex();
-        JdbcDataSourceBuildItem dataSourceBuildItem = getDefaultDataSource(jdbcDataSources);
-        String dbKind = dataSourceBuildItem.getDbKind();
+        String dbVendor = Configuration.getOptionalValue(NS_KEYCLOAK_PREFIX.concat(DatabaseOptions.DB.getKey())).orElse(H2.toString());
 
         for (Class<?> c : Arrays.asList(liquibase.diff.compare.DatabaseObjectComparator.class,
                 liquibase.parser.NamespaceDetails.class,
@@ -65,7 +64,7 @@ class LiquibaseProcessor {
             } else {
                 classes.addAll(index.getAllKnownSubclasses(DotName.createSimple(c.getName())));
             }
-            filterImplementations(c, dbKind, classes);
+            filterImplementations(c, dbVendor, classes);
             for (ClassInfo found : classes) {
                 if (Modifier.isAbstract(found.flags()) ||
                         Modifier.isInterface(found.flags()) ||
@@ -87,8 +86,15 @@ class LiquibaseProcessor {
         }
         services.put(ChangeLogParser.class.getName(), Collections.singletonList(XMLChangeLogSAXParser.class.getName()));
 
-        recorder.configureLiquibase(services);
+        return new LiquibaseServicesBuildItem(services);
     }
+
+    @Record(ExecutionTime.STATIC_INIT)
+    @Consume(LiquibaseServicesBuildItem.class)
+    void configure(KeycloakRecorder recorder, LiquibaseServicesBuildItem services) {
+        recorder.configureLiquibase(services.getServices());
+    }
+
 
     private void filterImplementations(Class<?> types, String dbKind, Set<ClassInfo> classes) {
         if (Database.class.equals(types)) {
