@@ -20,15 +20,18 @@ package org.keycloak.quarkus.runtime;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.logging.Handler;
 
 import io.agroal.api.AgroalDataSource;
 import io.quarkus.agroal.DataSource;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.InstanceHandle;
 import io.quarkus.hibernate.orm.runtime.integration.HibernateOrmIntegrationRuntimeInitListener;
+import io.quarkus.runtime.logging.LogMetricsHandler;
 import liquibase.Scope;
 
 import org.hibernate.cfg.AvailableSettings;
@@ -41,6 +44,7 @@ import org.keycloak.common.crypto.CryptoIntegration;
 import org.keycloak.common.crypto.CryptoProvider;
 import org.keycloak.common.crypto.FipsMode;
 import org.keycloak.quarkus.runtime.configuration.Configuration;
+import org.keycloak.quarkus.runtime.configuration.KcDelayedLogHandler;
 import org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider;
 import org.keycloak.quarkus.runtime.integration.QuarkusKeycloakSessionFactory;
 import org.keycloak.quarkus.runtime.integration.web.QuarkusRequestFilter;
@@ -74,6 +78,10 @@ public class KeycloakRecorder {
         ServiceLocator locator = Scope.getCurrentScope().getServiceLocator();
         if (locator instanceof FastServiceLocator)
             ((FastServiceLocator) locator).initServices(services);
+    }
+
+    public RuntimeValue<Optional<Handler>> getLogHandler() {
+        return new RuntimeValue(Optional.of(new KcDelayedLogHandler()));
     }
 
     public void configSessionFactory(
