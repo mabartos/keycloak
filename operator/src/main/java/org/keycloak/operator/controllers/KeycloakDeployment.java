@@ -239,11 +239,21 @@ public class KeycloakDeployment extends OperatorManagedResource<StatefulSet> imp
                 .map(path -> !path.endsWith("/") ? path + "/" : path)
                 .orElse("/");
 
+        if (!containerBuilder.hasStartupProbe()) {
+            containerBuilder.withNewStartupProbe()
+                    .withPeriodSeconds(1)
+                    .withFailureThreshold(150)
+                    .withNewHttpGet()
+                    .withScheme(protocol)
+                    .withNewPort(kcPort)
+                    .withPath(kcRelativePath + "health/started")
+                    .endHttpGet()
+                    .endStartupProbe();
+        }
         if (!containerBuilder.hasReadinessProbe()) {
             containerBuilder.withNewReadinessProbe()
-                .withInitialDelaySeconds(20)
                 .withPeriodSeconds(2)
-                .withFailureThreshold(250)
+                .withFailureThreshold(120) // 120*2 = 240s
                 .withNewHttpGet()
                 .withScheme(protocol)
                 .withNewPort(kcPort)
@@ -253,9 +263,8 @@ public class KeycloakDeployment extends OperatorManagedResource<StatefulSet> imp
         }
         if (!containerBuilder.hasLivenessProbe()) {
             containerBuilder.withNewLivenessProbe()
-                .withInitialDelaySeconds(20)
                 .withPeriodSeconds(2)
-                .withFailureThreshold(150)
+                .withFailureThreshold(90) // 90*2 = 180s
                 .withNewHttpGet()
                 .withScheme(protocol)
                 .withNewPort(kcPort)
