@@ -19,7 +19,7 @@ package org.keycloak.testsuite.adapter.servlet;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Test;
@@ -61,13 +61,13 @@ import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 @AppServerContainer(ContainerConstants.APP_SERVER_TOMCAT9)
 public class SessionServletAdapterTest extends AbstractServletsAdapterTest {
 
-    @Page
+
     private SessionPortal sessionPortalPage;
 
-    @Page
+
     protected LogoutConfirmPage logoutConfirmPage;
 
-    @Page
+
     protected InfoPage infoPage;
 
     @Override

@@ -25,7 +25,7 @@ import jakarta.mail.Address;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.keycloak.events.Details;
@@ -43,10 +43,10 @@ public class RequiredActionUpdateEmailTestWithVerificationTest extends AbstractR
 	@Rule
 	public GreenMailRule greenMail = new GreenMailRule();
 
-	@Page
+
 	private InfoPage infoPage;
 
-	@Page
+
 	private ErrorPage errorPage;
 
 	protected void prepareUser(UserRepresentation user){

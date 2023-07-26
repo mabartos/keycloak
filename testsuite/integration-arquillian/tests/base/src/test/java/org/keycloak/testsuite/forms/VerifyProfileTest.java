@@ -32,7 +32,7 @@ import java.util.UUID;
 import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -153,13 +153,13 @@ public class VerifyProfileTest extends AbstractTestRealmKeycloakTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+    
     protected AppPage appPage;
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected VerifyProfilePage verifyProfilePage;
 
     @ArquillianResource

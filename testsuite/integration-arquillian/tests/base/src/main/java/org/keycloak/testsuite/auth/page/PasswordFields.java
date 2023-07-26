@@ -16,7 +16,6 @@
  */
 package org.keycloak.testsuite.auth.page;
 
-import org.jboss.arquillian.graphene.page.Page;
 import org.keycloak.testsuite.util.UIUtils;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -30,7 +29,6 @@ import static org.keycloak.testsuite.util.UIUtils.getTextFromElement;
  */
 public class PasswordFields extends FieldsBase {
 
-    @Page
     private PasswordErrors inputErrors;
 
     @FindBy(id = "password")

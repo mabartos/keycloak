@@ -20,7 +20,7 @@ package org.keycloak.testsuite.federation.storage;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -73,16 +73,16 @@ public class BackwardsCompatibilityUserStorageTest extends AbstractTestRealmKeyc
 
     private String backwardsCompProviderId;
 
-    @Page
+
     protected AppPage appPage;
 
-    @Page
+
     protected LoginPage loginPage;
 
-    @Page
+
     protected LoginTotpPage loginTotpPage;
 
-    @Page
+
     protected LoginConfigTotpPage configureTotpRequiredActionPage;
 
 

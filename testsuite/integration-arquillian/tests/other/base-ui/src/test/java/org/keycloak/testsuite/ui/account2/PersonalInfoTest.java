@@ -27,7 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -43,7 +43,7 @@ import org.keycloak.testsuite.util.UserBuilder;
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
  */
 public class PersonalInfoTest extends BaseAccountPageTest {
-    @Page
+
     private PersonalInfoPage personalInfoPage;
 
     private UserRepresentation testUser2;

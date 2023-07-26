@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.auth.page.login;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.keycloak.models.UserModel;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -29,7 +29,7 @@ import static org.keycloak.testsuite.util.UIUtils.clickLink;
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
  */
 public class OTPSetup extends RequiredActions {
-    @Page
+
     private LoginForm.TotpSetupForm form;
 
     @FindBy(id = "kc-totp-secret-qr-code")

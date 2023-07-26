@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.broker;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Test;
 import org.keycloak.admin.client.resource.AuthenticationManagementResource;
 import org.keycloak.admin.client.resource.UsersResource;
@@ -38,7 +38,7 @@ public abstract class AbstractBrokerTest extends AbstractInitializedBaseBrokerTe
     public static final String ROLE_USER_DOT_GUIDE = "user.guide";
     public static final String EMPTY_ATTRIBUTE_ROLE = "empty.attribute.role";
 
-    @Page
+    
     ConsentPage consentPage;
 
     @Test

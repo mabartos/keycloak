@@ -38,7 +38,7 @@ import org.keycloak.testsuite.utils.io.IOUtil;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
-import org.jboss.arquillian.graphene.page.Page;
+
 import static org.keycloak.testsuite.adapter.AbstractServletsAdapterTest.samlServletDeployment;
 import org.keycloak.testsuite.adapter.page.SalesPostClockSkewServlet;
 import static org.keycloak.testsuite.util.SamlClient.Binding.POST;
@@ -52,7 +52,7 @@ import static org.keycloak.testsuite.util.SamlClient.Binding.POST;
 @AppServerContainer(ContainerConstants.APP_SERVER_JETTY94)
 public class SAMLClockSkewAdapterTest extends AbstractSAMLServletAdapterTest {
 
-    @Page protected SalesPostClockSkewServlet salesPostClockSkewServletPage;
+     protected SalesPostClockSkewServlet salesPostClockSkewServletPage;
     private static final String DEPLOYMENT_NAME_3_SEC = SalesPostClockSkewServlet.DEPLOYMENT_NAME + "_3Sec";
     private static final String DEPLOYMENT_NAME_30_SEC = SalesPostClockSkewServlet.DEPLOYMENT_NAME + "_30Sec";
 

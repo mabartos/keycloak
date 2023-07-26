@@ -48,7 +48,7 @@ import jakarta.ws.rs.core.Response.Status;
 import javax.xml.crypto.dsig.XMLSignature;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assume;
 import org.junit.Before;
@@ -187,7 +187,7 @@ public class SamlSignatureTest extends AbstractAdapterTest {
         }
     }
 
-    @Page
+
     private SalesPostAssertionAndResponseSig salesPostAssertionAndResponseSigPage;
 
     private UserRepresentation user;

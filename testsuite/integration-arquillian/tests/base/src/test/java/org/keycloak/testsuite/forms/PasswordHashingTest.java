@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.forms;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Test;
 import org.keycloak.common.util.Base64;
 import org.keycloak.credential.CredentialModel;
@@ -57,7 +57,7 @@ public class PasswordHashingTest extends AbstractTestRealmKeycloakTest {
     public void configureTestRealm(RealmRepresentation testRealm) {
     }
 
-    @Page
+    
     protected LoginPage loginPage;
 
     @Test

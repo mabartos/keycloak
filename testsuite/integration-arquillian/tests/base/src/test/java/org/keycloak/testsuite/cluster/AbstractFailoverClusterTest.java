@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.cluster;
 
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -58,16 +58,16 @@ public abstract class AbstractFailoverClusterTest extends AbstractClusterTest {
 
     public static final Integer REBALANCE_WAIT = Integer.parseInt(System.getProperty("rebalance.wait", "5000"));
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected AppPage appPage;
 
-    @Page
+    
     protected LogoutConfirmPage logoutConfirmPage;
 
-    @Page
+    
     protected InfoPage infoPage;
 
     @BeforeClass

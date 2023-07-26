@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.ui.account2;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -37,10 +37,10 @@ public class SessionTest extends AbstractAccountTest {
     public static final int SSO_SESSION_IDLE_TIMEOUT = 10;
     public static final int ACCESS_TOKEN_LIFESPAN = 10;
 
-    @Page
+
     private PersonalInfoPage personalInfoPage;
 
-    @Page
+
     private DeviceActivityPage deviceActivityPage;
 
     @Override

@@ -18,7 +18,7 @@ package org.keycloak.testsuite.adapter.servlet;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
@@ -112,13 +112,13 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
         return servletDeployment(ClientApp.DEPLOYMENT_NAME, LinkAndExchangeServlet.class, ServletTestUtils.class);
     }
 
-    @Page
+    
     protected LoginUpdateProfilePage loginUpdateProfilePage;
 
-    @Page
+    
     private LoginPage loginPage;
 
-    @Page
+    
     protected ErrorPage errorPage;
 
     public static class ClientApp extends AbstractPageWithInjectedUrl {
@@ -136,7 +136,7 @@ public class BrokerLinkAndTokenExchangeTest extends AbstractServletsAdapterTest 
 
     }
 
-    @Page
+    
     private ClientApp appPage;
 
     @Override

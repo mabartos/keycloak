@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.broker;
 
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Before;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -78,49 +78,49 @@ public abstract class AbstractBaseBrokerTest extends AbstractKeycloakTest {
 
     protected static final String ATTRIBUTE_VALUE = "attribute.value";
 
-    @Page
+
     protected LoginPage loginPage;
 
-    @Page
+
     protected UpdateAccountInformationPage updateAccountInformationPage;
 
-    @Page
+
     protected ErrorPage errorPage;
 
-    @Page
+
     protected IdpConfirmLinkPage idpConfirmLinkPage;
 
-    @Page
+
     protected ProceedPage proceedPage;
 
-    @Page
+
     protected LogoutConfirmPage logoutConfirmPage;
 
-    @Page
+
     protected InfoPage infoPage;
 
-    @Page
+
     protected IdpLinkEmailPage idpLinkEmailPage;
 
-    @Page
+
     protected LoginExpiredPage loginExpiredPage;
 
-    @Page
+
     protected LoginTotpPage loginTotpPage;
 
-    @Page
+
     protected LoginConfigTotpPage totpPage;
 
-    @Page
+
     protected LoginPasswordResetPage loginPasswordResetPage;
 
-    @Page
+
     protected VerifyEmailPage verifyEmailPage;
 
-    @Page
+
     protected OAuthGrantPage grantPage;
 
-    @Page
+
     protected AppPage appPage;
 
     protected TimeBasedOTP totp = new TimeBasedOTP();

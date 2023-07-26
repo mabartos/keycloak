@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.account.custom;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Test;
 import org.keycloak.models.AuthenticationExecutionModel.Requirement;
 import org.keycloak.models.utils.DefaultAuthenticationFlows;
@@ -71,13 +71,13 @@ public class CustomAuthFlowOTPTest extends AbstractCustomAccountManagementTest {
 
     private final TimeBasedOTP totp = new TimeBasedOTP();
     
-    @Page
+    
     private OneTimeCode testLoginOneTimeCodePage;
 
-    @Page
+    
     private LoginConfigTotpPage loginConfigTotpPage;
 
-    @Page
+    
     private LoginTotpPage loginTotpPage;
 
     @Override

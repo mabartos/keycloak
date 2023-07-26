@@ -14,7 +14,7 @@ import java.util.List;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.logging.Logger;
 import org.junit.After;
 import org.junit.Before;
@@ -72,25 +72,25 @@ public abstract class AbstractSpringBootTest extends AbstractKeycloakTest {
             "AY+Z8KRyQCR2BEG+oNitBOZ+YXF9KCpH3cdmECQHEigJhYg+ykOvr1aiZUMFT72HU0jnmQe2FVekuG+LJUt2Tm7GtMjTFoGpf0JwrVuZ" +
             "N39fOYAlo+nTixgeW7X8Y=";
 
-    @Page
+
     LoginPage loginPage;
 
-    @Page
+
     protected OIDCLogin testRealmLoginPage;
 
-    @Page
+
     protected LogoutConfirmPage logoutConfirmPage;
 
-    @Page
+
     protected InfoPage infoPage;
 
-    @Page
+
     SpringApplicationPage applicationPage;
 
-    @Page
+
     SpringAdminPage adminPage;
     
-    @Page
+
     TokenPage tokenPage;
 
     @Override

@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.keys;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.keycloak.OAuth2Constants;
@@ -46,10 +46,10 @@ public class FallbackKeyProviderTest extends AbstractKeycloakTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+    
     protected AppPage appPage;
 
-    @Page
+    
     protected LoginPage loginPage;
 
     @Override

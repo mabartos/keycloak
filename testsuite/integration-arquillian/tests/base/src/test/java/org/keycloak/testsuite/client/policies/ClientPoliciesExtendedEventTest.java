@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.keycloak.OAuth2Constants;
@@ -88,16 +88,16 @@ import static org.junit.Assert.assertNull;
 @EnableFeature(value = Profile.Feature.CLIENT_SECRET_ROTATION)
 public class ClientPoliciesExtendedEventTest extends AbstractClientPoliciesTest {
 
-    @Page
+    
     protected OAuth2DeviceVerificationPage verificationPage;
 
-    @Page
+    
     protected OAuthGrantPage grantPage;
 
-    @Page
+    
     protected ErrorPage errorPage;
 
-    @Page
+    
     protected LogoutConfirmPage logoutConfirmPage;
 
     @Override

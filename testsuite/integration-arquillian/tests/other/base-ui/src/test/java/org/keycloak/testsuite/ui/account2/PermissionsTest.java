@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.ui.account2;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Test;
 import org.keycloak.admin.client.resource.RoleScopeResource;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -35,16 +35,16 @@ import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
  */
 public class PermissionsTest extends AbstractAccountTest {
-    @Page
+
     private WelcomeScreen welcomeScreen;
 
-    @Page
+
     private PersonalInfoPage personalInfoPage;
 
-    @Page
+
     private SigningInPage signingInPage;
 
-    @Page
+
     private ForbiddenPage forbiddenPage;
 
     private static final String DEFAULT_ROLE_NAME = "default-roles-" + TEST;

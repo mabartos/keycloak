@@ -36,7 +36,7 @@ import java.util.List;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.ws.rs.core.Response;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Rule;
@@ -66,13 +66,13 @@ public class ActionTokenCrossDCTest extends AbstractAdminCrossDCTest {
     @Rule
     public GreenMailRule greenMail = new GreenMailRule();
 
-    @Page
+
     protected LoginPasswordUpdatePage passwordUpdatePage;
 
-    @Page
+
     protected ProceedPage proceedPage;
 
-    @Page
+
     protected ErrorPage errorPage;
 
     private String createUser(UserRepresentation userRep) {

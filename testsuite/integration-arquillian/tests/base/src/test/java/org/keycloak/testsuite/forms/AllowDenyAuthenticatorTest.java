@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.forms;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.keycloak.authentication.authenticators.access.AllowAccessAuthenticatorFactory;
@@ -32,13 +32,13 @@ import static org.keycloak.testsuite.forms.BrowserFlowTest.revertFlows;
  */
 public class AllowDenyAuthenticatorTest extends AbstractTestRealmKeycloakTest {
 
-    @Page
+
     protected LoginUsernameOnlyPage loginUsernameOnlyPage;
 
-    @Page
+
     protected PasswordPage passwordPage;
 
-    @Page
+
     protected ErrorPage errorPage;
 
     @Rule

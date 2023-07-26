@@ -20,7 +20,7 @@ import java.net.URL;
 import java.util.List;
 import jakarta.ws.rs.core.UriBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
@@ -48,7 +48,7 @@ import static org.keycloak.testsuite.utils.io.IOUtil.loadRealm;
 @AppServerContainer(ContainerConstants.APP_SERVER_EAP71)
 public class MultiTenancyTest extends AbstractServletsAdapterTest {
     
-    @Page
+    
     private MultiTenant tenantPage;
     
     @Override

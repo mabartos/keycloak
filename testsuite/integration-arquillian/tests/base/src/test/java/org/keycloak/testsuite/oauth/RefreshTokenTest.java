@@ -21,7 +21,7 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import java.io.Closeable;
 import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.drone.webdriver.htmlunit.DroneHtmlUnitDriver;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -115,7 +115,7 @@ public class RefreshTokenTest extends AbstractKeycloakTest {
 
     public static final int ALLOWED_CLOCK_SKEW = 3;
 
-    @Page
+
     protected LoginPage loginPage;
 
     @Rule

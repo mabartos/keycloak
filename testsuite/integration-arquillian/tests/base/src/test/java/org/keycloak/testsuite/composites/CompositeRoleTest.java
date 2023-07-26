@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.composites;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.keycloak.OAuth2Constants;
@@ -215,7 +215,7 @@ public class CompositeRoleTest extends AbstractCompositeKeycloakTest {
         targetClient.getScopeMappings().clientLevel(sourceClient.toRepresentation().getId()).add(Collections.singletonList(role));
     }
 
-    @Page
+
     protected LoginPage loginPage;
 
     @Test

@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.sessionlimits;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -102,19 +102,19 @@ public class UserSessionLimitsTest extends AbstractTestRealmKeycloakTest {
     @Rule
     public GreenMailRule greenMail = new GreenMailRule();
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected ErrorPage errorPage;
 
-    @Page
+    
     protected LoginPasswordResetPage resetPasswordPage;
 
-    @Page
+    
     protected LoginPasswordUpdatePage updatePasswordPage;
 
-    @Page
+    
     protected AppPage appPage;
 
     @Test

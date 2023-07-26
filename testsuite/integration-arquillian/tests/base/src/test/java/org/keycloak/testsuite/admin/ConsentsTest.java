@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.admin;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -171,16 +171,16 @@ public class ConsentsTest extends AbstractKeycloakTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+
     protected LoginPage accountLoginPage;
 
-    @Page
+
     protected ConsentPage consentPage;
 
-    @Page
+
     protected AppPage appPage;
 
-    @Page
+
     protected ErrorPage errorPage;
 
     @Override

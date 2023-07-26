@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.adapter;
 
 import org.apache.commons.io.IOUtils;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -53,7 +53,7 @@ import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
 @AppServerContainer("")
 public abstract class AbstractAdapterTest extends AbstractAuthTest {
 
-    @Page
+    
     protected AppServerContextRoot appServerContextRootPage;
 
     public static final String JBOSS_DEPLOYMENT_STRUCTURE_XML = "jboss-deployment-structure.xml";

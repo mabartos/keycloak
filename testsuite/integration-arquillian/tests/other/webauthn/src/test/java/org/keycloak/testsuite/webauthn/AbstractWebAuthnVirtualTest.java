@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.webauthn;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -85,28 +85,28 @@ public abstract class AbstractWebAuthnVirtualTest extends AbstractTestRealmKeycl
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+
     protected LoginPage loginPage;
 
-    @Page
+
     protected RegisterPage registerPage;
 
-    @Page
+
     protected WebAuthnRegisterPage webAuthnRegisterPage;
 
-    @Page
+
     protected WebAuthnErrorPage webAuthnErrorPage;
 
-    @Page
+
     protected WebAuthnLoginPage webAuthnLoginPage;
 
-    @Page
+
     protected AppPage appPage;
 
-    @Page
+
     protected LogoutConfirmPage logoutConfirmPage;
 
-    @Page
+
     protected InfoPage infoPage;
 
     protected static final String ALL_ZERO_AAGUID = "00000000-0000-0000-0000-000000000000";

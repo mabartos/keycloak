@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.actions;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,16 +46,16 @@ public class RequiredActionMultipleActionsTest extends AbstractTestRealmKeycloak
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+    
     protected AppPage appPage;
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected LoginPasswordUpdatePage changePasswordPage;
 
-    @Page
+    
     protected LoginUpdateProfileEditUsernameAllowedPage updateProfilePage;
 
     @Test

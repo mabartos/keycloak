@@ -24,7 +24,7 @@ import java.util.Collections;
 import jakarta.ws.rs.NotFoundException;
 
 import org.hamcrest.MatcherAssert;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -73,22 +73,22 @@ public class LegacyLogoutTest extends AbstractTestRealmKeycloakTest {
     @Rule
     public InfinispanTestTimeServiceRule ispnTestTimeService = new InfinispanTestTimeServiceRule(this);
 
-    @Page
+
     protected AppPage appPage;
 
-    @Page
+
     protected LoginPage loginPage;
 
-    @Page
+
     protected OAuthGrantPage grantPage;
 
-    @Page
+
     protected LogoutConfirmPage logoutConfirmPage;
 
-    @Page
+
     protected InfoPage infoPage;
 
-    @Page
+
     private ErrorPage errorPage;
 
     private String APP_REDIRECT_URI;

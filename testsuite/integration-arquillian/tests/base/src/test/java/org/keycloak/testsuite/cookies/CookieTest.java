@@ -28,7 +28,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.keycloak.models.Constants;
@@ -71,10 +71,10 @@ import jakarta.ws.rs.core.HttpHeaders;
  */
 public class CookieTest extends AbstractKeycloakTest {
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected AppPage appPage;
 
     @Before

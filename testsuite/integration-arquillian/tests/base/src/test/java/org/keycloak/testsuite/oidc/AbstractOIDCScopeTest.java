@@ -20,7 +20,7 @@ package org.keycloak.testsuite.oidc;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Rule;
 import org.keycloak.events.Details;
 import org.keycloak.representations.AccessToken;
@@ -43,16 +43,16 @@ public abstract class AbstractOIDCScopeTest extends AbstractTestRealmKeycloakTes
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+
     protected AppPage appPage;
 
-    @Page
+
     protected LoginPage loginPage;
 
-    @Page
+
     protected OAuthGrantPage grantPage;
 
-    @Page
+
     protected ErrorPage errorPage;
 
 

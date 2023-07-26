@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.actions;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +33,7 @@ import org.keycloak.testsuite.util.UserBuilder;
 @EnableFeature(Profile.Feature.UPDATE_EMAIL)
 public abstract class AbstractAppInitiatedActionUpdateEmailTest extends AbstractAppInitiatedActionTest {
 
-	@Page
+	
 	protected EmailUpdatePage emailUpdatePage;
 
 	@Override

@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.adapter.servlet;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
@@ -64,10 +64,10 @@ import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
 @AppServerContainer(ContainerConstants.APP_SERVER_JETTY94)
 public class SAMLLoginResponseHandlingTest extends AbstractSAMLServletAdapterTest {
 
-    @Page
+
     protected Employee2Servlet employee2ServletPage;
 
-    @Page
+
     protected EmployeeSigServlet employeeSigServletPage;
 
     @Deployment(name = Employee2Servlet.DEPLOYMENT_NAME)

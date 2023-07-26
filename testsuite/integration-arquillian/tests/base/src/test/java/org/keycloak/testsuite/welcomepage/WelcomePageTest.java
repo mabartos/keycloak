@@ -19,7 +19,7 @@ package org.keycloak.testsuite.welcomepage;
 
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -57,11 +57,11 @@ public class WelcomePageTest extends AbstractKeycloakTest {
     @PhantomJSBrowser
     private WebDriver phantomJS;
 
-    @Page
+    
     @PhantomJSBrowser
     protected OIDCLogin loginPage;
 
-    @Page
+    
     @PhantomJSBrowser
     protected WelcomePage welcomePage;
 

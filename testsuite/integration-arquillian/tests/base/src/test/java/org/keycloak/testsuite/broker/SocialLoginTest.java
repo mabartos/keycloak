@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.broker;
 
 import org.jboss.arquillian.graphene.Graphene;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -107,13 +107,13 @@ public class SocialLoginTest extends AbstractKeycloakTest {
 
     private static final Properties config = new Properties();
 
-    @Page
+    
     private LoginPage loginPage;
 
-    @Page
+    
     private AppPage appPage;
 
-    @Page
+    
     private UpdateAccount updateAccountPage;
 
     public enum Provider {

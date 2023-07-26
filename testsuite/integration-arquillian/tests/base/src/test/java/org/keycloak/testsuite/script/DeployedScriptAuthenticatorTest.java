@@ -27,7 +27,7 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -90,7 +90,7 @@ public class DeployedScriptAuthenticatorTest extends AbstractFlowTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+
     protected LoginPage loginPage;
 
     @ArquillianResource

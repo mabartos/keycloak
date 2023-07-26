@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -56,16 +56,16 @@ public class EmailTest extends AbstractI18NTest {
     @Rule
     public GreenMailRule greenMail = new GreenMailRule();
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected LoginPasswordResetPage resetPasswordPage;
 
-    @Page
+    
     private InfoPage infoPage;
 
-    @Page
+    
     private LoginPasswordUpdatePage loginPasswordUpdatePage;
 
     private void changeUserLocale(String locale) {

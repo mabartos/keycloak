@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.console.page;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.keycloak.protocol.oidc.OIDCLoginProtocolService;
 import org.keycloak.testsuite.auth.page.AuthServer;
 import org.keycloak.testsuite.auth.page.login.PageWithLoginUrl;
@@ -57,7 +57,7 @@ public class AdminConsole extends AuthServer implements PageWithLoginUrl, PageWi
         return super.createUriBuilder().path("admin/{" + ADMIN_REALM + "}/console");
     }
 
-    @Page
+    
     private Menu menu;
 
     @FindBy(xpath = "//div[@class='modal-dialog']")

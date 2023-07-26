@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.javascript;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -70,7 +70,7 @@ public abstract class AbstractJavascriptTest extends AbstractAuthTest {
     @JavascriptBrowser
     protected WebDriver jsDriver;
 
-    @Page
+    
     @JavascriptBrowser
     protected OIDCLogin jsDriverTestRealmLoginPage;
 

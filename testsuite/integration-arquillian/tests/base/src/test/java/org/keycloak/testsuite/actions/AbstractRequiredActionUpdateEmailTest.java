@@ -18,7 +18,7 @@ package org.keycloak.testsuite.actions;
 
 import static org.junit.Assert.assertFalse;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,13 +43,13 @@ public abstract class AbstractRequiredActionUpdateEmailTest extends AbstractTest
 	@Rule
 	public AssertEvents events = new AssertEvents(this);
 
-	@Page
+	
 	protected LoginPage loginPage;
 
-	@Page
+	
 	protected UpdateEmailPage updateEmailPage;
 
-	@Page
+	
 	protected AppPage appPage;
 
 	@Before

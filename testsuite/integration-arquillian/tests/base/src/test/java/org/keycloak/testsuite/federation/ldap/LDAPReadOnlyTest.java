@@ -18,7 +18,7 @@
 
 package org.keycloak.testsuite.federation.ldap;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -72,7 +72,7 @@ public class LDAPReadOnlyTest extends AbstractLDAPTest  {
         return ldapRule;
     }
 
-    @Page
+    
     protected LoginConfigTotpPage totpPage;
 
     private TimeBasedOTP totp = new TimeBasedOTP();

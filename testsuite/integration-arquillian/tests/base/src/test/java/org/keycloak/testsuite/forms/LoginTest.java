@@ -24,7 +24,7 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -129,19 +129,19 @@ public class LoginTest extends AbstractTestRealmKeycloakTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+
     protected AppPage appPage;
 
-    @Page
+
     protected LoginPage loginPage;
 
-    @Page
+
     protected ErrorPage errorPage;
 
-    @Page
+
     protected LoginPasswordUpdatePage updatePasswordPage;
 
-    @Page
+
     protected LoginConfigTotpPage configTotpPage;
 
     @Rule

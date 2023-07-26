@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.oidc;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -68,16 +68,16 @@ public class IdTokenEncryptionTest extends AbstractTestRealmKeycloakTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+    
     protected AppPage appPage;
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected OAuthGrantPage grantPage;
 
-    @Page
+    
     protected ErrorPage errorPage;
 
     @Override

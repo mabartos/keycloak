@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.forms;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Test;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.ClientScopeRepresentation;
@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ThemeSelectorTest extends AbstractTestRealmKeycloakTest {
 
-    @Page
+
     protected LoginPage loginPage;
 
     @Override

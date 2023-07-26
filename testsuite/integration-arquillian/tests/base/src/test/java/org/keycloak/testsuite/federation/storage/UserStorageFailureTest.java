@@ -17,7 +17,7 @@
 package org.keycloak.testsuite.federation.storage;
 
 import org.jboss.arquillian.container.test.api.ContainerController;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -76,10 +76,10 @@ public class UserStorageFailureTest extends AbstractTestRealmKeycloakTest {
     @ArquillianResource
     protected ContainerController controller;
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected AppPage appPage;
 
     @Rule

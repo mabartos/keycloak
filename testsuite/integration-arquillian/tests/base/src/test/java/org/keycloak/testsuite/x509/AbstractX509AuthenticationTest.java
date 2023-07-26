@@ -19,7 +19,7 @@
 package org.keycloak.testsuite.x509;
 
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.logging.Logger;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -124,15 +124,15 @@ public abstract class AbstractX509AuthenticationTest extends AbstractTestRealmKe
     @Rule
     public AssertAdminEvents assertAdminEvents = new AssertAdminEvents(this);
 
-    @Page
+    
     @PhantomJSBrowser
     protected AppPage appPage;
 
-    @Page
+    
     @PhantomJSBrowser
     protected X509IdentityConfirmationPage loginConfirmationPage;
 
-    @Page
+    
     @PhantomJSBrowser
     protected LoginPage loginPage;
 

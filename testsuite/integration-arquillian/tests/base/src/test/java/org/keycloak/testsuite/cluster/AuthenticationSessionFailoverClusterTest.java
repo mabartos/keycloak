@@ -22,7 +22,7 @@ import static org.keycloak.testsuite.util.WaitUtils.pause;
 
 import java.io.IOException;
 import jakarta.mail.MessagingException;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Test;
 import org.keycloak.services.managers.AuthenticationSessionManager;
 import org.keycloak.services.util.CookieHelper;
@@ -37,11 +37,11 @@ import org.openqa.selenium.WebDriver;
  */
 public class AuthenticationSessionFailoverClusterTest extends AbstractFailoverClusterTest {
 
-    @Page
+    
     protected LoginPasswordUpdatePage updatePasswordPage;
 
 
-    @Page
+    
     protected LoginUpdateProfilePage updateProfilePage;
 
 

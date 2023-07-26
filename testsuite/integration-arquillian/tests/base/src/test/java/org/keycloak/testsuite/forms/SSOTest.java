@@ -18,7 +18,7 @@ package org.keycloak.testsuite.forms;
 
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,13 +58,13 @@ public class SSOTest extends AbstractTestRealmKeycloakTest {
     @Different
     protected WebDriver driver2;
 
-    @Page
+    
     protected AppPage appPage;
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected LoginPasswordUpdatePage updatePasswordPage;
 
     @Rule

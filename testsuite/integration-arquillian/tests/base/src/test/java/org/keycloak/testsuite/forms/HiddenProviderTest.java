@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.forms;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -28,7 +28,7 @@ import org.keycloak.testsuite.util.IdentityProviderBuilder;
 
 public class HiddenProviderTest extends AbstractTestRealmKeycloakTest {
 
-    @Page
+
     protected LoginPage loginPage;
     
     @Override

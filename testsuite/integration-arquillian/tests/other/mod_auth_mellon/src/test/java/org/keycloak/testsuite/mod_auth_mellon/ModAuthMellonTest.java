@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.mod_auth_mellon;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.AbstractAuthTest;
@@ -17,16 +17,16 @@ import static org.keycloak.testsuite.util.WaitUtils.pause;
  * @author mhajas
  */
 public class ModAuthMellonTest extends AbstractAuthTest {
-    @Page
+    
     private ModAuthMellonProtectedResource modAuthMellonProtectedResourcePage;
 
-    @Page
+    
     private ModAuthMellonUnprotectedResource modAuthMellonUnprotectedResourcePage;
 
-    @Page
+    
     private ModAuthMellonProtectedResource2 modAuthMellonProtectedResourcePage2;
 
-    @Page
+    
     private ModAuthMellonUnprotectedResource2 modAuthMellonUnprotectedResourcePage2;
 
     @Override

@@ -28,7 +28,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,10 +51,10 @@ public class AppInitiatedActionUpdateEmailWithVerificationTest extends AbstractA
 	@Rule
 	public GreenMailRule greenMail = new GreenMailRule();
 
-	@Page
+
 	protected InfoPage infoPage;
 
-	@Page
+
 	protected ErrorPage errorPage;
 
 	@Override

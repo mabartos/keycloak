@@ -22,7 +22,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.hamcrest.MatcherAssert;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -104,22 +104,22 @@ public class RPInitiatedLogoutTest extends AbstractTestRealmKeycloakTest {
     @Rule
     public InfinispanTestTimeServiceRule ispnTestTimeService = new InfinispanTestTimeServiceRule(this);
 
-    @Page
+
     protected AppPage appPage;
 
-    @Page
+
     protected LoginPage loginPage;
 
-    @Page
+
     protected OAuthGrantPage grantPage;
 
-    @Page
+
     protected LogoutConfirmPage logoutConfirmPage;
 
-    @Page
+
     protected InfoPage infoPage;
 
-    @Page
+
     private ErrorPage errorPage;
 
     private String APP_REDIRECT_URI;

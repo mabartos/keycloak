@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.broker;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -28,10 +28,10 @@ import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
  */
 public class KcOidcFirstBrokerLoginNewAuthTest extends AbstractInitializedBaseBrokerTest {
 
-    @Page
+    
     PasswordPage passwordPage;
 
-    @Page
+    
     protected SelectAuthenticatorPage selectAuthenticatorPage;
 
     @Override

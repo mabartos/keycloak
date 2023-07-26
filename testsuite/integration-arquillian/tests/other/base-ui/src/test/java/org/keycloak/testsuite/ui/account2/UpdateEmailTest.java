@@ -20,7 +20,7 @@ package org.keycloak.testsuite.ui.account2;
 import static org.junit.Assert.assertTrue;
 import static org.keycloak.testsuite.util.UIUtils.refreshPageAndWaitForLoad;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,10 +42,10 @@ import org.keycloak.testsuite.ui.account2.page.PersonalInfoPage;
 @EnableFeature(Profile.Feature.UPDATE_EMAIL)
 public class UpdateEmailTest extends BaseAccountPageTest {
 
-    @Page
+    
     private PersonalInfoPage personalInfoPage;
 
-    @Page
+    
     private UpdateEmailPage updateEmailPage;
 
     @Rule

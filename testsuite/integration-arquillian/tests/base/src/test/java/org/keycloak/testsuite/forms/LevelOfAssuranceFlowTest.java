@@ -25,7 +25,7 @@ import java.util.Map;
 
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.core.UriBuilder;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -80,18 +80,18 @@ public class LevelOfAssuranceFlowTest extends AbstractTestRealmKeycloakTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected LoginTotpPage loginTotpPage;
 
     private TimeBasedOTP totp = new TimeBasedOTP();
 
-    @Page
+    
     protected PushTheButtonPage pushTheButtonPage;
 
-    @Page
+    
     protected ErrorPage errorPage;
 
     @Override

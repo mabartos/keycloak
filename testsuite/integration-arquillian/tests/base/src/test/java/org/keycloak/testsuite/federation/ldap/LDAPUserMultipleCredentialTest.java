@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.federation.ldap;
 
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -42,16 +42,16 @@ import java.util.Arrays;
 @EnableVault
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class LDAPUserMultipleCredentialTest extends AbstractLDAPTest {
-    @Page
+    
     protected LoginUsernameOnlyPage loginUsernameOnlyPage;
 
-    @Page
+    
     protected PasswordPage passwordPage;
     
-    @Page
+    
     protected SelectAuthenticatorPage selectAuthenticatorPage;
 
-    @Page
+    
     protected LoginTotpPage loginTotpPage;
 
     @Rule

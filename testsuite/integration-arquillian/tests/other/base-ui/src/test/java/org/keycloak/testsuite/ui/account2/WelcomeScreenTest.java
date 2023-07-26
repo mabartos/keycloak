@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.ui.account2;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.ui.account2.page.ApplicationsPage;
@@ -33,15 +33,15 @@ import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLo
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
  */
 public class WelcomeScreenTest extends AbstractAccountTest {
-    @Page
+
     private PersonalInfoPage personalInfoPage;
-    @Page
+
     private DeviceActivityPage deviceActivityPage;
-    @Page
+
     private LinkedAccountsPage linkedAccountsPage;
-    @Page
+
     private ApplicationsPage applicationsPage;
-    @Page
+
     private MyResourcesPage myResourcesPage;
 
     @Test

@@ -19,7 +19,7 @@ package org.keycloak.testsuite.cluster;
 
 import org.hamcrest.Matchers;
 import org.infinispan.Cache;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,17 +46,17 @@ import static org.keycloak.testsuite.admin.AbstractAdminTest.loadJson;
  */
 public class AuthenticationSessionClusterTest extends AbstractClusterTest {
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected LoginPasswordUpdatePage updatePasswordPage;
 
 
-    @Page
+    
     protected LoginUpdateProfilePage updateProfilePage;
 
-    @Page
+    
     protected AppPage appPage;
 
 

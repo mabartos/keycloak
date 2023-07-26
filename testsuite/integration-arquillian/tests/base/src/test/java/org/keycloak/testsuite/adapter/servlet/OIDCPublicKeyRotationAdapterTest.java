@@ -31,7 +31,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Before;
@@ -85,13 +85,13 @@ import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
 @AppServerContainer(ContainerConstants.APP_SERVER_EAP71)
 public class OIDCPublicKeyRotationAdapterTest extends AbstractServletsAdapterTest {
 
-    @Page
+
     private SecurePortal securePortal;
 
-    @Page
+
     private TokenMinTTLPage tokenMinTTLPage;
 
-    @Page
+
     private CustomerDb customerDb;
 
     @Deployment(name = SecurePortal.DEPLOYMENT_NAME)

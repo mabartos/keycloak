@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.ui.account2;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,10 +58,10 @@ public class LinkedAccountsTest extends BaseAccountPageTest {
     private LinkedAccountsPage.IdentityProvider socialIdp;
     private LinkedAccountsPage.IdentityProvider systemIdp;
 
-    @Page
+
     private LinkedAccountsPage linkedAccountsPage;
 
-    @Page
+
     private LoginPage loginPageWithSocialBtns;
 
     public LinkedAccountsTest() {

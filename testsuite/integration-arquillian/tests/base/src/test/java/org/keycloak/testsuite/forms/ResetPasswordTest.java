@@ -20,7 +20,7 @@ import org.hamcrest.Matchers;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.authentication.actiontoken.resetcred.ResetCredentialsActionToken;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.keycloak.common.Profile;
 import org.keycloak.common.constants.ServiceAccountConstants;
 import org.keycloak.events.Details;
@@ -129,28 +129,28 @@ public class ResetPasswordTest extends AbstractTestRealmKeycloakTest {
     @Rule
     public GreenMailRule greenMail = new GreenMailRule();
 
-    @Page
+    
     protected AppPage appPage;
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected ErrorPage errorPage;
 
-    @Page
+    
     protected InfoPage infoPage;
 
-    @Page
+    
     protected VerifyEmailPage verifyEmailPage;
 
-    @Page
+    
     protected LoginPasswordResetPage resetPasswordPage;
 
-    @Page
+    
     protected LoginPasswordUpdatePage updatePasswordPage;
 
-    @Page
+    
     protected LogoutConfirmPage logoutConfirmPage;
 
     @Rule

@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.webauthn.account;
 
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.testsuite.arquillian.annotation.IgnoreBrowserDriver;
@@ -38,10 +38,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class WebAuthnErrorTest extends AbstractWebAuthnAccountTest {
 
-    @Page
+
     protected WebAuthnLoginPage webAuthnLoginPage;
 
-    @Page
+
     protected WebAuthnErrorPage webAuthnErrorPage;
 
     @Test

@@ -19,7 +19,7 @@ package org.keycloak.testsuite.admin;
 
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Assert;
@@ -141,19 +141,19 @@ public class UserTest extends AbstractAdminTest {
     @Drone
     protected WebDriver driver;
 
-    @Page
+    
     protected LoginPasswordUpdatePage passwordUpdatePage;
 
-    @Page
+    
     protected InfoPage infoPage;
 
-    @Page
+    
     protected ProceedPage proceedPage;
 
-    @Page
+    
     protected ErrorPage errorPage;
 
-    @Page
+    
     protected LoginPage loginPage;
 
     @Before

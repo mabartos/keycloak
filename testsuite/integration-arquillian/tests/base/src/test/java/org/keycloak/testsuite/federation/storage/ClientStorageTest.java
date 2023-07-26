@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.federation.storage;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -90,13 +90,13 @@ public class ClientStorageTest extends AbstractTestRealmKeycloakTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+    
     protected AppPage appPage;
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected ErrorPage errorPage;
 
     @Override

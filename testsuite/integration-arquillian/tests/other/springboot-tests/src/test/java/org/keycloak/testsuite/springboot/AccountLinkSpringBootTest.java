@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.springboot;
 
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -71,16 +71,16 @@ public class AccountLinkSpringBootTest extends AbstractSpringBootTest {
     private static final String CHILD_USERNAME_2 = "child-username-2";
     private static final String CHILD_PASSWORD_2 = "child-password-2";
 
-    @Page
+
     private LinkingPage linkingPage;
 
-    //@Page
+    //
     //private AccountUpdateProfilePage profilePage;
 
-    @Page
+
     private LoginUpdateProfilePage loginUpdateProfilePage;
 
-    @Page
+
     private ErrorPage errorPage;
 
     @Override

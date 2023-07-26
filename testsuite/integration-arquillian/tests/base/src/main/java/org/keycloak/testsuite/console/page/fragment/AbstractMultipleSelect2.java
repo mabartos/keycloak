@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.keycloak.testsuite.util.UIUtils.clickLink;
 import static org.keycloak.testsuite.util.WaitUtils.pause;
@@ -40,8 +41,7 @@ import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
  */
 public abstract class AbstractMultipleSelect2<R> {
 
-    @Root
-    private WebElement root;
+    private WebElement root = getDriver().findElement(By.tagName("body"));
 
     @Drone
     private WebDriver driver;

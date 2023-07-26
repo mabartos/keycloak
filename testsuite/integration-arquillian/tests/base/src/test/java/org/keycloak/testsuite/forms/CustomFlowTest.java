@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.forms;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -185,23 +185,23 @@ public class CustomFlowTest extends AbstractFlowTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+
     protected AppPage appPage;
 
-    @Page
+
     protected LoginPage loginPage;
 
-    @Page
+
     protected ErrorPage errorPage;
 
-    @Page
+
     protected TermsAndConditionsPage termsPage;
 
 
-    @Page
+
     protected LoginPasswordUpdatePage updatePasswordPage;
 
-    @Page
+
     protected RegisterPage registerPage;
 
     private static String userId;

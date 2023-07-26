@@ -33,7 +33,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.jboss.arquillian.container.test.api.ContainerController;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
@@ -63,10 +63,10 @@ public class SecuredDeploymentsAdapterTest extends AbstractServletsAdapterTest i
     @ArquillianResource
     private ContainerController controller;
 
-    @Page
+
     private CustomerPortalSubsystem customerPortalSubsystem;
 
-    @Page
+
     private ProductPortalSubsystem productPortalSubsystem;
 
     @Deployment(name = CustomerPortalSubsystem.DEPLOYMENT_NAME)

@@ -46,7 +46,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
 import org.infinispan.Cache;
 import org.infinispan.util.concurrent.TimeoutException;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.Indexer;
@@ -89,7 +89,7 @@ public class MultiVersionClusterTest extends AbstractClusterTest {
     private static ContainerInfo legacyNode;
     private static boolean initialized = false;
 
-    @Page
+
     protected LoginPage loginPage;
 
     static class CacheValuesHolder {

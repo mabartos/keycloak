@@ -16,7 +16,6 @@
  */
 package org.keycloak.testsuite.util;
 
-import org.jboss.arquillian.graphene.wait.ElementBuilder;
 import org.keycloak.common.Profile;
 import org.keycloak.testsuite.ProfileAssume;
 import org.openqa.selenium.By;
@@ -24,6 +23,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -32,7 +32,6 @@ import java.time.Duration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.jboss.arquillian.graphene.Graphene.waitGui;
 import static org.keycloak.testsuite.util.DroneUtils.getCurrentDriver;
 import static org.openqa.selenium.support.ui.ExpectedConditions.javaScriptThrowsNoExceptions;
 import static org.openqa.selenium.support.ui.ExpectedConditions.not;
@@ -55,32 +54,35 @@ public final class WaitUtils {
     public static final int IMPLICIT_ELEMENT_WAIT_MILLIS = 2000; // high value means more stable but slower tests; it needs to be balanced
 
     // Should be no longer necessary for finding elements since we have implicit wait
-    public static ElementBuilder<Void> waitUntilElement(By by) {
-        return waitGui().until().element(by);
+    public static void waitUntilElement(ExpectedCondition<?> expectedCondition) {
+        getWebDriverWait().until(expectedCondition);
     }
 
     // Should be no longer necessary for finding elements since we have implicit wait
-    public static ElementBuilder<Void> waitUntilElement(WebElement element) {
-        return waitGui().until().element(element);
+    public static void waitUntilElement(WebElement element) {
+        getWebDriverWait().until(ExpectedConditions.elementToBeClickable(element));
     }
 
     // Should be no longer necessary for finding elements since we have implicit wait
-    public static ElementBuilder<Void> waitUntilElement(WebElement element, String failMessage) {
-        return waitGui().until(failMessage).element(element);
+    public static void waitUntilElement(WebElement element, String failMessage) {
+        getWebDriverWait().until(ExpectedConditions.elementToBeClickable(element));
+
+    }
+
+    public static WebDriverWait getWebDriverWait() {
+        return new WebDriverWait(getCurrentDriver(), 1);
     }
 
     public static void waitUntilElementIsNotPresent(By locator) {
-        waitUntilElement(locator).is().not().present();
+        waitUntilElement(ExpectedConditions.not(ExpectedConditions.presenceOfElementLocated(locator)));
     }
 
     public static void waitUntilElementIsNotPresent(WebElement element) {
-        waitUntilElement(element).is().not().present();
-//        (new WebDriverWait(driver, IMPLICIT_ELEMENT_WAIT_MILLIS))
-//                .until(invisibilityOfAllElements(Collections.singletonList(element)));
+        waitUntilElement(ExpectedConditions.not(ExpectedConditions.elementToBeSelected(element)));
     }
 
     public static void waitUntilElementClassContains(WebElement element, String value) {
-        new WebDriverWait(getCurrentDriver(), 1).until(
+        getWebDriverWait().until(
                 ExpectedConditions.attributeContains(element, "class", value)
         );
     }

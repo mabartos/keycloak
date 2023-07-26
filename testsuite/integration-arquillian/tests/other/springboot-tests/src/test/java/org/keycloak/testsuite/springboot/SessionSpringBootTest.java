@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.springboot;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,10 +40,10 @@ public class SessionSpringBootTest extends AbstractSpringBootTest {
     static final String USER_EMAIL_CORRECT_2 = "usercorrect2@email.test";
     static final String USER_PASSWORD_CORRECT_2 = "testcorrectpassword2";
 
-    @Page
+
     private SessionPage sessionPage;
 
-    @Page
+
     @SecondBrowser
     private SessionPage secondBrowserSessionPage;
 
@@ -51,15 +51,15 @@ public class SessionSpringBootTest extends AbstractSpringBootTest {
     @SecondBrowser
     private WebDriver driver2;
 
-    @Page
+
     @SecondBrowser
     private OIDCLogin secondTestRealmLoginPage;
 
-    @Page
+
     @SecondBrowser
     protected LogoutConfirmPage secondBrowserLogoutConfirmPage;
 
-    @Page
+
     @SecondBrowser
     protected InfoPage secondBrowserInfoPage;
 

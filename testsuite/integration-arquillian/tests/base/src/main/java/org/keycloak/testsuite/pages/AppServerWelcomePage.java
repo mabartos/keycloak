@@ -19,7 +19,7 @@ package org.keycloak.testsuite.pages;
 import static org.junit.Assert.assertTrue;
 import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.keycloak.testsuite.adapter.page.AppServerContextRoot;
 import org.keycloak.testsuite.auth.page.login.OIDCLogin;
 import org.keycloak.testsuite.util.DroneUtils;
@@ -33,7 +33,7 @@ import org.openqa.selenium.support.FindBy;
  */
 public class AppServerWelcomePage extends AppServerContextRoot {
 
-    @Page
+
     @JavascriptBrowser
     protected OIDCLogin loginPage;
 

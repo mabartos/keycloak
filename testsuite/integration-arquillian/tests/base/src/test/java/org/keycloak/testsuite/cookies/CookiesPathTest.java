@@ -16,7 +16,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpCoreContext;
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -48,7 +48,7 @@ import org.junit.Before;
  * @author <a href="mailto:mkanis@redhat.com">Martin Kanis</a>
  */
 public class CookiesPathTest extends AbstractKeycloakTest {
-    @Page
+    
     protected LoginPage loginPage;
 
     public static final String AUTH_SESSION_VALUE = "1869c345-2f90-4724-936d-a1a1ef41dea7";

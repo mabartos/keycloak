@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.forms;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -77,22 +77,22 @@ public class BrowserFlowTest extends AbstractTestRealmKeycloakTest {
     @Drone
     protected WebDriver driver;
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected LoginUsernameOnlyPage loginUsernameOnlyPage;
 
-    @Page
+    
     protected PasswordPage passwordPage;
 
-    @Page
+    
     protected ErrorPage errorPage;
 
-    @Page
+    
     protected LoginTotpPage loginTotpPage;
 
-    @Page
+    
     protected OneTimeCode oneTimeCodePage;
 
     @Rule

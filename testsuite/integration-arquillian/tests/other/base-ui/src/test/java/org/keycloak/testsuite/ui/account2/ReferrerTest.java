@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.ui.account2;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Test;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -41,10 +41,10 @@ public class ReferrerTest extends AbstractAccountTest {
     public static final String FAKE_CLIENT_URL_CONTEXT = "auth/non-existing-page/";
     public static final String FAKE_CLIENT_URL_FRAGMENT = "?foo=bar&bar=foo#anchor";
 
-    @Page
+
     private WelcomeScreen welcomeScreen;
 
-    @Page
+
     private PersonalInfoPage personalInfoPage;
 
     @Override

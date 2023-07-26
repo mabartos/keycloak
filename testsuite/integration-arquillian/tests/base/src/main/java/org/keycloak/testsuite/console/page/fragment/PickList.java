@@ -30,7 +30,6 @@ import org.openqa.selenium.support.ui.Select;
 
 public class PickList {
 
-    @Root
     private WebElement root;
 
     private Select firstSelect;

@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.webauthn;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,13 +63,13 @@ public class AppInitiatedActionWebAuthnTest extends AbstractAppInitiatedActionTe
     protected final String DEFAULT_USERNAME = "test-user@localhost";
     protected final String DEFAULT_PASSWORD = "password";
 
-    @Page
+
     LoginUsernameOnlyPage usernamePage;
 
-    @Page
+
     PasswordPage passwordPage;
 
-    @Page
+
     WebAuthnRegisterPage webAuthnRegisterPage;
 
     @Before

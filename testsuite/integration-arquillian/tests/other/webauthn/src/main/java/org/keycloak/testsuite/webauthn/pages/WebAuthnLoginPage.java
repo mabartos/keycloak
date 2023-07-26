@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.webauthn.pages;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.keycloak.testsuite.pages.LanguageComboboxAwarePage;
 import org.keycloak.testsuite.util.WaitUtils;
 import org.openqa.selenium.WebElement;
@@ -37,7 +37,7 @@ public class WebAuthnLoginPage extends LanguageComboboxAwarePage {
     @FindBy(id = "kc-webauthn-authenticator-label")
     private List<WebElement> authenticatorsLabels;
 
-    @Page
+
     private WebAuthnAuthenticatorsList authenticators;
 
     public void clickAuthenticate() {

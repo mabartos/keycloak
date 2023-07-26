@@ -29,7 +29,7 @@ import java.util.List;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.keycloak.common.util.Base64;
@@ -56,10 +56,10 @@ public class GeneratedEcdsaKeyProviderTest extends AbstractKeycloakTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+
     protected AppPage appPage;
 
-    @Page
+
     protected LoginPage loginPage;
 
     @Override

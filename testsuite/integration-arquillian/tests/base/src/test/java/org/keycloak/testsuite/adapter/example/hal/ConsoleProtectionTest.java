@@ -27,7 +27,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,10 +57,10 @@ import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
 @AppServerContainer(ContainerConstants.APP_SERVER_EAP71)
 public class ConsoleProtectionTest extends AbstractAdapterTest {
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected AppPage appPage;
 
     // Javascript browser needed KEYCLOAK-4703
@@ -68,7 +68,7 @@ public class ConsoleProtectionTest extends AbstractAdapterTest {
     @JavascriptBrowser
     protected WebDriver jsDriver;
 
-    @Page
+    
     @JavascriptBrowser
     protected AppServerWelcomePage appServerWelcomePage;
 

@@ -19,7 +19,7 @@
 package org.keycloak.testsuite.broker;
 
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.keycloak.OAuth2Constants;
@@ -40,10 +40,10 @@ import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
  */
 public class KcOidcBrokerStateParameterTest extends AbstractInitializedBaseBrokerTest {
 
-    @Page
+
     protected AppPage appPage;
 
-    @Page
+
     protected LoginExpiredPage loginExpiredPage;
 
     @Rule

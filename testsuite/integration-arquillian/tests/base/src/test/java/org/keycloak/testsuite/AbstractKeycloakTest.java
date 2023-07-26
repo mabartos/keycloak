@@ -22,7 +22,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.logging.Logger;
 import org.junit.After;
@@ -136,24 +136,24 @@ public abstract class AbstractKeycloakTest {
     @Drone
     protected WebDriver driver;
 
-    @Page
+
     protected AuthServerContextRoot authServerContextRootPage;
-    @Page
+
     protected AuthServer authServerPage;
 
-    @Page
+
     protected AuthRealm masterRealmPage;
 
-    @Page
+
     protected OIDCLogin loginPage;
 
-    @Page
+
     protected UpdatePassword updatePasswordPage;
 
-    @Page
+
     protected LoginPasswordUpdatePage passwordUpdatePage;
 
-    @Page
+
     protected WelcomePage welcomePage;
 
     private PropertiesConfiguration constantsProperties;

@@ -25,7 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -97,37 +97,37 @@ public class MultipleTabsLoginTest extends AbstractTestRealmKeycloakTest {
     @Rule
     public GreenMailRule greenMail = new GreenMailRule();
 
-    @Page
+
     protected AppPage appPage;
 
-    @Page
+
     protected LoginPage loginPage;
 
-    @Page
+
     protected ErrorPage errorPage;
 
-    @Page
+
     protected InfoPage infoPage;
 
-    @Page
+
     protected VerifyEmailPage verifyEmailPage;
 
-    @Page
+
     protected LoginPasswordResetPage resetPasswordPage;
 
-    @Page
+
     protected LoginPasswordUpdatePage updatePasswordPage;
 
-    @Page
+
     protected LoginUpdateProfilePage updateProfilePage;
 
-    @Page
+
     protected LoginExpiredPage loginExpiredPage;
 
-    @Page
+
     protected RegisterPage registerPage;
 
-    @Page
+
     protected OAuthGrantPage grantPage;
 
     @Rule

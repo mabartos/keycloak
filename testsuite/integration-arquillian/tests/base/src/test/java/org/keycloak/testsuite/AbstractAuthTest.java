@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
@@ -44,15 +44,15 @@ import static org.keycloak.testsuite.auth.page.AuthRealm.TEST;
  */
 public abstract class AbstractAuthTest extends AbstractKeycloakTest {
 
-    @Page
+    
     protected AuthRealm testRealmPage;
-    @Page
+    
     protected OIDCLogin testRealmLoginPage;
 
-    @Page
+    
     protected SAMLPostLogin testRealmSAMLPostLoginPage;
 
-    @Page
+    
     protected SAMLRedirectLogin testRealmSAMLRedirectLoginPage;
 
     protected UserRepresentation testUser;

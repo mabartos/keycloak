@@ -100,7 +100,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -195,123 +195,123 @@ import org.xml.sax.SAXException;
 @AppServerContainer(ContainerConstants.APP_SERVER_TOMCAT8)
 @AppServerContainer(ContainerConstants.APP_SERVER_TOMCAT9)
 public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
-    @Page
+
     protected BadClientSalesPostSigServlet badClientSalesPostSigServletPage;
 
-    @Page
+
     protected BadRealmSalesPostSigServlet badRealmSalesPostSigServletPage;
 
-    @Page
+
     protected EmployeeAcsServlet employeeAcsServletPage;
 
-    @Page
+
     protected Employee2Servlet employee2ServletPage;
 
-    @Page
+
     protected EmployeeDomServlet employeeDomServletPage;
 
-    @Page
+
     protected EmployeeSigServlet employeeSigServletPage;
 
-    @Page
+
     protected EmployeeSigPostNoIdpKeyServlet employeeSigPostNoIdpKeyServletPage;
 
-    @Page
+
     protected EmployeeSigRedirNoIdpKeyServlet employeeSigRedirNoIdpKeyServletPage;
 
-    @Page
+
     protected EmployeeSigRedirOptNoIdpKeyServlet employeeSigRedirOptNoIdpKeyServletPage;
 
-    @Page
+
     protected EmployeeSigFrontServlet employeeSigFrontServletPage;
 
-    @Page
+
     protected EmployeeRoleMappingServlet employeeRoleMappingPage;
 
-    @Page
+
     protected SalesMetadataServlet salesMetadataServletPage;
 
-    @Page
+
     protected SalesPostServlet salesPostServletPage;
 
-    @Page
+
     private SalesPost2Servlet salesPost2ServletPage;
 
-    @Page
+
     protected SalesPostEncServlet salesPostEncServletPage;
 
-    @Page
+
     protected SalesPostEncSignAssertionsOnlyServlet salesPostEncSignAssertionsOnlyServletPage;
 
-    @Page
+
     protected SalesPostPassiveServlet salesPostPassiveServletPage;
 
-    @Page
+
     protected SalesPostSigServlet salesPostSigServletPage;
 
-    @Page
+
     protected SalesPostSigEmailServlet salesPostSigEmailServletPage;
 
-    @Page
+
     protected SalesPostSigPersistentServlet salesPostSigPersistentServletPage;
 
-    @Page
+
     protected SalesPostSigTransientServlet salesPostSigTransientServletPage;
 
-    @Page
+
     protected SAMLIDPInitiatedLogin samlidpInitiatedLogin;
 
     protected boolean forbiddenIfNotAuthenticated = true;
 
-    @Page
+
     protected SalesPostAssertionAndResponseSig salesPostAssertionAndResponseSigPage;
 
-    @Page
+
     protected BadAssertionSalesPostSig badAssertionSalesPostSigPage;
 
-    @Page
+
     protected MissingAssertionSig missingAssertionSigPage;
 
-    @Page
+
     protected EmployeeServlet employeeServletPage;
 
-    @Page
+
     protected DifferentCookieNameServlet differentCookieNameServletPage;
 
-    @Page
+
     private InputPortal inputPortalPage;
 
-    @Page
+
     private SAMLIDPInitiatedLogin samlidpInitiatedLoginPage;
 
-    @Page
+
     protected SalesPostAutodetectServlet salesPostAutodetectServletPage;
 
-    @Page
+
     protected AdapterLogoutPage adapterLogoutPage;
 
-    @Page
+
     protected EcpSP ecpSPPage;
 
-    @Page
+
     protected MultiTenant1Saml multiTenant1SamlPage;
 
-    @Page
+
     protected MultiTenant2Saml multiTenant2SamlPage;
 
-    @Page
+
     protected SAMLPostLoginTenant1 tenant1RealmSAMLPostLoginPage;
 
-    @Page
+
     protected SAMLPostLoginTenant2 tenant2RealmSAMLPostLoginPage;
 
-    @Page
+
     protected OneTimeCode authenticate;
 
-    @Page
+
     private InfoPage infoPage;
 
-    @Page
+
     private ErrorPage errorPage;
 
     public static final String FORBIDDEN_TEXT = "HTTP status code: 403";

@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.ui.account2;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.keycloak.common.util.Time;
@@ -71,7 +71,7 @@ public class DeviceActivityTest extends BaseAccountPageTest {
     public static final String TEST_CLIENT3_SECRET = "dunno";
     public static final String TEST_CLIENT3_NAME = "Příliš žluťoučký kůň";
 
-    @Page
+    
     private DeviceActivityPage deviceActivityPage;
 
     @Override

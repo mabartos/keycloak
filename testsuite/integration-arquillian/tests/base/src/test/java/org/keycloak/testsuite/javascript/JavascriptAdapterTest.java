@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.javascript;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -76,11 +76,11 @@ public class JavascriptAdapterTest extends AbstractJavascriptTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+
     @JavascriptBrowser
     private OAuthGrant oAuthGrantPage;
 
-    @Page
+
     @JavascriptBrowser
     private UpdatePassword updatePasswordPage;
 

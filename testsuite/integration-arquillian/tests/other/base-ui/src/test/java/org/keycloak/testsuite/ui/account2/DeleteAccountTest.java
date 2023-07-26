@@ -20,7 +20,7 @@ package org.keycloak.testsuite.ui.account2;
 import java.util.Arrays;
 import java.util.Objects;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -45,13 +45,13 @@ import static org.keycloak.testsuite.util.UIUtils.refreshPageAndWaitForLoad;
  */
 public class DeleteAccountTest extends BaseAccountPageTest {
 
-  @Page
+
   private PersonalInfoPage personalInfoPage;
 
-  @Page
+
   private DeleteAccountActionConfirmPage deleteAccountActionConfirmPage;
 
-  @Page
+
   private PasswordPage passwordPage;
 
   @Rule

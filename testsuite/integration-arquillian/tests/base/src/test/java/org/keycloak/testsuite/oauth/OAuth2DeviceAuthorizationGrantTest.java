@@ -22,7 +22,7 @@ import static org.junit.Assert.assertNull;
 import static org.keycloak.models.OAuth2DeviceConfig.DEFAULT_OAUTH2_DEVICE_CODE_LIFESPAN;
 import static org.keycloak.models.OAuth2DeviceConfig.DEFAULT_OAUTH2_DEVICE_POLLING_INTERVAL;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -84,13 +84,13 @@ public class OAuth2DeviceAuthorizationGrantTest extends AbstractKeycloakTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+
     protected OAuth2DeviceVerificationPage verificationPage;
 
-    @Page
+
     protected OAuthGrantPage grantPage;
 
-    @Page
+
     protected ErrorPage errorPage;
 
     @Override

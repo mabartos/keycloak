@@ -26,7 +26,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -106,16 +106,16 @@ import static org.keycloak.testsuite.util.ClientPoliciesUtil.createClientUpdateC
  */
 public class FAPI1Test extends AbstractClientPoliciesTest {
 
-    @Page
+    
     protected ErrorPage errorPage;
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected OAuthGrantPage grantPage;
 
-    @Page
+    
     protected AppPage appPage;
 
     @BeforeClass

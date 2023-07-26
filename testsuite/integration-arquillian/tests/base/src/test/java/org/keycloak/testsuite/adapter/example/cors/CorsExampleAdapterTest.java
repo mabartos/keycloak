@@ -20,7 +20,7 @@ package org.keycloak.testsuite.adapter.example.cors;
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jetbrains.annotations.Nullable;
@@ -77,11 +77,11 @@ public class CorsExampleAdapterTest extends AbstractExampleAdapterTest {
     @JavascriptBrowser
     protected WebDriver jsDriver;
 
-    @Page
+
     @JavascriptBrowser
     protected OIDCLogin jsDriverTestRealmLoginPage;
 
-    @Page
+
     @JavascriptBrowser
     private AngularCorsProductTestApp jsDriverAngularCorsProductPage;
 

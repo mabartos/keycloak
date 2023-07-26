@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.ui.account2;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -40,10 +40,10 @@ public abstract class AbstractAccountTest extends AbstractUiTest {
     public static final String ACCOUNT_THEME_NAME_KC = "keycloak.v2";
     public static final DateTimeFormatter DEFAULT_TIME_FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy 'at' h:mm a", Locale.ENGLISH);
 
-    @Page
+    
     protected WelcomeScreen accountWelcomeScreen;
 
-    @Page
+    
     protected PageNotFound pageNotFound;
 
     @Override

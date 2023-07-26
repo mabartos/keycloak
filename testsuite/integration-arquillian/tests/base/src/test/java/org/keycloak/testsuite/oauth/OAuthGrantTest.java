@@ -17,7 +17,7 @@
 package org.keycloak.testsuite.oauth;
 
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -73,16 +73,16 @@ public class OAuthGrantTest extends AbstractKeycloakTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+
     protected OAuthGrantPage grantPage;
 
-    @Page
+
     protected LogoutConfirmPage logoutConfirmPage;
 
-    @Page
+
     protected AppPage appPage;
 
-    @Page
+
     protected ErrorPage errorPage;
 
     @Override

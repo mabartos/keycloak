@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.error;
 
 import org.hamcrest.CoreMatchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Test;
 import org.keycloak.common.util.KeycloakUriBuilder;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class EscapeErrorPageTest extends AbstractKeycloakTest {
 
-    @Page
+
     public ErrorPage errorPage;
 
     @Override

@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.springboot;
 
 import org.eclipse.persistence.annotations.BatchFetch;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -46,7 +46,7 @@ public class OfflineTokenSpringBootTest extends AbstractSpringBootTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+
     private OAuthGrantPage oauthGrantPage;
 
     @Before

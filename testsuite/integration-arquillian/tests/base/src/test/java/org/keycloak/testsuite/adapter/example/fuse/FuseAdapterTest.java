@@ -43,7 +43,7 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -82,32 +82,32 @@ public class FuseAdapterTest extends AbstractExampleAdapterTest {
     @JavascriptBrowser
     protected WebDriver jsDriver;
 
-    @Page
+
     @JavascriptBrowser
     private HawtioPage hawtioPage;
-    @Page
+
     @JavascriptBrowser
     private Hawtio2Page hawtio2Page;
-    @Page
+
     @JavascriptBrowser
     private OIDCLogin testRealmLoginPageFuse;
-    @Page
+
     @JavascriptBrowser
     private AuthRealm loginPageFuse;
-    @Page
+
     @JavascriptBrowser
     protected CustomerPortalFuseExample customerPortal;
-    @Page
+
     @JavascriptBrowser
     protected CustomerListing customerListing;
-    @Page
+
     @JavascriptBrowser
     protected AdminInterface adminInterface;
-    @Page
+
     @JavascriptBrowser
     protected ProductPortalFuseExample productPortal;
 
-    @Page
+
     @JavascriptBrowser
     protected LogoutConfirmPage logoutConfirmPage;
 

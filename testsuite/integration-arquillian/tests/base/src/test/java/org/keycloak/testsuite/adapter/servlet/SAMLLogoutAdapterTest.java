@@ -28,7 +28,7 @@ import jakarta.ws.rs.core.Response.Status;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import static org.hamcrest.Matchers.anyOf;
@@ -72,10 +72,10 @@ public class SAMLLogoutAdapterTest extends AbstractServletsAdapterTest {
         return samlServletDeployment(SalesPostServlet.DEPLOYMENT_NAME, SendUsernameServlet.class);
     }
 
-    @Page
+    
     private EmployeeServlet employeeServletPage;
 
-    @Page
+    
     private SalesPostServlet salesPostServlet;
 
     private final AtomicReference<NameIDType> nameIdRef = new AtomicReference<>();

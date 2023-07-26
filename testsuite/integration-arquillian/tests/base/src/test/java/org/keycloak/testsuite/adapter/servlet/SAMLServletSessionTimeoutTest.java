@@ -2,7 +2,7 @@ package org.keycloak.testsuite.adapter.servlet;
 
 import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.keycloak.adapters.rotation.PublicKeyLocator;
@@ -45,7 +45,7 @@ import static org.keycloak.testsuite.util.Matchers.bodyHC;
 @AppServerContainer(ContainerConstants.APP_SERVER_JETTY94)
 public class SAMLServletSessionTimeoutTest extends AbstractSAMLServletAdapterTest {
 
-    @Page
+    
     protected Employee2Servlet employee2ServletPage;
 
     @Deployment(name = Employee2Servlet.DEPLOYMENT_NAME)

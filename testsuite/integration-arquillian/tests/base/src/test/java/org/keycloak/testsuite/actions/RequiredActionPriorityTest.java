@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -58,22 +58,22 @@ public class RequiredActionPriorityTest extends AbstractTestRealmKeycloakTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+    
     protected AppPage appPage;
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected LoginPasswordUpdatePage changePasswordPage;
 
-    @Page
+    
     protected LoginUpdateProfileEditUsernameAllowedPage updateProfilePage;
 
-    @Page
+    
     protected TermsAndConditionsPage termsPage;
 
-    @Page
+    
     protected LoginConfigTotpPage totpPage;
 
     @Before

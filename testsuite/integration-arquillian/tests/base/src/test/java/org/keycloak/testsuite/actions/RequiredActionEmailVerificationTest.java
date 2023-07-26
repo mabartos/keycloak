@@ -19,7 +19,7 @@ package org.keycloak.testsuite.actions;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.authentication.actiontoken.verifyemail.VerifyEmailActionToken;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -96,25 +96,25 @@ public class RequiredActionEmailVerificationTest extends AbstractTestRealmKeyclo
     @Rule
     public InfinispanTestTimeServiceRule ispnTestTimeService = new InfinispanTestTimeServiceRule(this);
 
-    @Page
+
     protected AppPage appPage;
 
-    @Page
+
     protected LoginPage loginPage;
 
-    @Page
+
     protected VerifyEmailPage verifyEmailPage;
 
-    @Page
+
     protected RegisterPage registerPage;
 
-    @Page
+
     protected InfoPage infoPage;
 
-    @Page
+
     protected ProceedPage proceedPage;
 
-    @Page
+
     protected ErrorPage errorPage;
 
     private String testUserId;

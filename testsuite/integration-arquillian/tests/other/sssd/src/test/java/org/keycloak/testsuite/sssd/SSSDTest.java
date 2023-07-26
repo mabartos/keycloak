@@ -11,7 +11,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.logging.Logger;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -76,10 +76,10 @@ public class SSSDTest extends AbstractTestRealmKeycloakTest {
     private static final String ADMIN_USER = "admin";
     private static PropertiesConfiguration sssdConfig;
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected AppPage appPage;
 
     @Rule

@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.ui.account2;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.keycloak.models.credential.OTPCredentialModel;
@@ -52,13 +52,13 @@ import static org.keycloak.testsuite.util.WaitUtils.pause;
 public class SigningInTest extends BaseAccountPageTest {
     public static final String PASSWORD_LABEL = "My password";
 
-    @Page
+
     private SigningInPage signingInPage;
 
-    @Page
+
     private UpdatePassword updatePasswordPage;
 
-    @Page
+
     private OTPSetup otpSetupPage;
 
     private SigningInPage.CredentialType passwordCredentialType;

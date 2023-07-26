@@ -18,7 +18,7 @@
 
 package org.keycloak.testsuite.federation.ldap;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -150,10 +150,10 @@ public class LDAPUserLoginTest extends AbstractLDAPTest {
         }
     }
 
-    @Page
+    
     protected AppPage appPage;
 
-    @Page
+    
     protected LoginPage loginPage;
 
     // Helper methods

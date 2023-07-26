@@ -29,7 +29,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.jboss.arquillian.container.test.api.Deployer;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -60,10 +60,10 @@ public class AbstractServletPolicyEnforcerTest extends AbstractExampleAdapterTes
     @ArquillianResource
     private Deployer deployer;
 
-    @Page
+    
     protected LogoutConfirmPage logoutConfirmPage;
 
-    @Page
+    
     protected InfoPage infoPage;
 
     @BeforeClass

@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.ClassRule;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -111,16 +111,16 @@ public class LDAPNoCacheTest extends AbstractLDAPTest {
     @Rule
     public GreenMailRule greenMail = new GreenMailRule();
 
-    @Page
+
     protected AppPage appPage;
 
-    @Page
+
     protected LoginPage loginPage;
 
-    @Page
+
     protected LoginPasswordResetPage resetPasswordPage;
 
-    @Page
+
     protected LoginPasswordUpdatePage updatePasswordPage;
 
     private static void checkEmailAddressMultipleVariants(KeycloakTestingClient testingClient, String username, String newEmail) {

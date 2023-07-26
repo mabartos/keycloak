@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.auth.page.login;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.keycloak.testsuite.auth.page.AuthRealm;
 import org.keycloak.testsuite.console.page.fragment.LocaleDropdown;
 import org.openqa.selenium.By;
@@ -31,7 +31,7 @@ import static org.keycloak.testsuite.util.WaitUtils.waitUntilElement;
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
  */
 public abstract class LoginBase extends AuthRealm {
-    @Page
+    
     protected FeedbackMessage feedbackMessage;
 
     @FindBy(id = "kc-page-title")

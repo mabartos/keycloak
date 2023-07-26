@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.webauthn.account;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Before;
 import org.keycloak.authentication.authenticators.browser.UsernamePasswordFormFactory;
@@ -58,13 +58,13 @@ import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 
 public abstract class AbstractWebAuthnAccountTest extends AbstractAuthTest implements UseVirtualAuthenticators {
 
-    @Page
+    
     protected SigningInPage signingInPage;
 
-    @Page
+    
     protected WebAuthnRegisterPage webAuthnRegisterPage;
 
-    @Page
+    
     protected WebAuthnLoginPage webAuthnLoginPage;
 
     private VirtualAuthenticatorManager webAuthnManager;

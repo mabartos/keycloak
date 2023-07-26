@@ -20,7 +20,7 @@ package org.keycloak.testsuite.federation.ldap;
 import java.util.Collections;
 
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.FixMethodOrder;
@@ -88,7 +88,7 @@ public class LDAPMSADMapperTest extends AbstractLDAPTest {
     }
 
 
-    @Page
+    
     protected LoginPasswordUpdatePage passwordUpdatePage;
 
 

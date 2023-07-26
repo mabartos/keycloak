@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.ui.account2;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -45,13 +45,13 @@ import static org.junit.Assert.fail;
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
  */
 public class InternationalizationTest extends AbstractAccountTest {
-    @Page
+
     private WelcomeScreen welcomeScreen;
 
-    @Page
+
     private PersonalInfoPage personalInfoPage;
 
-    @Page
+
     private SigningInPage signingInPage;
     private SigningInPage.CredentialType passwordCredentialType;
 

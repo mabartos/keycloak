@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.oidc;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -61,16 +61,16 @@ public class AuthorizationTokenEncryptionTest extends AbstractTestRealmKeycloakT
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+    
     protected AppPage appPage;
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected OAuthGrantPage grantPage;
 
-    @Page
+    
     protected ErrorPage errorPage;
 
     @Override

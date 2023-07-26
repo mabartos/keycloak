@@ -74,7 +74,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
@@ -221,16 +221,16 @@ public abstract class AbstractClientPoliciesTest extends AbstractKeycloakTest {
     protected static final String SECRET_ROTATION_PROFILE = "ClientSecretRotationProfile";
     protected static final String SECRET_ROTATION_POLICY = "ClientSecretRotationPolicy";
     
-    @Page
+
     protected OAuth2DeviceVerificationPage verificationPage;
 
-    @Page
+
     protected OAuthGrantPage grantPage;
 
-    @Page
+
     protected ErrorPage errorPage;
 
-    @Page
+
     protected LogoutConfirmPage logoutConfirmPage;
     
     @Rule

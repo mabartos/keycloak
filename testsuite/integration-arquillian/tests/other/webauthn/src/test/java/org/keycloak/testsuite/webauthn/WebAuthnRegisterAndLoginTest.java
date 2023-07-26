@@ -17,7 +17,7 @@
 package org.keycloak.testsuite.webauthn;
 
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.keycloak.WebAuthnConstants;
@@ -66,16 +66,16 @@ import static org.keycloak.models.AuthenticationExecutionModel.Requirement.REQUI
 
 public class WebAuthnRegisterAndLoginTest extends AbstractWebAuthnVirtualTest {
 
-    @Page
+
     protected ErrorPage errorPage;
 
-    @Page
+
     protected LoginUsernameOnlyPage loginUsernamePage;
 
-    @Page
+
     protected PasswordPage passwordPage;
 
-    @Page
+
     protected SelectAuthenticatorPage selectAuthenticatorPage;
 
     @Override

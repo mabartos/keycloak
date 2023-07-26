@@ -18,7 +18,7 @@ package org.keycloak.testsuite.forms;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.IOUtils;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -60,7 +60,7 @@ import static org.keycloak.common.Profile.Feature.AUTHORIZATION;
 @EnableFeature(value = Profile.Feature.SCRIPTS)
 public class ScriptAuthenticatorTest extends AbstractFlowTest {
 
-    @Page
+    
     protected LoginPage loginPage;
 
     @Rule

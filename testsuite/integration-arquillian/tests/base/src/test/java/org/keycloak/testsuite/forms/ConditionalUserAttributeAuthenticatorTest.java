@@ -1,6 +1,6 @@
 package org.keycloak.testsuite.forms;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.keycloak.authentication.authenticators.access.AllowAccessAuthenticatorFactory;
@@ -49,13 +49,13 @@ public class ConditionalUserAttributeAuthenticatorTest extends AbstractTestRealm
     private final static String APPROVED_BY_SUBGROUP_USER = "approved-by-subgroup";
     private final static String PASSWORD = "password";
 
-    @Page
+    
     protected LoginUsernameOnlyPage loginUsernameOnlyPage;
 
-    @Page
+    
     protected PasswordPage passwordPage;
 
-    @Page
+    
     protected ErrorPage errorPage;
 
     @Rule

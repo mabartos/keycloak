@@ -17,7 +17,7 @@
 package org.keycloak.testsuite.authz.adapter.example;
 
 import org.jboss.arquillian.container.test.api.Deployer;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -64,10 +64,10 @@ public abstract class AbstractBaseServletAuthzAdapterTest extends AbstractExampl
     @ArquillianResource
     private Deployer deployer;
 
-    @Page
+
     protected LogoutConfirmPage logoutConfirmPage;
 
-    @Page
+
     protected InfoPage infoPage;
 
     @BeforeClass

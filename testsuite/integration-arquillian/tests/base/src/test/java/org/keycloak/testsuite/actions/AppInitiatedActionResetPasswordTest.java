@@ -17,7 +17,7 @@
 package org.keycloak.testsuite.actions;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -63,7 +63,7 @@ public class AppInitiatedActionResetPasswordTest extends AbstractAppInitiatedAct
     @Rule
     public GreenMailRule greenMail = new GreenMailRule();
 
-    @Page
+
     protected LoginPasswordUpdatePage changePasswordPage;
 
     @Drone

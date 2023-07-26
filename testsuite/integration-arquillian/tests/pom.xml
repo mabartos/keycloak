@@ -1615,11 +1615,24 @@
                 </dependency>
 
                 <dependency>
-                    <groupId>org.jboss.arquillian.graphene</groupId>
-                    <artifactId>graphene-webdriver</artifactId>
-                    <version>${arquillian-graphene.version}</version>
+                    <groupId>org.jboss.arquillian.extension</groupId>
+                    <artifactId>arquillian-drone-bom</artifactId>
+                    <version>${arquillian-drone.version}</version>
                     <type>pom</type>
+                    <scope>provided</scope>
                 </dependency>
+
+                <dependency>
+                    <groupId>org.jboss.arquillian.extension</groupId>
+                    <artifactId>arquillian-drone-api</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>htmlunit-driver</artifactId>
+                    <version>3.64.0</version>
+                </dependency>
+
                 <dependency>
                     <groupId>org.jboss.arquillian.protocol</groupId>
                     <artifactId>arquillian-protocol-servlet</artifactId>
@@ -1628,21 +1641,6 @@
                     <groupId>org.jboss.arquillian.extension</groupId>
                     <artifactId>arquillian-phantom-driver</artifactId>
                     <version>1.2.1.Final</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.jboss.arquillian.graphene</groupId>
-                    <artifactId>arquillian-browser-screenshooter</artifactId>
-                    <version>${arquillian-graphene.version}</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>org.apache.commons</groupId>
-                            <artifactId>commons-io</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>com.google.guava</groupId>
-                            <artifactId>guava</artifactId>
-                        </exclusion>
-                    </exclusions>
                 </dependency>
 
                 <dependency>

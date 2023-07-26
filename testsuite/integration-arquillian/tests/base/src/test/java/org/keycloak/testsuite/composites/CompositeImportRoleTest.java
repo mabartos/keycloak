@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.composites;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.keycloak.OAuth2Constants;
@@ -42,7 +42,7 @@ public class CompositeImportRoleTest extends AbstractCompositeKeycloakTest {
         testRealms.add(testRealm);
     }
 
-    @Page
+
     protected LoginPage loginPage;
 
     @Test

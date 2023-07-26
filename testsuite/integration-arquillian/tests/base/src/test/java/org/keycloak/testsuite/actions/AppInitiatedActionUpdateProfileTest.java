@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
 
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,10 +46,10 @@ public class AppInitiatedActionUpdateProfileTest extends AbstractAppInitiatedAct
         return UserModel.RequiredAction.UPDATE_PROFILE.name();
     }
     
-    @Page
+    
     protected LoginUpdateProfileEditUsernameAllowedPage updateProfilePage;
 
-    @Page
+    
     protected ErrorPage errorPage;
 
     protected boolean isDynamicForm() {

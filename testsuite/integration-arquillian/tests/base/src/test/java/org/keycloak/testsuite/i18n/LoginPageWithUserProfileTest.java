@@ -27,7 +27,7 @@ import java.util.Locale;
 
 import jakarta.ws.rs.core.Response;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;

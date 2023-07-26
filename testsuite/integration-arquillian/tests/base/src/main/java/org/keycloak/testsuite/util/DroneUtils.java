@@ -17,8 +17,7 @@
 
 package org.keycloak.testsuite.util;
 
-import org.jboss.arquillian.graphene.context.GrapheneContext;
-import org.jboss.arquillian.graphene.page.Page;
+import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.keycloak.testsuite.page.AbstractPage;
 import org.openqa.selenium.WebDriver;
 import java.lang.reflect.Field;
@@ -32,13 +31,13 @@ import java.util.Queue;
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
  */
 public final class DroneUtils {
+
+    @Drone
+    WebDriver driver;
+
     private static Queue<WebDriver> driverQueue = new LinkedList<>();
 
     public static WebDriver getCurrentDriver() {
-        if (driverQueue.isEmpty()) {
-            return GrapheneContext.lastContext().getWebDriver();
-        }
-
         return driverQueue.peek();
     }
 
@@ -75,19 +74,7 @@ public final class DroneUtils {
         }
 
         for (Field f : allFields) {
-            if (f.getAnnotation(Page.class) != null
-                    && AbstractPage.class.isAssignableFrom(f.getType())) {
-                try {
-                    if (!f.isAccessible())
-                        f.setAccessible(true);
-                    Object o = f.get(target);
-                    AbstractPage page = (AbstractPage) o;
-                    page.setDriver(driver);
-                    replaceDefaultWebDriver(page, driver);
-                } catch (IllegalAccessException e) {
-                    throw new IllegalStateException("Could not replace the driver in " + f, e);
-                }
-            } else if (f.getName().equals("driver") && WebDriver.class.isAssignableFrom(f.getType())) {
+           if (f.getName().equals("driver") && WebDriver.class.isAssignableFrom(f.getType())) {
                 try {
                     if (!f.isAccessible())
                         f.setAccessible(true);

@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.ssl;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,13 +47,13 @@ import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWith;
  */
 public class TrustStoreEmailTest extends AbstractTestRealmKeycloakTest {
 
-    @Page
+    
     protected OIDCLogin testRealmLoginPage;
 
-    @Page
+    
     protected AuthRealm testRealmPage;
 
-    @Page
+    
     private VerifyEmail testRealmVerifyEmailPage;
 
     @Rule

@@ -9,7 +9,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.hamcrest.CoreMatchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -47,7 +47,7 @@ import static org.keycloak.utils.MediaType.APPLICATION_JSON;
 
 public class UncaughtErrorPageTest extends AbstractKeycloakTest {
 
-    @Page
+    
     private ErrorPage errorPage;
 
     @Override

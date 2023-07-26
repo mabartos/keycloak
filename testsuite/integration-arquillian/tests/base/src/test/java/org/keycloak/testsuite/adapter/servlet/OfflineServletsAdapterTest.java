@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.ArrayList;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -58,11 +58,11 @@ public class OfflineServletsAdapterTest extends AbstractServletsAdapterTest {
 
     @Rule
     public AssertEvents events = new AssertEvents(this);
-    @Page
+    
     protected OfflineToken offlineTokenPage;
-    @Page
+    
     protected LoginPage loginPage;
-    @Page
+    
     protected OAuthGrantPage oauthGrantPage;
 
     @Rule

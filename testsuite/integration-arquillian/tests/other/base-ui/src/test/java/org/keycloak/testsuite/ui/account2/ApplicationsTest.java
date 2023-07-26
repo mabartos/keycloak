@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.ui.account2;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.keycloak.models.utils.KeycloakModelUtils;
@@ -43,7 +43,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
  */
 public class ApplicationsTest extends BaseAccountPageTest {
-    @Page
+
     private ApplicationsPage applicationsPage;
 
     @Override

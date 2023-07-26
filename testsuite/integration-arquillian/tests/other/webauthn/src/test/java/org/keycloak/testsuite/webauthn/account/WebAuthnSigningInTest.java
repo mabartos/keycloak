@@ -18,7 +18,7 @@
 package org.keycloak.testsuite.webauthn.account;
 
 import org.hamcrest.Matchers;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Test;
 import org.junit.Ignore;
 import org.keycloak.admin.client.resource.UserResource;

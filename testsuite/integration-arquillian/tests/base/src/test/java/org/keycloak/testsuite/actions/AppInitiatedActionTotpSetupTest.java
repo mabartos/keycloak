@@ -19,7 +19,7 @@ package org.keycloak.testsuite.actions;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -85,13 +85,13 @@ public class AppInitiatedActionTotpSetupTest extends AbstractAppInitiatedActionT
     }
 
 
-    @Page
+
     protected LoginTotpPage loginTotpPage;
 
-    @Page
+
     protected LoginConfigTotpPage totpPage;
 
-    @Page
+
     protected RegisterPage registerPage;
 
     protected TimeBasedOTP totp = new TimeBasedOTP();

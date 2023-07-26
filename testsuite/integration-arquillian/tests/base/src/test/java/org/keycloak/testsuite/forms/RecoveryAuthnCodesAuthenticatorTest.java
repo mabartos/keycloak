@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.forms;
 
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Test;
 import org.keycloak.authentication.AuthenticationFlow;
 import org.keycloak.authentication.authenticators.browser.RecoveryAuthnCodesFormAuthenticatorFactory;
@@ -54,22 +54,22 @@ public class RecoveryAuthnCodesAuthenticatorTest extends AbstractTestRealmKeyclo
     @Drone
     protected WebDriver driver;
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected LoginUsernameOnlyPage loginUsernameOnlyPage;
 
-    @Page
+    
     protected EnterRecoveryAuthnCodePage enterRecoveryAuthnCodePage;
 
-    @Page
+    
     protected SetupRecoveryAuthnCodesPage setupRecoveryAuthnCodesPage;
 
-    @Page
+    
     protected SelectAuthenticatorPage selectAuthenticatorPage;
 
-    @Page
+    
     protected PasswordPage passwordPage;
 
     @Override

@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.webauthn;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.logging.Logger;
 import org.junit.Rule;
 import org.junit.Test;
@@ -67,25 +67,25 @@ public class WebAuthnIdlessTest extends AbstractWebAuthnVirtualTest {
     @Rule
     public AssertEvents events = new AssertEvents(this);
 
-    @Page
+
     protected AppPage appPage;
 
-    @Page
+
     protected LoginPage loginPage;
 
-    @Page
+
     protected ErrorPage errorPage;
 
-    @Page
+
     protected WebAuthnLoginPage webAuthnLoginPage;
 
-    @Page
+
     protected WebAuthnRegisterPage webAuthnRegisterPage;
 
-    @Page
+
     protected LoginUsernameOnlyPage loginUsernamePage;
 
-    @Page
+
     protected SelectAuthenticatorPage selectAuthenticatorPage;
 
     private static final Logger logger = Logger.getLogger(WebAuthnIdlessTest.class);

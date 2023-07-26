@@ -44,7 +44,7 @@ import org.keycloak.testsuite.pages.LanguageComboboxAwarePage;
 import org.keycloak.testsuite.pages.LoginPage;
 
 import jakarta.ws.rs.core.Response;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.keycloak.testsuite.pages.LoginPasswordUpdatePage;
 import org.keycloak.testsuite.pages.OAuthGrantPage;
 import org.keycloak.testsuite.util.IdentityProviderBuilder;
@@ -61,19 +61,19 @@ import static org.hamcrest.Matchers.not;
  */
 public class LoginPageTest extends AbstractI18NTest {
 
-    @Page
+
     protected AppPage appPage;
 
-    @Page
+
     protected LoginPage loginPage;
 
-    @Page
+
     protected ErrorPage errorPage;
 
-    @Page
+
     protected LoginPasswordUpdatePage changePasswordPage;
 
-    @Page
+
     protected OAuthGrantPage grantPage;
 
 

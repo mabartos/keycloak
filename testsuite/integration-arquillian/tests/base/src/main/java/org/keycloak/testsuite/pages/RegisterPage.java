@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.pages;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.testsuite.auth.page.AccountFields;
@@ -33,10 +33,10 @@ import org.openqa.selenium.support.FindBy;
  */
 public class RegisterPage extends AbstractPage {
 
-    @Page
+
     private AccountFields.AccountErrors accountErrors;
 
-    @Page
+
     private PasswordFields.PasswordErrors passwordErrors;
 
     @FindBy(id = "firstName")

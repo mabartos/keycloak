@@ -37,7 +37,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.ietf.jgss.GSSCredential;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
@@ -86,7 +86,7 @@ public abstract class AbstractKerberosTest extends AbstractAuthTest {
 
     protected ResteasyClient client;
 
-    @Page
+
     protected LoginPage loginPage;
 
     @Rule

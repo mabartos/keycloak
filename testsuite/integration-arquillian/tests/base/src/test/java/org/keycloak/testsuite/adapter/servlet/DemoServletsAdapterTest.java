@@ -27,7 +27,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -145,53 +145,53 @@ import static org.keycloak.testsuite.util.WaitUtils.waitForPageToLoad;
 @AppServerContainer(ContainerConstants.APP_SERVER_TOMCAT9)
 public class DemoServletsAdapterTest extends AbstractServletsAdapterTest {
 
-    @Page
+    
     protected LogoutConfirmPage logoutConfirmPage;
 
-    @Page
+    
     protected InfoPage infoPage;
 
-    @Page
+    
     protected CustomerPortal customerPortal;
-    @Page
+    
     private CustomerPortalNoConf customerPortalNoConf;
-    @Page
+    
     private SecurePortal securePortal;
-    @Page
+    
     private SecurePortalWithCustomSessionConfig securePortalWithCustomSessionConfig;
-    @Page
+    
     private SecurePortalRewriteRedirectUri securePortalRewriteRedirectUri;
-    @Page
+    
     private CustomerDb customerDb;
-    @Page
+    
     private CustomerDbErrorPage customerDbErrorPage;
-    @Page
+    
     private ProductPortal productPortal;
-    @Page
+    
     private ProductPortalAutodetectBearerOnly productPortalAutodetectBearerOnly;
-    @Page
+    
     private InputPortal inputPortal;
-    @Page
+    
     private InputPortalNoAccessToken inputPortalNoAccessToken;
-    @Page
+    
     private TokenMinTTLPage tokenMinTTLPage;
-    @Page
+    
     private TokenRefreshPage tokenRefreshPage;
-    @Page
+    
     private OAuthGrant oAuthGrantPage;
-    @Page
+    
     protected LoginEvents loginEventsPage;
-    @Page
+    
     private BasicAuth basicAuthPage;
-    @Page
+    
     protected Config configPage;
-    @Page
+    
     private ClientSecretJwtSecurePortal clientSecretJwtSecurePortal;
-    @Page
+    
     private ClientSecretJwtSecurePortalValidAlg clientSecretJwtSecurePortalValidAlg;
-    @Page
+    
     private CustomerCookiePortal customerCookiePortal;
-    @Page
+    
     private CustomerCookiePortalRoot customerCookiePortalRoot;
 
     @Rule

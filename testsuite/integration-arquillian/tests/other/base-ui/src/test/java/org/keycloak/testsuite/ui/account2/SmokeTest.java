@@ -17,7 +17,7 @@
 
 package org.keycloak.testsuite.ui.account2;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Test;
 import org.keycloak.testsuite.ui.account2.page.DeviceActivityPage;
 import org.keycloak.testsuite.ui.account2.page.PersonalInfoPage;
@@ -28,10 +28,10 @@ import org.keycloak.testsuite.ui.account2.page.PersonalInfoPage;
  * @author Vaclav Muzikar <vmuzikar@redhat.com>
  */
 public class SmokeTest extends AbstractAccountTest {
-    @Page
+    
     private PersonalInfoPage personalInfoPage;
 
-    @Page
+    
     private DeviceActivityPage deviceActivityPage;
 
     @Test

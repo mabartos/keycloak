@@ -16,7 +16,7 @@
  */
 package org.keycloak.testsuite.auth.page.login;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.auth.page.AccountFields;
 import org.keycloak.testsuite.auth.page.PasswordFields;
@@ -36,11 +36,11 @@ import static org.keycloak.testsuite.util.UIUtils.getTextFromElement;
  */
 public class LoginForm extends Form {
 
-    @Page
+
     private AccountFields accountFields;
-    @Page
+
     private PasswordFields passwordFields;
-    @Page
+
     private TotpSetupForm totpForm;
 
     @FindBy(name = "login")

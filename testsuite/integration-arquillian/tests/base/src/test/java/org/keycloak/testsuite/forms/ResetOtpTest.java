@@ -2,7 +2,7 @@ package org.keycloak.testsuite.forms;
 
 import static org.wildfly.common.Assert.assertTrue;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Test;
 import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -24,13 +24,13 @@ import java.util.stream.Collectors;
 
 public class ResetOtpTest extends AbstractTestRealmKeycloakTest {
 
-    @Page
+    
     protected LoginPage loginPage;
 
-    @Page
+    
     protected ResetOtpPage resetOtpPage;
 
-    @Page
+    
     protected LoginPasswordResetPage resetPasswordPage;
 
     private static RealmResource realmResource;

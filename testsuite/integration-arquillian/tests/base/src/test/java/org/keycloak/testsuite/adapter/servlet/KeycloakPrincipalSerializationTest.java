@@ -1,7 +1,7 @@
 package org.keycloak.testsuite.adapter.servlet;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.keycloak.testsuite.adapter.AbstractServletsAdapterTest;
@@ -21,7 +21,7 @@ import static org.junit.Assert.assertThat;
 @AppServerContainer(ContainerConstants.APP_SERVER_EAP)
 // The purpose of this class is to test KeycloakPrincipal serialization on different app-server-jdks
 public class KeycloakPrincipalSerializationTest extends AbstractServletsAdapterTest {
-    @Page
+    
     protected SerializationServletPage serializationServlet;
 
     @Deployment(name = SerializationServletPage.DEPLOYMENT_NAME)

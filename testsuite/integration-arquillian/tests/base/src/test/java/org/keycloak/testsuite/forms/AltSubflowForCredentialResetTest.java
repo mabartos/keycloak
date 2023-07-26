@@ -18,7 +18,7 @@
 
 package org.keycloak.testsuite.forms;
 
-import org.jboss.arquillian.graphene.page.Page;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -61,13 +61,13 @@ public class AltSubflowForCredentialResetTest extends AbstractTestRealmKeycloakT
     @Rule
     public GreenMailRule greenMailRule = new GreenMailRule();
 
-    @Page
+
     LoginPage loginPage;
 
-    @Page
+
     protected LoginUsernameOnlyPage loginUsernameOnlyPage;
 
-    @Page
+
     LoginPasswordResetPage loginPasswordResetPage;
 
     @Override
