@@ -72,7 +72,6 @@ jobs:
         name: Integration test setup
         uses: ./.github/actions/integration-test-setup
 
-      # Not sure why, but needs to re-build otherwise there's some failures starting up
       - name: Run Quarkus integration Tests
         run: |
           declare -A PARAMS
@@ -81,8 +80,6 @@ jobs:
           PARAMS["container"]="-Dkc.quarkus.tests.dist=docker"
           PARAMS["storage"]="-Ptest-database -Dtest=PostgreSQLDistTest,MariaDBDistTest#testSuccessful,MySQLDistTest#testSuccessful,DatabaseOptionsDistTest,JPAStoreDistTest,HotRodStoreDistTest,MixedStoreDistTest,TransactionConfigurationDistTest"
 
-          ./mvnw clean install -nsu -B -pl common -DskipTests
-          ./mvnw clean install -nsu -B -f quarkus/pom.xml -DskipTests
           ./mvnw test -nsu -B -pl quarkus/tests/integration ${PARAMS["${{ matrix.server }}"]} | misc/log/trimmer.sh
 
       - name: Upload JVM Heapdumps
