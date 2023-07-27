@@ -10,27 +10,6 @@ outputs:
   ci:
     description: Should "ci.yml" execute
     value: ${{ steps.changes.outputs.ci }}
-  operator:
-    description: Should "operator-ci.yml" execute
-    value: ${{ steps.changes.outputs.operator }}
-  js:
-    description: Should "js-ci.yml" execute
-    value: ${{ steps.changes.outputs.js }}
-  codeql-java:
-    description: Should "codeql-analysis.yml / java" execute
-    value: ${{ steps.changes.outputs.codeql-java }}
-  codeql-themes:
-    description: Should "codeql-analysis.yml / themes" execute
-    value: ${{ steps.changes.outputs.codeql-themes }}
-  guides:
-    description: Should "guides.yml" execute
-    value: ${{ steps.changes.outputs.guides }}
-  documentation:
-    description: Should "documentation.yml" execute
-    value: ${{ steps.changes.outputs.documentation }}
-  sssd:
-    description: Should "sssd.yml" execute
-    value: ${{ steps.changes.outputs.sssd }}
 
 runs:
   using: composite
