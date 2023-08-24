@@ -17,11 +17,8 @@
 
 package org.keycloak.it.cli.dist;
 
-import static org.junit.Assert.assertEquals;
-import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.OPTIMIZED_BUILD_OPTION_LONG;
-
-import java.util.List;
-
+import io.quarkus.test.junit.main.Launch;
+import io.quarkus.test.junit.main.LaunchResult;
 import org.approvaltests.Approvals;
 import org.approvaltests.namer.NamedEnvironment;
 import org.junit.jupiter.api.Test;
@@ -37,8 +34,11 @@ import org.keycloak.quarkus.runtime.cli.command.Import;
 import org.keycloak.quarkus.runtime.cli.command.Start;
 import org.keycloak.quarkus.runtime.cli.command.StartDev;
 
-import io.quarkus.test.junit.main.Launch;
-import io.quarkus.test.junit.main.LaunchResult;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.keycloak.config.LoggingOptions.GELF_ENABLED;
+import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.OPTIMIZED_BUILD_OPTION_LONG;
 
 @DistributionTest
 @RawDistOnly(reason = "Verifying the help message output doesn't need long spin-up of docker dist tests.")
@@ -165,10 +165,19 @@ public class HelpCommandDistTest {
     }
 
     private void assertHelp(CLIResult result) {
-        try (NamedEnvironment env = KcNamerFactory.asWindowsOsSpecificTest()) {
+        try (NamedEnvironment ignore = KcNamerFactory.noGelf()) {
             Approvals.verify(result.getOutput());
         } catch (Exception cause) {
-            throw new RuntimeException("Failed to assert help", cause);
+            // If no-gelf approval file is not present, just check the normal one
+            if (GELF_ENABLED) {
+                try (NamedEnvironment ignore = KcNamerFactory.asWindowsOsSpecificTest()) {
+                    Approvals.verify(result.getOutput());
+                } catch (Exception cause2) {
+                    throw new RuntimeException("Failed to assert help", cause2);
+                }
+            } else {
+                throw new RuntimeException("Failed to assert help", cause);
+            }
         }
     }
 }

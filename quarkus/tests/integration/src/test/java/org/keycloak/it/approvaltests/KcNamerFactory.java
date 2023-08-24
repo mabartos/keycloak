@@ -22,8 +22,11 @@ import org.approvaltests.namer.NamerFactory;
 
 public class KcNamerFactory extends NamerFactory {
 
-    public static NamedEnvironment asWindowsOsSpecificTest()
-    {
+    public static NamedEnvironment asWindowsOsSpecificTest() {
         return asMachineSpecificTest(new WindowsOrUnixOsEnvironmentLabeller());
+    }
+
+    public static NamedEnvironment noGelf() {
+        return asMachineSpecificTest(new NoGelfLabeler());
     }
 }
