@@ -34,7 +34,7 @@ public class GelfRemovedTest {
     @Launch({ StartDev.NAME, "--help-all" })
     void checkGelfRemoved(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;
-        if (GELF_ENABLED) {
+        if ("true".equals(System.getProperty("includeGelf"))) {
             cliResult.assertMessage("gelf");
         } else {
             cliResult.assertNoMessage("gelf");

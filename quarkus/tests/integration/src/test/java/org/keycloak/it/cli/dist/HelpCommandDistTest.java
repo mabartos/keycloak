@@ -49,7 +49,7 @@ public class HelpCommandDistTest {
 
     @BeforeAll
     public static void assumeGelfEnabled() {
-        Assumptions.assumeTrue(LoggingOptions.GELF_ENABLED, "Assume GELF support is given in order to simplify these test cases");
+        Assumptions.assumeTrue("true".equals(System.getProperty("includeGelf")), "Assume GELF support is given in order to simplify these test cases");
     }
 
     @Test
