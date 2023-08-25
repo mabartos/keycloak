@@ -24,8 +24,11 @@ import java.util.List;
 
 import org.approvaltests.Approvals;
 import org.approvaltests.namer.NamedEnvironment;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.OS;
+import org.keycloak.config.LoggingOptions;
 import org.keycloak.it.approvaltests.KcNamerFactory;
 import org.keycloak.it.junit5.extension.CLIResult;
 import org.keycloak.it.junit5.extension.DistributionTest;
@@ -44,6 +47,11 @@ import io.quarkus.test.junit.main.LaunchResult;
 @RawDistOnly(reason = "Verifying the help message output doesn't need long spin-up of docker dist tests.")
 public class HelpCommandDistTest {
 
+    @BeforeAll
+    public static void assumeGelfEnabled() {
+        Assumptions.assumeTrue(LoggingOptions.GELF_ENABLED, "Assume GELF support is given in order to simplify these test cases");
+    }
+
     @Test
     @Launch({})
     void testDefaultToHelp(LaunchResult result) {
@@ -52,7 +60,7 @@ public class HelpCommandDistTest {
     }
 
     @Test
-    @Launch({ "--help" })
+    @Launch({"--help"})
     void testHelp(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;
         assertHelp(cliResult);

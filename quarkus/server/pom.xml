@@ -77,5 +77,25 @@
                 </dependency>
             </dependencies>
         </profile>
+
+        <profile>
+            <id>product</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.keycloak</groupId>
+                    <artifactId>keycloak-quarkus-server</artifactId>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>io.quarkus</groupId>
+                            <artifactId>quarkus-logging-gelf</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>io.quarkus</groupId>
+                            <artifactId>quarkus-logging-gelf-deployment</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 </project>
