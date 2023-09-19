@@ -35,14 +35,6 @@ final class HostnamePropertyMappers {
                 fromOption(HostnameOptions.HOSTNAME_STRICT_BACKCHANNEL)
                         .to("kc.spi-hostname-default-strict-backchannel")
                         .build(),
-                fromOption(HostnameOptions.HOSTNAME_PATH)
-                        .to("kc.spi-hostname-default-path")
-                        .paramLabel("path")
-                        .build(),
-                fromOption(HostnameOptions.HOSTNAME_PORT)
-                        .to("kc.spi-hostname-default-hostname-port")
-                        .paramLabel("port")
-                        .build(),
                 fromOption(HostnameOptions.HOSTNAME_DEBUG)
                         .to("kc.spi-hostname-default-hostname-debug")
                         .build()

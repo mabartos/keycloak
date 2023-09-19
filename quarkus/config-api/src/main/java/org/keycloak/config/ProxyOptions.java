@@ -1,18 +1,17 @@
 package org.keycloak.config;
 
 public class ProxyOptions {
-
-    public enum Mode {
-        none,
-        edge,
-        reencrypt,
-        passthrough;
-    }
-
-    public static final Option<Mode> PROXY = new OptionBuilder<>("proxy", Mode.class)
+    
+    public static final Option<Boolean> PROXY = new OptionBuilder<>("proxy", Boolean.class)
             .category(OptionCategory.PROXY)
-            .description("The proxy address forwarding mode if the server is behind a reverse proxy.")
-            .defaultValue(Mode.none)
+            .description("If the server is behind a reverse proxy.")
+            .defaultValue(Boolean.FALSE)
+            .build();
+
+    public static final Option<Boolean> PROXY_PARSE_HEADER = new OptionBuilder<>("proxy-parse-headers", Boolean.class)
+            .category(OptionCategory.PROXY)
+            .description("If the server should parse forwarded headers")
+            .defaultValue(Boolean.FALSE)
             .build();
 
     public static final Option<Boolean> PROXY_FORWARDED_HOST = new OptionBuilder<>("proxy-forwarded-host", Boolean.class)

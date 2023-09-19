@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class OptionBuilder<T> {
 
@@ -23,6 +24,7 @@ public class OptionBuilder<T> {
     private OptionCategory category;
     private boolean hidden;
     private boolean build;
+    private Integer order;
     private String description;
     private Optional<T> defaultValue;
     private Supplier<List<String>> expectedValues;
@@ -64,6 +66,11 @@ public class OptionBuilder<T> {
 
     public OptionBuilder<T> buildTime(boolean build) {
         this.build = build;
+        return this;
+    }
+
+    public OptionBuilder<T> order(Integer order) {
+        this.order = order;
         return this;
     }
 
@@ -114,9 +121,9 @@ public class OptionBuilder<T> {
 
     public Option<T> build() {
         if (auxiliaryType != null) {
-            return new MultiOption<T>(type, auxiliaryType, key, category, hidden, build, description, defaultValue, expectedValues);
+            return new MultiOption<T>(type, auxiliaryType, key, category, hidden, build, description, order, defaultValue, expectedValues);
         } else {
-            return new Option<T>(type, key, category, hidden, build, description, defaultValue, expectedValues);
+            return new Option<T>(type, key, category, hidden, build, description, order, defaultValue, expectedValues);
         }
     }
 

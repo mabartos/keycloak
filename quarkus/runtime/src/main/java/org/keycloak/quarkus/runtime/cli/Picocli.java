@@ -472,6 +472,12 @@ public final class Picocli {
                     optBuilder.defaultValue(mapper.getDefaultValue().get().toString());
                 }
 
+                if (mapper.getOrder().isPresent()) {
+                    optBuilder.order((Integer) mapper.getOrder().get());
+                } else {
+                    optBuilder.order(-1);
+                }
+
                 if (mapper.getType() != null) {
                     optBuilder.type(mapper.getType());
                     if (mapper.getOption() instanceof MultiOption) {

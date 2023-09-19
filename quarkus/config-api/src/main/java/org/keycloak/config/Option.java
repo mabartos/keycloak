@@ -12,16 +12,18 @@ public class Option<T> {
     private final boolean hidden;
     private final boolean buildTime;
     private final String description;
+    private final Integer order;
     private final Optional<T> defaultValue;
     private final Supplier<List<String>> expectedValues;
 
-    public Option(Class<T> type, String key, OptionCategory category, boolean hidden, boolean buildTime, String description, Optional<T> defaultValue, Supplier<List<String>> expectedValues) {
+    public Option(Class<T> type, String key, OptionCategory category, boolean hidden, boolean buildTime, String description, Integer order, Optional<T> defaultValue, Supplier<List<String>> expectedValues) {
         this.type = type;
         this.key = key;
         this.category = category;
         this.hidden = hidden;
         this.buildTime = buildTime;
         this.description = getDescriptionByCategorySupportLevel(description);
+        this.order = order;
         this.defaultValue = defaultValue;
         this.expectedValues = expectedValues;
     }
@@ -44,6 +46,10 @@ public class Option<T> {
         return category;
     }
 
+    public Optional<Integer> getOrder(){
+        return Optional.ofNullable(order);
+    }
+
     public String getDescription() { return description; }
 
     public Optional<T> getDefaultValue() {
@@ -62,6 +68,7 @@ public class Option<T> {
             this.hidden,
             this.buildTime,
             this.description,
+            this.order,
             Optional.ofNullable(defaultValue),
             this.expectedValues
         );

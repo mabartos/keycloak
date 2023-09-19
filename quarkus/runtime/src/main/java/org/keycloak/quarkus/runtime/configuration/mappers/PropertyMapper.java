@@ -156,6 +156,8 @@ public class PropertyMapper<T> {
 
     public String getDescription() { return this.option.getDescription(); }
 
+    public Optional<Integer> getOrder(){ return this.option.getOrder(); }
+
     public List<String> getExpectedValues() {
         return this.option.getExpectedValues();
     }

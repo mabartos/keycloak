@@ -67,6 +67,7 @@ public final class Help extends CommandLine.Help {
             }
         }
 
+        result.sort(Comparator.comparingInt(OptionSpec::order));
         return result;
     }
 
