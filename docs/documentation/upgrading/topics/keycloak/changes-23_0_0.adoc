@@ -72,3 +72,12 @@ New code example:
     </button>
 </div>
 ----
+
+= The deprecated `auto-build` CLI option was removed
+
+The `auto-build` CLI option has been marked as deprecated for a long time.
+In this release, it was completely removed, and it is no longer supported.
+
+If you are using this option, you can leverage the `--optimized` CLI option, which provides a similar functionality.
+When executing the `start` command, the server is automatically built based on the configuration.
+In order to prevent this behavior, set the `--optimized` flag.
