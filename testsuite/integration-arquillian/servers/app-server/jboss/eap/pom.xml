@@ -62,14 +62,6 @@
 
     <profiles>
         <profile>
-            <id>app-server-eap71</id>
-            <properties>
-                <app.server.jboss>eap71</app.server.jboss>
-                <app.server.jboss.version>${eap71.version}</app.server.jboss.version>
-                <app.server.jboss.unpacked.folder.name>jboss-eap-7.1</app.server.jboss.unpacked.folder.name>
-            </properties>
-        </profile>
-        <profile>
             <id>app-server-eap-java17</id>
             <activation>
                 <jdk>[17,)</jdk>
