@@ -56,7 +56,6 @@ import org.wildfly.extras.creaper.core.online.operations.OperationException;
 
 @AppServerContainer(ContainerConstants.APP_SERVER_WILDFLY)
 @AppServerContainer(ContainerConstants.APP_SERVER_EAP)
-@AppServerContainer(ContainerConstants.APP_SERVER_EAP6)
 @AppServerContainer(ContainerConstants.APP_SERVER_EAP71)
 public class SecuredDeploymentsAdapterTest extends AbstractServletsAdapterTest implements SelfManagedAppContainerLifecycle {
 

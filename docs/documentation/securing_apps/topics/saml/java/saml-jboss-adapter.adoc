@@ -21,6 +21,5 @@ You install the adapters by using a ZIP file or an RPM.
 
 * <<_saml-jboss-adapter-installation, Installing adapters from a ZIP file>>
 * <<_jboss7_adapter_rpm_saml, Installing JBoss EAP 7 Adapters from an RPM>>
-* <<_jboss6_adapter_rpm_saml, Installing JBoss EAP 6 Adapters from an RPM>>
 endif::[]
 

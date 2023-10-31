@@ -34,9 +34,6 @@ public abstract class AbstractPageWithInjectedUrl extends AbstractPage {
 
     //EAP6 URL fix
     protected URL createInjectedURL(String url) {
-        if (!System.getProperty("app.server","").startsWith("eap6")) {
-            return null;
-        }
         try {
             return new URL(ServerURLs.getAppServerContextRoot() + "/" + url);
         } catch (MalformedURLException e) {

@@ -37,7 +37,6 @@ import static org.hamcrest.Matchers.is;
  */
 @AppServerContainer(ContainerConstants.APP_SERVER_WILDFLY)
 @AppServerContainer(ContainerConstants.APP_SERVER_EAP)
-@AppServerContainer(ContainerConstants.APP_SERVER_EAP6)
 @AppServerContainer(ContainerConstants.APP_SERVER_UNDERTOW)
 @AppServerContainer(ContainerConstants.APP_SERVER_EAP71)
 @AppServerContainer(ContainerConstants.APP_SERVER_TOMCAT8)
@@ -56,7 +55,7 @@ public class PermissiveModeAdapterTest extends AbstractBaseServletAuthzAdapterTe
             login("jdoe", "jdoe");
             driver.navigate().to(getResourceServerUrl() + "/enforcing/resource");
 
-            if (AppServerTestEnricher.isEAP6AppServer() || AppServerTestEnricher.isTomcatAppServer()) {
+            if (AppServerTestEnricher.isTomcatAppServer()) {
                 assertThat(driver.getPageSource(), containsString("HTTP Status 404"));
             } else {
                 assertThat(driver.getTitle(), is(equalTo("Error")));

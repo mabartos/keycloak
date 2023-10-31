@@ -17,7 +17,7 @@ Typically, each zip that gets distibuted to users needs to contain a license XML
 The XML and individual files are maintained in git. When you change or add a dependency that is a part of:
 
 - the server, modify `distribution/feature-packs/server-feature-pack/src/main/resources/licenses/rh-sso/license.xml`.
-- an adapter, modify `distribution/{saml-adapters,adapters}/*/*/src/main/resources/licenses/rh-sso/licenses.xml`, for example `distribution/saml-adapters/as7-eap6-adapter/eap6-adapter-zip/src/main/resources/licenses/rh-sso/licenses.xml`.
+- an adapter, modify `distribution/{saml-adapters,adapters}/*/*/src/main/resources/licenses/rh-sso/licenses.xml`, for example `distribution/saml-adapters/wildfly-adapter/wildfly-modules/src/main/resources/licenses/rh-sso/licenses.xml`.
 
 Maven dependencies go into a `licenseSummary/dependencies/dependency` element, and non-maven dependencies go into a `licenseSummary/others/other` element.
 
