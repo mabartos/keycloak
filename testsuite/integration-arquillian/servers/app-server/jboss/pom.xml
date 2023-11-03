@@ -806,6 +806,20 @@
         </profile>
 
         <profile>
+            <id>app-server-eap7</id>
+            <activation>
+                <property>
+                    <name>app.server</name>
+                    <value>eap7</value>
+                </property>
+            </activation>
+            <modules>
+                <module>eap</module>
+            </modules>
+        </profile>
+
+
+        <profile>
             <id>app-server-wildfly</id>
             <activation>
                 <activeByDefault>true</activeByDefault>

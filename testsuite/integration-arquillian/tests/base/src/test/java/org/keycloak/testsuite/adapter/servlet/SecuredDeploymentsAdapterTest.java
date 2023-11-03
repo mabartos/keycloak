@@ -21,9 +21,7 @@ package org.keycloak.testsuite.adapter.servlet;
 import static org.hamcrest.Matchers.containsString;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.keycloak.testsuite.arquillian.AppServerTestEnricher.CURRENT_APP_SERVER;
 import static org.keycloak.testsuite.arquillian.AppServerTestEnricher.enableHTTPSForAppServer;
-import static org.keycloak.testsuite.util.ServerURLs.APP_SERVER_SSL_REQUIRED;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
 import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlEquals;
 import static org.keycloak.testsuite.util.URLAssert.assertCurrentUrlStartsWithLoginUrlOf;
@@ -56,7 +54,7 @@ import org.wildfly.extras.creaper.core.online.operations.OperationException;
 
 @AppServerContainer(ContainerConstants.APP_SERVER_WILDFLY)
 @AppServerContainer(ContainerConstants.APP_SERVER_EAP)
-@AppServerContainer(ContainerConstants.APP_SERVER_EAP71)
+@AppServerContainer(ContainerConstants.APP_SERVER_EAP7)
 public class SecuredDeploymentsAdapterTest extends AbstractServletsAdapterTest implements SelfManagedAppContainerLifecycle {
 
     @ArquillianResource

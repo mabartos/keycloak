@@ -592,15 +592,15 @@
         </profile>
 
         <profile>
-            <id>app-server-eap71</id>
+            <id>app-server-eap7</id>
             <activation>
                 <property>
                     <name>app.server</name>
-                    <value>eap71</value>
+                    <value>eap7</value>
                 </property>
             </activation>
             <properties>
-                <app.server>eap71</app.server> <!--in case the profile is called directly-->
+                <app.server>eap7</app.server> <!--in case the profile is called directly-->
                 <app.server.skip.unpack>false</app.server.skip.unpack>
                 <app.server.artifactId>integration-arquillian-servers-app-server-eap</app.server.artifactId><!-- Need to override -->
             </properties>
