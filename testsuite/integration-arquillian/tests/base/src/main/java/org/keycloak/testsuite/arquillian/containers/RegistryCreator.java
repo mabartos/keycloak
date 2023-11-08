@@ -34,14 +34,17 @@ import org.jboss.arquillian.core.spi.Validate;
 import org.jboss.logging.Logger;
 import org.jboss.shrinkwrap.descriptor.spi.node.Node;
 import org.jboss.shrinkwrap.descriptor.spi.node.NodeDescriptor;
+import org.keycloak.testsuite.arquillian.container.AppServerContainerProvider;
 import org.keycloak.testsuite.arquillian.container.AppServerContainerService;
 import org.mvel2.MVEL;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import static org.keycloak.testsuite.arquillian.containers.SecurityActions.isClassPresent;
 import static org.keycloak.testsuite.arquillian.containers.SecurityActions.loadClass;
+import static org.keycloak.utils.StringUtil.isNotBlank;
 
 /**
  * Registers all container adapters.
@@ -108,18 +111,26 @@ public class RegistryCreator {
     }
 
     private void addAppServerContainers(List<ContainerDef> containerDefs, List<GroupDef> groupDefs) {
-        Node parent = ((NodeDescriptor)containerDefs.get(0)).getRootNode();
+        Node parent = ((NodeDescriptor) containerDefs.get(0)).getRootNode();
 
         String appServerName = System.getProperty("app.server", "wildfly");
 
-        List<Node> containers = AppServerContainerService.getInstance().getContainers(appServerName);
-        if (containers == null) {
+        final AppServerContainerService appServerContainerService = AppServerContainerService.getInstance();
+
+        final AppServerContainerProvider provider = appServerContainerService.getAppServerContainerProvider(appServerName);
+        final List<Node> containers = appServerContainerService.getContainers(appServerName);
+
+        if (provider == null || containers == null) {
             log.warn("None dynamically loaded containers");
             return;
         }
         for (Node container : containers) {
             if (container.getName().equals("container")) {
-                containerDefs.add(new ContainerDefImpl("arquillian.xml", parent, container));
+                ContainerDef containerDef = new ContainerDefImpl("arquillian.xml", parent, container);
+                if (isNotBlank(provider.getDefaultProtocol())) {
+                    containerDef = containerDef.protocol(provider.getDefaultProtocol());
+                }
+                containerDefs.add(containerDef);
             } else if (container.getName().equals("group")) {
                 groupDefs.add(new GroupDefImpl("arquillian.xml", parent, container));
             }
