@@ -20,8 +20,7 @@
             xsi:schemaLocation="http://jboss.org/schema/arquillian
         http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
 
-    <defaultProtocol type="Servlet 3.0" />
-	
+    <defaultProtocol type="Servlet 5.0"/>"
     <extension qualifier="webdriver">
         <property name="browser">${browser}</property>
         <property name="downloadBinaries">${webdriverDownloadBinaries}</property>
@@ -108,7 +107,12 @@
         <property name="deploymentExportPath">target/deployments</property>
     </engine>
 
+    <container qualifier="app-server-eap8">
+        <protocol type="Servlet 5.0"/>
+    </container>
+
     <container qualifier="auth-server-undertow" mode="manual" default="true">
+        <protocol type="Servlet 3.0"/>
         <configuration>
             <property name="enabled">${auth.server.undertow} &amp;&amp; ! ${auth.server.crossdc}</property>
             <property name="bindAddress">0.0.0.0</property>
@@ -120,6 +124,7 @@
     </container>
 
     <container qualifier="auth-server-${auth.server}" mode="manual" default="true">
+        <protocol type="Servlet 3.0"/>
         <configuration>
             <property name="enabled">${auth.server.jboss} &amp;&amp; ! ${auth.server.crossdc}</property>
             <property name="adapterImplClass">${auth.server.adapter.impl.class}</property>
@@ -159,6 +164,7 @@
 
     <group qualifier="auth-server-${auth.server}-cluster">
         <container qualifier="auth-server-${auth.server}-backend1" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.jboss.cluster}</property>
                 <property name="adapterImplClass">org.jboss.as.arquillian.container.managed.ManagedDeployableContainer</property>
@@ -187,6 +193,7 @@
             </configuration>
         </container>
         <container qualifier="auth-server-${auth.server}-backend2" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.jboss.cluster}</property>
                 <property name="adapterImplClass">org.jboss.as.arquillian.container.managed.ManagedDeployableContainer</property>
@@ -215,6 +222,7 @@
             </configuration>
         </container>
         <container qualifier="auth-server-legacy" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.jboss.legacy}</property>
                 <property name="adapterImplClass">org.jboss.as.arquillian.container.managed.ManagedDeployableContainer</property>
@@ -245,6 +253,7 @@
     <!-- Clustering with embedded undertow -->
     <group qualifier="auth-server-undertow-cluster">
         <container qualifier="auth-server-undertow-backend1" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.undertow.cluster}</property>
                 <property name="adapterImplClass">org.keycloak.testsuite.arquillian.undertow.KeycloakOnUndertow</property>
@@ -264,6 +273,7 @@
             </configuration>
         </container>
         <container qualifier="auth-server-undertow-backend2" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.undertow.cluster}</property>
                 <property name="adapterImplClass">org.keycloak.testsuite.arquillian.undertow.KeycloakOnUndertow</property>
@@ -284,6 +294,7 @@
         </container>
 
         <container qualifier="auth-server-balancer-undertow" mode="suite" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.cluster}</property>
                 <property name="adapterImplClass">org.keycloak.testsuite.arquillian.undertow.lb.SimpleUndertowLoadBalancerContainer</property>
@@ -299,6 +310,7 @@
     <!-- Cross DC. Node numbering is [centre #].[node #] -->
     <group qualifier="auth-server-jboss-cross-dc">
         <container qualifier="cache-server-legacy-cross-dc-1" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.crossdc} &amp;&amp; ! ${cache.server.lifecycle.skip} &amp;&amp; ${cache.server.legacy}</property>
                 <property name="adapterImplClass">org.jboss.as.arquillian.container.managed.ManagedDeployableContainer</property>
@@ -329,6 +341,7 @@
         </container>
 
         <container qualifier="cache-server-legacy-cross-dc-2" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.crossdc} &amp;&amp; ! ${cache.server.lifecycle.skip} &amp;&amp; ${cache.server.legacy}</property>
                 <property name="adapterImplClass">org.jboss.as.arquillian.container.managed.ManagedDeployableContainer</property>
@@ -361,6 +374,7 @@
         </container>
 
         <container qualifier="cache-server-cross-dc-1" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.crossdc} &amp;&amp; ! ${cache.server.lifecycle.skip} &amp;&amp; ! ${cache.server.legacy}</property>
                 <property name="adapterImplClass">org.keycloak.testsuite.arquillian.containers.InfinispanServerDeployableContainer</property>
@@ -376,6 +390,7 @@
             </configuration>
         </container>
         <container qualifier="cache-server-cross-dc-2" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.crossdc} &amp;&amp; ! ${cache.server.lifecycle.skip} &amp;&amp; ! ${cache.server.legacy}</property>
                 <property name="adapterImplClass">org.keycloak.testsuite.arquillian.containers.InfinispanServerDeployableContainer</property>
@@ -392,6 +407,7 @@
         </container>
 
         <container qualifier="auth-server-balancer-cross-dc" mode="suite" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.crossdc}</property>
                 <property name="adapterImplClass">org.keycloak.testsuite.arquillian.undertow.lb.SimpleUndertowLoadBalancerContainer</property>
@@ -402,6 +418,7 @@
         </container>
 
         <container qualifier="auth-server-undertow-cross-dc-0_1" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.undertow.crossdc}</property>
                 <property name="adapterImplClass">org.keycloak.testsuite.arquillian.undertow.KeycloakOnUndertow</property>
@@ -429,6 +446,7 @@
             </configuration>
         </container>
         <container qualifier="auth-server-undertow-cross-dc-0_2-manual" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.undertow.crossdc}</property>
                 <property name="adapterImplClass">org.keycloak.testsuite.arquillian.undertow.KeycloakOnUndertow</property>
@@ -457,6 +475,7 @@
         </container>
 
         <container qualifier="auth-server-undertow-cross-dc-1_1" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.undertow.crossdc}</property>
                 <property name="adapterImplClass">org.keycloak.testsuite.arquillian.undertow.KeycloakOnUndertow</property>
@@ -484,6 +503,7 @@
             </configuration>
         </container>
         <container qualifier="auth-server-undertow-cross-dc-1_2-manual" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.undertow.crossdc}</property>
                 <property name="adapterImplClass">org.keycloak.testsuite.arquillian.undertow.KeycloakOnUndertow</property>
@@ -511,6 +531,7 @@
             </configuration>
         </container>
         <container qualifier="auth-server-jboss-cross-dc-0_1" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.jboss.crossdc}</property>
                 <property name="adapterImplClass">${auth.server.adapter.impl.class}</property>
@@ -543,6 +564,7 @@
             </configuration>
         </container>
         <container qualifier="auth-server-jboss-cross-dc-0_2-manual" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.jboss.crossdc}</property>
                 <property name="adapterImplClass">${auth.server.adapter.impl.class}</property>
@@ -576,6 +598,7 @@
         </container>
 
         <container qualifier="auth-server-jboss-cross-dc-1_1" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.jboss.crossdc}</property>
                 <property name="adapterImplClass">${auth.server.adapter.impl.class}</property>
@@ -608,6 +631,7 @@
             </configuration>
         </container>
         <container qualifier="auth-server-jboss-cross-dc-1_2-manual" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.jboss.crossdc}</property>
                 <property name="adapterImplClass">${auth.server.adapter.impl.class}</property>
@@ -641,7 +665,8 @@
         </container>
     </group>
 
-    <container qualifier="auth-server-quarkus" mode="manual" >
+    <container qualifier="auth-server-quarkus" mode="manual">
+        <protocol type="Servlet 3.0"/>
         <configuration>
             <property name="enabled">${auth.server.quarkus}</property>
             <property name="adapterImplClass">
@@ -654,7 +679,8 @@
         </configuration>
     </container>
 
-    <container qualifier="auth-server-quarkus-embedded" mode="manual" >
+    <container qualifier="auth-server-quarkus-embedded" mode="manual">
+        <protocol type="Servlet 3.0"/>
         <configuration>
             <property name="enabled">${auth.server.quarkus.embedded}</property>
             <property name="adapterImplClass">
@@ -667,6 +693,7 @@
     <!-- Clustering with Quarkus -->
     <group qualifier="auth-server-quarkus-cluster">
         <container qualifier="auth-server-quarkus-backend1" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.quarkus.cluster}</property>
                 <property name="adapterImplClass">org.keycloak.testsuite.arquillian.containers.KeycloakQuarkusServerDeployableContainer</property>
@@ -690,6 +717,7 @@
             </configuration>
         </container>
         <container qualifier="auth-server-quarkus-backend2" mode="manual" >
+            <protocol type="Servlet 3.0"/>
             <configuration>
                 <property name="enabled">${auth.server.quarkus.cluster}</property>
                 <property name="adapterImplClass">org.keycloak.testsuite.arquillian.containers.KeycloakQuarkusServerDeployableContainer</property>
@@ -717,9 +745,12 @@
     <!-- PREVIOUS VERSION OF KEYCLOAK FOR MIGRATION TESTS -->
 
     <container qualifier="auth-server-migration" mode="manual">
+        <protocol type="Servlet 3.0"/>
         <configuration>
             <property name="enabled">${auth.server.migration}</property>
-            <property name="adapterImplClass">org.keycloak.testsuite.arquillian.containers.KeycloakQuarkusServerDeployableContainer</property>
+            <property name="adapterImplClass">
+                org.keycloak.testsuite.arquillian.containers.KeycloakQuarkusServerDeployableContainer
+            </property>
             <property name="bindHttpPortOffset">${auth.server.port.offset}</property>
             <property name="importFile">${migration.import.file.name}</property>
             <property name="providersPathString">${keycloak.migration.home}</property>
