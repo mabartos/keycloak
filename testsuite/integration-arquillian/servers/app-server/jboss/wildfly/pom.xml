@@ -41,7 +41,8 @@
         <app.server.oidc.adapter.artifactId>keycloak-wildfly-adapter-dist</app.server.oidc.adapter.artifactId>
         <app.server.saml.adapter.artifactId>keycloak-saml-wildfly-adapter-dist</app.server.saml.adapter.artifactId>
 
-        <skip.elytron.adapter.installation>false</skip.elytron.adapter.installation>
+        <skip.elytron.oidc.adapter.installation>false</skip.elytron.oidc.adapter.installation>
+        <skip.elytron.saml.adapter.installation>false</skip.elytron.saml.adapter.installation>
     </properties>
 
     <dependencies>

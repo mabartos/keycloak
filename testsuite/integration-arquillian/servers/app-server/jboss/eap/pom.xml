@@ -40,7 +40,8 @@
         <app.server.oidc.adapter.artifactId>keycloak-wildfly-adapter-dist</app.server.oidc.adapter.artifactId>
         <app.server.saml.adapter.artifactId>keycloak-saml-wildfly-adapter-dist</app.server.saml.adapter.artifactId>
 
-        <skip.elytron.adapter.installation>false</skip.elytron.adapter.installation>
+        <skip.elytron.oidc.adapter.installation>false</skip.elytron.oidc.adapter.installation>
+        <skip.elytron.saml.adapter.installation>false</skip.elytron.saml.adapter.installation>
     </properties>
 
     <dependencies>
@@ -69,7 +70,7 @@
                 <app.server.jboss.unpacked.folder.name>jboss-eap-7.1</app.server.jboss.unpacked.folder.name>
             </properties>
         </profile>
-        <profile>
+       <!-- <profile>
             <id>app-server-eap-java17</id>
             <activation>
                 <jdk>[17,)</jdk>
@@ -77,7 +78,7 @@
             <properties>
                 <skip.java17.enablement>false</skip.java17.enablement>
             </properties>
-        </profile>
+        </profile>-->
     </profiles>
 
 </project>

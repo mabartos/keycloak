@@ -40,7 +40,8 @@
 
         <oidc-adapter.version>${project.version}</oidc-adapter.version>
         <saml-adapter.version>${project.version}</saml-adapter.version>
-        <skip.elytron.adapter.installation>true</skip.elytron.adapter.installation>
+        <skip.elytron.oidc.adapter.installation>true</skip.elytron.oidc.adapter.installation>
+        <skip.elytron.saml.adapter.installation>true</skip.elytron.saml.adapter.installation>
         <skip.adapter.offline.installation>true</skip.adapter.offline.installation>
         <skip.oidc.adapter.installation>false</skip.oidc.adapter.installation>
         <skip.java17.enablement>true</skip.java17.enablement>
@@ -365,7 +366,7 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <skip>${skip.elytron.adapter.installation}</skip>
+                                    <skip>${skip.elytron.oidc.adapter.installation}</skip>
                                     <executable>${cli.executable}</executable>
                                     <workingDirectory>${cli.working.dir}</workingDirectory>
                                     <environmentVariables>
@@ -391,7 +392,7 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <skip>${skip.elytron.adapter.installation}</skip>
+                                    <skip>${skip.elytron.oidc.adapter.installation}</skip>
                                     <executable>${cli.executable}</executable>
                                     <workingDirectory>${cli.working.dir}</workingDirectory>
                                     <environmentVariables>
@@ -418,7 +419,7 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <skip>${skip.elytron.adapter.installation}</skip>
+                                    <skip>${skip.elytron.saml.adapter.installation}</skip>
                                     <executable>${cli.executable}</executable>
                                     <workingDirectory>${cli.working.dir}</workingDirectory>
                                     <environmentVariables>
@@ -444,7 +445,7 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <skip>${skip.elytron.adapter.installation}</skip>
+                                    <skip>${skip.elytron.saml.adapter.installation}</skip>
                                     <executable>${cli.executable}</executable>
                                     <workingDirectory>${cli.working.dir}</workingDirectory>
                                     <environmentVariables>

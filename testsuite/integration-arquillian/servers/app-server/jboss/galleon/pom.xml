@@ -25,15 +25,17 @@
         <app.server.jboss.artifactId>wildfly-ee-dist</app.server.jboss.artifactId>
         <app.server.jboss.version>${eap.version}</app.server.jboss.version>
 
-        <app.server.jboss.unpacked.folder.path>${containers.home}/jboss-distribution
-        </app.server.jboss.unpacked.folder.path>
+       <!-- <app.server.jboss.unpacked.folder.path>${containers.home}/jboss-distribution
+        </app.server.jboss.unpacked.folder.path>-->
         <app.server.jboss.unpacked.folder.name>jboss-eap-8.0</app.server.jboss.unpacked.folder.name>
 
-        <app.server.saml.adapter.artifactId>keycloak-saml-adapter-galleon-pack</app.server.saml.adapter.artifactId>
+        <app.server.saml.adapter.artifactId>keycloak-saml-wildfly-adapter-jakarta-dist</app.server.saml.adapter.artifactId>
+       <!-- <app.server.saml.adapter.artifactId>keycloak-saml-adapter-galleon-pack</app.server.saml.adapter.artifactId>-->
 
         <skip.apply.offline.cli>true</skip.apply.offline.cli>
         <skip.configure.clustered.scenario>true</skip.configure.clustered.scenario>
-        <skip.elytron.adapter.installation>true</skip.elytron.adapter.installation>
+        <skip.elytron.oidc.adapter.installation>true</skip.elytron.oidc.adapter.installation>
+        <skip.elytron.saml.adapter.installation>true</skip.elytron.saml.adapter.installation>
         <skip.oidc.adapter.installation>true</skip.oidc.adapter.installation>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -72,13 +74,13 @@
         </dependency>
     </dependencies>
 
-    <build>
+    <!--<build>
         <plugins>
             <plugin>
                 <groupId>org.jboss.galleon</groupId>
                 <artifactId>galleon-maven-plugin</artifactId>
                 <version>${org.jboss.galleon.version}</version>
-                <!--Provision a server with relevant layers-->
+                &lt;!&ndash;Provision a server with relevant layers&ndash;&gt;
                 <executions>
                     <execution>
                         <id>server-provisioning</id>
@@ -167,5 +169,5 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>
+    </build>-->
 </project>
