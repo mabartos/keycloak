@@ -17,23 +17,32 @@
 
 package org.keycloak.testsuite.arquillian.container;
 
-import java.util.List;
 import org.jboss.shrinkwrap.descriptor.spi.node.Node;
+
+import java.util.List;
 
 /**
  * @author <a href="mailto:vramik@redhat.com">Vlasta Ramik</a>
  */
-public interface AppServerContainerProvider  {
+public interface AppServerContainerProvider {
 
-    public static final String APP_SERVER = "app-server";
+    String APP_SERVER = "app-server";
+    String DEFAULT_PROTOCOL = "Servlet 3.0";
 
     /**
      * @return string name of container
      */
-    public String getName();
+    String getName();
 
     /**
      * @return List of available containers or null if there are none
      */
-    public List<Node> getContainers();
+    List<Node> getContainers();
+
+    /**
+     * @return optional default protocol
+     */
+    default String getDefaultProtocol() {
+        return DEFAULT_PROTOCOL;
+    }
 }

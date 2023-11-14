@@ -17,12 +17,14 @@
 
 package org.keycloak.testsuite.arquillian.container;
 
+import org.jboss.shrinkwrap.descriptor.spi.node.Node;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
-import org.jboss.shrinkwrap.descriptor.spi.node.Node;
 
 /**
  * @author <a href="mailto:vramik@redhat.com">Vlasta Ramik</a>
@@ -41,6 +43,15 @@ public class AppServerContainerService  {
             service = new AppServerContainerService();
         }
         return service;
+    }
+
+    public AppServerContainerProvider getAppServerContainerProvider(String appServerName) {
+        for (AppServerContainerProvider provider : loader) {
+            if (provider.getName().equals(appServerName)) {
+                return provider;
+            }
+        }
+        return null;
     }
 
     public List<Node> getContainers(String appServerName) {
