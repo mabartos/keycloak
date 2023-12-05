@@ -2,12 +2,12 @@ package org.keycloak.quarkus.runtime.configuration.mappers;
 
 import io.smallrye.config.ConfigSourceInterceptorContext;
 import io.smallrye.config.ConfigValue;
-
 import org.keycloak.common.crypto.FipsMode;
 import org.keycloak.config.HttpOptions;
 import org.keycloak.config.SecurityOptions;
 import org.keycloak.quarkus.runtime.Environment;
 import org.keycloak.quarkus.runtime.Messages;
+import org.keycloak.quarkus.runtime.configuration.Configuration;
 import org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider;
 
 import java.io.File;
@@ -157,7 +157,7 @@ final class HttpPropertyMappers {
     }
 
     private static Optional<String> resolveKeyStoreType(Optional<String> value,
-            ConfigSourceInterceptorContext configSourceInterceptorContext) {
+                                                        ConfigSourceInterceptorContext configSourceInterceptorContext) {
         if (value.isPresent()) {
             try {
                 if (FipsMode.valueOfOption(value.get()).equals(FipsMode.STRICT)) {

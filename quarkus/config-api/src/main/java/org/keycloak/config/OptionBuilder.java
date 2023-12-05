@@ -2,16 +2,17 @@ package org.keycloak.config;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class OptionBuilder<T> {
 
-    private  static final Supplier<List<String>> EMPTY_VALUES_SUPPLIER = List::of;
-    private  static final Supplier<List<String>> BOOLEAN_TYPE_VALUES = new Supplier<List<String>>() {
+    private static final Supplier<List<String>> EMPTY_VALUES_SUPPLIER = List::of;
+    private static final Supplier<List<String>> BOOLEAN_TYPE_VALUES = new Supplier<List<String>>() {
         List<String> values = List.of(Boolean.TRUE.toString(), Boolean.FALSE.toString());
 
-        @Override 
+        @Override
         public List<String> get() {
             return values;
         }
@@ -21,6 +22,7 @@ public class OptionBuilder<T> {
     private final Class<T> auxiliaryType;
     private final String key;
     private OptionCategory category;
+    private BooleanSupplier enabled;
     private boolean hidden;
     private boolean build;
     private String description;
@@ -36,6 +38,7 @@ public class OptionBuilder<T> {
         this.auxiliaryType = auxiliaryType;
         this.key = key;
         category = OptionCategory.GENERAL;
+        enabled = () -> true;
         hidden = false;
         build = false;
         description = null;
@@ -54,6 +57,11 @@ public class OptionBuilder<T> {
 
     public OptionBuilder<T> category(OptionCategory category) {
         this.category = category;
+        return this;
+    }
+
+    public OptionBuilder<T> enabled(BooleanSupplier enabled) {
+        this.enabled = enabled;
         return this;
     }
 
@@ -99,7 +107,7 @@ public class OptionBuilder<T> {
         return this;
     }
 
-    public OptionBuilder<T> expectedValues(T ... expected) {
+    public OptionBuilder<T> expectedValues(T... expected) {
         this.expectedValues = new Supplier<>() {
             List<String> values = List.of(expected).stream().map(v -> v.toString()).collect(Collectors.toList());
 
@@ -114,9 +122,9 @@ public class OptionBuilder<T> {
 
     public Option<T> build() {
         if (auxiliaryType != null) {
-            return new MultiOption<T>(type, auxiliaryType, key, category, hidden, build, description, defaultValue, expectedValues);
+            return new MultiOption<T>(type, auxiliaryType, key, category, enabled, hidden, build, description, defaultValue, expectedValues);
         } else {
-            return new Option<T>(type, key, category, hidden, build, description, defaultValue, expectedValues);
+            return new Option<T>(type, key, category, enabled, hidden, build, description, defaultValue, expectedValues);
         }
     }
 

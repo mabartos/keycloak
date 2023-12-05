@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.BooleanSupplier;
 
 import io.smallrye.config.ConfigSourceInterceptorContext;
 import io.smallrye.config.ConfigValue;
@@ -140,27 +141,41 @@ public class PropertyMapper<T> {
         return transformedValue;
     }
 
-    public Option<T> getOption() { return this.option; }
+    public Option<T> getOption() {
+        return this.option;
+    }
 
-    public Class<T> getType() { return this.option.getType(); }
+    public boolean isEnabled() {
+        return this.option.isEnabled();
+    }
+
+    public Class<T> getType() {
+        return this.option.getType();
+    }
 
     public String getFrom() {
         return MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX + this.option.getKey();
     }
 
-    public String getDescription() { return this.option.getDescription(); }
+    public String getDescription() {
+        return this.option.getDescription();
+    }
 
     public List<String> getExpectedValues() {
         return this.option.getExpectedValues();
     }
 
-    public Optional<T> getDefaultValue() { return this.option.getDefaultValue(); }
+    public Optional<T> getDefaultValue() {
+        return this.option.getDefaultValue();
+    }
 
     public OptionCategory getCategory() {
         return this.option.getCategory();
     }
 
-    public boolean isHidden() { return this.option.isHidden(); }
+    public boolean isHidden() {
+        return this.option.isHidden();
+    }
 
     public boolean isBuildTime() {
         return this.option.isBuildTime();

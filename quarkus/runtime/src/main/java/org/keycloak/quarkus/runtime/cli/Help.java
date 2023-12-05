@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
 import org.keycloak.utils.StringUtil;
@@ -35,7 +36,7 @@ import picocli.CommandLine.Model.OptionSpec;
 
 public final class Help extends CommandLine.Help {
 
-    static final String[] OPTION_NAMES = new String[] { "-h", "--help" };
+    static final String[] OPTION_NAMES = new String[]{"-h", "--help"};
     private static final int HELP_WIDTH = 100;
     private static final String DEFAULT_OPTION_LIST_HEADING = "Options:";
     private static final String DEFAULT_COMMAND_LIST_HEADING = "Commands:";
@@ -118,7 +119,7 @@ public final class Help extends CommandLine.Help {
         return new IParameterRenderer() {
             @Override
             public Ansi.Text[][] render(CommandLine.Model.PositionalParamSpec param,
-                    IParamLabelRenderer parameterLabelRenderer, ColorScheme scheme) {
+                                        IParamLabelRenderer parameterLabelRenderer, ColorScheme scheme) {
                 // we do our own formatting of parameters and labels when rendering optionsq
                 return new Ansi.Text[0][];
             }
@@ -164,6 +165,8 @@ public final class Help extends CommandLine.Help {
             // only filter mapped options, defaults to the hidden marker
             return !option.hidden();
         }
+
+        if (!mapper.isEnabled()) return false;
 
         boolean isUnsupportedOption = !PropertyMappers.isSupported(mapper);
 
