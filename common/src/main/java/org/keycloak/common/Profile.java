@@ -158,7 +158,7 @@ public class Profile {
         DEFAULT_RESOLVERS.add(new PropertiesFileProfileConfigResolver());
     };
 
-    private static Profile CURRENT;
+    private static volatile Profile CURRENT;
 
     private final ProfileName profileName;
 

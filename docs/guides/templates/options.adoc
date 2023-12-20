@@ -23,6 +23,10 @@
 *Env:* `${option.keyEnv}`
 --
 
+<#if option.enabledWhen?has_content>
+${option.enabledWhen!}
+</#if>
+
 <#if option.deprecated?has_content>
 *DEPRECATED.*
 ${option.deprecated.note!}<#if option.deprecated.newOptionsKeys?has_content><#if option.deprecated.note?has_content> </#if>Use: <#list option.deprecated.newOptionsKeys as key>`+${key}+`<#if key?has_next>, </#if></#list>.</#if>

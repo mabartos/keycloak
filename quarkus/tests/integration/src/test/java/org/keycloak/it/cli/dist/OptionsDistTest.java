@@ -53,6 +53,18 @@ public class OptionsDistTest {
     }
 
     @Test
+    @Launch({"start", "--log=console", "--log-file-output=JSON"})
+    public void testServerDoesNotStartIfDisabledFileLogOption(LaunchResult result) {
+        assertEquals(1, result.getErrorStream().stream().filter(s -> s.contains("Disabled option: '--log-file-output'. Available only when Console log handler is activated")).count());
+    }
+
+    @Test
+    @Launch({"start", "--log=file", "--log-file-output=JSON"})
+    public void testServerStartIfEnabledFileLogOption(LaunchResult result) {
+        assertEquals(1, result.getErrorStream().stream().filter(s -> s.contains("Disabled option: '--log-file-output'. Available only when Console log handler is activated")).count());
+    }
+
+    @Test
     @RawDistOnly(reason = "Raw is enough and we avoid issues with including custom conf file in the container")
     public void testExpressionsInConfigFile(KeycloakDistribution distribution) {
         distribution.setEnvVar("MY_LOG_LEVEL", "debug");
