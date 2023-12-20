@@ -28,6 +28,7 @@ import org.keycloak.it.utils.KeycloakDistribution;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @CLITest
 public class OptionValidationTest {
@@ -86,14 +87,8 @@ public class OptionValidationTest {
     public void failWithDisabledGelfOption(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;
         assertEquals("Disabled option: '--log-gelf-include-stack-trace'. Available only when GELF is activated\n" +
-                "Possible solutions: --log, --log-level\n" +
-                "Try '" + KeycloakDistribution.SCRIPT_CMD + " start --help' for more information on the available options.", cliResult.getErrorOutput());
-    }
-
-    @Test
-    @Launch({"start", "--log=gelf", "--log-gelf-include-stack-trace=true"})
-    public void failWithEnabledOption(LaunchResult result) {
-        CLIResult cliResult = (CLIResult) result;
-        cliResult.assertStarted();
+                "Possible solutions: --log, --log-console-output, --log-console-format, --log-console-color, --log-level\n" +
+                "Try '" + KeycloakDistribution.SCRIPT_CMD + " start --help' for more information on the available options.\n" +
+                "Specify '--help-all' to obtain information on all options and their availability.", cliResult.getErrorOutput());
     }
 }

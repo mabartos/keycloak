@@ -285,7 +285,14 @@ public final class Picocli {
             List<PropertyMapper> mappers = new ArrayList<>();
             Optional.ofNullable(PropertyMappers.getRuntimeMappers().get(category)).ifPresent(mappers::addAll);
             Optional.ofNullable(PropertyMappers.getBuildTimeMappers().get(category)).ifPresent(mappers::addAll);
-            Optional.ofNullable(PropertyMappers.getDisabledMappers().get(category)).ifPresent(mappers::addAll);
+
+            if (options.includeBuildTime) {
+                Optional.ofNullable(PropertyMappers.getDisabledBuildTimeMappers().get(category)).ifPresent(mappers::addAll);
+            }
+            if (options.includeRuntime && !isRebuildCheck()) {
+                Optional.ofNullable(PropertyMappers.getDisabledRuntimeMappers().get(category)).ifPresent(mappers::addAll);
+            }
+
             for (PropertyMapper mapper : mappers) {
                 // bypass the PropertyMappingInterceptor - the transformations may cause unexpected errors
                 String value = null;
