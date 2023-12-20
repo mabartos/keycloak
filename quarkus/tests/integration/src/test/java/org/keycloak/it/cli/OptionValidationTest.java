@@ -28,6 +28,7 @@ import org.keycloak.it.utils.KeycloakDistribution;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @CLITest
 public class OptionValidationTest {
@@ -73,11 +74,21 @@ public class OptionValidationTest {
     }
 
     @Test
-    @Launch({"start", "--db-username=foobar","--db-pasword=mytestpw", "--foobar=barfoo"})
+    @Launch({"start", "--db-username=foobar", "--db-pasword=mytestpw", "--foobar=barfoo"})
     public void failWithFirstOptionOnMultipleUnknownOptions(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;
         assertEquals("Unknown option: '--db-pasword'\n" +
                 "Possible solutions: --db-driver, --db-url, --db-url-host, --db-url-database, --db-url-port, --db-url-properties, --db-username, --db-password, --db-schema, --db-pool-initial-size, --db-pool-min-size, --db-pool-max-size, --db\n" +
                 "Try '" + KeycloakDistribution.SCRIPT_CMD + " start --help' for more information on the available options.", cliResult.getErrorOutput());
+    }
+
+    @Test
+    @Launch({"start", "--log=console", "--log-gelf-include-stack-trace=true"})
+    public void failWithDisabledGelfOption(LaunchResult result) {
+        CLIResult cliResult = (CLIResult) result;
+        assertEquals("Disabled option: '--log-gelf-include-stack-trace'. Available only when GELF is activated\n" +
+                "Possible solutions: --log, --log-console-output, --log-console-format, --log-console-color, --log-level\n" +
+                "Try '" + KeycloakDistribution.SCRIPT_CMD + " start --help' for more information on the available options.\n" +
+                "Specify '--help-all' to obtain information on all options and their availability.", cliResult.getErrorOutput());
     }
 }

@@ -194,7 +194,7 @@ public class Profile {
 
     private static final Logger logger = Logger.getLogger(Profile.class);
 
-    private static Profile CURRENT;
+    private static volatile Profile CURRENT;
 
     private final ProfileName profileName;
 

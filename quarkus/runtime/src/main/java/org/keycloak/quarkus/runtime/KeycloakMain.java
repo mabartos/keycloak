@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
 import picocli.CommandLine.ExitCode;
 
 import io.quarkus.runtime.ApplicationLifecycleManager;
@@ -90,6 +91,8 @@ public class KeycloakMain implements QuarkusApplication {
                 return;
             }
 
+            PropertyMappers.sanitizeDisabledMappers();
+
             try {
                 Picocli.validateConfig(cliArgs, new Start(), new PrintWriter(System.out, true));
             } catch (PropertyException e) {
@@ -102,6 +105,8 @@ public class KeycloakMain implements QuarkusApplication {
 
             return;
         }
+
+        PropertyMappers.sanitizeDisabledMappers();
 
         // parse arguments and execute any of the configured commands
         parseAndRun(cliArgs);

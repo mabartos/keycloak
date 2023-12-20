@@ -28,6 +28,7 @@ import io.smallrye.config.SmallRyeConfig;
 
 import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
 import org.eclipse.microprofile.config.spi.ConfigSource;
+import org.keycloak.config.Option;
 import org.keycloak.quarkus.runtime.Environment;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
@@ -45,6 +46,25 @@ public final class Configuration {
 
     private Configuration() {
 
+    }
+
+    public static boolean isTrue(Option<Boolean> option, boolean isKcValue) {
+        return getOptionalBooleanValue(isKcValue ? NS_KEYCLOAK_PREFIX + option.getKey() : option.getKey())
+                .orElse(false);
+    }
+
+    public static boolean isTrue(Option<Boolean> option) {
+        return isTrue(option, true);
+    }
+
+    public static boolean containsValue(Option<?> option, String value, boolean isKcValue) {
+        return getOptionalValue(isKcValue ? NS_KEYCLOAK_PREFIX + option.getKey() : option.getKey())
+                .filter(f -> f.equals(value))
+                .isPresent();
+    }
+
+    public static boolean containsValue(Option<?> option, String value) {
+        return containsValue(option, value, true);
     }
 
     public static synchronized SmallRyeConfig getConfig() {

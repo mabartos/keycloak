@@ -28,6 +28,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.BooleanSupplier;
 
 import io.smallrye.config.ConfigSourceInterceptorContext;
 import io.smallrye.config.ConfigValue;
@@ -42,12 +43,15 @@ import org.keycloak.quarkus.runtime.cli.PropertyMapperParameterConsumer;
 import org.keycloak.quarkus.runtime.configuration.ConfigArgsConfigSource;
 import org.keycloak.quarkus.runtime.Environment;
 import org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider;
+import org.keycloak.utils.StringUtil;
 
 public class PropertyMapper<T> {
 
     static PropertyMapper IDENTITY = new PropertyMapper(
             new OptionBuilder<String>(null, String.class).build(),
             null,
+            () -> false,
+            "",
             null,
             null,
             null,
@@ -61,20 +65,25 @@ public class PropertyMapper<T> {
 
     private final Option<T> option;
     private final String to;
+    private BooleanSupplier enabled;
+    private String enabledWhen;
     private final BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper;
     private final String mapFrom;
     private final boolean mask;
     private final String paramLabel;
     private final String envVarFormat;
-    private String cliFormat;
+    private final String cliFormat;
     private BiConsumer<PropertyMapper<T>, ConfigValue> validator;
 
     private static final Logger logger = Logger.getLogger(PropertyMapper.class);
 
-    PropertyMapper(Option<T> option, String to, BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper,
+    PropertyMapper(Option<T> option, String to, BooleanSupplier enabled, String enabledWhen,
+                   BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper,
                    String mapFrom, String paramLabel, boolean mask, BiConsumer<PropertyMapper<T>, ConfigValue> validator) {
         this.option = option;
         this.to = to == null ? getFrom() : to;
+        this.enabled = enabled;
+        this.enabledWhen = enabledWhen;
         this.mapper = mapper == null ? PropertyMapper::defaultTransformer : mapper;
         this.mapFrom = mapFrom;
         this.paramLabel = paramLabel;
@@ -152,15 +161,39 @@ public class PropertyMapper<T> {
         return transformedValue;
     }
 
-    public Option<T> getOption() { return this.option; }
+    public Option<T> getOption() {
+        return this.option;
+    }
 
-    public Class<T> getType() { return this.option.getType(); }
+    public void setEnabled(BooleanSupplier enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return enabled.getAsBoolean();
+    }
+
+    public Optional<String> getEnabledWhen() {
+        return Optional.of(enabledWhen)
+                .filter(StringUtil::isNotBlank)
+                .map(e -> "Available only when " + e);
+    }
+
+    public void setEnabledWhen(String enabledWhen) {
+        this.enabledWhen = enabledWhen;
+    }
+
+    public Class<T> getType() {
+        return this.option.getType();
+    }
 
     public String getFrom() {
         return MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX + this.option.getKey();
     }
 
-    public String getDescription() { return this.option.getDescription(); }
+    public String getDescription() {
+        return this.option.getDescription();
+    }
 
     public List<String> getExpectedValues() {
         return this.option.getExpectedValues();
@@ -241,8 +274,10 @@ public class PropertyMapper<T> {
         private BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper;
         private String mapFrom = null;
         private boolean isMasked = false;
+        private BooleanSupplier isEnabled = () -> true;
+        private String enabledWhen = "";
         private String paramLabel;
-        private BiConsumer<PropertyMapper<T>, ConfigValue> validator = (mapper, value) -> mapper.validateExpectedValues(value);
+        private BiConsumer<PropertyMapper<T>, ConfigValue> validator = PropertyMapper::validateExpectedValues;
 
         public Builder(Option<T> option) {
             this.option = option;
@@ -273,6 +308,12 @@ public class PropertyMapper<T> {
             return this;
         }
 
+        public Builder<T> isEnabled(BooleanSupplier isEnabled, String enabledWhen) {
+            this.isEnabled = isEnabled;
+            this.enabledWhen=enabledWhen;
+            return this;
+        }
+
         public Builder<T> validator(BiConsumer<PropertyMapper<T>, ConfigValue> validator) {
             this.validator = validator;
             return this;
@@ -282,7 +323,7 @@ public class PropertyMapper<T> {
             if (paramLabel == null && Boolean.class.equals(option.getType())) {
                 paramLabel = Boolean.TRUE + "|" + Boolean.FALSE;
             }
-            return new PropertyMapper<T>(option, to, mapper, mapFrom, paramLabel, isMasked, validator);
+            return new PropertyMapper<T>(option, to, isEnabled, enabledWhen, mapper, mapFrom, paramLabel, isMasked, validator);
         }
     }
 

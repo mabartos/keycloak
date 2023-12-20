@@ -53,10 +53,34 @@ public class OptionsDistTest {
     }
 
     @Test
+    @Launch({"start", "--log=console", "--log-file-output=json"})
+    public void testServerDoesNotStartIfDisabledFileLogOption(LaunchResult result) {
+        assertEquals(1, result.getErrorStream().stream().filter(s -> s.contains("Disabled option: '--log-file-output'. Available only when File log handler is activated")).count());
+    }
+
+    @Test
+    @Launch({"start", "--log=file", "--log-file-output=json"})
+    public void testServerStartIfEnabledFileLogOption(LaunchResult result) {
+        assertEquals(0, result.getErrorStream().stream().filter(s -> s.contains("Disabled option: '--log-file-output'. Available only when File log handler is activated")).count());
+    }
+
+    @Test
     @RawDistOnly(reason = "Raw is enough and we avoid issues with including custom conf file in the container")
     public void testExpressionsInConfigFile(KeycloakDistribution distribution) {
         distribution.setEnvVar("MY_LOG_LEVEL", "debug");
         CLIResult result = distribution.run(CONFIG_FILE_LONG_NAME + "=" + Paths.get("src/test/resources/OptionsDistTest/keycloak.conf").toAbsolutePath().normalize(), "start-dev");
         result.assertMessage("DEBUG [org.keycloak");
     }
+
+    @Test
+    @RawDistOnly(reason = "Raw is enough and we avoid issues with including custom conf file in the container")
+    public void testDisabledOptionsWarning(KeycloakDistribution distribution) {
+        final var configFile = CONFIG_FILE_LONG_NAME + "=" + Paths.get("src/test/resources/OptionsDistTest/keycloak.conf").toAbsolutePath().normalize();
+        CLIResult result = distribution.run(configFile, "start-dev");
+        result.assertMessage("The following used options are UNAVAILABLE and will be ignored:");
+        result.assertMessage("- log-gelf-level: Available only when GELF is activated.");
+        result.assertMessage("- log-gelf-version: Available only when GELF is activated.");
+        result.assertNoMessage("- log-file-output:");
+    }
+
 }

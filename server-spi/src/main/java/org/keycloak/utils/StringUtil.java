@@ -20,12 +20,18 @@ import java.util.Collection;
 
 public class StringUtil {
 
+    /**
+     * Returns true if str is null or blank
+     */
     public static boolean isBlank(String str) {
         return !(isNotBlank(str));
     }
 
-    public static boolean  isNotBlank(String str) {
-        return str != null && !"".equals(str.trim());
+    /**
+     * Returns true if str is not null and not blank
+     */
+    public static boolean isNotBlank(String str) {
+        return str != null && !str.isBlank();
     }
 
     public static boolean isNullOrEmpty(String str) {
