@@ -15,6 +15,7 @@ import java.util.logging.Level;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.jboss.logmanager.LogContext;
+import org.keycloak.config.EnabledMetadata;
 import org.keycloak.config.LoggingOptions;
 import org.keycloak.quarkus.runtime.Messages;
 
@@ -22,7 +23,23 @@ import io.smallrye.config.ConfigSourceInterceptorContext;
 
 public final class LoggingPropertyMappers {
 
-    private LoggingPropertyMappers(){}
+    private static final EnabledMetadata isConsoleEnabled = new EnabledMetadata(() ->
+            isTrue(LoggingOptions.LOG_CONSOLE_ENABLED),
+            "Console log handler is activated"
+    );
+
+    private static final EnabledMetadata isFileEnabled = new EnabledMetadata(() ->
+            isTrue(LoggingOptions.LOG_FILE_ENABLED),
+            "File log handler is activated"
+    );
+
+    private static final EnabledMetadata isGelfEnabled = new EnabledMetadata(() ->
+            isTrue(LoggingOptions.LOG_GELF_ENABLED),
+            "GELF is activated"
+    );
+
+    private LoggingPropertyMappers() {
+    }
 
     public static PropertyMapper[] getMappers() {
         PropertyMapper[] defaultMappers = new PropertyMapper[]{
@@ -30,21 +47,18 @@ public final class LoggingPropertyMappers {
                         .paramLabel("<handler>")
                         .build(),
                 fromOption(LoggingOptions.LOG_CONSOLE_OUTPUT)
-                        .isEnabled(LoggingPropertyMappers::isConsoleEnabled)
-                        .enabledWhen("Console log handler is activated")
+                        .isEnabled(isConsoleEnabled)
                         .to("quarkus.log.console.json")
                         .paramLabel("output")
                         .transformer(LoggingPropertyMappers::resolveLogOutput)
                         .build(),
                 fromOption(LoggingOptions.LOG_CONSOLE_FORMAT)
-                        .isEnabled(LoggingPropertyMappers::isConsoleEnabled)
-                        .enabledWhen("Console log handler is activated")
+                        .isEnabled(isConsoleEnabled)
                         .to("quarkus.log.console.format")
                         .paramLabel("format")
                         .build(),
                 fromOption(LoggingOptions.LOG_CONSOLE_COLOR)
-                        .isEnabled(LoggingPropertyMappers::isConsoleEnabled)
-                        .enabledWhen("Console log handler is activated")
+                        .isEnabled(isConsoleEnabled)
                         .to("quarkus.log.console.color")
                         .build(),
                 fromOption(LoggingOptions.LOG_CONSOLE_ENABLED)
@@ -58,21 +72,18 @@ public final class LoggingPropertyMappers {
                         .transformer(LoggingPropertyMappers.resolveLogHandler("file"))
                         .build(),
                 fromOption(LoggingOptions.LOG_FILE)
-                        .isEnabled(LoggingPropertyMappers::isFileEnabled)
-                        .enabledWhen("File log handler is activated")
+                        .isEnabled(isFileEnabled)
                         .to("quarkus.log.file.path")
                         .paramLabel("file")
                         .transformer(LoggingPropertyMappers::resolveFileLogLocation)
                         .build(),
                 fromOption(LoggingOptions.LOG_FILE_FORMAT)
-                        .isEnabled(LoggingPropertyMappers::isFileEnabled)
-                        .enabledWhen("File log handler is activated")
+                        .isEnabled(isFileEnabled)
                         .to("quarkus.log.file.format")
                         .paramLabel("<format>")
                         .build(),
                 fromOption(LoggingOptions.LOG_FILE_OUTPUT)
-                        .isEnabled(LoggingPropertyMappers::isFileEnabled)
-                        .enabledWhen("File log handler is activated")
+                        .isEnabled(isFileEnabled)
                         .to("quarkus.log.file.json")
                         .paramLabel("output")
                         .transformer(LoggingPropertyMappers::resolveLogOutput)
@@ -95,75 +106,53 @@ public final class LoggingPropertyMappers {
                         .transformer(LoggingPropertyMappers.resolveLogHandler("gelf"))
                         .build(),
                 fromOption(LoggingOptions.LOG_GELF_LEVEL)
-                        .isEnabled(LoggingPropertyMappers::isGelfEnabled)
-                        .enabledWhen("GELF is activated")
+                        .isEnabled(isGelfEnabled)
                         .to("quarkus.log.handler.gelf.level")
                         .paramLabel("level")
                         .build(),
                 fromOption(LoggingOptions.LOG_GELF_HOST)
-                        .isEnabled(LoggingPropertyMappers::isGelfEnabled)
-                        .enabledWhen("GELF is activated")
+                        .isEnabled(isGelfEnabled)
                         .to("quarkus.log.handler.gelf.host")
                         .paramLabel("hostname")
                         .build(),
                 fromOption(LoggingOptions.LOG_GELF_PORT)
-                        .isEnabled(LoggingPropertyMappers::isGelfEnabled)
-                        .enabledWhen("GELF is activated")
+                        .isEnabled(isGelfEnabled)
                         .to("quarkus.log.handler.gelf.port")
                         .paramLabel("port")
                         .build(),
                 fromOption(LoggingOptions.LOG_GELF_VERSION)
-                        .isEnabled(LoggingPropertyMappers::isGelfEnabled)
-                        .enabledWhen("GELF is activated")
+                        .isEnabled(isGelfEnabled)
                         .to("quarkus.log.handler.gelf.version")
                         .paramLabel("version")
                         .build(),
                 fromOption(LoggingOptions.LOG_GELF_INCLUDE_STACK_TRACE)
-                        .isEnabled(LoggingPropertyMappers::isGelfEnabled)
-                        .enabledWhen("GELF is activated")
+                        .isEnabled(isGelfEnabled)
                         .to("quarkus.log.handler.gelf.extract-stack-trace")
                         .build(),
                 fromOption(LoggingOptions.LOG_GELF_TIMESTAMP_FORMAT)
-                        .isEnabled(LoggingPropertyMappers::isGelfEnabled)
-                        .enabledWhen("GELF is activated")
+                        .isEnabled(isGelfEnabled)
                         .to("quarkus.log.handler.gelf.timestamp-pattern")
                         .paramLabel("pattern")
                         .build(),
                 fromOption(LoggingOptions.LOG_GELF_FACILITY)
-                        .isEnabled(LoggingPropertyMappers::isGelfEnabled)
-                        .enabledWhen("GELF is activated")
+                        .isEnabled(isGelfEnabled)
                         .to("quarkus.log.handler.gelf.facility")
                         .paramLabel("name")
                         .build(),
                 fromOption(LoggingOptions.LOG_GELF_MAX_MSG_SIZE)
-                        .isEnabled(LoggingPropertyMappers::isGelfEnabled)
-                        .enabledWhen("GELF is activated")
+                        .isEnabled(isGelfEnabled)
                         .to("quarkus.log.handler.gelf.maximum-message-size")
                         .paramLabel("size")
                         .build(),
                 fromOption(LoggingOptions.LOG_GELF_INCLUDE_LOG_MSG_PARAMS)
-                        .isEnabled(LoggingPropertyMappers::isGelfEnabled)
-                        .enabledWhen("GELF is activated")
+                        .isEnabled(isGelfEnabled)
                         .to("quarkus.log.handler.gelf.include-log-message-parameters")
                         .build(),
                 fromOption(LoggingOptions.LOG_GELF_INCLUDE_LOCATION)
-                        .isEnabled(LoggingPropertyMappers::isGelfEnabled)
-                        .enabledWhen("GELF is activated")
+                        .isEnabled(isGelfEnabled)
                         .to("quarkus.log.handler.gelf.include-location")
                         .build()
         };
-    }
-
-    public static boolean isGelfEnabled() {
-        return isTrue(LoggingOptions.LOG_GELF_ENABLED);
-    }
-
-    public static boolean isConsoleEnabled() {
-        return isTrue(LoggingOptions.LOG_CONSOLE_ENABLED);
-    }
-
-    public static boolean isFileEnabled() {
-        return isTrue(LoggingOptions.LOG_FILE_ENABLED);
     }
 
     private static BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> resolveLogHandler(String handler) {

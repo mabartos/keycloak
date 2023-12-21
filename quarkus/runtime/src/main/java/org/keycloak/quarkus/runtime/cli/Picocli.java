@@ -57,6 +57,7 @@ import java.util.stream.Collectors;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.jboss.logging.Logger;
 import org.keycloak.config.DeprecatedMetadata;
+import org.keycloak.config.EnabledMetadata;
 import org.keycloak.config.MultiOption;
 import org.keycloak.config.OptionCategory;
 import org.keycloak.quarkus.runtime.cli.command.AbstractCommand;
@@ -77,6 +78,7 @@ import org.keycloak.quarkus.runtime.Environment;
 
 import io.smallrye.config.ConfigValue;
 
+import org.keycloak.utils.StringUtil;
 import picocli.CommandLine;
 import picocli.CommandLine.ParameterException;
 import picocli.CommandLine.Help.Ansi;
@@ -326,9 +328,13 @@ public final class Picocli {
                             value, mapper.getExpectedValues(), mapper.getExpectedValues()) + ". From ConfigSource " + configSource.getName());
                 }
 
-                if (!mapper.isEnabled()) {
-                    disabledInUse.add(formatDisabledOption(mapper));
-                }
+                mapper.getEnabledMetadata().ifPresent(e -> {
+                    EnabledMetadata metadata = (EnabledMetadata) e;
+                    boolean isDisabled = !metadata.isEnabled().getAsBoolean();
+                    if (isDisabled) {
+                        disabledInUse.add(formatDisabledOption(mapper));
+                    }
+                });
 
                 mapper.getDeprecatedMetadata().ifPresent(d -> {
                     DeprecatedMetadata metadata = (DeprecatedMetadata) d;
@@ -369,12 +375,16 @@ public final class Picocli {
         final StringBuilder sb = new StringBuilder("\t- ");
         sb.append(optionName);
 
-        if (mapper.getEnabledWhen().isPresent()) {
-            final String enabledWhen = (String) mapper.getEnabledWhen().get();
-            sb.append(": ");
-            sb.append(enabledWhen);
-            if (!enabledWhen.endsWith(".")) {
-                sb.append(".");
+        if (mapper.getEnabledMetadata().isPresent()) {
+            final EnabledMetadata metadata = (EnabledMetadata) mapper.getEnabledMetadata().get();
+            final String enabledWhen = metadata.enabledWhen();
+
+            if (StringUtil.isNotBlank(enabledWhen)) {
+                sb.append(": ");
+                sb.append(enabledWhen);
+                if (!enabledWhen.endsWith(".")) {
+                    sb.append(".");
+                }
             }
         }
         return sb.toString();
@@ -699,7 +709,12 @@ public final class Picocli {
         }
 
         mapper.getDefaultValue().map(d -> format(" Default: %s.", d)).ifPresent(transformedDesc::append);
-        mapper.getEnabledWhen().map(e -> format(" %s.", e)).ifPresent(transformedDesc::append);
+
+        mapper.getEnabledMetadata().ifPresent(enabledMetadata -> {
+            if (StringUtil.isNotBlank(enabledMetadata.enabledWhen())) {
+                transformedDesc.append(format(" %s.", enabledMetadata.enabledWhen()));
+            }
+        });
 
         mapper.getDeprecatedMetadata().ifPresent(deprecatedMetadata -> {
             List<String> deprecatedDetails = new ArrayList<>();

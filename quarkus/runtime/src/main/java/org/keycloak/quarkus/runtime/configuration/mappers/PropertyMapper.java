@@ -34,20 +34,19 @@ import io.smallrye.config.ConfigValue;
 
 import org.jboss.logging.Logger;
 import org.keycloak.config.DeprecatedMetadata;
+import org.keycloak.config.EnabledMetadata;
 import org.keycloak.config.Option;
 import org.keycloak.config.OptionBuilder;
 import org.keycloak.config.OptionCategory;
 import org.keycloak.quarkus.runtime.Environment;
 import org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider;
-import org.keycloak.utils.StringUtil;
 
 public class PropertyMapper<T> {
 
     static PropertyMapper IDENTITY = new PropertyMapper(
             new OptionBuilder<String>(null, String.class).build(),
             null,
-            () -> false,
-            "",
+            new EnabledMetadata(),
             null,
             null,
             null,
@@ -66,18 +65,16 @@ public class PropertyMapper<T> {
     private final String paramLabel;
     private final String envVarFormat;
     private final String cliFormat;
-    private BooleanSupplier enabled;
-    private String enabledWhen;
+    private EnabledMetadata enabled;
 
     private static final Logger logger = Logger.getLogger(PropertyMapper.class);
 
-    PropertyMapper(Option<T> option, String to, BooleanSupplier enabled, String enabledWhen,
+    PropertyMapper(Option<T> option, String to, EnabledMetadata enabled,
                    BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper,
                    String mapFrom, String paramLabel, boolean mask) {
         this.option = option;
         this.to = to == null ? getFrom() : to;
         this.enabled = enabled;
-        this.enabledWhen = enabledWhen;
         this.mapper = mapper == null ? PropertyMapper::defaultTransformer : mapper;
         this.mapFrom = mapFrom;
         this.paramLabel = paramLabel;
@@ -158,24 +155,6 @@ public class PropertyMapper<T> {
         return this.option;
     }
 
-    public void setEnabled(BooleanSupplier enabled) {
-        this.enabled = enabled;
-    }
-
-    public boolean isEnabled() {
-        return enabled.getAsBoolean();
-    }
-
-    public Optional<String> getEnabledWhen() {
-        return Optional.ofNullable(enabledWhen)
-                .filter(StringUtil::isNotBlank)
-                .map(e -> "Available only when " + e);
-    }
-
-    public void setEnabledWhen(String enabledWhen) {
-        this.enabledWhen = enabledWhen;
-    }
-
     public Class<T> getType() {
         return this.option.getType();
     }
@@ -226,6 +205,14 @@ public class PropertyMapper<T> {
         return mask;
     }
 
+    public void setEnabledMetadata(EnabledMetadata enabled) {
+        this.enabled = enabled;
+    }
+
+    public Optional<EnabledMetadata> getEnabledMetadata() {
+        return Optional.ofNullable(enabled);
+    }
+
     public Optional<DeprecatedMetadata> getDeprecatedMetadata() {
         return option.getDeprecatedMetadata();
     }
@@ -265,8 +252,7 @@ public class PropertyMapper<T> {
         private BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper;
         private String mapFrom = null;
         private boolean isMasked = false;
-        private BooleanSupplier isEnabled = () -> true;
-        private String enabledWhen = "";
+        private EnabledMetadata enabled = new EnabledMetadata();
         private String paramLabel;
 
         public Builder(Option<T> option) {
@@ -298,13 +284,13 @@ public class PropertyMapper<T> {
             return this;
         }
 
-        public Builder<T> isEnabled(BooleanSupplier isEnabled) {
-            this.isEnabled = isEnabled;
+        public Builder<T> isEnabled(BooleanSupplier isEnabled, String enabledWhen) {
+            this.enabled = new EnabledMetadata(isEnabled, enabledWhen);
             return this;
         }
 
-        public Builder<T> enabledWhen(String enabledWhen) {
-            this.enabledWhen = enabledWhen;
+        public Builder<T> isEnabled(EnabledMetadata enabled) {
+            this.enabled = enabled;
             return this;
         }
 
@@ -312,7 +298,7 @@ public class PropertyMapper<T> {
             if (paramLabel == null && Boolean.class.equals(option.getType())) {
                 paramLabel = Boolean.TRUE + "|" + Boolean.FALSE;
             }
-            return new PropertyMapper<T>(option, to, isEnabled, enabledWhen, mapper, mapFrom, paramLabel, isMasked);
+            return new PropertyMapper<T>(option, to, enabled, mapper, mapFrom, paramLabel, isMasked);
         }
     }
 

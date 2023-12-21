@@ -4,6 +4,7 @@ import io.smallrye.config.ConfigSourceInterceptorContext;
 import io.smallrye.config.ConfigValue;
 
 import org.keycloak.config.ConfigSupportLevel;
+import org.keycloak.config.EnabledMetadata;
 import org.keycloak.config.OptionCategory;
 import org.keycloak.quarkus.runtime.Environment;
 import org.keycloak.quarkus.runtime.configuration.ConfigArgsConfigSource;
@@ -176,8 +177,7 @@ public final class PropertyMappers {
 
         public void addAll(PropertyMapper[] mappers, BooleanSupplier isEnabled, String enabledWhen) {
             Arrays.stream(mappers).forEach(mapper -> {
-                mapper.setEnabled(isEnabled);
-                mapper.setEnabledWhen(enabledWhen);
+                mapper.setEnabledMetadata(new EnabledMetadata(isEnabled, enabledWhen));
             });
 
             addAll(mappers);
@@ -245,7 +245,10 @@ public final class PropertyMappers {
         private static <T extends Map<OptionCategory, List<PropertyMapper>>> void sanitizeMappers(T mappers, T disabledMappers) {
             mappers.forEach((category, propertyMappers) ->
                     propertyMappers.removeIf(pm -> {
-                        final boolean shouldRemove = !pm.isEnabled();
+                        final boolean shouldRemove = (boolean) pm.getEnabledMetadata()
+                                .map(e -> ((EnabledMetadata) e).isEnabled().getAsBoolean())
+                                .orElse(false);
+
                         if (shouldRemove) {
                             addMapperByStage(pm, disabledMappers);
                         }

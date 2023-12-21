@@ -1,5 +1,6 @@
 package org.keycloak.quarkus.runtime.cli;
 
+import org.keycloak.config.EnabledMetadata;
 import org.keycloak.quarkus.runtime.cli.command.AbstractCommand;
 import org.keycloak.quarkus.runtime.cli.command.Start;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper;
@@ -47,9 +48,9 @@ public class ShortErrorMessageHandler implements IParameterExceptionHandler {
 
             if (isDisabledOption) {
                 var enabledWhen = PropertyMappers.getDisabledMapper(cliKey)
-                        .map(PropertyMapper::getEnabledWhen)
-                        .filter(Optional::isPresent)
-                        .map(desc -> format(". %s", desc.get()))
+                        .flatMap(PropertyMapper::getEnabledMetadata)
+                        .map(e -> ((EnabledMetadata) e).enabledWhen())
+                        .map(desc -> format(". %s", desc))
                         .orElse("");
 
                 errorMessage = format("Disabled option: '%s'%s", cliKey, enabledWhen);
