@@ -19,7 +19,7 @@ describe("Masthead tests", () => {
       sidebarPage.waitForPageLoad();
       masthead.accountManagement();
       sidebarPage.waitForPageLoad();
-      cy.get("h1").contains("Welcome to Keycloak account management");
+      cy.url().should("include", "/realms/master/account/");
       masthead.goToAdminConsole();
       sidebarPage.waitForPageLoad();
       masthead.checkIsAdminUI();
