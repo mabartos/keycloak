@@ -36,6 +36,7 @@ import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
 import io.quarkus.deployment.builditem.HotDeploymentWatchedFileBuildItem;
 import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
 import io.quarkus.deployment.builditem.StaticInitConfigBuilderBuildItem;
+import io.quarkus.deployment.builditem.SystemPropertyBuildItem;
 import io.quarkus.hibernate.orm.deployment.HibernateOrmConfig;
 import io.quarkus.hibernate.orm.deployment.PersistenceXmlDescriptorBuildItem;
 import io.quarkus.hibernate.orm.deployment.integration.HibernateOrmIntegrationRuntimeConfiguredBuildItem;
@@ -45,6 +46,8 @@ import io.quarkus.runtime.configuration.ConfigurationException;
 import io.quarkus.runtime.configuration.ProfileManager;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
 import io.smallrye.config.ConfigValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.spi.PersistenceUnitTransactionType;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 import org.hibernate.jpa.boot.internal.PersistenceXmlParser;
@@ -65,6 +68,7 @@ import org.keycloak.authorization.policy.provider.PolicySpi;
 import org.keycloak.authorization.policy.provider.js.DeployedScriptPolicyFactory;
 import org.keycloak.common.Profile;
 import org.keycloak.common.crypto.FipsMode;
+import org.keycloak.common.util.KerberosJdkProvider;
 import org.keycloak.common.util.StreamUtil;
 import org.keycloak.config.DatabaseOptions;
 import org.keycloak.config.SecurityOptions;
@@ -82,8 +86,6 @@ import org.keycloak.provider.Provider;
 import org.keycloak.provider.ProviderFactory;
 import org.keycloak.provider.ProviderManager;
 import org.keycloak.provider.Spi;
-import org.keycloak.quarkus.runtime.integration.health.ReactiveLivenessHandler;
-import org.keycloak.quarkus.runtime.integration.health.ReactiveReadinessHandler;
 import org.keycloak.quarkus.runtime.Environment;
 import org.keycloak.quarkus.runtime.KeycloakRecorder;
 import org.keycloak.quarkus.runtime.configuration.Configuration;
@@ -93,6 +95,8 @@ import org.keycloak.quarkus.runtime.configuration.PersistedConfigSource;
 import org.keycloak.quarkus.runtime.configuration.QuarkusPropertiesConfigSource;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
+import org.keycloak.quarkus.runtime.integration.health.ReactiveLivenessHandler;
+import org.keycloak.quarkus.runtime.integration.health.ReactiveReadinessHandler;
 import org.keycloak.quarkus.runtime.integration.resteasy.KeycloakHandlerChainCustomizer;
 import org.keycloak.quarkus.runtime.integration.web.NotFoundHandler;
 import org.keycloak.quarkus.runtime.services.health.KeycloakReadyAsyncHealthCheck;
@@ -116,8 +120,6 @@ import org.keycloak.util.JsonSerialization;
 import org.keycloak.vault.FilesKeystoreVaultProviderFactory;
 import org.keycloak.vault.FilesPlainTextVaultProviderFactory;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.spi.PersistenceUnitTransactionType;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -134,7 +136,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
@@ -273,12 +274,12 @@ class KeycloakProcessor {
     @BuildStep
     @Record(ExecutionTime.RUNTIME_INIT)
     void configurePersistenceUnits(HibernateOrmConfig config,
-            List<PersistenceXmlDescriptorBuildItem> descriptors,
-            List<JdbcDataSourceBuildItem> jdbcDataSources,
-            BuildProducer<AdditionalJpaModelBuildItem> additionalJpaModel,
-            CombinedIndexBuildItem indexBuildItem,
-            BuildProducer<HibernateOrmIntegrationRuntimeConfiguredBuildItem> runtimeConfigured,
-            KeycloakRecorder recorder) {
+                                   List<PersistenceXmlDescriptorBuildItem> descriptors,
+                                   List<JdbcDataSourceBuildItem> jdbcDataSources,
+                                   BuildProducer<AdditionalJpaModelBuildItem> additionalJpaModel,
+                                   CombinedIndexBuildItem indexBuildItem,
+                                   BuildProducer<HibernateOrmIntegrationRuntimeConfiguredBuildItem> runtimeConfigured,
+                                   KeycloakRecorder recorder) {
         ParsedPersistenceXmlDescriptor defaultUnitDescriptor = null;
         List<String> userManagedEntities = new ArrayList<>();
 
@@ -315,8 +316,15 @@ class KeycloakProcessor {
         producer.produce(new PersistenceXmlDescriptorBuildItem(descriptor));
     }
 
+    @BuildStep
+    void isKerberosAvailable(BuildProducer<SystemPropertyBuildItem> systemPropertyProducer) {
+        String isAvailable = Boolean.toString(KerberosJdkProvider.getProvider().isKerberosAvailable());
+        systemPropertyProducer.produce(new SystemPropertyBuildItem("kc.kerberos.available", isAvailable));
+        System.setProperty("kc.kerberos.available", isAvailable);
+    }
+
     private void configureDefaultPersistenceUnitProperties(ParsedPersistenceXmlDescriptor descriptor, HibernateOrmConfig config,
-            JdbcDataSourceBuildItem defaultDataSource) {
+                                                           JdbcDataSourceBuildItem defaultDataSource) {
         if (defaultDataSource == null || !defaultDataSource.isDefault()) {
             throw new RuntimeException("The server datasource must be the default datasource.");
         }
@@ -342,7 +350,7 @@ class KeycloakProcessor {
     }
 
     private void configureDefaultPersistenceUnitEntities(ParsedPersistenceXmlDescriptor descriptor, CombinedIndexBuildItem indexBuildItem,
-            List<String> userManagedEntities) {
+                                                         List<String> userManagedEntities) {
         IndexView index = indexBuildItem.getIndex();
         Collection<AnnotationInstance> annotations = index.getAnnotations(DotName.createSimple(Entity.class.getName()));
 
@@ -383,7 +391,7 @@ class KeycloakProcessor {
             for (Entry<Class<? extends Provider>, Map<String, ProviderFactory>> value : entry.getValue().entrySet()) {
                 for (ProviderFactory factory : value.getValue().values()) {
                     factories.computeIfAbsent(spi,
-                            key -> new HashMap<>())
+                                    key -> new HashMap<>())
                             .computeIfAbsent(spi.getProviderClass(), aClass -> new HashMap<>()).put(factory.getId(),factory.getClass());
                 }
             }
@@ -430,16 +438,16 @@ class KeycloakProcessor {
     }
 
     private void configureUserDefinedPersistenceUnits(List<PersistenceXmlDescriptorBuildItem> descriptors,
-            Map<Spi, Map<Class<? extends Provider>, Map<String, Class<? extends ProviderFactory>>>> factories,
-            Map<String, ProviderFactory> preConfiguredProviders, Spi spi) {
+                                                      Map<Spi, Map<Class<? extends Provider>, Map<String, Class<? extends ProviderFactory>>>> factories,
+                                                      Map<String, ProviderFactory> preConfiguredProviders, Spi spi) {
         descriptors.stream()
                 .map(PersistenceXmlDescriptorBuildItem::getDescriptor)
                 .map(ParsedPersistenceXmlDescriptor::getName)
                 .filter(Predicate.not("keycloak-default"::equals)).forEach((String unitName) -> {
                     NamedJpaConnectionProviderFactory factory = new NamedJpaConnectionProviderFactory();
-                    
+
                     factory.setUnitName(unitName);
-                    
+
                     factories.get(spi).get(JpaConnectionProvider.class).put(unitName, NamedJpaConnectionProviderFactory.class);
                     preConfiguredProviders.put(unitName, factory);
                 });
@@ -584,7 +592,7 @@ class KeycloakProcessor {
 
     @BuildStep
     void disableHealthEndpoint(BuildProducer<RouteBuildItem> routes, BuildProducer<BuildTimeConditionBuildItem> removeBeans,
-            CombinedIndexBuildItem index) {
+                               CombinedIndexBuildItem index) {
         boolean healthDisabled = !isHealthEnabled();
 
         if (healthDisabled) {
@@ -624,8 +632,8 @@ class KeycloakProcessor {
 
     @BuildStep
     void configureResteasy(CombinedIndexBuildItem index,
-            BuildProducer<BuildTimeConditionBuildItem> buildTimeConditionBuildItemBuildProducer,
-            BuildProducer<MethodScannerBuildItem> scanner) {
+                           BuildProducer<BuildTimeConditionBuildItem> buildTimeConditionBuildItemBuildProducer,
+                           BuildProducer<MethodScannerBuildItem> scanner) {
         buildTimeConditionBuildItemBuildProducer.produce(new BuildTimeConditionBuildItem(index.getIndex().getClassByName(DotName.createSimple(
                 KeycloakApplication.class.getName())), false));
 
@@ -634,7 +642,7 @@ class KeycloakProcessor {
         scanner.produce(new MethodScannerBuildItem(new MethodScanner() {
             @Override
             public List<HandlerChainCustomizer> scan(MethodInfo method, ClassInfo actualEndpointClass,
-                    Map<String, Object> methodContext) {
+                                                     Map<String, Object> methodContext) {
                 return List.of(chainCustomizer);
             }
         }));
@@ -755,7 +763,7 @@ class KeycloakProcessor {
     }
 
     private ProviderFactory createDeployableScriptProvider(JarFile jarFile, Entry<String, List<ScriptProviderMetadata>> entry,
-            ScriptProviderMetadata metadata) throws IOException {
+                                                           ScriptProviderMetadata metadata) throws IOException {
         String fileName = metadata.getFileName();
 
         if (fileName == null) {

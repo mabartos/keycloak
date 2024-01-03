@@ -22,6 +22,7 @@ import org.keycloak.common.Profile.Feature.Type;
 import org.keycloak.common.profile.ProfileConfigResolver;
 import org.keycloak.common.profile.ProfileConfigResolver.FeatureConfig;
 import org.keycloak.common.profile.ProfileException;
+import org.keycloak.common.util.Environment;
 import org.keycloak.common.util.KerberosJdkProvider;
 
 import java.util.Arrays;
@@ -82,7 +83,7 @@ public class Profile {
         STEP_UP_AUTHENTICATION("Step-up Authentication", Type.DEFAULT),
 
         // Check if kerberos is available in underlying JVM and auto-detect if feature should be enabled or disabled by default based on that
-        KERBEROS("Kerberos", KerberosJdkProvider.getProvider().isKerberosAvailable() ? Type.DEFAULT : Type.DISABLED_BY_DEFAULT),
+        KERBEROS("Kerberos", Environment.isKerberosAvailable() ? Type.DEFAULT : Type.DISABLED_BY_DEFAULT),
 
         RECOVERY_CODES("Recovery codes", Type.PREVIEW),
 

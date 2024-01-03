@@ -57,4 +57,13 @@ public class Environment {
         return false;
     }
 
+    public static boolean isKerberosAvailable() {
+        String property = System.getProperty("kc.kerberos.available");
+        if (property != null) {
+            return Boolean.parseBoolean(property);
+        }
+
+        return KerberosJdkProvider.getProvider().isKerberosAvailable();
+    }
+
 }
