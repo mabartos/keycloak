@@ -36,6 +36,7 @@ public final class LoggingPropertyMappers {
                 fromOption(LoggingOptions.LOG_CONSOLE_FORMAT)
                         .to("quarkus.log.console.format")
                         .paramLabel("format")
+                        .transformer(LoggingPropertyMappers::unescapeFormat)
                         .build(),
                 fromOption(LoggingOptions.LOG_CONSOLE_COLOR)
                         .to("quarkus.log.console.color")
@@ -58,6 +59,7 @@ public final class LoggingPropertyMappers {
                 fromOption(LoggingOptions.LOG_FILE_FORMAT)
                         .to("quarkus.log.file.format")
                         .paramLabel("<format>")
+                        .transformer(LoggingPropertyMappers::unescapeFormat)
                         .build(),
                 fromOption(LoggingOptions.LOG_FILE_OUTPUT)
                         .to("quarkus.log.file.json")
@@ -211,5 +213,9 @@ public final class LoggingPropertyMappers {
         }
 
         return of(Boolean.TRUE.toString());
+    }
+
+    private static Optional<String> unescapeFormat(Optional<String> value, ConfigSourceInterceptorContext context) {
+        return value.map(s -> s.replaceAll("%%", "%"));
     }
 }

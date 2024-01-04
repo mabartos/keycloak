@@ -77,7 +77,7 @@ public class LoggingOptions {
     public static final Option<String> LOG_CONSOLE_FORMAT = new OptionBuilder<>("log-console-format", String.class)
             .category(OptionCategory.LOGGING)
             .description("The format of unstructured console log entries. If the format has spaces in it, escape the value using \"<format>\".")
-            .defaultValue("%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n")
+            .defaultValue(escapeFormat("%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"))
             .build();
 
     public static final Option<Boolean> LOG_CONSOLE_COLOR = new OptionBuilder<>("log-console-color", Boolean.class)
@@ -105,7 +105,7 @@ public class LoggingOptions {
     public static final Option<String> LOG_FILE_FORMAT = new OptionBuilder<>("log-file-format", String.class)
             .category(OptionCategory.LOGGING)
             .description("Set a format specific to file log entries.")
-            .defaultValue("%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n")
+            .defaultValue(escapeFormat("%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"))
             .build();
 
     public static final Option<Output> LOG_FILE_OUTPUT = new OptionBuilder<>("log-file-output", Output.class)
@@ -189,5 +189,9 @@ public class LoggingOptions {
         } catch (ClassNotFoundException e) {
             return false;
         }
+    }
+
+    private static String escapeFormat(String str){
+        return str.replaceAll("%","%%");
     }
 }
