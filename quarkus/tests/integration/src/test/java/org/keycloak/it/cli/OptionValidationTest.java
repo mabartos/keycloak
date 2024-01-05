@@ -28,7 +28,6 @@ import org.keycloak.it.utils.KeycloakDistribution;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @CLITest
 public class OptionValidationTest {

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import org.keycloak.quarkus.runtime.configuration.KeycloakConfigSourceProvider;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
 import picocli.CommandLine.ExitCode;
 
@@ -91,7 +92,8 @@ public class KeycloakMain implements QuarkusApplication {
                 return;
             }
 
-            PropertyMappers.sanitizeDisabledMappers();
+            // Remove disabled options from Keycloak config sources
+            KeycloakConfigSourceProvider.sanitizeKcConfigSources();
 
             try {
                 Picocli.validateConfig(cliArgs, new Start(), new PrintWriter(System.out, true));
@@ -106,7 +108,8 @@ public class KeycloakMain implements QuarkusApplication {
             return;
         }
 
-        PropertyMappers.sanitizeDisabledMappers();
+        // Remove disabled options from Keycloak config sources
+        KeycloakConfigSourceProvider.sanitizeKcConfigSources();
 
         // parse arguments and execute any of the configured commands
         parseAndRun(cliArgs);

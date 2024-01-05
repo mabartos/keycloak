@@ -26,10 +26,12 @@ import io.smallrye.config.SmallRyeConfigBuilder;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.eclipse.microprofile.config.spi.ConfigSourceProvider;
 import org.keycloak.quarkus.runtime.Environment;
+import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
 
 public class KeycloakConfigSourceProvider implements ConfigSourceProvider, ConfigBuilder {
 
     private static final List<ConfigSource> CONFIG_SOURCES = new ArrayList<>();
+    private static final List<ConfigSource> KC_CONFIG_SOURCES = new ArrayList<>();
 
     // we initialize in a static block to avoid discovering the config sources multiple times when starting the application
     static {
@@ -43,31 +45,53 @@ public class KeycloakConfigSourceProvider implements ConfigSourceProvider, Confi
             System.setProperty("quarkus.profile", profile);
         }
 
-        CONFIG_SOURCES.add(new ConfigArgsConfigSource());
-        CONFIG_SOURCES.add(new KcEnvConfigSource());
+        initializeQuarkusSources();
+        initializeKeycloakSources();
+    }
 
+    private static void initializeQuarkusSources() {
         CONFIG_SOURCES.addAll(new QuarkusPropertiesConfigSource().getConfigSources(Thread.currentThread().getContextClassLoader()));
+        CONFIG_SOURCES.add(new SmallRyeEnvConfigSource());
+        CONFIG_SOURCES.addAll(new KcSmallRyeConfigBuilder().getDefaultSources());
+    }
 
-        CONFIG_SOURCES.add(PersistedConfigSource.getInstance());
-
-        CONFIG_SOURCES.addAll(new KeycloakPropertiesConfigSource.InFileSystem().getConfigSources(Thread.currentThread().getContextClassLoader()));
-
+    private static void initializeKeycloakSources() {
+        KC_CONFIG_SOURCES.add(new ConfigArgsConfigSource());
+        KC_CONFIG_SOURCES.add(new KcEnvConfigSource());
+        KC_CONFIG_SOURCES.add(PersistedConfigSource.getInstance());
+        KC_CONFIG_SOURCES.addAll(new KeycloakPropertiesConfigSource.InFileSystem().getConfigSources(Thread.currentThread().getContextClassLoader()));
         // by enabling this config source we are able to rely on the default settings when running tests
-        CONFIG_SOURCES.addAll(new KeycloakPropertiesConfigSource.InClassPath().getConfigSources(Thread.currentThread().getContextClassLoader()));
+        KC_CONFIG_SOURCES.addAll(new KeycloakPropertiesConfigSource.InClassPath().getConfigSources(Thread.currentThread().getContextClassLoader()));
+
+        CONFIG_SOURCES.addAll(KC_CONFIG_SOURCES);
+    }
+
+    private static void reloadKeycloakSources() {
+        KC_CONFIG_SOURCES.clear();
+        initializeKeycloakSources();
     }
 
     /**
-     * Mainly for test purposes as MicroProfile Config does not seem to provide a way to reload configsources when the config
+     * Mainly for test purposes as MicroProfile Config does not seem to provide a way to reload config sources when the config
      * is released
      */
     public static void reload() {
         CONFIG_SOURCES.clear();
+        KC_CONFIG_SOURCES.clear();
         initializeSources();
+    }
+
+    /**
+     * Reload Keycloak config sources without disabled options
+     */
+    public static void sanitizeKcConfigSources() {
+        PropertyMappers.sanitizeDisabledMappers();
+        reloadKeycloakSources();
     }
 
     @Override
     public Iterable<ConfigSource> getConfigSources(ClassLoader forClassLoader) {
-        if(Environment.isTestLaunchMode()) {
+        if (Environment.isTestLaunchMode()) {
             reload();
         }
         return CONFIG_SOURCES;
@@ -75,6 +99,6 @@ public class KeycloakConfigSourceProvider implements ConfigSourceProvider, Confi
 
     @Override
     public SmallRyeConfigBuilder configBuilder(SmallRyeConfigBuilder builder) {
-        return builder.withSources(CONFIG_SOURCES);
+        return builder.setAddDefaultSources(false).withSources(CONFIG_SOURCES);
     }
 }

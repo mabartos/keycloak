@@ -18,6 +18,8 @@
 package org.keycloak.quarkus.runtime.configuration;
 
 import static io.smallrye.config.common.utils.StringUtil.replaceNonAlphanumericByUnderscores;
+import static org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider.NS_KEYCLOAK;
+import static org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +35,14 @@ public class KcEnvConfigSource extends EnvConfigSource {
         super(buildProperties(), 500);
     }
 
+    @Override
+    public String getValue(final String propertyName) {
+        if (propertyName.startsWith(NS_KEYCLOAK_PREFIX) && PropertyMappers.isDisabledMapper(propertyName)) {
+            return null;
+        }
+        return super.getValue(propertyName);
+    }
+
     private static Map<String, String> buildProperties() {
         Map<String, String> properties = new HashMap<>();
         String kcPrefix = replaceNonAlphanumericByUnderscores(MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX.toUpperCase());
@@ -42,7 +52,10 @@ public class KcEnvConfigSource extends EnvConfigSource {
             String value = entry.getValue();
 
             if (key.startsWith(kcPrefix)) {
-                properties.put(key, value);
+
+                if (!PropertyMappers.isDisabledMapper(key)) {
+                    properties.put(key, value);
+                }
 
                 PropertyMapper mapper = PropertyMappers.getMapper(key);
 

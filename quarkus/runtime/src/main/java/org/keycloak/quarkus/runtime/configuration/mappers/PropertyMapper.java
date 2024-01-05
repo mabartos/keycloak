@@ -67,7 +67,7 @@ public class PropertyMapper<T> {
     private final String to;
     private BooleanSupplier enabled;
     private String enabledWhen;
-    private final BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper;
+    private final BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> transformer;
     private final String mapFrom;
     private final boolean mask;
     private final String paramLabel;
@@ -78,13 +78,13 @@ public class PropertyMapper<T> {
     private static final Logger logger = Logger.getLogger(PropertyMapper.class);
 
     PropertyMapper(Option<T> option, String to, BooleanSupplier enabled, String enabledWhen,
-                   BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper,
+                   BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> transformer,
                    String mapFrom, String paramLabel, boolean mask, BiConsumer<PropertyMapper<T>, ConfigValue> validator) {
         this.option = option;
         this.to = to == null ? getFrom() : to;
         this.enabled = enabled;
         this.enabledWhen = enabledWhen;
-        this.mapper = mapper == null ? PropertyMapper::defaultTransformer : mapper;
+        this.transformer = transformer == null ? PropertyMapper::defaultTransformer : transformer;
         this.mapFrom = mapFrom;
         this.paramLabel = paramLabel;
         this.mask = mask;
@@ -95,6 +95,14 @@ public class PropertyMapper<T> {
 
     private static Optional<String> defaultTransformer(Optional<String> value, ConfigSourceInterceptorContext context) {
         return value;
+    }
+
+    boolean isDefinedByProperty(String property) {
+        if (property == null) return false;
+        return getFrom().equals(property) ||
+                getTo().equals(property) ||
+                getCliFormat().equals(property) ||
+                getEnvVarFormat().equals(property);
     }
 
     ConfigValue getConfigValue(ConfigSourceInterceptorContext context) {
@@ -115,13 +123,13 @@ public class PropertyMapper<T> {
         }
 
         // try to obtain the value for the property we want to map first
-        ConfigValue config = convertValue(context.proceed(from));
+        ConfigValue config = sanitizeValue(context.proceed(from));
 
         if (config == null) {
             if (mapFrom != null) {
-                // if the property we want to map depends on another one, we use the value from the other property to call the mapper
+                // if the property we want to map depends on another one, we use the value from the other property to call the transformer
                 String parentKey = MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX + mapFrom;
-                ConfigValue parentValue = convertValue(context.proceed(parentKey));
+                ConfigValue parentValue = sanitizeValue(context.proceed(parentKey));
 
                 if (parentValue == null) {
                     // parent value not explicitly set, try to resolve the default value set to the parent property
@@ -244,22 +252,31 @@ public class PropertyMapper<T> {
             return null;
         }
 
-        if (mapper == null || (mapFrom == null && name.equals(getFrom()))) {
+        if (transformer == null || (mapFrom == null && name.equals(getFrom()))) {
             // no mapper set or requesting a property that does not depend on other property, just return the value from the config source
-            return ConfigValue.builder().withName(name).withValue(value.orElse(null)).withConfigSourceName(configSourceName).build();
+            return ConfigValue.builder()
+                    .withName(name)
+                    .withValue(value.orElse(null))
+                    .withConfigSourceName(configSourceName)
+                    .build();
         }
 
-        Optional<String> mappedValue = mapper.apply(value, context);
+        Optional<String> mappedValue = transformer.apply(value, context);
 
         if (mappedValue == null || mappedValue.isEmpty()) {
             return null;
         }
 
-        return ConfigValue.builder().withName(name).withValue(mappedValue.get()).withRawValue(value.orElse(null))
-                .withConfigSourceName(configSourceName).build();
+        return ConfigValue.builder()
+                .withName(name)
+                .withValue(mappedValue.get())
+                .withRawValue(value.orElse(null))
+                .withConfigSourceName(configSourceName)
+                .build();
     }
 
-    private ConfigValue convertValue(ConfigValue configValue) {
+    // sanitize value of a property
+    private static ConfigValue sanitizeValue(ConfigValue configValue) {
         if (configValue == null) {
             return null;
         }
@@ -271,7 +288,7 @@ public class PropertyMapper<T> {
 
         private final Option<T> option;
         private String to;
-        private BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper;
+        private BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> transformer;
         private String mapFrom = null;
         private boolean isMasked = false;
         private BooleanSupplier isEnabled = () -> true;
@@ -288,8 +305,8 @@ public class PropertyMapper<T> {
             return this;
         }
 
-        public Builder<T> transformer(BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper) {
-            this.mapper = mapper;
+        public Builder<T> transformer(BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> transformer) {
+            this.transformer = transformer;
             return this;
         }
 
@@ -323,7 +340,7 @@ public class PropertyMapper<T> {
             if (paramLabel == null && Boolean.class.equals(option.getType())) {
                 paramLabel = Boolean.TRUE + "|" + Boolean.FALSE;
             }
-            return new PropertyMapper<T>(option, to, isEnabled, enabledWhen, mapper, mapFrom, paramLabel, isMasked, validator);
+            return new PropertyMapper<T>(option, to, isEnabled, enabledWhen, transformer, mapFrom, paramLabel, isMasked, validator);
         }
     }
 

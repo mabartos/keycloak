@@ -112,7 +112,9 @@ public class ConfigArgsConfigSource extends PropertiesConfigSource {
             public void accept(String key, String value) {
                 key = NS_KEYCLOAK_PREFIX + key.substring(2);
 
-                properties.put(key, value);
+                if (!PropertyMappers.isDisabledMapper(key)) {
+                    properties.put(key, value);
+                }
 
                 PropertyMapper mapper = PropertyMappers.getMapper(key);
 

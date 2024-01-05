@@ -2,7 +2,6 @@ package org.keycloak.quarkus.runtime.configuration.mappers;
 
 import io.smallrye.config.ConfigSourceInterceptorContext;
 import io.smallrye.config.ConfigValue;
-
 import org.keycloak.config.ConfigSupportLevel;
 import org.keycloak.config.OptionCategory;
 import org.keycloak.quarkus.runtime.Environment;
@@ -18,6 +17,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
+
+import static org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX;
 
 public final class PropertyMappers {
 
@@ -141,12 +142,14 @@ public final class PropertyMappers {
         return mapper.getCategory().getSupportLevel().equals(ConfigSupportLevel.SUPPORTED);
     }
 
-    public static Optional<PropertyMapper> getDisabledMapper(String cliProperty) {
+    public static Optional<PropertyMapper> getDisabledMapper(String property) {
+        if (property == null) return Optional.empty();
+
         return getDisabledMappers()
                 .values()
                 .stream()
                 .flatMap(List::stream)
-                .filter(f -> f.getCliFormat().equals(cliProperty))
+                .filter(pm -> pm.isDefinedByProperty(property))
                 .findAny();
     }
 
