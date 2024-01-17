@@ -26,6 +26,9 @@ import io.smallrye.config.SmallRyeConfigBuilder;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.eclipse.microprofile.config.spi.ConfigSourceProvider;
 import org.keycloak.quarkus.runtime.Environment;
+import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
+
+import java.util.Map;
 
 public class KeycloakConfigSourceProvider implements ConfigSourceProvider, ConfigBuilder {
 
@@ -43,6 +46,9 @@ public class KeycloakConfigSourceProvider implements ConfigSourceProvider, Confi
             System.setProperty("quarkus.profile", profile);
         }
 
+        CONFIG_SOURCES.add(new SmallRyeEnvConfigSource());
+        CONFIG_SOURCES.addAll(new KcSmallRyeConfigBuilder().getDefaultSources());
+
         CONFIG_SOURCES.add(new ConfigArgsConfigSource());
         CONFIG_SOURCES.add(new KcEnvConfigSource());
 
@@ -57,7 +63,7 @@ public class KeycloakConfigSourceProvider implements ConfigSourceProvider, Confi
     }
 
     /**
-     * Mainly for test purposes as MicroProfile Config does not seem to provide a way to reload configsources when the config
+     * Mainly for test purposes as MicroProfile Config does not seem to provide a way to reload config sources when the config
      * is released
      */
     public static void reload() {
@@ -65,9 +71,33 @@ public class KeycloakConfigSourceProvider implements ConfigSourceProvider, Confi
         initializeSources();
     }
 
+    /**
+     * Get removed properties after the sanitization
+     *
+     * @return removed properties
+     */
+    public static Map<String, String> getSanitizedRemovedProperties() {
+        return SanitizedRemovedConfigContext.getRemovedSanitizedProperties();
+    }
+
+    /**
+     * Reload Keycloak config sources without disabled options
+     */
+    public static void sanitizeConfigSources() {
+        PropertyMappers.sanitizeDisabledMappers();
+        sanitizeConfigSources(CONFIG_SOURCES);
+    }
+
+    protected static void sanitizeConfigSources(List<ConfigSource> configSources) {
+        configSources.stream()
+                .filter(cs -> cs instanceof SanitizableConfigSource)
+                .map(cs -> (SanitizableConfigSource) cs)
+                .forEach(SanitizableConfigSource::sanitizeConfigSource);
+    }
+
     @Override
     public Iterable<ConfigSource> getConfigSources(ClassLoader forClassLoader) {
-        if(Environment.isTestLaunchMode()) {
+        if (Environment.isTestLaunchMode()) {
             reload();
         }
         return CONFIG_SOURCES;
@@ -75,6 +105,6 @@ public class KeycloakConfigSourceProvider implements ConfigSourceProvider, Confi
 
     @Override
     public SmallRyeConfigBuilder configBuilder(SmallRyeConfigBuilder builder) {
-        return builder.withSources(CONFIG_SOURCES);
+        return builder.setAddDefaultSources(false).withSources(CONFIG_SOURCES);
     }
 }

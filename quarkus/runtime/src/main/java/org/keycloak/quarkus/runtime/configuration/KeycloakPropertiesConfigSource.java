@@ -28,6 +28,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.eclipse.microprofile.config.spi.ConfigSource;
@@ -40,7 +42,6 @@ import io.smallrye.config.AbstractLocationConfigSourceLoader;
 import io.smallrye.config.PropertiesConfigSource;
 import io.smallrye.config.common.utils.ConfigSourceUtil;
 
-import static org.keycloak.common.util.StringPropertyReplacer.replaceProperties;
 import static org.keycloak.quarkus.runtime.configuration.Configuration.getMappedPropertyName;
 import static org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider.NS_KEYCLOAK;
 import static org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX;
@@ -58,12 +59,44 @@ public class KeycloakPropertiesConfigSource extends AbstractLocationConfigSource
 
     @Override
     protected String[] getFileExtensions() {
-        return new String[] { "conf" };
+        return new String[]{"conf"};
     }
 
     @Override
     protected ConfigSource loadConfigSource(URL url, int ordinal) throws IOException {
-        return new PropertiesConfigSource(transform(ConfigSourceUtil.urlToMap(url)), url.toString(), ordinal);
+        return new SanitizablePropertiesConfigSource(transform(ConfigSourceUtil.urlToMap(url)), url.toString(), ordinal);
+    }
+
+    /**
+     * Properties config source with the ability to sanitize its properties based on a specific condition
+     */
+    protected static class SanitizablePropertiesConfigSource extends PropertiesConfigSource implements SanitizableConfigSource {
+        private Map<String, String> properties;
+
+        public SanitizablePropertiesConfigSource(Map<String, String> properties, String source, int ordinal) {
+            super(properties, source, ordinal);
+            this.properties = properties;
+        }
+
+        @Override
+        public Map<String, String> getProperties() {
+            return properties;
+        }
+
+        @Override
+        public Set<String> getPropertyNames() {
+            return getProperties().keySet();
+        }
+
+        @Override
+        public String getValue(String propertyName) {
+            return getProperties().get(propertyName);
+        }
+
+        @Override
+        public void sanitizeConfigSource() {
+            this.properties = sanitizeProperties(properties);
+        }
     }
 
     public static class InClassPath extends KeycloakPropertiesConfigSource implements ConfigSourceProvider {
@@ -144,7 +177,11 @@ public class KeycloakPropertiesConfigSource extends AbstractLocationConfigSource
         Map<String, String> result = new HashMap<>(properties.size());
         properties.keySet().forEach(k -> {
             String key = transformKey(k);
+
             PropertyMapper<?> mapper = PropertyMappers.getMapper(key);
+            if (mapper == null) {
+                mapper = PropertyMappers.getDisabledMapper(key).orElse(null);
+            }
 
             //TODO: remove explicit checks for spi and feature options once we have proper support in our config mappers
             if (mapper != null
