@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX;
+
 /**
  * Stores removed properties after sanitization of config sources
  */
@@ -28,7 +30,7 @@ public class SanitizedRemovedConfigContext {
     private static final Map<String, String> REMOVED_SANITIZED_PROPS = new ConcurrentHashMap<>();
 
     public static void add(String key, String value) {
-        REMOVED_SANITIZED_PROPS.put(key, value);
+        REMOVED_SANITIZED_PROPS.put(key.replaceFirst(NS_KEYCLOAK_PREFIX, ""), value);
     }
 
     public static void clear() {

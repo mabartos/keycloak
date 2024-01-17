@@ -17,22 +17,23 @@
 
 package org.keycloak.quarkus.runtime.configuration;
 
-import static org.keycloak.quarkus.runtime.Environment.getProfileOrDefault;
-import static org.keycloak.quarkus.runtime.cli.Picocli.ARG_PREFIX;
-
-import java.util.Optional;
-import java.util.Properties;
-
 import io.smallrye.config.ConfigValue;
 import io.smallrye.config.SmallRyeConfig;
-
 import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
 import org.eclipse.microprofile.config.spi.ConfigSource;
+import org.eclipse.microprofile.config.spi.ConfigSourceProvider;
 import org.keycloak.config.Option;
 import org.keycloak.quarkus.runtime.Environment;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
+import org.keycloak.utils.StringUtil;
 
+import java.util.Optional;
+import java.util.Properties;
+import java.util.stream.StreamSupport;
+
+import static org.keycloak.quarkus.runtime.Environment.getProfileOrDefault;
+import static org.keycloak.quarkus.runtime.cli.Picocli.ARG_PREFIX;
 import static org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX;
 
 /**
@@ -228,6 +229,15 @@ public final class Configuration {
         }
 
         return value;
+    }
+
+    public static boolean isPropertyFromCli(String propertyName) {
+        return isPropertyFromConfigSource(ConfigArgsConfigSource.class, propertyName);
+    }
+
+    public static boolean isPropertyFromConfigSource(Class<? extends ConfigSource> configSourceClass, String propertyName) {
+        return StreamSupport.stream(getConfig().getConfigSources(configSourceClass).spliterator(), false)
+                .anyMatch(f -> StringUtil.isNotBlank(f.getValue(propertyName)));
     }
 
     public static boolean isOptimized() {

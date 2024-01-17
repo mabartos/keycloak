@@ -17,23 +17,23 @@
 
 package org.keycloak.quarkus.runtime.configuration;
 
-import static java.util.Arrays.asList;
-import static org.keycloak.quarkus.runtime.cli.Picocli.ARG_SHORT_PREFIX;
-import static org.keycloak.quarkus.runtime.configuration.Configuration.OPTION_PART_SEPARATOR_CHAR;
-import static org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX;
+import io.smallrye.config.PropertiesConfigSource;
+import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper;
+import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
+import org.keycloak.utils.StringUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
-import io.smallrye.config.PropertiesConfigSource;
-
-import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper;
-import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
-import org.keycloak.utils.StringUtil;
+import static java.util.Arrays.asList;
+import static org.keycloak.quarkus.runtime.cli.Picocli.ARG_SHORT_PREFIX;
+import static org.keycloak.quarkus.runtime.configuration.Configuration.OPTION_PART_SEPARATOR_CHAR;
+import static org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX;
 
 /**
  * <p>A configuration source for mapping configuration arguments to their corresponding properties so that they can be recognized
@@ -111,9 +111,17 @@ public class ConfigArgsConfigSource extends PropertiesConfigSource implements Sa
         return properties.get(propertyName.replace(OPTION_PART_SEPARATOR_CHAR, '.'));
     }
 
+    /**
+     * Transform parsed key to start with the namespace kc.**
+     */
+    public static String transformKey(String key) {
+        if (StringUtil.isBlank(key)) return "";
+        return NS_KEYCLOAK_PREFIX + key.substring(2);
+    }
+
     private static Map<String, String> parseArgument() {
         String rawArgs = getRawConfigArgs();
-        
+
         if (rawArgs == null || "".equals(rawArgs.trim())) {
             return Collections.emptyMap();
         }
@@ -123,7 +131,7 @@ public class ConfigArgsConfigSource extends PropertiesConfigSource implements Sa
         parseConfigArgs(new BiConsumer<String, String>() {
             @Override
             public void accept(String key, String value) {
-                key = NS_KEYCLOAK_PREFIX + key.substring(2);
+                key = transformKey(key);
 
                 properties.put(key, value);
 
@@ -145,15 +153,18 @@ public class ConfigArgsConfigSource extends PropertiesConfigSource implements Sa
     }
 
     public static void parseConfigArgs(BiConsumer<String, String> cliArgConsumer) {
+        final String[] args = Optional.of(getRawConfigArgs())
+                .filter(StringUtil::isNotBlank)
+                .map(ARG_SPLIT::split)
+                .orElseGet(() -> new String[0]);
+        if (args.length == 0) return;
+
+        parseConfigArgs(args, cliArgConsumer);
+    }
+
+    public static void parseConfigArgs(String[] args, BiConsumer<String, String> cliArgConsumer) {
         // init here because the class might be loaded by CL without init
         List<String> ignoredArgs = asList("--verbose", "-v", "--help", "-h");
-        String rawArgs = getRawConfigArgs();
-
-        if (StringUtil.isBlank(rawArgs)) {
-            return;
-        }
-
-        String[] args = ARG_SPLIT.split(rawArgs);
 
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];

@@ -54,6 +54,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.jboss.logging.Logger;
@@ -115,7 +116,7 @@ public final class Picocli {
             if (isRebuildCheck()) {
                 exitCode = runReAugmentationIfNeeded(cliArgs, cmd);
             } else {
-                KeycloakConfigSourceProvider.sanitizeConfigSources();
+                sanitizeConfigSources(cliArgs, cmd);
                 exitCode = cmd.execute(argArray);
             }
 
@@ -124,6 +125,44 @@ public final class Picocli {
             catchParameterException(parEx, cmd, argArray);
         } catch (ProfileException proEx) {
             catchProfileException(proEx, cmd);
+        }
+    }
+
+    private static void sanitizeConfigSources(List<String> cliArgs, CommandLine cmd) {
+        KeycloakConfigSourceProvider.sanitizeConfigSources();
+        reValidateCli(cliArgs, cmd);
+    }
+
+    /**
+     * Revalidate CLI arguments after the config sources sanitization
+     */
+    private static void reValidateCli(List<String> cliArgs, CommandLine cmd) {
+        if (cmd.getParseResult() == null) throw new IllegalStateException("You need to parse the CLI first");
+
+        // Parse provided cliArgs
+        final Set<String> parsedOptions = new HashSet<>();
+        ConfigArgsConfigSource.parseConfigArgs(cliArgs.toArray(new String[0]),
+                (key, value) -> parsedOptions.add(ConfigArgsConfigSource.transformKey(key))
+        );
+
+        // Current options for CLI config source
+        final Set<String> knownOptions = StreamSupport.stream(getConfig().getConfigSources(ConfigArgsConfigSource.class).spliterator(), false)
+                .map(ConfigSource::getProperties)
+                .flatMap(f -> f.keySet().stream())
+                .collect(Collectors.toSet());
+
+        final List<String> unmatchedOptions = parsedOptions.stream()
+                .filter(f -> !knownOptions.contains(f))
+                .map(f -> f.replaceFirst(NS_KEYCLOAK_PREFIX, ARG_PREFIX))
+                .toList();
+
+        // Throw error if CLI contains some sanitized property
+        if (!unmatchedOptions.isEmpty()) {
+            var cmdList = cmd.getParseResult().asCommandLineList();
+            var lastCommand = !cmdList.isEmpty() ?
+                    cmdList.get(cmdList.size() - 1).getCommandSpec().commandLine() :
+                    cmd.getParseResult().commandSpec().commandLine();
+            throw new CommandLine.UnmatchedArgumentException(lastCommand, unmatchedOptions);
         }
     }
 
@@ -176,7 +215,7 @@ public final class Picocli {
             }
         }
         if (requiresReAugmentation(currentCommandSpec)) {
-            KeycloakConfigSourceProvider.sanitizeConfigSources(); // Remove disabled options from Keycloak config sources
+            sanitizeConfigSources(cliArgs, cmd);
             exitCode = runReAugmentation(cliArgs, cmd);
         }
 
@@ -283,7 +322,7 @@ public final class Picocli {
     }
 
     /**
-     * Additional validation and handling of deprecated options
+     * Additional validation and handling of deprecated and disabled options
      *
      * @param cliArgs
      * @param abstractCommand
@@ -395,10 +434,7 @@ public final class Picocli {
     }
 
     private static String handleDisabledInUse(PropertyMapper<?> mapper) {
-        String optionName = mapper.getFrom();
-        if (optionName.startsWith(NS_KEYCLOAK_PREFIX)) {
-            optionName = optionName.substring(NS_KEYCLOAK_PREFIX.length());
-        }
+        String optionName = mapper.getFrom().replaceFirst(NS_KEYCLOAK_PREFIX, "");
 
         final StringBuilder sb = new StringBuilder("\t- ");
         sb.append(optionName);

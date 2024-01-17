@@ -16,6 +16,7 @@ import picocli.CommandLine.UnmatchedArgumentException;
 
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.OPTIMIZED_BUILD_OPTION_LONG;
@@ -29,9 +30,7 @@ public class ShortErrorMessageHandler implements IParameterExceptionHandler {
         String errorMessage = ex.getMessage();
         String additionalSuggestion = null;
 
-        if (ex instanceof UnmatchedArgumentException) {
-            UnmatchedArgumentException uae = (UnmatchedArgumentException) ex;
-
+        if (ex instanceof UnmatchedArgumentException uae) {
             String[] unmatched = getUnmatchedPartsByOptionSeparator(uae, "=");
 
             String cliKey = unmatched[0];
@@ -72,7 +71,7 @@ public class ShortErrorMessageHandler implements IParameterExceptionHandler {
         }
 
         writer.println(cmd.getColorScheme().errorText(errorMessage));
-        UnmatchedArgumentException.printSuggestions(ex, writer);
+        printSuggestions(ex, writer);
 
         CommandSpec spec = cmd.getCommandSpec();
         writer.printf("Try '%s --help' for more information on the available options.%n", spec.qualifiedName());
@@ -82,6 +81,23 @@ public class ShortErrorMessageHandler implements IParameterExceptionHandler {
         }
 
         return getInvalidInputExitCode(ex, cmd);
+    }
+
+    /**
+     * Print sanitized suggestion
+     */
+    static void printSuggestions(ParameterException ex, PrintWriter writer) {
+        if (ex instanceof UnmatchedArgumentException uae) {
+            if (uae.isUnknownOption()) {
+                var suggestedProperties = uae.getSuggestions().stream()
+                        .filter(f -> !PropertyMappers.isDisabledMapper(f))
+                        .collect(Collectors.joining(", "));
+
+                writer.println("Possible solutions: " + suggestedProperties);
+            } else {
+                UnmatchedArgumentException.printSuggestions(uae, writer);
+            }
+        }
     }
 
     static int getInvalidInputExitCode(Exception ex, CommandLine cmd) {
