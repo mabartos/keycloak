@@ -17,31 +17,36 @@
 
 package org.keycloak.quarkus.runtime.cli;
 
-import static java.lang.String.format;
-import static java.util.Optional.ofNullable;
-import static java.util.stream.StreamSupport.stream;
-import static org.keycloak.quarkus.runtime.Environment.isRebuildCheck;
-import static org.keycloak.quarkus.runtime.Environment.isRebuilt;
-import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.OPTIMIZED_BUILD_OPTION_LONG;
-import static org.keycloak.quarkus.runtime.configuration.ConfigArgsConfigSource.parseConfigArgs;
-import static org.keycloak.quarkus.runtime.configuration.Configuration.OPTION_PART_SEPARATOR;
-import static org.keycloak.quarkus.runtime.configuration.Configuration.getBuildTimeProperty;
-import static org.keycloak.quarkus.runtime.configuration.Configuration.getConfig;
-import static org.keycloak.quarkus.runtime.Environment.isDevMode;
-import static org.keycloak.quarkus.runtime.configuration.Configuration.getCurrentBuiltTimeProperty;
-import static org.keycloak.quarkus.runtime.configuration.Configuration.getRawPersistedProperty;
-import static org.keycloak.quarkus.runtime.configuration.Configuration.getRuntimeProperty;
-import static org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX;
-import static org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers.formatValue;
-import static org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers.isBuildTimeProperty;
-import static org.keycloak.utils.StringUtil.isNotBlank;
-import static picocli.CommandLine.Model.UsageMessageSpec.SECTION_KEY_COMMAND_LIST;
+import io.smallrye.config.ConfigValue;
+import org.eclipse.microprofile.config.spi.ConfigSource;
+import org.jboss.logging.Logger;
+import org.keycloak.common.profile.ProfileException;
+import org.keycloak.config.DeprecatedMetadata;
+import org.keycloak.config.Option;
+import org.keycloak.config.OptionCategory;
+import org.keycloak.quarkus.runtime.Environment;
+import org.keycloak.quarkus.runtime.cli.command.AbstractCommand;
+import org.keycloak.quarkus.runtime.cli.command.Build;
+import org.keycloak.quarkus.runtime.cli.command.HelpAllMixin;
+import org.keycloak.quarkus.runtime.cli.command.ImportRealmMixin;
+import org.keycloak.quarkus.runtime.cli.command.ShowConfig;
+import org.keycloak.quarkus.runtime.cli.command.StartDev;
+import org.keycloak.quarkus.runtime.cli.command.Tools;
+import org.keycloak.quarkus.runtime.configuration.ConfigArgsConfigSource;
+import org.keycloak.quarkus.runtime.configuration.Configuration;
+import org.keycloak.quarkus.runtime.configuration.KeycloakConfigSourceProvider;
+import org.keycloak.quarkus.runtime.configuration.PersistedConfigSource;
+import org.keycloak.quarkus.runtime.configuration.PropertyMappingInterceptor;
+import org.keycloak.quarkus.runtime.configuration.QuarkusPropertiesConfigSource;
+import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper;
+import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
+import picocli.CommandLine;
+import picocli.CommandLine.Help.Ansi;
+import picocli.CommandLine.ParameterException;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -56,38 +61,24 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.eclipse.microprofile.config.spi.ConfigSource;
-import org.jboss.logging.Logger;
-import org.keycloak.common.profile.ProfileException;
-import org.keycloak.config.DeprecatedMetadata;
-import org.keycloak.config.Option;
-import org.keycloak.config.OptionCategory;
-import org.keycloak.quarkus.runtime.cli.command.AbstractCommand;
-import org.keycloak.quarkus.runtime.cli.command.Build;
-import org.keycloak.quarkus.runtime.cli.command.HelpAllMixin;
-import org.keycloak.quarkus.runtime.cli.command.ImportRealmMixin;
-import org.keycloak.quarkus.runtime.cli.command.Main;
-import org.keycloak.quarkus.runtime.cli.command.ShowConfig;
-import org.keycloak.quarkus.runtime.cli.command.StartDev;
-import org.keycloak.quarkus.runtime.cli.command.Tools;
-import org.keycloak.quarkus.runtime.configuration.ConfigArgsConfigSource;
-import org.keycloak.quarkus.runtime.configuration.Configuration;
-import org.keycloak.quarkus.runtime.configuration.KeycloakConfigSourceProvider;
-import org.keycloak.quarkus.runtime.configuration.PersistedConfigSource;
-import org.keycloak.quarkus.runtime.configuration.PropertyMappingInterceptor;
-import org.keycloak.quarkus.runtime.configuration.QuarkusPropertiesConfigSource;
-import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
-import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper;
-import org.keycloak.quarkus.runtime.Environment;
-
-import io.smallrye.config.ConfigValue;
-
-import picocli.CommandLine;
-import picocli.CommandLine.ParameterException;
-import picocli.CommandLine.Help.Ansi;
-import picocli.CommandLine.Model.CommandSpec;
-import picocli.CommandLine.Model.OptionSpec;
-import picocli.CommandLine.Model.ArgGroupSpec;
+import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.StreamSupport.stream;
+import static org.keycloak.quarkus.runtime.Environment.isDevMode;
+import static org.keycloak.quarkus.runtime.Environment.isRebuildCheck;
+import static org.keycloak.quarkus.runtime.Environment.isRebuilt;
+import static org.keycloak.quarkus.runtime.cli.CommandLineFactory.getCurrentCommandSpec;
+import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.OPTIMIZED_BUILD_OPTION_LONG;
+import static org.keycloak.quarkus.runtime.configuration.ConfigArgsConfigSource.parseConfigArgs;
+import static org.keycloak.quarkus.runtime.configuration.Configuration.getBuildTimeProperty;
+import static org.keycloak.quarkus.runtime.configuration.Configuration.getConfig;
+import static org.keycloak.quarkus.runtime.configuration.Configuration.getCurrentBuiltTimeProperty;
+import static org.keycloak.quarkus.runtime.configuration.Configuration.getRawPersistedProperty;
+import static org.keycloak.quarkus.runtime.configuration.Configuration.getRuntimeProperty;
+import static org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX;
+import static org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers.formatValue;
+import static org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers.isBuildTimeProperty;
+import static org.keycloak.utils.StringUtil.isNotBlank;
 
 public final class Picocli {
 
@@ -96,7 +87,7 @@ public final class Picocli {
     public static final String NO_PARAM_LABEL = "none";
     private static final String ARG_KEY_VALUE_SEPARATOR = "=";
 
-    private static class IncludeOptions {
+    static class IncludeOptions {
         boolean includeRuntime;
         boolean includeBuildTime;
         boolean includeDisabled;
@@ -106,7 +97,8 @@ public final class Picocli {
     }
 
     public static void parseAndRun(List<String> cliArgs) {
-        CommandLine cmd = createCommandLine(cliArgs);
+        final CommandLineFactory cmdFactory = new CommandLineFactory();
+        CommandLine cmd = cmdFactory.createCommandLine(cliArgs);
         String[] argArray = cliArgs.toArray(new String[0]);
 
         try {
@@ -116,7 +108,12 @@ public final class Picocli {
             if (isRebuildCheck()) {
                 exitCode = runReAugmentationIfNeeded(cliArgs, cmd);
             } else {
+<<<<<<< Updated upstream
                 sanitizeConfigSources(cliArgs, cmd);
+=======
+                KeycloakConfigSourceProvider.sanitizeConfigSources();
+                cmd = cmdFactory.reuseCommandLine();
+>>>>>>> Stashed changes
                 exitCode = cmd.execute(argArray);
             }
 
@@ -576,38 +573,7 @@ public final class Picocli {
         return key.startsWith("kc.provider.file");
     }
 
-    public static CommandLine createCommandLine(List<String> cliArgs) {
-        CommandSpec spec = CommandSpec.forAnnotatedObject(new Main(), new DefaultFactory()).name(Environment.getCommand());
-
-        for (CommandLine subCommand : spec.subcommands().values()) {
-            CommandSpec subCommandSpec = subCommand.getCommandSpec();
-
-            // help option added to any subcommand
-            subCommandSpec.addOption(OptionSpec.builder(Help.OPTION_NAMES)
-                    .usageHelp(true)
-                    .description("This help message.")
-                    .build());
-        }
-
-        addCommandOptions(cliArgs, getCurrentCommandSpec(cliArgs, spec));
-
-        if (isRebuildCheck()) {
-            // build command should be available when running re-aug
-            addCommandOptions(cliArgs, spec.subcommands().get(Build.NAME));
-        }
-
-        CommandLine cmd = new CommandLine(spec);
-
-        cmd.setExecutionExceptionHandler(new ExecutionExceptionHandler());
-        cmd.setParameterExceptionHandler(new ShortErrorMessageHandler());
-        cmd.setHelpFactory(new HelpFactory());
-        cmd.getHelpSectionMap().put(SECTION_KEY_COMMAND_LIST, new SubCommandListRenderer());
-        cmd.setErr(new PrintWriter(System.err, true));
-
-        return cmd;
-    }
-
-    private static IncludeOptions getIncludeOptions(List<String> cliArgs, AbstractCommand abstractCommand, String commandName) {
+    static IncludeOptions getIncludeOptions(List<String> cliArgs, AbstractCommand abstractCommand, String commandName) {
         IncludeOptions result = new IncludeOptions();
         if (abstractCommand == null) {
             return result;
@@ -624,157 +590,6 @@ public final class Picocli {
             result.includeRuntime = isRebuildCheck();
         }
         return result;
-    }
-
-    private static void addCommandOptions(List<String> cliArgs, CommandLine command) {
-        if (command != null && command.getCommand() instanceof AbstractCommand) {
-            IncludeOptions options = getIncludeOptions(cliArgs, command.getCommand(), command.getCommandName());
-
-            if (!options.includeBuildTime && !options.includeRuntime) {
-                return;
-            }
-
-            addOptionsToCli(command, options);
-        }
-    }
-
-    private static CommandLine getCurrentCommandSpec(List<String> cliArgs, CommandSpec spec) {
-        for (String arg : cliArgs) {
-            CommandLine command = spec.subcommands().get(arg);
-
-            if (command != null) {
-                return command;
-            }
-        }
-
-        return null;
-    }
-
-    private static void addOptionsToCli(CommandLine commandLine, IncludeOptions includeOptions) {
-        final Map<OptionCategory, List<PropertyMapper<?>>> mappers = new EnumMap<>(OptionCategory.class);
-
-        if (includeOptions.includeRuntime) {
-            mappers.putAll(PropertyMappers.getRuntimeMappers());
-
-            if (includeOptions.includeDisabled) {
-                combinePropertyMappers(mappers, PropertyMappers.getDisabledRuntimeMappers());
-            }
-        }
-
-        if (includeOptions.includeBuildTime) {
-            combinePropertyMappers(mappers, PropertyMappers.getBuildTimeMappers());
-
-            if (includeOptions.includeDisabled) {
-                combinePropertyMappers(mappers, PropertyMappers.getDisabledBuildTimeMappers());
-            }
-        }
-
-        addMappedOptionsToArgGroups(commandLine, mappers);
-    }
-
-    private static <T extends Map<OptionCategory, List<PropertyMapper<?>>>> void combinePropertyMappers(T origMappers, T additionalMappers) {
-        for (Map.Entry<OptionCategory, List<PropertyMapper<?>>> entry : additionalMappers.entrySet()) {
-            final List<PropertyMapper<?>> result = new ArrayList<>(origMappers.getOrDefault(entry.getKey(), Collections.emptyList()));
-            result.addAll(entry.getValue());
-            origMappers.put(entry.getKey(), result);
-        }
-    }
-
-    private static void addMappedOptionsToArgGroups(CommandLine commandLine, Map<OptionCategory, List<PropertyMapper<?>>> propertyMappers) {
-        CommandSpec cSpec = commandLine.getCommandSpec();
-        for (OptionCategory category : ((AbstractCommand) commandLine.getCommand()).getOptionCategories()) {
-            List<PropertyMapper<?>> mappersInCategory = propertyMappers.get(category);
-
-            if (mappersInCategory == null) {
-                //picocli raises an exception when an ArgGroup is empty, so ignore it when no mappings found for a category.
-                continue;
-            }
-
-            ArgGroupSpec.Builder argGroupBuilder = ArgGroupSpec.builder()
-                    .heading(category.getHeading() + ":")
-                    .order(category.getOrder())
-                    .validate(false);
-
-            for (PropertyMapper<?> mapper: mappersInCategory) {
-                String name = mapper.getCliFormat();
-                String description = mapper.getDescription();
-
-                if (description == null || cSpec.optionsMap().containsKey(name) || name.endsWith(OPTION_PART_SEPARATOR)) {
-                    //when key is already added or has no description, don't add.
-                    continue;
-                }
-
-                OptionSpec.Builder optBuilder = OptionSpec.builder(name)
-                        .description(getDecoratedOptionDescription(mapper))
-                        .paramLabel(mapper.getParamLabel())
-                        .completionCandidates(new Iterable<String>() {
-                            @Override
-                            public Iterator<String> iterator() {
-                                return mapper.getExpectedValues().iterator();
-                            }
-                        })
-                        .parameterConsumer(PropertyMapperParameterConsumer.INSTANCE)
-                        .hidden(mapper.isHidden());
-
-                if (mapper.getDefaultValue().isPresent()) {
-                    optBuilder.defaultValue(Option.getDefaultValueString(mapper.getDefaultValue().get()));
-                }
-
-                if (mapper.getType() != null) {
-                    optBuilder.type(mapper.getType());
-                } else {
-                    optBuilder.type(String.class);
-                }
-
-                argGroupBuilder.addArg(optBuilder.build());
-            }
-
-            if (argGroupBuilder.args().isEmpty()) {
-                continue;
-            }
-
-            cSpec.addArgGroup(argGroupBuilder.build());
-        }
-    }
-
-    private static String getDecoratedOptionDescription(PropertyMapper<?> mapper) {
-        StringBuilder transformedDesc = new StringBuilder(mapper.getDescription());
-
-        if (mapper.getType() != Boolean.class && !mapper.getExpectedValues().isEmpty()) {
-            transformedDesc.append(" Possible values are: " + String.join(", ", mapper.getExpectedValues()) + ".");
-        }
-
-        mapper.getDefaultValue()
-                .map(d -> Option.getDefaultValueString(d).replaceAll("%", "%%")) // escape formats
-                .map(d -> " Default: " + d + ".")
-                .ifPresent(transformedDesc::append);
-
-        mapper.getEnabledWhen().map(e -> format(" %s.", e)).ifPresent(transformedDesc::append);
-
-        mapper.getDeprecatedMetadata().ifPresent(deprecatedMetadata -> {
-            List<String> deprecatedDetails = new ArrayList<>();
-            String note = deprecatedMetadata.getNote();
-            if (note != null) {
-                if (!note.endsWith(".")) {
-                    note += ".";
-                }
-                deprecatedDetails.add(note);
-            }
-            if (!deprecatedMetadata.getNewOptionsKeys().isEmpty()) {
-                String s = deprecatedMetadata.getNewOptionsKeys().size() > 1 ? "s" : "";
-                deprecatedDetails.add("Use the following option" + s + " instead: " + String.join(", ", deprecatedMetadata.getNewOptionsKeys()) + ".");
-            }
-
-            transformedDesc.insert(0, "@|bold DEPRECATED.|@ ");
-            if (!deprecatedDetails.isEmpty()) {
-                transformedDesc
-                        .append(" @|bold ")
-                        .append(String.join(" ", deprecatedDetails))
-                        .append("|@");
-            }
-        });
-
-        return transformedDesc.toString();
     }
 
     public static void println(CommandLine cmd, String message) {
