@@ -28,7 +28,7 @@ import org.keycloak.it.utils.KeycloakDistribution;
 
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.quarkus.runtime.cli.command.Main.CONFIG_FILE_LONG_NAME;
 
 @DistributionTest
@@ -50,6 +50,34 @@ public class OptionsDistTest {
     @Launch({"start", "--test=invalid"})
     public void testServerDoesNotStartIfValidationFailDuringReAugStart(LaunchResult result) {
         assertEquals(1, result.getErrorStream().stream().filter(s -> s.contains("Unknown option: '--test'")).count());
+    }
+
+    @Test
+    @Launch({"start", "--log=console", "--log-file-output=json", "--http-enabled=true", "--hostname-strict=false", "--optimized"})
+    public void testServerDoesNotStartIfDisabledFileLogOption(LaunchResult result) {
+        assertEquals(1, result.getErrorStream().stream().filter(s -> s.contains("Disabled option: '--log-file-output'. Available only when File log handler is activated")).count());
+        assertEquals(1, result.getErrorStream().stream().filter(s -> s.contains("Possible solutions: --log, --log-console-output, --log-console-format, --log-console-color")).count());
+    }
+
+    @Test
+    @Launch({"start", "--log=file", "--log-file-output=json", "--http-enabled=true", "--hostname-strict=false", "--optimized"})
+    public void testServerStartIfEnabledFileLogOption(LaunchResult result) {
+        assertEquals(0, result.getErrorStream().stream().filter(s -> s.contains("Disabled option: '--log-file-output'. Available only when File log handler is activated")).count());
+    }
+
+    @Test
+    @Launch({"start-dev", "--log=console", "--log-file-output=json"})
+    public void testServerDoesNotStartDevIfDisabledFileLogOption(LaunchResult result) {
+        assertEquals(1, result.getErrorStream().stream().filter(s -> s.contains("Disabled option: '--log-file-output'. Available only when File log handler is activated")).count());
+        assertEquals(1, result.getErrorStream().stream().filter(s -> s.contains("Possible solutions: --log, --log-console-output, --log-console-format, --log-console-color")).count());
+    }
+
+    @Test
+    @Launch({"start-dev", "--log=file", "--log-file-output=json", "--log-console-color=true"})
+    public void testServerStartDevIfEnabledFileLogOption(LaunchResult result) {
+        assertEquals(0, result.getErrorStream().stream().filter(s -> s.contains("Disabled option: '--log-file-output'. Available only when File log handler is activated")).count());
+        assertEquals(1, result.getErrorStream().stream().filter(s -> s.contains("Disabled option: '--log-console-color'. Available only when Console log handler is activated")).count());
+        assertEquals(1, result.getErrorStream().stream().filter(s -> s.contains("Possible solutions: --log, --log-file, --log-file-format, --log-file-output, --log-level")).count());
     }
 
     @Test

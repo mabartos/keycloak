@@ -27,10 +27,22 @@ import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
 
 import io.smallrye.config.EnvConfigSource;
 
-public class KcEnvConfigSource extends EnvConfigSource {
+public class KcEnvConfigSource extends EnvConfigSource implements SanitizableConfigSource {
+    private Map<String, String> properties;
 
     public KcEnvConfigSource() {
         super(buildProperties(), 500);
+        this.properties = super.getProperties();
+    }
+
+    @Override
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    @Override
+    public void sanitizeConfigSource() {
+        this.properties = sanitizeProperties(properties);
     }
 
     private static Map<String, String> buildProperties() {

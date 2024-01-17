@@ -158,4 +158,13 @@ public final class PersistedConfigSource extends PropertiesConfigSource {
         Boolean result = ENABLED.get();
         return result == null ? true : result;
     }
+
+    public <T> T runWithDisabled(Supplier<T> execution) {
+        try {
+            enable(false);
+            return execution.get();
+        } finally {
+            enable(true);
+        }
+    }
 }

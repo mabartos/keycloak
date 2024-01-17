@@ -44,7 +44,7 @@ import org.keycloak.utils.StringUtil;
  * 
  * <p>Each argument is going to be mapped to its corresponding configuration property by prefixing the key with the {@link MicroProfileConfigProvider#NS_KEYCLOAK} namespace. 
  */
-public class ConfigArgsConfigSource extends PropertiesConfigSource {
+public class ConfigArgsConfigSource extends PropertiesConfigSource implements SanitizableConfigSource {
 
     public static final String CLI_ARGS = "kc.config.args";
     public static final String NAME = "CliConfigSource";
@@ -52,12 +52,25 @@ public class ConfigArgsConfigSource extends PropertiesConfigSource {
     private static final Pattern ARG_SPLIT = Pattern.compile(";;");
     private static final Pattern ARG_KEY_VALUE_SPLIT = Pattern.compile("=");
 
+    private Map<String, String> properties;
+
     protected ConfigArgsConfigSource() {
         super(parseArgument(), NAME, 600);
+        this.properties = super.getProperties();
     }
 
     public static void setCliArgs(String[] args) {
         System.setProperty(CLI_ARGS, String.join(ARG_SEPARATOR, args));
+    }
+
+    @Override
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    @Override
+    public void sanitizeConfigSource() {
+        this.properties = sanitizeProperties(properties);
     }
 
     /**
@@ -68,7 +81,7 @@ public class ConfigArgsConfigSource extends PropertiesConfigSource {
      * @return the invoked command from the CLI, or empty List if not set.
      */
     public static List<String> getAllCliArgs() {
-        if(System.getProperty(CLI_ARGS) == null) {
+        if (System.getProperty(CLI_ARGS) == null) {
             return Collections.emptyList();
         }
 
