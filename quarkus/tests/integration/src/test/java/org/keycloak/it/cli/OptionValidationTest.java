@@ -87,7 +87,7 @@ public class OptionValidationTest {
     }
 
     @Test
-    @Launch({"start", "--db-username=foobar","--db-pasword=mytestpw", "--foobar=barfoo"})
+    @Launch({"start", "--db-username=foobar", "--db-pasword=mytestpw", "--foobar=barfoo"})
     public void failWithFirstOptionOnMultipleUnknownOptions(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;
         assertEquals("Unknown option: '--db-pasword'\n" +
@@ -96,9 +96,19 @@ public class OptionValidationTest {
     }
 
     @Test
-    @Launch({ "start", "--db postgres" })
+    @Launch({"start", "--db postgres"})
     void failSingleParamWithSpace(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;
         cliResult.assertError("Option: '--db postgres' is not expected to contain whitespace, please remove any unnecessary quoting/escaping");
+    }
+
+    @Test
+    @Launch({"start", "--log=console", "--log-gelf-include-stack-trace=true"})
+    public void failWithDisabledGelfOption(LaunchResult result) {
+        CLIResult cliResult = (CLIResult) result;
+        assertEquals("Disabled option: '--log-gelf-include-stack-trace'. Available only when GELF is activated\n" +
+                "Possible solutions: --log, --log-console-output, --log-console-format, --log-console-color, --log-level\n" +
+                "Try '" + KeycloakDistribution.SCRIPT_CMD + " start --help' for more information on the available options.\n" +
+                "Specify '--help-all' to obtain information on all options and their availability.", cliResult.getErrorOutput());
     }
 }
