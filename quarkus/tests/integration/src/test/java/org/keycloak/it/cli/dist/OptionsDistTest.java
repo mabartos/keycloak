@@ -28,7 +28,7 @@ import org.keycloak.it.utils.KeycloakDistribution;
 
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.keycloak.quarkus.runtime.cli.command.Main.CONFIG_FILE_LONG_NAME;
 
 @DistributionTest
@@ -53,10 +53,39 @@ public class OptionsDistTest {
     }
 
     @Test
+    @Launch({"start", "--log=console", "--log-file-output=json", "--http-enabled=true", "--hostname-strict=false", "--optimized"})
+    public void testServerDoesNotStartIfDisabledFileLogOption(LaunchResult result) {
+        assertEquals(1, result.getErrorStream().stream().filter(s -> s.contains("Disabled option: '--log-file-output'. Available only when File log handler is activated")).count());
+        assertEquals(1, result.getErrorStream().stream().filter(s -> s.contains("Possible solutions: --log, --log-console-output, --log-console-format, --log-console-color")).count());
+    }
+
+    @Test
+    @Launch({"start", "--log=file", "--log-file-output=json", "--http-enabled=true", "--hostname-strict=false", "--optimized"})
+    public void testServerStartIfEnabledFileLogOption(LaunchResult result) {
+        assertEquals(0, result.getErrorStream().stream().filter(s -> s.contains("Disabled option: '--log-file-output'. Available only when File log handler is activated")).count());
+    }
+
+    @Test
+    @Launch({"start", "--log=console", "--log-file-output=json", "--http-enabled=true", "--hostname-strict=false", "--optimized"})
+    public void testServerDoesNotStartDevIfDisabledFileLogOption(LaunchResult result) {
+        assertEquals(1, result.getErrorStream().stream().filter(s -> s.contains("Disabled option: '--log-file-output'. Available only when File log handler is activated")).count());
+        assertEquals(1, result.getErrorStream().stream().filter(s -> s.contains("Possible solutions: --log, --log-console-output, --log-console-format, --log-console-color")).count());
+    }
+
+    @Test
+    @Launch({"start", "--log=file", "--log-file-output=json", "--log-console-color=true", "--http-enabled=true", "--hostname-strict=false", "--optimized"})
+    public void testServerStartDevIfEnabledFileLogOption(LaunchResult result) {
+        assertEquals(0, result.getErrorStream().stream().filter(s -> s.contains("Disabled option: '--log-file-output'. Available only when File log handler is activated")).count());
+        assertEquals(1, result.getErrorStream().stream().filter(s -> s.contains("Disabled option: '--log-console-color'. Available only when Console log handler is activated")).count());
+        assertEquals(1, result.getErrorStream().stream().filter(s -> s.contains("Possible solutions: --log, --log-file, --log-file-format, --log-file-output, --log-level")).count());
+    }
+
+    @Test
     @RawDistOnly(reason = "Raw is enough and we avoid issues with including custom conf file in the container")
     public void testExpressionsInConfigFile(KeycloakDistribution distribution) {
-        distribution.setEnvVar("MY_LOG_LEVEL", "debug");
-        CLIResult result = distribution.run(CONFIG_FILE_LONG_NAME + "=" + Paths.get("src/test/resources/OptionsDistTest/keycloak.conf").toAbsolutePath().normalize(), "start-dev");
-        result.assertMessage("DEBUG [org.keycloak");
+        distribution.setEnvVar("MY_LOG_LEVEL", "warn");
+        CLIResult result = distribution.run(CONFIG_FILE_LONG_NAME + "=" + Paths.get("src/test/resources/OptionsDistTest/keycloak.conf").toAbsolutePath().normalize(), "start", "--http-enabled=true", "--hostname-strict=false", "--optimized");
+        result.assertNoMessage("INFO [io.quarkus]");
+        result.assertNoMessage("Listening on:");
     }
 }
