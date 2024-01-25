@@ -20,23 +20,27 @@ package org.keycloak.quarkus.runtime.configuration.mappers;
 import io.smallrye.config.ConfigSourceInterceptorContext;
 import io.smallrye.config.ConfigValue;
 import org.keycloak.config.ImportOptions;
+import org.keycloak.config.Option;
+import org.keycloak.config.OptionBuilder;
+import org.keycloak.config.OptionCategory;
 import org.keycloak.exportimport.Strategy;
-import picocli.CommandLine;
+import org.keycloak.quarkus.runtime.configuration.Configuration;
 
 import java.util.Optional;
 
-import static org.keycloak.exportimport.ExportImportConfig.PROVIDER;
 import static org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper.fromOption;
 
-final class ImportPropertyMappers {
+public final class ImportPropertyMappers {
 
     private ImportPropertyMappers() {
     }
 
+    public static final String IMPORTER_PROPERTY = "kc.spi-import-importer";
+
     public static PropertyMapper<?>[] getMappers() {
-        return new PropertyMapper[] {
-                fromOption(ImportOptions.FILE)
-                        .to("kc.spi-import-importer")
+        return new PropertyMapper[]{
+                fromOption(IMPORTER_PLACEHOLDER)
+                        .to(IMPORTER_PROPERTY)
                         .transformer(ImportPropertyMappers::transformImporter)
                         .paramLabel("file")
                         .build(),
@@ -51,13 +55,43 @@ final class ImportPropertyMappers {
                 fromOption(ImportOptions.OVERRIDE)
                         .to("kc.spi-import-single-file-strategy")
                         .transformer(ImportPropertyMappers::transformOverride)
+                        .isEnabled(ImportPropertyMappers::isSingleFileProvider)
                         .build(),
                 fromOption(ImportOptions.OVERRIDE)
                         .to("kc.spi-import-dir-strategy")
                         .transformer(ImportPropertyMappers::transformOverride)
+                        .isEnabled(ImportPropertyMappers::isDirProvider)
                         .build(),
         };
     }
+
+    private static final Option<String> IMPORTER_PLACEHOLDER = new OptionBuilder<>("importer", String.class)
+            .category(OptionCategory.IMPORT)
+            .description("Placeholder for determining import mode")
+            .buildTime(false)
+            .hidden()
+            .build();
+
+    public static boolean isProperImporter() {
+        return Configuration.getOptionalValue(IMPORTER_PROPERTY).isPresent();
+    }
+
+    private static boolean isSingleFileProvider() {
+        return isProvider(SINGLE_FILE);
+    }
+
+    private static boolean isDirProvider() {
+        return isProvider(DIR);
+    }
+
+    private static boolean isProvider(String provider) {
+        return Configuration.getOptionalValue(IMPORTER_PROPERTY)
+                .filter(provider::equals)
+                .isPresent();
+    }
+
+    private static final String SINGLE_FILE = "singleFile";
+    private static final String DIR = "dir";
 
     private static Optional<String> transformOverride(Optional<String> option, ConfigSourceInterceptorContext context) {
         if (option.isPresent() && Boolean.parseBoolean(option.get())) {
@@ -68,25 +102,20 @@ final class ImportPropertyMappers {
     }
 
     private static Optional<String> transformImporter(Optional<String> option, ConfigSourceInterceptorContext context) {
-        ConfigValue importer = context.proceed("kc.spi-import-importer");
+        ConfigValue importer = context.proceed(IMPORTER_PROPERTY);
         if (importer != null) {
             return Optional.of(importer.getValue());
         }
-        if (option.isPresent()) {
-            return Optional.of("singleFile");
-        }
-        ConfigValue dirConfigValue = context.proceed("kc.spi-import-dir-dir");
-        if (dirConfigValue != null && dirConfigValue.getValue() != null) {
-            return Optional.of("dir");
-        }
-        ConfigValue dirValue = context.proceed("kc.dir");
-        if (dirConfigValue != null && dirValue.getValue() != null) {
-            return Optional.of("dir");
-        }
-        if (System.getProperty(PROVIDER) == null) {
-            throw new CommandLine.PicocliException("Must specify either --dir or --file options.");
-        }
-        return Optional.empty();
+
+        var file = Configuration.getOptionalValue("kc.spi-import-single-file-file").map(f -> SINGLE_FILE);
+        var dir = Configuration.getOptionalValue("kc.spi-import-dir-dir")
+                .or(() -> Configuration.getOptionalValue("kc.dir"))
+                .map(f -> DIR);
+
+        // Only one option can be specified
+        boolean xor = file.isPresent() ^ dir.isPresent();
+
+        return xor ? file.or(() -> dir) : Optional.empty();
     }
 
 }

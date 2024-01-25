@@ -20,6 +20,7 @@ package org.keycloak.quarkus.runtime.cli;
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.StreamSupport.stream;
+import static org.keycloak.quarkus.runtime.Environment.isRebuild;
 import static org.keycloak.quarkus.runtime.Environment.isRebuildCheck;
 import static org.keycloak.quarkus.runtime.Environment.isRebuilt;
 import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.OPTIMIZED_BUILD_OPTION_LONG;
@@ -40,7 +41,6 @@ import static picocli.CommandLine.Model.UsageMessageSpec.SECTION_KEY_COMMAND_LIS
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -122,8 +122,8 @@ public final class Picocli {
             exitOnFailure(exitCode, cmd);
         } catch (ParameterException parEx) {
             catchParameterException(parEx, cmd, argArray);
-        } catch (ProfileException proEx) {
-            catchProfileException(proEx, cmd);
+        } catch (ProfileException | PropertyException proEx) {
+            catchProfileException(proEx.getMessage(), proEx.getCause(), cmd);
         }
     }
 
@@ -139,9 +139,9 @@ public final class Picocli {
         exitOnFailure(exitCode, cmd);
     }
 
-    private static void catchProfileException(ProfileException proEx, CommandLine cmd) {
+    private static void catchProfileException(String message, Throwable cause, CommandLine cmd) {
         ExecutionExceptionHandler errorHandler = new ExecutionExceptionHandler();
-        errorHandler.error(cmd.getErr(), proEx.getMessage(), proEx.getCause());
+        errorHandler.error(cmd.getErr(), message, cause);
         exitOnFailure(CommandLine.ExitCode.USAGE, cmd);
     }
 
@@ -176,6 +176,7 @@ public final class Picocli {
             }
         }
         if (requiresReAugmentation(currentCommandSpec)) {
+            PropertyMappers.sanitizeDisabledMappers();
             exitCode = runReAugmentation(cliArgs, cmd);
         }
 
@@ -328,7 +329,12 @@ public final class Picocli {
                     }
 
                     if (disabledMappers.contains(mapper)) {
-                        if (PropertyMapper.isCliOption(configValue)) {
+                        if (!PropertyMappers.isDisabledMapper(mapper.getFrom())) {
+                            continue; // we found enabled mapper with the same name
+                        }
+                        final boolean deniedPrintException = mapper.isRunTime() && isRebuild();
+
+                        if (PropertyMapper.isCliOption(configValue) && !deniedPrintException) {
                             throw new KcUnmatchedArgumentException(abstractCommand.getCommandLine(), List.of(mapper.getCliFormat()));
                         } else {
                             handleDisabled(mapper.isRunTime() ? disabledRunTime : disabledBuildTime, mapper);
@@ -606,8 +612,11 @@ public final class Picocli {
     }
 
     private static void addCommandOptions(List<String> cliArgs, CommandLine command) {
-        if (command != null && command.getCommand() instanceof AbstractCommand) {
+        if (command != null && command.getCommand() instanceof AbstractCommand ac) {
             IncludeOptions options = getIncludeOptions(cliArgs, command.getCommand(), command.getCommandName());
+
+            // set current parsed command
+            Environment.setParsedCommand(ac);
 
             if (!options.includeBuildTime && !options.includeRuntime) {
                 return;
@@ -683,11 +692,13 @@ public final class Picocli {
                     .order(category.getOrder())
                     .validate(false);
 
-            for (PropertyMapper<?> mapper: mappersInCategory) {
+            final Set<String> alreadyPresentArgs = new HashSet<>();
+
+            for (PropertyMapper<?> mapper : mappersInCategory) {
                 String name = mapper.getCliFormat();
                 String description = mapper.getDescription();
 
-                if (description == null || cSpec.optionsMap().containsKey(name) || name.endsWith(OPTION_PART_SEPARATOR)) {
+                if (description == null || cSpec.optionsMap().containsKey(name) || name.endsWith(OPTION_PART_SEPARATOR) || alreadyPresentArgs.contains(name)) {
                     //when key is already added or has no description, don't add.
                     continue;
                 }
@@ -713,6 +724,8 @@ public final class Picocli {
                 } else {
                     optBuilder.type(String.class);
                 }
+
+                alreadyPresentArgs.add(name);
 
                 argGroupBuilder.addArg(optBuilder.build());
             }

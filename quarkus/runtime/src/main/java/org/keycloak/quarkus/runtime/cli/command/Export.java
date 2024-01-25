@@ -18,8 +18,11 @@
 package org.keycloak.quarkus.runtime.cli.command;
 
 import static org.keycloak.exportimport.ExportImportConfig.ACTION_EXPORT;
+import static org.keycloak.exportimport.ExportImportConfig.PROVIDER;
+import static org.keycloak.quarkus.runtime.configuration.mappers.ExportPropertyMappers.isProperExporter;
 
 import org.keycloak.config.OptionCategory;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 import java.util.List;
@@ -40,6 +43,14 @@ public final class Export extends AbstractExportImportCommand implements Runnabl
     public List<OptionCategory> getOptionCategories() {
         return super.getOptionCategories().stream().filter(optionCategory ->
                 optionCategory != OptionCategory.IMPORT).collect(Collectors.toList());
+    }
+
+    @Override
+    public void validateConfig() {
+        if (!isProperExporter() && System.getProperty(PROVIDER) == null) {
+            throw new CommandLine.ParameterException(getCommandLine(), "Must specify either --dir or --file options.");
+        }
+        super.validateConfig();
     }
 
     @Override
