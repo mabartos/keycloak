@@ -176,6 +176,7 @@ public final class Picocli {
             }
         }
         if (requiresReAugmentation(currentCommandSpec)) {
+            PropertyMappers.sanitizeDisabledMappers();
             exitCode = runReAugmentation(cliArgs, cmd);
         }
 
@@ -328,6 +329,11 @@ public final class Picocli {
                     }
 
                     if (disabledMappers.contains(mapper)) {
+                        if (!PropertyMappers.isDisabledMapper(mapper.getFrom())) {
+                            // when we found there is enabled mapper with the same name
+                            continue;
+                        }
+
                         if (PropertyMapper.isCliOption(configValue)) {
                             throw new KcUnmatchedArgumentException(abstractCommand.getCommandLine(), List.of(mapper.getCliFormat()));
                         } else {
@@ -606,8 +612,11 @@ public final class Picocli {
     }
 
     private static void addCommandOptions(List<String> cliArgs, CommandLine command) {
-        if (command != null && command.getCommand() instanceof AbstractCommand) {
+        if (command != null && command.getCommand() instanceof AbstractCommand ac) {
             IncludeOptions options = getIncludeOptions(cliArgs, command.getCommand(), command.getCommandName());
+
+            // set current parsed command
+            Environment.setParsedCommand(ac);
 
             if (!options.includeBuildTime && !options.includeRuntime) {
                 return;
@@ -683,11 +692,13 @@ public final class Picocli {
                     .order(category.getOrder())
                     .validate(false);
 
-            for (PropertyMapper<?> mapper: mappersInCategory) {
+            final List<String> alreadyPresentArgs = new ArrayList<>();
+
+            for (PropertyMapper<?> mapper : mappersInCategory) {
                 String name = mapper.getCliFormat();
                 String description = mapper.getDescription();
 
-                if (description == null || cSpec.optionsMap().containsKey(name) || name.endsWith(OPTION_PART_SEPARATOR)) {
+                if (description == null || cSpec.optionsMap().containsKey(name) || name.endsWith(OPTION_PART_SEPARATOR) || alreadyPresentArgs.contains(name)) {
                     //when key is already added or has no description, don't add.
                     continue;
                 }
@@ -713,6 +724,8 @@ public final class Picocli {
                 } else {
                     optBuilder.type(String.class);
                 }
+
+                alreadyPresentArgs.add(name);
 
                 argGroupBuilder.addArg(optBuilder.build());
             }

@@ -38,19 +38,24 @@ import org.apache.commons.lang3.SystemUtils;
 import org.keycloak.common.Profile;
 import org.keycloak.common.profile.PropertiesFileProfileConfigResolver;
 import org.keycloak.common.profile.PropertiesProfileConfigResolver;
+import org.keycloak.quarkus.runtime.cli.command.AbstractCommand;
 import org.keycloak.quarkus.runtime.configuration.PersistedConfigSource;
 
 public final class Environment {
 
     public static final String IMPORT_EXPORT_MODE = "import_export";
-    public static final String PROFILE ="kc.profile";
-    public static final String ENV_PROFILE ="KC_PROFILE";
+    public static final String PROFILE = "kc.profile";
+    public static final String ENV_PROFILE = "KC_PROFILE";
     public static final String DATA_PATH = File.separator + "data";
-    public static final String DEFAULT_THEMES_PATH = File.separator +  "themes";
+    public static final String DEFAULT_THEMES_PATH = File.separator + "themes";
     public static final String DEV_PROFILE_VALUE = "dev";
     public static final String PROD_PROFILE_VALUE = "prod";
     public static final String LAUNCH_MODE = "kc.launch.mode";
-    private Environment() {}
+
+    private static volatile AbstractCommand parsedCommand;
+
+    private Environment() {
+    }
 
     public static Boolean isRebuild() {
         return Boolean.getBoolean("quarkus.launch.rebuild");
@@ -254,5 +259,16 @@ public final class Environment {
         }
 
         return profile;
+    }
+
+    /**
+     * Get parsed AbstractCommand we obtained from the CLI
+     */
+    public static Optional<AbstractCommand> getParsedCommand() {
+        return Optional.ofNullable(parsedCommand);
+    }
+
+    public static void setParsedCommand(AbstractCommand command) {
+        Environment.parsedCommand = command;
     }
 }
