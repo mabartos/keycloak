@@ -324,7 +324,13 @@ public final class Picocli {
                     ConfigValue configValue = Configuration.getConfigValue(mapper.getFrom());
 
                     // don't consider missing or anything below standard env properties
-                    if (configValue.getValue() == null || configValue.getConfigSourceOrdinal() < 300) {
+                    if (configValue.getValue() == null) {
+                        final var shouldBeValidated = options.includeBuildTime && mapper.isBuildTime() || options.includeRuntime && mapper.isRunTime() && !isRebuildCheck();
+                        if (shouldBeValidated) {
+                            mapper.validateIfEmpty();
+                        }
+                        continue;
+                    } else if (configValue.getConfigSourceOrdinal() < 300) {
                         continue;
                     }
 

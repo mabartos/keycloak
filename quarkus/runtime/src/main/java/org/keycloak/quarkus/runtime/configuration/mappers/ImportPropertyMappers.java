@@ -24,10 +24,12 @@ import org.keycloak.config.Option;
 import org.keycloak.config.OptionBuilder;
 import org.keycloak.config.OptionCategory;
 import org.keycloak.exportimport.Strategy;
+import org.keycloak.quarkus.runtime.cli.PropertyException;
 import org.keycloak.quarkus.runtime.configuration.Configuration;
 
 import java.util.Optional;
 
+import static org.keycloak.exportimport.ExportImportConfig.PROVIDER;
 import static org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper.fromOption;
 
 public final class ImportPropertyMappers {
@@ -35,13 +37,13 @@ public final class ImportPropertyMappers {
     private ImportPropertyMappers() {
     }
 
-    public static final String IMPORTER_PROPERTY = "kc.spi-import-importer";
 
     public static PropertyMapper<?>[] getMappers() {
         return new PropertyMapper[]{
                 fromOption(IMPORTER_PLACEHOLDER)
                         .to(IMPORTER_PROPERTY)
                         .transformer(ImportPropertyMappers::transformImporter)
+                        .validatorIfEmpty(ImportPropertyMappers::validateImporter)
                         .paramLabel("file")
                         .build(),
                 fromOption(ImportOptions.FILE)
@@ -72,8 +74,13 @@ public final class ImportPropertyMappers {
             .hidden()
             .build();
 
-    public static boolean isProperImporter() {
-        return Configuration.getOptionalValue(IMPORTER_PROPERTY).isPresent();
+    private static void validateImporter(PropertyMapper<?> mapper) {
+        // get transformed value
+        final ConfigValue value = Configuration.getConfigValue(mapper.getTo());
+
+        if (value == null || System.getProperty(PROVIDER) == null) {
+            throw new PropertyException("Must specify either --dir or --file options.");
+        }
     }
 
     private static boolean isSingleFileProvider() {
@@ -90,6 +97,7 @@ public final class ImportPropertyMappers {
                 .isPresent();
     }
 
+    private static final String IMPORTER_PROPERTY = "kc.spi-import-importer";
     private static final String SINGLE_FILE = "singleFile";
     private static final String DIR = "dir";
 

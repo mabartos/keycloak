@@ -23,10 +23,12 @@ import org.keycloak.config.ExportOptions;
 import org.keycloak.config.Option;
 import org.keycloak.config.OptionBuilder;
 import org.keycloak.config.OptionCategory;
+import org.keycloak.quarkus.runtime.cli.PropertyException;
 import org.keycloak.quarkus.runtime.configuration.Configuration;
 
 import java.util.Optional;
 
+import static org.keycloak.exportimport.ExportImportConfig.PROVIDER;
 import static org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper.fromOption;
 
 public final class ExportPropertyMappers {
@@ -34,13 +36,12 @@ public final class ExportPropertyMappers {
     private ExportPropertyMappers() {
     }
 
-    public static final String EXPORTER_PROPERTY = "kc.spi-export-exporter";
-
     public static PropertyMapper<?>[] getMappers() {
         return new PropertyMapper[] {
                 fromOption(EXPORTER_PLACEHOLDER)
                         .to(EXPORTER_PROPERTY)
                         .transformer(ExportPropertyMappers::transformExporter)
+                        .validatorIfEmpty(ExportPropertyMappers::validateExporter)
                         .paramLabel("file")
                         .build(),
                 fromOption(ExportOptions.FILE)
@@ -81,8 +82,13 @@ public final class ExportPropertyMappers {
             .hidden()
             .build();
 
-    public static boolean isProperExporter() {
-        return Configuration.getOptionalValue(EXPORTER_PROPERTY).isPresent();
+    private static void validateExporter(PropertyMapper<?> mapper) {
+        // get transformed value
+        final ConfigValue value = Configuration.getConfigValue(mapper.getTo());
+
+        if (value == null || System.getProperty(PROVIDER) == null) {
+            throw new PropertyException("Must specify either --dir or --file options.");
+        }
     }
 
     private static boolean isSingleFileProvider() {
@@ -99,6 +105,7 @@ public final class ExportPropertyMappers {
                 .isPresent();
     }
 
+    private static final String EXPORTER_PROPERTY = "kc.spi-export-exporter";
     private static final String SINGLE_FILE = "singleFile";
     private static final String DIR = "dir";
 

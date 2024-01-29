@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
 import io.smallrye.config.ConfigSourceInterceptorContext;
 import io.smallrye.config.ConfigValue;
@@ -54,6 +55,7 @@ public class PropertyMapper<T> {
             null,
             null,
             false,
+            null,
             null) {
         @Override
         public ConfigValue getConfigValue(String name, ConfigSourceInterceptorContext context) {
@@ -72,10 +74,12 @@ public class PropertyMapper<T> {
     private final String envVarFormat;
     private final String cliFormat;
     private final BiConsumer<PropertyMapper<T>, ConfigValue> validator;
+    private final Consumer<PropertyMapper<T>> validatorIfEmpty;
 
     PropertyMapper(Option<T> option, String to, BooleanSupplier enabled, String enabledWhen,
                    BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper,
-                   String mapFrom, String paramLabel, boolean mask, BiConsumer<PropertyMapper<T>, ConfigValue> validator) {
+                   String mapFrom, String paramLabel, boolean mask, BiConsumer<PropertyMapper<T>, ConfigValue> validator,
+                   Consumer<PropertyMapper<T>> validatorIfEmpty) {
         this.option = option;
         this.to = to == null ? getFrom() : to;
         this.enabled = enabled;
@@ -87,6 +91,7 @@ public class PropertyMapper<T> {
         this.cliFormat = toCliFormat(option.getKey());
         this.envVarFormat = toEnvVarFormat(getFrom());
         this.validator = validator;
+        this.validatorIfEmpty = validatorIfEmpty;
     }
 
     private static Optional<String> defaultTransformer(Optional<String> value, ConfigSourceInterceptorContext context) {
@@ -282,6 +287,7 @@ public class PropertyMapper<T> {
         private String enabledWhen = "";
         private String paramLabel;
         private BiConsumer<PropertyMapper<T>, ConfigValue> validator = (mapper, value) -> mapper.validateExpectedValues(value, mapper::validateSingleValue);
+        private Consumer<PropertyMapper<T>> validatorIfEmpty = (mapper) -> {};
 
         public Builder(Option<T> option) {
             this.option = option;
@@ -328,11 +334,16 @@ public class PropertyMapper<T> {
             return this;
         }
 
+        public Builder<T> validatorIfEmpty(Consumer<PropertyMapper<T>> validator) {
+            this.validatorIfEmpty = validator;
+            return this;
+        }
+
         public PropertyMapper<T> build() {
             if (paramLabel == null && Boolean.class.equals(option.getType())) {
                 paramLabel = Boolean.TRUE + "|" + Boolean.FALSE;
             }
-            return new PropertyMapper<T>(option, to, isEnabled, enabledWhen, mapper, mapFrom, paramLabel, isMasked, validator);
+            return new PropertyMapper<T>(option, to, isEnabled, enabledWhen, mapper, mapFrom, paramLabel, isMasked, validator, validatorIfEmpty);
         }
     }
 
@@ -346,12 +357,18 @@ public class PropertyMapper<T> {
         }
     }
 
+    public void validateIfEmpty() {
+        if (validatorIfEmpty != null) {
+            validatorIfEmpty.accept(this);
+        }
+    }
+
     public void validateExpectedValues(ConfigValue configValue, BiConsumer<ConfigValue, String> singleValidator) {
         String value = configValue.getValue();
 
         boolean multiValued = getOption().getType() == java.util.List.class;
 
-        String[] values = multiValued ? value.split(",") : new String[] { value };
+        String[] values = multiValued ? value.split(",") : new String[]{value};
         for (String v : values) {
             boolean cli = isCliOption(configValue);
             if (multiValued && !v.trim().equals(v)) {
