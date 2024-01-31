@@ -96,7 +96,21 @@ if [ -z "$JAVA_OPTS" ]; then
    # If the memory is not used, it will be freed. See https://developers.redhat.com/blog/2017/04/04/openjdk-and-containers for details.
    # To optimize for large heap sizes or for throughput and better response time due to shorter GC pauses, consider ZGC and Shenandoah GC.
    # Both ZGC and Shenandoah GC seem to be more eager to claim the maximum heap size. Tests showed that ZGC might need additional tuning as as it is not as aggressive as ParallelGC in reclaiming dead objects.
-   JAVA_OPTS="-Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.err.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -XX:+ExitOnOutOfMemoryError -Djava.security.egd=file:/dev/urandom -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -XX:FlightRecorderOptions=stackdepth=512"
+   JAVA_OPTS="-XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.err.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -XX:+ExitOnOutOfMemoryError -Djava.security.egd=file:/dev/urandom -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -XX:FlightRecorderOptions=stackdepth=512"
+
+   if [ -z "$JAVA_OPTS_KC_HEAP" ]; then
+      JAVA_OPTS_KC_HEAP="-Xms64m -Xmx512m"
+      if [ "$RUN_IN_CONTAINER" = "true" ]; then
+         # Maximum utilization of the heap is set to 80% of the total container memory
+         # Initial heap size is set to 20% of the total container memory
+         JAVA_OPTS_KC_HEAP="-XX:MaxRAMPercentage=80 -XX:InitialRAMPercentage=20"
+      fi
+   else
+      echo "JAVA_OPTS_KC_HEAP already set in environment; overriding default settings with values: $JAVA_OPTS_KC_HEAP"
+   fi
+
+   JAVA_OPTS="$JAVA_OPTS $JAVA_OPTS_KC_HEAP"
+
 else
    echo "JAVA_OPTS already set in environment; overriding default settings with values: $JAVA_OPTS"
 fi

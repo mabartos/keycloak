@@ -24,6 +24,8 @@ import io.fabric8.kubernetes.api.model.EnvVarSource;
 import io.fabric8.kubernetes.api.model.EnvVarSourceBuilder;
 import io.fabric8.kubernetes.api.model.PodSpec;
 import io.fabric8.kubernetes.api.model.PodTemplateSpec;
+import io.fabric8.kubernetes.api.model.PodTemplateSpecFluent.SpecNested;
+import io.fabric8.kubernetes.api.model.ResourceRequirements;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.SecretKeySelector;
 import io.fabric8.kubernetes.api.model.VolumeBuilder;
@@ -100,6 +102,7 @@ public class KeycloakDeploymentDependentResource extends CRUDKubernetesDependent
         Container kcContainer = baseDeployment.getSpec().getTemplate().getSpec().getContainers().get(0);
         addTruststores(primary, baseDeployment, kcContainer, allSecrets);
         addEnvVars(baseDeployment, primary, allSecrets);
+        addResources(primary, kcContainer);
         Optional.ofNullable(primary.getSpec().getCacheSpec())
                 .ifPresent(c -> configureCache(primary, baseDeployment, kcContainer, c, context.getClient()));
 
@@ -174,6 +177,15 @@ public class KeycloakDeploymentDependentResource extends CRUDKubernetesDependent
             deployment.getSpec().getTemplate().getSpec().getVolumes().add(0, volume);
             kcContainer.getVolumeMounts().add(0, volumeMount);
             allSecrets.add(secretName);
+        }
+    }
+
+    private void addResources(Keycloak keycloakCR, Container kcContainer) {
+        ResourceRequirements resourcesSpec = keycloakCR.getSpec().getResourceRequirements();
+        if (resourcesSpec != null) {
+            kcContainer.setResources(resourcesSpec);
+        } else {
+            //todo set some defaults?
         }
     }
 
