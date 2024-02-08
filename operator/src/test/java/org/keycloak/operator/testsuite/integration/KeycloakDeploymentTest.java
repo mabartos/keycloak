@@ -20,6 +20,8 @@ package org.keycloak.operator.testsuite.integration;
 import io.fabric8.kubernetes.api.model.EnvVarBuilder;
 import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.LocalObjectReferenceBuilder;
+import io.fabric8.kubernetes.api.model.Quantity;
+import io.fabric8.kubernetes.api.model.ResourceRequirements;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
 import io.fabric8.kubernetes.api.model.SecretKeySelectorBuilder;
@@ -641,6 +643,83 @@ public class KeycloakDeploymentTest extends BaseOperatorTest {
                 "testLabelWithExpression", "my-value"
         );
         assertThat(labels).containsAllEntriesOf(expected);
+    }
+
+    @Test
+    public void testApplyingResourcesParametersContainer() {
+        var kc = getTestKeycloakDeployment(true);
+
+        var resourceRequirements = new ResourceRequirements();
+        resourceRequirements.setLimits(Map.of(
+                "cpu", new Quantity("3"),
+                "memory", new Quantity("3", "G")));
+        resourceRequirements.setRequests(Map.of(
+                "memory", new Quantity("500", "M")));
+
+        kc.getSpec().setResourceRequirements(resourceRequirements);
+
+        deployKeycloak(k8sclient, kc, true);
+
+        var pods = k8sclient
+                .pods()
+                .inNamespace(namespace)
+                .withLabels(Constants.DEFAULT_LABELS)
+                .list()
+                .getItems();
+
+        assertThat(pods).isNotNull();
+        assertThat(pods).isNotEmpty();
+
+        var containers = pods.get(0).getSpec().getContainers();
+        assertThat(containers).isNotNull();
+        assertThat(containers).isNotEmpty();
+
+        var resources = containers.get(0).getResources();
+        assertThat(resources).isNotNull();
+
+        var requests = resources.getRequests();
+        assertThat(requests).isNotNull();
+        assertThat(requests.get("memory").getAmount()).isEqualTo("500");
+        assertThat(requests.get("memory").getFormat()).isEqualTo("M");
+
+        var limits = resources.getLimits();
+        assertThat(limits).isNotNull();
+        assertThat(limits.get("cpu").getAmount()).isEqualTo("3");
+        assertThat(limits.get("cpu").getFormat()).isEqualTo("");
+        assertThat(limits.get("memory").getAmount()).isEqualTo("3");
+        assertThat(limits.get("memory").getFormat()).isEqualTo("G");
+    }
+
+    @Test
+    public void testApplyingResourcesDefaultValues() {
+        var kc = getTestKeycloakDeployment(true);
+        deployKeycloak(k8sclient, kc, true);
+
+        var pods = k8sclient
+                .pods()
+                .inNamespace(namespace)
+                .withLabels(Constants.DEFAULT_LABELS)
+                .list()
+                .getItems();
+
+        assertThat(pods).isNotNull();
+        assertThat(pods).isNotEmpty();
+
+        var containers = pods.get(0).getSpec().getContainers();
+        assertThat(containers).isNotNull();
+        assertThat(containers).isNotEmpty();
+
+        var resources = containers.get(0).getResources();
+        assertThat(resources).isNotNull();
+
+        var requests = resources.getRequests();
+        assertThat(requests).isNotNull();
+        assertThat(requests.get("memory").getNumericalAmount()).isEqualTo(Constants.KEYCLOAK_RESOURCES_MEMORY_REQUESTS_DEFAULT.getNumericalAmount());
+
+        var limits = resources.getLimits();
+        assertThat(limits).isNotNull();
+        assertThat(limits.get("cpu")).isEqualTo(Constants.KEYCLOAK_RESOURCES_CPU_LIMITS_DEFAULT);
+        assertThat(limits.get("memory")).isEqualTo(Constants.KEYCLOAK_RESOURCES_MEMORY_LIMITS_DEFAULT);
     }
 
     private void handleFakeImagePullSecretCreation(Keycloak keycloakCR,

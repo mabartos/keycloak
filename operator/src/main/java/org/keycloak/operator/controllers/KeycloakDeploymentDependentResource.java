@@ -64,6 +64,8 @@ import java.util.stream.Stream;
 
 import jakarta.inject.Inject;
 
+import static org.keycloak.operator.Utils.addResources;
+import static org.keycloak.operator.controllers.KeycloakDistConfigurator.KC_RUN_IN_CONTAINER;
 import static org.keycloak.operator.crds.v2alpha1.CRDUtils.isTlsConfigured;
 
 @KubernetesDependent(labelSelector = Constants.DEFAULT_LABELS_AS_STRING)
@@ -100,6 +102,7 @@ public class KeycloakDeploymentDependentResource extends CRUDKubernetesDependent
         Container kcContainer = baseDeployment.getSpec().getTemplate().getSpec().getContainers().get(0);
         addTruststores(primary, baseDeployment, kcContainer, allSecrets);
         addEnvVars(baseDeployment, primary, allSecrets);
+        addResources(primary.getSpec().getResourceRequirements(), kcContainer);
         Optional.ofNullable(primary.getSpec().getCacheSpec())
                 .ifPresent(c -> configureCache(primary, baseDeployment, kcContainer, c, context.getClient()));
 
@@ -346,6 +349,9 @@ public class KeycloakDeploymentDependentResource extends CRUDKubernetesDependent
 
         // include the kube CA if the user is not controlling KC_TRUSTSTORE_PATHS via the unsupported or the additional
         varMap.putIfAbsent(KC_TRUSTSTORE_PATHS, new EnvVarBuilder().withName(KC_TRUSTSTORE_PATHS).withValue("/var/run/secrets/kubernetes.io/serviceaccount/ca.crt").build());
+
+        // notify distribution that it is running inside a container
+        varMap.putIfAbsent(KC_RUN_IN_CONTAINER, new EnvVarBuilder().withName(KC_RUN_IN_CONTAINER).withValue("true").build());
 
         var envVars = new ArrayList<>(varMap.values());
         baseDeployment.getSpec().getTemplate().getSpec().getContainers().get(0).setEnv(envVars);

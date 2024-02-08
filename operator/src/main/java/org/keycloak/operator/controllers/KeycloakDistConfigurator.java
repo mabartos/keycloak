@@ -55,6 +55,11 @@ import static io.smallrye.config.common.utils.StringUtil.replaceNonAlphanumericB
 public class KeycloakDistConfigurator {
 
     /**
+     * ENV var for notifying distribution that it is running inside a container
+     */
+    public static final String KC_RUN_IN_CONTAINER = "KC_RUN_IN_CONTAINER";
+
+    /**
      * Specify first-class citizens fields which should not be added as general server configuration property
      */
     @SuppressWarnings("rawtypes")

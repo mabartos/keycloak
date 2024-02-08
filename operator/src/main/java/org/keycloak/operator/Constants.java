@@ -16,6 +16,7 @@
  */
 package org.keycloak.operator;
 
+import io.fabric8.kubernetes.api.model.Quantity;
 import org.keycloak.operator.crds.v2alpha1.deployment.ValueOrSecret;
 
 import java.util.Collections;
@@ -71,4 +72,8 @@ public final class Constants {
     public static final String CACHE_CONFIG_FOLDER = CONFIG_FOLDER + "/" + CACHE_CONFIG_SUBFOLDER;
 
     public static final String KEYCLOAK_HTTP_RELATIVE_PATH_KEY = "http-relative-path";
+
+    // Container requests/limits resources (tested suitable minimum for well-performant Keycloak)
+    public static final Quantity KEYCLOAK_RESOURCES_MEMORY_REQUESTS_DEFAULT = new Quantity("768Mi");
+    public static final Quantity KEYCLOAK_RESOURCES_MEMORY_LIMITS_DEFAULT = new Quantity("4Gi");
 }
