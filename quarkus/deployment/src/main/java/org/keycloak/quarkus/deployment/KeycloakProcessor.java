@@ -171,20 +171,7 @@ class KeycloakProcessor {
     private static final Map<String, Function<ScriptProviderMetadata, ProviderFactory>> DEPLOYEABLE_SCRIPT_PROVIDERS = new HashMap<>();
     private static final String KEYCLOAK_SCRIPTS_JSON_PATH = "META-INF/keycloak-scripts.json";
 
-    private static final List<Class<? extends ProviderFactory>> IGNORED_PROVIDER_FACTORY = List.of(
-            JBossJtaTransactionManagerLookup.class,
-            DefaultJpaConnectionProviderFactory.class,
-            DefaultLiquibaseConnectionProvider.class,
-            FolderThemeProviderFactory.class,
-            LiquibaseJpaUpdaterProviderFactory.class,
-            DefaultHostnameProviderFactory.class,
-            FixedHostnameProviderFactory.class,
-            RequestHostnameProviderFactory.class,
-            FilesKeystoreVaultProviderFactory.class,
-            FilesPlainTextVaultProviderFactory.class,
-            BlacklistPasswordPolicyProviderFactory.class,
-            ClasspathThemeResourceProviderFactory.class,
-            JarThemeProviderFactory.class);
+
 
     static {
         DEPLOYEABLE_SCRIPT_PROVIDERS.put(AUTHENTICATORS, KeycloakProcessor::registerScriptAuthenticator);
@@ -394,34 +381,9 @@ class KeycloakProcessor {
     @Consume(CryptoProviderInitBuildItem.class)
     @Produce(KeycloakSessionFactoryPreInitBuildItem.class)
     void configureKeycloakSessionFactory(KeycloakRecorder recorder, List<PersistenceXmlDescriptorBuildItem> descriptors) {
-        Map<Spi, Map<Class<? extends Provider>, Map<String, Class<? extends ProviderFactory>>>> factories = new HashMap<>();
-        Map<Class<? extends Provider>, String> defaultProviders = new HashMap<>();
-        Map<String, ProviderFactory> preConfiguredProviders = new HashMap<>();
-
-        for (Entry<Spi, Map<Class<? extends Provider>, Map<String, ProviderFactory>>> entry : loadFactories(preConfiguredProviders)
-                .entrySet()) {
-            Spi spi = entry.getKey();
-
-            checkProviders(spi, entry.getValue(), defaultProviders);
-
-            for (Entry<Class<? extends Provider>, Map<String, ProviderFactory>> value : entry.getValue().entrySet()) {
-                for (ProviderFactory factory : value.getValue().values()) {
-                    factories.computeIfAbsent(spi,
-                            key -> new HashMap<>())
-                            .computeIfAbsent(spi.getProviderClass(), aClass -> new HashMap<>()).put(factory.getId(),factory.getClass());
-                }
-            }
-
-            if (spi instanceof JpaConnectionSpi) {
-                configureUserDefinedPersistenceUnits(descriptors, factories, preConfiguredProviders, spi);
-            }
-
-            if (spi instanceof ThemeResourceSpi) {
-                configureThemeResourceProviders(factories, spi);
-            }
-        }
-
-        recorder.configSessionFactory(factories, defaultProviders, preConfiguredProviders, loadThemesFromClassPath(), Environment.isRebuild());
+        recorder.configSessionFactory(descriptors.stream().map(PersistenceXmlDescriptorBuildItem::getDescriptor).toList(),
+                loadThemesFromClassPath(),
+                Environment.isRebuild());
     }
 
     private List<ClasspathThemeProviderFactory.ThemesRepresentation> loadThemesFromClassPath() {
@@ -692,13 +654,8 @@ class KeycloakProcessor {
         hotFiles.produce(new HotDeploymentWatchedFileBuildItem("META-INF/keycloak.conf"));
     }
 
-    private Map<Spi, Map<Class<? extends Provider>, Map<String, ProviderFactory>>> loadFactories(
-            Map<String, ProviderFactory> preConfiguredProviders) {
-        Config.init(new MicroProfileConfigProvider());
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        ProviderManager pm = getProviderManager(classLoader);
-        Map<Spi, Map<Class<? extends Provider>, Map<String, ProviderFactory>>> factories = new HashMap<>();
 
+<<<<<<< Updated upstream
         for (Spi spi : pm.loadSpis()) {
             Map<Class<? extends Provider>, Map<String, ProviderFactory>> providers = new HashMap<>();
             List<ProviderFactory> loadedFactories = new ArrayList<>();
@@ -876,6 +833,8 @@ class KeycloakProcessor {
             logger.debugv("No default provider for {0}", spi.getName());
         }
     }
+=======
+>>>>>>> Stashed changes
 
     private boolean isMetricsEnabled() {
         return Configuration.getOptionalBooleanValue(NS_KEYCLOAK_PREFIX.concat("metrics-enabled")).orElse(false);

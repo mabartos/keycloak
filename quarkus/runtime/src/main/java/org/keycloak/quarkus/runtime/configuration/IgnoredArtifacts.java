@@ -93,6 +93,7 @@ public class IgnoredArtifacts {
             "io.quarkus:quarkus-jdbc-mysql",
             "io.quarkus:quarkus-jdbc-mysql-deployment",
             "mysql:mysql-connector-java"
+            //"com.mysql:mysql-connector-j"
     );
 
     public static final Set<String> JDBC_MSSQL = Set.of(
