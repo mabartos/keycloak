@@ -18,6 +18,8 @@
 package org.keycloak.services;
 
 import jakarta.ws.rs.core.HttpHeaders;
+import org.keycloak.adaptive.AdaptiveAuthnContext;
+import org.keycloak.authentication.adaptive.DefaultAdaptiveAuthnContext;
 import org.keycloak.common.ClientConnection;
 import org.keycloak.common.util.Resteasy;
 import org.keycloak.http.HttpRequest;
@@ -29,6 +31,7 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakUriInfo;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
+import org.keycloak.adaptive.manager.AdaptiveAuthnManager;
 import org.keycloak.sessions.AuthenticationSessionModel;
 import org.keycloak.urls.UrlType;
 
@@ -53,6 +56,7 @@ public class DefaultKeycloakContext implements KeycloakContext {
     private AuthenticationSessionModel authenticationSession;
     private HttpRequest request;
     private HttpResponse response;
+    private AdaptiveAuthnContext adaptiveAuthnContext;
 
     public DefaultKeycloakContext(KeycloakSession session) {
         this.session = session;
@@ -168,6 +172,14 @@ public class DefaultKeycloakContext implements KeycloakContext {
         }
 
         return response;
+    }
+
+    @Override
+    public AdaptiveAuthnContext adaptiveAuthnContext() {
+        if (adaptiveAuthnContext == null) {
+            adaptiveAuthnContext = new DefaultAdaptiveAuthnContext(getSession());
+        }
+        return adaptiveAuthnContext;
     }
 
     protected HttpRequest createHttpRequest() {

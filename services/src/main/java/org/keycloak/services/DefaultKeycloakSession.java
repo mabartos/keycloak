@@ -17,6 +17,8 @@
 package org.keycloak.services;
 
 import org.jboss.logging.Logger;
+import org.keycloak.adaptive.manager.AdaptiveAuthnManager;
+import org.keycloak.authentication.adaptive.DefaultAdaptiveAuthnManager;
 import org.keycloak.common.util.StackUtil;
 import org.keycloak.component.ComponentFactory;
 import org.keycloak.component.ComponentModel;
@@ -82,6 +84,7 @@ public class DefaultKeycloakSession implements KeycloakSession {
     private TokenManager tokenManager;
     private VaultTranscriber vaultTranscriber;
     private ClientPolicyManager clientPolicyManager;
+    private AdaptiveAuthnManager adaptiveAuthnManager;
     private boolean closed = false;
 
     public DefaultKeycloakSession(DefaultKeycloakSessionFactory factory) {
@@ -353,6 +356,14 @@ public class DefaultKeycloakSession implements KeycloakSession {
             clientPolicyManager = getProvider(ClientPolicyManager.class);
         }
         return clientPolicyManager;
+    }
+
+    @Override
+    public AdaptiveAuthnManager adaptiveAuthn() {
+        if (adaptiveAuthnManager == null) {
+            adaptiveAuthnManager = new DefaultAdaptiveAuthnManager(this);
+        }
+        return adaptiveAuthnManager;
     }
 
     private static final Logger LOG = Logger.getLogger(DefaultKeycloakSession.class);

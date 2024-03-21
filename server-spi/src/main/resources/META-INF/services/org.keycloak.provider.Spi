@@ -37,3 +37,11 @@ org.keycloak.locale.LocaleUpdaterSPI
 org.keycloak.theme.ThemeResourceSpi
 org.keycloak.theme.ThemeSelectorSpi
 org.keycloak.urls.HostnameSpi
+
+#Adaptive Authn
+org.keycloak.adaptive.levels.RiskLevelsSpi
+org.keycloak.adaptive.levels.RiskLevelManagerSpi
+org.keycloak.adaptive.manager.AdaptiveAuthnManagerSpi
+org.keycloak.adaptive.engines.RiskEngineSpi
+org.keycloak.adaptive.factors.RiskFactorEvaluatorSpi
+org.keycloak.adaptive.factors.UserContextSpi

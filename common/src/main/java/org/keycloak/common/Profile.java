@@ -50,6 +50,8 @@ public class Profile {
 
         ACCOUNT_API("Account Management REST API", Type.DEFAULT),
 
+        ADAPTIVE_AUTHN("Adaptive Risk-based authentication", Type.EXPERIMENTAL),
+
         @Deprecated
         ACCOUNT2("Account Console version 2", Type.DEPRECATED, Feature.ACCOUNT_API),
         ACCOUNT3("Account Console version 3", Type.DEFAULT, Feature.ACCOUNT_API),

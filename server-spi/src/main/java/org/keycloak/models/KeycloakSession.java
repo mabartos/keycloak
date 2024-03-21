@@ -17,6 +17,7 @@
 
 package org.keycloak.models;
 
+import org.keycloak.adaptive.manager.AdaptiveAuthnManager;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.provider.InvalidationHandler.InvalidableObjectType;
 import org.keycloak.provider.Provider;
@@ -242,5 +243,10 @@ public interface KeycloakSession extends AutoCloseable {
      * Client Policy Manager
      */
     ClientPolicyManager clientPolicy();
+
+    /**
+     * Adaptive authentication Manager
+     */
+    AdaptiveAuthnManager adaptiveAuthn();
 
 }

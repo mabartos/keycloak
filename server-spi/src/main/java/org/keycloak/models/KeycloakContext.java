@@ -17,9 +17,11 @@
 
 package org.keycloak.models;
 
+import org.keycloak.adaptive.AdaptiveAuthnContext;
 import org.keycloak.common.ClientConnection;
 import org.keycloak.http.HttpRequest;
 import org.keycloak.http.HttpResponse;
+import org.keycloak.adaptive.manager.AdaptiveAuthnManager;
 import org.keycloak.sessions.AuthenticationSessionModel;
 import org.keycloak.urls.UrlType;
 
@@ -81,4 +83,6 @@ public interface KeycloakContext {
     HttpRequest getHttpRequest();
 
     HttpResponse getHttpResponse();
+
+    AdaptiveAuthnContext adaptiveAuthnContext();
 }
