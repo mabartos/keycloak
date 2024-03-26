@@ -25,6 +25,9 @@ ENV LANG en_US.UTF-8
 # Flag for determining app is running in container
 ENV KC_RUN_IN_CONTAINER true
 
+# Management interface is enabled by default for container
+ENV KC_MANAGEMENT_ENABLED true
+
 COPY --from=ubi-micro-build /tmp/null/rootfs/ /
 COPY --from=ubi-micro-build --chown=1000:0 /opt/keycloak /opt/keycloak
 
@@ -35,5 +38,6 @@ USER 1000
 
 EXPOSE 8080
 EXPOSE 8443
+EXPOSE 9000
 
 ENTRYPOINT [ "/opt/keycloak/bin/kc.sh" ]

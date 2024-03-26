@@ -47,7 +47,8 @@ public final class Constants {
             new ValueOrSecret("health-enabled", "true"),
             new ValueOrSecret("cache", "ispn"),
             new ValueOrSecret("cache-stack", "kubernetes"),
-            new ValueOrSecret("proxy", "passthrough")
+            new ValueOrSecret("proxy", "passthrough"),
+            new ValueOrSecret("management-enabled", "true")
     );
 
 
@@ -59,6 +60,8 @@ public final class Constants {
     public static final String KEYCLOAK_SERVICE_SUFFIX = "-service";
     public static final Integer KEYCLOAK_DISCOVERY_SERVICE_PORT = 7800;
     public static final String KEYCLOAK_DISCOVERY_SERVICE_SUFFIX = "-discovery";
+    public static final Integer KEYCLOAK_MANAGEMENT_PORT = 9000;
+    public static final String KEYCLOAK_MANAGEMENT_PORT_NAME = "management";
 
     public static final String KEYCLOAK_INGRESS_SUFFIX = "-ingress";
 
@@ -69,6 +72,4 @@ public final class Constants {
     public static final String TRUSTSTORES_FOLDER = CONFIG_FOLDER + "/truststores";
     public static final String CACHE_CONFIG_SUBFOLDER = "cache";
     public static final String CACHE_CONFIG_FOLDER = CONFIG_FOLDER + "/" + CACHE_CONFIG_SUBFOLDER;
-
-    public static final String KEYCLOAK_HTTP_RELATIVE_PATH_KEY = "http-relative-path";
 }

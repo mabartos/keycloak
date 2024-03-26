@@ -30,7 +30,10 @@ import org.keycloak.it.utils.KeycloakDistribution;
 
 import io.quarkus.test.junit.main.Launch;
 
-@DistributionTest(keepAlive =true)
+@DistributionTest(keepAlive = true,
+        requestPort = 9000,
+        containerExposedPorts = {8080, 9000},
+        defaultOptions = "--management-enabled=true")
 public class MetricsDistTest {
 
     @Test
@@ -67,7 +70,7 @@ public class MetricsDistTest {
     @Test
     void testUsingRelativePath(KeycloakDistribution distribution) {
         for (String relativePath : List.of("/auth", "/auth/", "auth")) {
-            distribution.run("start-dev", "--metrics-enabled=true", "--http-relative-path=" + relativePath);
+            distribution.run("start-dev", "--metrics-enabled=true", "--management-relative-path=" + relativePath);
             if (!relativePath.endsWith("/")) {
                 relativePath = relativePath + "/";
             }
@@ -79,7 +82,7 @@ public class MetricsDistTest {
     @Test
     void testMultipleRequests(KeycloakDistribution distribution) throws Exception {
         for (String relativePath : List.of("/", "/auth/", "auth")) {
-            distribution.run("start-dev", "--metrics-enabled=true", "--http-relative-path=" + relativePath);
+            distribution.run("start-dev", "--metrics-enabled=true", "--management-relative-path=" + relativePath);
             CompletableFuture future = CompletableFuture.completedFuture(null);
 
             for (int i = 0; i < 3; i++) {
