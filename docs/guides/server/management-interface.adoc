@@ -1,0 +1,65 @@
+<#import "/templates/guide.adoc" as tmpl>
+<#import "/templates/kc.adoc" as kc>
+<#import "/templates/links.adoc" as links>
+
+<@tmpl.guide
+title="Configuring {project_name} Management Interface"
+summary="Learn how to configure {project_name}'s management interface for endpoints like Metrics and Health checks."
+includedOptions="http-management-* https-management-* legacy-observability-interface">
+
+The management interface allows accessing management endpoints via a different HTTP server than the primary one.
+It provides the possibility to hide endpoints like `/metrics` or `/health` from the outside world and, therefore, hardens the security.
+The most significant advantage might be seen in Kubernetes environments as the specific management port might not be exposed.
+
+== Management interface configuration
+
+The management interface is turned on by default, so management endpoints such as `/metrics`, and `/health` are exposed on port `9000`.
+In order to change the port for the management interface, you can use the {project_name} option `http-management-port` or environment variable `KC_HTTP_MANAGEMENT_PORT`.
+
+The new management interface provides a new set of options and is fully configurable.
+If these options for the management HTTP server are not explicitly set, their values are automatically inherited from the default HTTP server.
+
+You can change the relative path of the management interface, as the prefix path for the management endpoints can be different.
+You can achieve it via the {project_name} option `http-management-relative-path` or environment variable `KC_HTTP_MANAGEMENT_RELATIVE_PATH`.
+
+For instance, if you set the CLI option `--http-management-relative-path=/management`, the metrics, and health endpoints will be accessed on the `/management/metrics` and `/management/health` paths.
+
+Beware, if you do not explicitly set the value for it, the value from the `http-relative-path` property is used.
+
+== {project_name} Operator
+{project_name} Operator provides only one first-class citizen field `port` in the Keycloak CR.
+However, if it is necessary to change the properties of the management interface, you can do it by providing `additionalOptions` field.
+
+You can specify the `port` and the `additionalOptions` as follows:
+[source,yaml]
+----
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: example-kc
+spec:
+  httpManagement:
+    port: 9001
+  additionalOptions:
+    - name: http-management-relative-path
+      value: /management
+----
+
+== TLS support
+When the TLS is set for the default {project_name} server, the management interface will be accessible through the HTTPS as well.
+The management interface can run only either on HTTP or HTTPS, not both as for the main server.
+
+Specific {project_name} management interface options with the prefix `https-management-*` were provided for setting different TLS parameters for the management HTTP server.
+When these options are not explicitly set, the TLS parameters are inherited from the default HTTP server.
+
+== Disable Management interface
+The management interface is automatically turned off when nothing is exposed on it.
+Currently, only health checks and metrics are exposed on the management interface regardless their state.
+If you want to disable exposing them on the management interface, set the {project_name} property `legacy-observability-interface` to `true`.
+
+[WARNING]
+Exposing health and metrics endpoints on the default server is not recommended, and you should always use the management interface.
+Beware, the `legacy-observability-interface` option is deprecated and will be removed in future releases.
+It only allows you to give more time for the migration.
+
+</@tmpl.guide>

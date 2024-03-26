@@ -78,3 +78,16 @@ This scope contains preconfigured protocol mappers for the following claims:
  * `auth_time`
 
 This helps to reduce even more the number of claims in a lightweight access token, but also gives the chance to configure claims that were always added automatically.
+
+= Management port for metrics and health endpoints
+
+The `/health` and `/metrics` endpoints are accessible on the management port `9000`, which is turned on by default.
+That means these endpoints are no longer exposed to the standard Keycloak ports `8080` and `8443`.
+
+In order to reflect the old behavior, use the property `--legacy-observability-interface=true`, which will not expose these endpoints on the management port.
+However, this property is deprecated and will be removed in future releases, so it is recommended not to use it.
+
+The management interface uses a different HTTP server than the default {project_name} HTTP server, and it is possible to configure them separately.
+Beware, if no values are supplied for the management interface properties, they are inherited from the default {project_name} HTTP server.
+
+For more details, see https://www.keycloak.org/server/management-interface[Configuring {project_name} Management Interface].

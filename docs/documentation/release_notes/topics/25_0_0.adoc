@@ -34,3 +34,14 @@ For users of the `keycloak-authz-client` library, calling `AuthorizationResource
 Previously, it would return a `List<Map>` at runtime, even though the method declaration advertised `List<Permission>`.
 
 This fix will break code that relied on casting the List or its contents to `List<Map>`. If you have used this method in any capacity, you are likely to have done this and be affected.
+
+= Management port for metrics and health endpoints
+
+Metrics and health checks endpoints are no longer accessible through the standard {project_name} server port.
+As these endpoints should be hidden from the outside world, they can be accessed on a separate default management port `9000`.
+
+It allows to not expose it to the users as standard Keycloak endpoints in Kubernetes environments.
+The new management interface provides a new set of options and is fully configurable.
+
+{project_name} Operator assumes the management interface is turned on by default.
+For more details, see https://www.keycloak.org/server/management-interface[Configuring {project_name} Management Interface].
