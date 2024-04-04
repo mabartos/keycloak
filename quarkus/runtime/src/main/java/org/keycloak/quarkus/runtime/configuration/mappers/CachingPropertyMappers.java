@@ -10,15 +10,17 @@ import static org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper.
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 
-final class CachingPropertyMappers {
+final class CachingPropertyMappers implements PropertyMappersWrapper {
 
-    private CachingPropertyMappers() {
+    public CachingPropertyMappers() {
     }
 
-    public static PropertyMapper<?>[] getClusteringPropertyMappers() {
-        return new PropertyMapper[] {
+    @Override
+    public List<PropertyMapper<?>> getPropertyMappers() {
+        return List.of(
                 fromOption(CachingOptions.CACHE)
                         .paramLabel("type")
                         .build(),
@@ -61,12 +63,9 @@ final class CachingPropertyMappers {
                         .paramLabel("password")
                         .isMasked(true)
                         .build(),
-
                 fromOption(CachingOptions.CACHE_METRICS_HISTOGRAMS_ENABLED)
                         .isEnabled(MetricsPropertyMappers::metricsEnabled, MetricsPropertyMappers.METRICS_ENABLED_MSG)
-                        .build(),
-
-        };
+                        .build());
     }
 
     private static Optional<String> resolveConfigFile(Optional<String> value, ConfigSourceInterceptorContext context) {

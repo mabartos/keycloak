@@ -2,7 +2,6 @@ package org.keycloak.quarkus.runtime.configuration.mappers;
 
 import io.smallrye.config.ConfigSourceInterceptorContext;
 import io.smallrye.config.ConfigValue;
-
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import org.jboss.logging.Logger;
 import org.keycloak.common.util.CollectionUtil;
@@ -18,7 +17,6 @@ import org.keycloak.quarkus.runtime.configuration.DisabledMappersInterceptor;
 import org.keycloak.quarkus.runtime.configuration.PersistedConfigSource;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -27,9 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.Set;
-import java.util.function.BooleanSupplier;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -46,13 +43,13 @@ public final class PropertyMappers {
     private PropertyMappers(){}
 
     static {
-        MAPPERS.addAll(CachingPropertyMappers.getClusteringPropertyMappers());
+        MAPPERS.add(new CachingPropertyMappers());
         MAPPERS.addAll(DatabasePropertyMappers.getDatabasePropertyMappers());
         MAPPERS.addAll(HostnamePropertyMappers.getHostnamePropertyMappers());
         MAPPERS.addAll(HttpPropertyMappers.getHttpPropertyMappers());
         MAPPERS.addAll(HealthPropertyMappers.getHealthPropertyMappers());
         MAPPERS.addAll(ConfigKeystorePropertyMappers.getConfigKeystorePropertyMappers());
-        MAPPERS.addAll(ManagementPropertyMappers.getManagementPropertyMappers());
+        MAPPERS.add(new ManagementPropertyMappers());
         MAPPERS.addAll(MetricsPropertyMappers.getMetricsPropertyMappers());
         MAPPERS.addAll(ProxyPropertyMappers.getProxyPropertyMappers());
         MAPPERS.addAll(VaultPropertyMappers.getVaultPropertyMappers());
@@ -214,6 +211,11 @@ public final class PropertyMappers {
         return mappers.stream().filter(f -> allowedCategories.contains(f.getCategory())).collect(Collectors.toSet());
     }
 
+    private enum Scope {
+        RUNTIME,
+        BUILD
+    }
+
     private static class MappersConfig extends MultivaluedHashMap<String, PropertyMapper<?>> {
 
         private final Map<OptionCategory, List<PropertyMapper<?>>> buildTimeMappers = new EnumMap<>(OptionCategory.class);
@@ -222,13 +224,19 @@ public final class PropertyMappers {
         private final Map<String, PropertyMapper<?>> disabledBuildTimeMappers = new HashMap<>();
         private final Map<String, PropertyMapper<?>> disabledRuntimeMappers = new HashMap<>();
 
-        public void addAll(PropertyMapper<?>[] mappers, BooleanSupplier isEnabled, String enabledWhen) {
-            Arrays.stream(mappers).forEach(mapper -> {
-                mapper.setEnabled(isEnabled);
-                mapper.setEnabledWhen(enabledWhen);
-            });
+        private final Map<Scope, List<PropertyMapperValidator>> validators = new EnumMap<>(Scope.class);
 
-            addAll(mappers);
+        public void add(PropertyMappersWrapper mappersWrapper) {
+            for (PropertyMapper<?> mapper : mappersWrapper.getPropertyMappers()) {
+                addMapper(mapper);
+
+                if (mapper.isBuildTime()) {
+                    addMapperByStage(mapper, buildTimeMappers);
+                } else {
+                    addMapperByStage(mapper, runtimeTimeMappers);
+                }
+            }
+            mappersWrapper.getValidators().forEach(f -> addValidatorByScope(f, validators));
         }
 
         public void addAll(PropertyMapper<?>[] mappers) {
@@ -241,6 +249,10 @@ public final class PropertyMappers {
                     addMapperByStage(mapper, runtimeTimeMappers);
                 }
             }
+        }
+
+        private static void addValidatorByScope(PropertyMapperValidator validator, Map<Scope, List<PropertyMapperValidator>> validators) {
+            validators.computeIfAbsent(validator.inRuntime() ? Scope.RUNTIME : Scope.BUILD, c -> new ArrayList<>()).add(validator);
         }
 
         private static void addMapperByStage(PropertyMapper<?> mapper, Map<OptionCategory, List<PropertyMapper<?>>> mappers) {

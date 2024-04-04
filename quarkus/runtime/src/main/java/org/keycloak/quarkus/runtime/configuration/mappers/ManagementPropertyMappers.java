@@ -23,19 +23,32 @@ import org.keycloak.quarkus.runtime.Messages;
 import org.keycloak.quarkus.runtime.cli.PropertyException;
 import org.keycloak.quarkus.runtime.configuration.Configuration;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
 import static org.keycloak.quarkus.runtime.configuration.Configuration.isTrue;
 import static org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper.fromOption;
 
-public class ManagementPropertyMappers {
+public class ManagementPropertyMappers implements PropertyMappersWrapper {
     private static final String MANAGEMENT_ENABLED_MSG = "Management interface is enabled";
 
-    private ManagementPropertyMappers() {
+    public ManagementPropertyMappers() {
     }
 
-    public static PropertyMapper<?>[] getManagementPropertyMappers() {
-        return new PropertyMapper[]{
+    @Override
+    public List<PropertyMapperValidator> getValidators() {
+        return List.of(() -> ManagementPropertyMappers::validateTlsProperties);
+    }
+
+    @Override
+    public BooleanSupplier isEnabled() {
+        return () -> true;
+    }
+
+    @Override
+    public List<PropertyMapper<?>> getPropertyMappers() {
+        return List.of(
                 fromOption(ManagementOptions.LEGACY_OBSERVABILITY_INTERFACE)
                         .to("quarkus.management.enabled") // ATM, the management interface state is only based on the legacy-observability-interface property
                         .paramLabel(Boolean.TRUE + "|" + Boolean.FALSE)
@@ -81,28 +94,24 @@ public class ManagementPropertyMappers {
                         .isEnabled(ManagementPropertyMappers::isManagementEnabled, MANAGEMENT_ENABLED_MSG)
                         .mapFrom(HttpOptions.HTTPS_CERTIFICATE_FILE.getKey())
                         .to("quarkus.management.ssl.certificate.files")
-                        .validator((mapper, value) -> validateTlsProperties())
                         .paramLabel("file")
                         .build(),
                 fromOption(ManagementOptions.HTTPS_MANAGEMENT_CERTIFICATE_KEY_FILE)
                         .isEnabled(ManagementPropertyMappers::isManagementEnabled, MANAGEMENT_ENABLED_MSG)
                         .mapFrom(HttpOptions.HTTPS_CERTIFICATE_KEY_FILE.getKey())
                         .to("quarkus.management.ssl.certificate.key-files")
-                        .validator((mapper, value) -> validateTlsProperties())
                         .paramLabel("file")
                         .build(),
                 fromOption(ManagementOptions.HTTPS_MANAGEMENT_KEY_STORE_FILE)
                         .isEnabled(ManagementPropertyMappers::isManagementEnabled, MANAGEMENT_ENABLED_MSG)
                         .mapFrom(HttpOptions.HTTPS_KEY_STORE_FILE.getKey())
                         .to("quarkus.management.ssl.certificate.key-store-file")
-                        .validator((mapper, value) -> validateTlsProperties())
                         .paramLabel("file")
                         .build(),
                 fromOption(ManagementOptions.HTTPS_MANAGEMENT_KEY_STORE_PASSWORD)
                         .isEnabled(ManagementPropertyMappers::isManagementEnabled, MANAGEMENT_ENABLED_MSG)
                         .mapFrom(HttpOptions.HTTPS_KEY_STORE_PASSWORD.getKey())
                         .to("quarkus.management.ssl.certificate.key-store-password")
-                        .validator((mapper, value) -> validateTlsProperties())
                         .paramLabel("password")
                         .isMasked(true)
                         .build(),
@@ -112,8 +121,8 @@ public class ManagementPropertyMappers {
                         .to("quarkus.management.ssl.certificate.key-store-file-type")
                         .transformer((value, config) -> value.or(() -> Configuration.getOptionalKcValue(HttpOptions.HTTPS_KEY_STORE_TYPE.getKey())))
                         .paramLabel("type")
-                        .build(),
-        };
+                        .build()
+        );
     }
 
     public static boolean isManagementEnabled() {
