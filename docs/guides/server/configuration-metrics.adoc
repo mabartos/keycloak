@@ -18,7 +18,7 @@ It is possible to enable metrics using the build time option `metrics-enabled`:
 
 == Querying Metrics
 
-{project_name} exposes metrics at the following endpoint on management port `9000`:
+{project_name} exposes metrics at the following endpoint on management port:
 
 * `/metrics`
 

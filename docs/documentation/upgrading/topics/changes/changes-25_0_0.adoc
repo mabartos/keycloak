@@ -90,4 +90,4 @@ However, this property is deprecated and will be removed in future releases, so 
 The management interface uses a different HTTP server than the default {project_name} HTTP server, and it is possible to configure them separately.
 Beware, if no values are supplied for the management interface properties, they are inherited from the default {project_name} HTTP server.
 
-For more details, see https://www.keycloak.org/server/management-interface[Configuring {project_name} Management Interface].
+For more details, see https://www.keycloak.org/server/management-interface[Configuring the Management Interface].

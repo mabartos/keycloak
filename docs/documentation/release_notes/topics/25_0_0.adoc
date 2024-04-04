@@ -44,4 +44,4 @@ It allows to not expose it to the users as standard Keycloak endpoints in Kubern
 The new management interface provides a new set of options and is fully configurable.
 
 {project_name} Operator assumes the management interface is turned on by default.
-For more details, see https://www.keycloak.org/server/management-interface[Configuring {project_name} Management Interface].
+For more details, see https://www.keycloak.org/server/management-interface[Configuring the Management Interface].
