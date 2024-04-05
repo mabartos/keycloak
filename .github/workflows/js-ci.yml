@@ -175,7 +175,7 @@ jobs:
       - uses: ./.github/actions/pnpm-setup
 
       - name: Download Keycloak server
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: keycloak
 
@@ -253,7 +253,7 @@ jobs:
         run: pnpm --filter @keycloak/keycloak-admin-client build
 
       - name: Download Keycloak server
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: keycloak
 
