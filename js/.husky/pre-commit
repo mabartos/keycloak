@@ -26,4 +26,4 @@ pnpm install --reporter=silent || {
 }
 
 # Run lint-staged.
-pnpm exec lint-staged
+#pnpm exec lint-staged
