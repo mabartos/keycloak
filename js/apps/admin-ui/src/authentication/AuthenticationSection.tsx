@@ -41,11 +41,17 @@ import { AuthenticationTab, toAuthentication } from "./routes/Authentication";
 import { toCreateFlow } from "./routes/CreateFlow";
 import { toFlow } from "./routes/Flow";
 import { useAdminClient } from "../admin-client";
+import {toAuthenticationPolicy} from "./routes/AuthenticationPolicy";
+import AuthenticationPolicyDetails from "./AuthenticationPolicyDetails";
 
 type UsedBy = "SPECIFIC_CLIENTS" | "SPECIFIC_PROVIDERS" | "DEFAULT";
 
 export type AuthenticationType = AuthenticationFlowRepresentation & {
   usedBy?: { type?: UsedBy; values: string[] };
+  realm: RealmRepresentation;
+};
+
+export type AuthenticationPolicyType = AuthenticationFlowRepresentation & {
   realm: RealmRepresentation;
 };
 
@@ -81,6 +87,25 @@ const AliasRenderer = ({ id, alias, usedBy, builtIn }: AuthenticationType) => {
   );
 };
 
+const AliasAuthPolicyRenderer = ({id, alias}: AuthenticationPolicyType) => {
+  const {t} = useTranslation();
+  const {realm} = useRealm();
+
+  return (
+      <>
+        <Link
+            to={toAuthenticationPolicy({
+              realm,
+              id: id!
+            })}
+            key={`link-${id}`}
+        >
+          {alias}
+        </Link>{" "}
+      </>
+  );
+};
+
 export default function AuthenticationSection() {
   const { adminClient } = useAdminClient();
   const { t } = useTranslation();
@@ -93,6 +118,7 @@ export default function AuthenticationSection() {
   const { addAlert, addError } = useAlerts();
   const localeSort = useLocaleSort();
   const [selectedFlow, setSelectedFlow] = useState<AuthenticationType>();
+  const [selectedAuthPolicy, setSelectedAuthPolicy] = useState<AuthenticationPolicyType>();
   const [open, toggleOpen] = useToggle();
   const [bindFlowOpen, toggleBindFlow] = useToggle();
 
@@ -124,12 +150,34 @@ export default function AuthenticationSection() {
     );
   };
 
+  const loaderAuthnPolicies = async () => {
+    const policiesRequest = await fetchWithError(
+        `${addTrailingSlash(
+            adminClient.baseUrl,
+        )}realms/${realmName}/authn-policies`,
+        {
+          method: "GET",
+          headers: getAuthorizationHeaders(await adminClient.getAccessToken()),
+        },
+    );
+    const policies = await policiesRequest.json();
+    if (!policies) {
+      return [];
+    }
+
+    return sortBy(
+        localeSort<AuthenticationPolicyType>(policies, mapByKey("alias")),
+        (flow) => flow,
+    );
+  };
+
   const useTab = (tab: AuthenticationTab) =>
     useRoutableTab(toAuthentication({ realm: realmName, tab }));
 
   const flowsTab = useTab("flows");
   const requiredActionsTab = useTab("required-actions");
   const policiesTab = useTab("policies");
+  const authnPoliciesTab = useTab("authn-policies");
 
   const [toggleDeleteDialog, DeleteConfirm] = useConfirmDialog({
     titleKey: "deleteConfirmFlow",
@@ -284,6 +332,13 @@ export default function AuthenticationSection() {
             {...policiesTab}
           >
             <Policies />
+          </Tab>
+          <Tab
+              data-testid="authn-policies"
+              title={<TabTitleText>{t("authnPolicies")}</TabTitleText>}
+              {...authnPoliciesTab}
+          >
+            <AuthenticationPolicyDetails isParentPolicy={true}/>
           </Tab>
         </RoutableTabs>
       </PageSection>
