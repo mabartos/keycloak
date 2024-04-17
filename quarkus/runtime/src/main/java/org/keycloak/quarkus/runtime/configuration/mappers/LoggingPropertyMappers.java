@@ -25,6 +25,7 @@ public final class LoggingPropertyMappers {
     private static final String CONSOLE_ENABLED_MSG = "Console log handler is activated";
     private static final String FILE_ENABLED_MSG = "File log handler is activated";
     private static final String SYSLOG_ENABLED_MSG = "Syslog is activated";
+    private static final String SYSLOG_ASYNC_ENABLED_MSG = "Syslog Async is activated";
     private static final String GELF_ENABLED_MSG = "GELF is activated";
 
     private LoggingPropertyMappers() {
@@ -119,6 +120,20 @@ public final class LoggingPropertyMappers {
                         .paramLabel("output")
                         .transformer(LoggingPropertyMappers::resolveLogOutput)
                         .build(),
+                fromOption(LoggingOptions.LOG_SYSLOG_ASYNC_ENABLED)
+                        .isEnabled(LoggingPropertyMappers::isSyslogEnabled, SYSLOG_ENABLED_MSG)
+                        .to("quarkus.log.syslog.async")
+                        .build(),
+                fromOption(LoggingOptions.LOG_SYSLOG_ASYNC_QUEUE_LENGTH)
+                        .isEnabled(LoggingPropertyMappers::isSyslogAsyncEnabled, SYSLOG_ASYNC_ENABLED_MSG)
+                        .paramLabel("length")
+                        .to("quarkus.log.syslog.async.queue-length")
+                        .build(),
+                fromOption(LoggingOptions.LOG_SYSLOG_ASYNC_OVERFLOW)
+                        .isEnabled(LoggingPropertyMappers::isSyslogAsyncEnabled, SYSLOG_ASYNC_ENABLED_MSG)
+                        .paramLabel("strategy")
+                        .to("quarkus.log.syslog.async.overflow")
+                        .build(),
         };
 
         return GELF_ACTIVATED ? ArrayUtils.addAll(defaultMappers, getGelfMappers()) : defaultMappers;
@@ -195,6 +210,10 @@ public final class LoggingPropertyMappers {
 
     public static boolean isSyslogEnabled() {
         return isTrue(LoggingOptions.LOG_SYSLOG_ENABLED);
+    }
+
+    public static boolean isSyslogAsyncEnabled() {
+        return isSyslogEnabled() && isTrue(LoggingOptions.LOG_SYSLOG_ASYNC_ENABLED);
     }
 
     private static BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> resolveLogHandler(String handler) {

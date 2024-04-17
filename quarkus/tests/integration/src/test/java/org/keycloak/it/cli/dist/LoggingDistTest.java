@@ -17,24 +17,20 @@
 
 package org.keycloak.it.cli.dist;
 
-import static org.awaitility.Awaitility.given;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.keycloak.quarkus.runtime.cli.command.Main.CONFIG_FILE_LONG_NAME;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.restassured.RestAssured;
+import io.quarkus.bootstrap.logging.InitialConfigurator;
+import io.quarkus.bootstrap.logging.QuarkusDelayedHandler;
+import io.quarkus.test.junit.main.Launch;
+import io.quarkus.test.junit.main.LaunchResult;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matchers;
+import org.jboss.logmanager.Logger;
+import org.jboss.logmanager.handlers.SyslogHandler;
 import org.junit.jupiter.api.Test;
 import org.keycloak.config.LoggingOptions;
 import org.keycloak.it.junit5.extension.CLIResult;
 import org.keycloak.it.junit5.extension.DistributionTest;
 import org.keycloak.it.junit5.extension.RawDistOnly;
-
-import io.quarkus.test.junit.main.Launch;
-import io.quarkus.test.junit.main.LaunchResult;
-
-import static io.restassured.RestAssured.when;
-
 import org.keycloak.it.utils.KeycloakDistribution;
 import org.keycloak.it.utils.RawDistRootPath;
 import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
@@ -44,6 +40,15 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.logging.Handler;
+
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.keycloak.quarkus.runtime.cli.command.Main.CONFIG_FILE_LONG_NAME;
 
 @DistributionTest
 @RawDistOnly(reason = "Too verbose for docker and enough to check raw dist")
@@ -171,6 +176,17 @@ public class LoggingDistTest {
     @Launch({"start-dev", "--log=syslog"})
     void syslogHandler(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;
+
+        QuarkusDelayedHandler delayedHandler = InitialConfigurator.DELAYED_HANDLER;
+        assertThat(Arrays.asList(Logger.getLogger("").getHandlers()), Matchers.containsInAnyOrder(delayedHandler));
+
+        Optional<Handler> handler = Arrays.stream(delayedHandler.getHandlers())
+                .filter(h -> (h instanceof SyslogHandler))
+                .findFirst();
+
+        assertThat(handler.isPresent(), CoreMatchers.is(true));
+        assertThat(handler.get(), notNullValue());
+
         cliResult.assertNoMessage("org.keycloak");
         cliResult.assertNoMessage("Listening on:");
         cliResult.assertError("Error writing to TCP stream");

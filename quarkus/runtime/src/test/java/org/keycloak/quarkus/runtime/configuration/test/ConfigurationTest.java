@@ -587,6 +587,53 @@ public class ConfigurationTest {
     }
 
     @Test
+    public void testSyslogAsyncDefaultProperties() {
+        putEnvVar("KC_LOG", "syslog");
+
+        initConfig();
+
+        assertConfig(Map.of(
+                "log-syslog-enabled", "true",
+                "log-syslog-async-enabled", "false",
+                "log-syslog-async-queue-length", "512",
+                "log-syslog-async-overflow", "block"
+        ));
+
+        assertExternalConfig(Map.of(
+                "quarkus.log.syslog.enable", "true",
+                "quarkus.log.syslog.async", "false",
+                "quarkus.log.syslog.async.queue-length", "512",
+                "quarkus.log.syslog.async.overflow", "block"
+        ));
+    }
+
+    @Test
+    public void testSyslogAsyncDifferentProperties() {
+        putEnvVars(Map.of(
+                "KC_LOG", "syslog",
+                "KC_LOG_SYSLOG_ASYNC_ENABLED", "true",
+                "KC_LOG_SYSLOG_ASYNC_QUEUE_LENGTH", "1024",
+                "KC_LOG_SYSLOG_ASYNC_OVERFLOW", "discard"
+        ));
+
+        initConfig();
+
+        assertConfig(Map.of(
+                "log-syslog-enabled", "true",
+                "log-syslog-async-enabled", "true",
+                "log-syslog-async-queue-length", "1024",
+                "log-syslog-async-overflow", "discard"
+        ));
+
+        assertExternalConfig(Map.of(
+                "quarkus.log.syslog.enable", "true",
+                "quarkus.log.syslog.async", "true",
+                "quarkus.log.syslog.async.queue-length", "1024",
+                "quarkus.log.syslog.async.overflow", "discard"
+        ));
+    }
+
+    @Test
     public void testOptionValueWithEqualSign() {
         ConfigArgsConfigSource.setCliArgs("--db=postgres", "--db-password=my_secret=");
         SmallRyeConfig config = createConfig();

@@ -167,6 +167,25 @@ public class LoggingOptions {
             .description("Set the syslog output to JSON or default (plain) unstructured logging.")
             .build();
 
+    public static final Option<Boolean> LOG_SYSLOG_ASYNC_ENABLED = new OptionBuilder<>("log-syslog-async-enabled", Boolean.class)
+            .category(OptionCategory.LOGGING)
+            .description("Indicates whether to log asynchronously.")
+            .defaultValue(false)
+            .build();
+
+    public static final Option<Integer> LOG_SYSLOG_ASYNC_QUEUE_LENGTH = new OptionBuilder<>("log-syslog-async-queue-length", Integer.class)
+            .category(OptionCategory.LOGGING)
+            .description("The queue length to use before flushing writing.")
+            .defaultValue(512)
+            .build();
+
+    public static final Option<String> LOG_SYSLOG_ASYNC_OVERFLOW = new OptionBuilder<>("log-syslog-async-overflow", String.class)
+            .category(OptionCategory.LOGGING)
+            .description("Determine whether to block the publisher (rather than drop the message) when the queue is full.")
+            .defaultValue("block")
+            .expectedValues("block", "discard")
+            .build();
+
     // GELF
     public static final Option<Boolean> LOG_GELF_ENABLED = new OptionBuilder<>("log-gelf-enabled", Boolean.class)
             .category(OptionCategory.LOGGING)
