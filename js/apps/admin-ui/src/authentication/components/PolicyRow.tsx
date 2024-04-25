@@ -1,4 +1,3 @@
-import type { AuthenticationProviderRepresentation } from "@keycloak/keycloak-admin-client/lib/defs/authenticatorConfigRepresentation";
 import {
     Button,
     DataListCell,
@@ -6,48 +5,56 @@ import {
     DataListDragButton,
     DataListItem,
     DataListItemCells,
-    DataListItemRow,
-    DataListToggle,
+    DataListItemRow, DataListToggle,
     Draggable,
     Text,
     TextVariants,
     Tooltip,
 } from "@patternfly/react-core";
-import { TrashIcon } from "@patternfly/react-icons";
-import { useTranslation } from "react-i18next";
-import type { ExpandableExecution } from "../execution-model";
-import { AddFlowDropdown } from "./AddFlowDropdown";
-import { EditFlow } from "./EditFlow";
-import { ExecutionConfigModal } from "./ExecutionConfigModal";
-import { FlowRequirementDropdown } from "./FlowRequirementDropdown";
-import { FlowTitle } from "./FlowTitle";
-import type { Flow } from "./modals/AddSubFlowModal";
+import {TrashIcon} from "@patternfly/react-icons";
+import {useTranslation} from "react-i18next";
+import type {ExpandableExecution} from "../execution-model";
+import {FlowRequirementDropdown} from "./FlowRequirementDropdown";
+import type {Flow} from "./modals/AddSubFlowModal";
 
 import "./flow-row.css";
+import {useNavigate} from "react-router-dom";
+import {useRealm} from "../../context/realm-context/RealmContext";
+import {toFlow} from "../routes/Flow";
+import {toAuthenticationPolicy} from "../routes/AuthenticationPolicy";
+import {AddFlowDropdown} from "./AddFlowDropdown";
+import {EditFlow} from "./EditFlow";
+import {AddPolicyFlowDropdown} from "./AddPolicyFlowDropdown";
+import type {
+    AuthenticationProviderRepresentation
+} from "@keycloak/keycloak-admin-client/lib/defs/authenticatorConfigRepresentation";
+import {FlowRow} from "./FlowRow";
 
 type PolicyRowProps = {
     builtIn: boolean;
     execution: ExpandableExecution;
+    isParentPolicy: boolean;
     onRowClick: (execution: ExpandableExecution) => void;
     onRowChange: (execution: ExpandableExecution) => void;
     onAddExecution: (
         execution: ExpandableExecution,
         type: AuthenticationProviderRepresentation,
     ) => void;
-    onAddFlow: (execution: ExpandableExecution, flow: Flow) => void;
     onDelete: (execution: ExpandableExecution) => void;
 };
 
 export const PolicyRow = ({
                             builtIn,
                             execution,
+                            isParentPolicy,
                             onRowClick,
                             onRowChange,
                             onAddExecution,
-                            onAddFlow,
                             onDelete,
                         }: PolicyRowProps) => {
     const { t } = useTranslation();
+    const {realm} = useRealm();
+    const navigate = useNavigate();
     const hasSubList = !!execution.executionList?.length;
 
     return (
@@ -56,7 +63,7 @@ export const PolicyRow = ({
                 <DataListItem
                     className="keycloak__authentication__flow-item"
                     id={execution.id}
-                    isExpanded={!execution.isCollapsed}
+                    isExpanded={!isParentPolicy && !execution.isCollapsed}
                     aria-labelledby={`title-id-${execution.id}`}
                 >
                     <DataListItemRow
@@ -68,7 +75,7 @@ export const PolicyRow = ({
                         <DataListControl>
                             <DataListDragButton aria-label={t("dragHelp")} />
                         </DataListControl>
-                        {hasSubList && (
+                        {!isParentPolicy && hasSubList && (
                             <DataListToggle
                                 onClick={() => onRowClick(execution)}
                                 isExpanded={!execution.isCollapsed}
@@ -79,22 +86,12 @@ export const PolicyRow = ({
                         <DataListItemCells
                             dataListCells={[
                                 <DataListCell key={`${execution.id}-name`}>
-                                    {!execution.authenticationFlow && (
-                                        <FlowTitle
-                                            id={execution.id}
-                                            key={execution.id}
-                                            alias={execution.alias!}
-                                            title={execution.displayName!}
-                                        />
-                                    )}
-                                    {execution.authenticationFlow && (
                                         <>
                                             {execution.displayName} <br />{" "}
                                             <Text component={TextVariants.small}>
                                                 {execution.alias} {execution.description}
                                             </Text>
                                         </>
-                                    )}
                                 </DataListCell>,
                                 <DataListCell key={`${execution.id}-requirement`}>
                                     <FlowRequirementDropdown
@@ -102,14 +99,27 @@ export const PolicyRow = ({
                                         onChange={onRowChange}
                                     />
                                 </DataListCell>,
+
+                                <DataListCell key={`${execution.id}-detail`}>
+                                    {isParentPolicy && (
+                                        <Button
+                                            data-testid="policyDetail"
+                                            variant="secondary"
+                                            onClick={() => navigate(toAuthenticationPolicy({
+                                                realm,
+                                                id: execution.id!
+                                            }))}
+                                        >
+                                            {t("details")}
+                                        </Button>
+                                    )}
+                                </DataListCell>,
                                 <DataListCell key={`${execution.id}-config`}>
-                                    <ExecutionConfigModal execution={execution} />
-                                    {execution.authenticationFlow && !builtIn && (
+                                    {!isParentPolicy && (
                                         <>
-                                            <AddFlowDropdown
+                                            <AddPolicyFlowDropdown
                                                 execution={execution}
                                                 onAddExecution={onAddExecution}
-                                                onAddFlow={onAddFlow}
                                             />
                                             <EditFlow
                                                 execution={execution}
@@ -135,17 +145,18 @@ export const PolicyRow = ({
                     </DataListItemRow>
                 </DataListItem>
             </Draggable>
-            {!execution.isCollapsed &&
+            {!isParentPolicy &&
+                !execution.isCollapsed &&
                 hasSubList &&
                 execution.executionList?.map((ex) => (
-                    <PolicyRow
+                    <FlowRow
                         builtIn={builtIn}
                         key={ex.id}
                         execution={ex}
                         onRowClick={onRowClick}
                         onRowChange={onRowChange}
                         onAddExecution={onAddExecution}
-                        onAddFlow={onAddFlow}
+                        onAddFlow={() => null}
                         onDelete={onDelete}
                     />
                 ))}

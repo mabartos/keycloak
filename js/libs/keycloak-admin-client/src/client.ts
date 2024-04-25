@@ -16,6 +16,7 @@ import { UserStorageProvider } from "./resources/userStorageProvider.js";
 import { WhoAmI } from "./resources/whoAmI.js";
 import { Credentials, getToken } from "./utils/auth.js";
 import { defaultBaseUrl, defaultRealm } from "./utils/constants.js";
+import {AuthenticationPolicies} from "./resources/authnPolicies.js";
 
 export interface TokenProvider {
   getAccessToken: () => Promise<string | undefined>;
@@ -44,6 +45,7 @@ export class KeycloakAdminClient {
   public whoAmI: WhoAmI;
   public attackDetection: AttackDetection;
   public authenticationManagement: AuthenticationManagement;
+  public authenticationPolicies: AuthenticationPolicies;
   public cache: Cache;
 
   // Members
@@ -75,6 +77,7 @@ export class KeycloakAdminClient {
     this.identityProviders = new IdentityProviders(this);
     this.components = new Components(this);
     this.authenticationManagement = new AuthenticationManagement(this);
+    this.authenticationPolicies = new AuthenticationPolicies(this);
     this.serverInfo = new ServerInfo(this);
     this.whoAmI = new WhoAmI(this);
     this.attackDetection = new AttackDetection(this);
