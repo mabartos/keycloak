@@ -84,8 +84,8 @@ importers:
         specifier: ^23.10.1
         version: 23.10.1
       i18next-http-backend:
-        specifier: ^2.5.0
-        version: 2.5.0
+        specifier: ^2.5.2
+        version: 2.5.2
       keycloak-js:
         specifier: workspace:*
         version: link:../../libs/keycloak-js
@@ -187,8 +187,8 @@ importers:
         specifier: ^23.10.1
         version: 23.10.1
       i18next-http-backend:
-        specifier: ^2.5.0
-        version: 2.5.0
+        specifier: ^2.5.2
+        version: 2.5.2
       keycloak-js:
         specifier: workspace:*
         version: link:../../libs/keycloak-js
@@ -5982,8 +5982,8 @@ packages:
     hasBin: true
     dev: true
 
-  /i18next-http-backend@2.5.0:
-    resolution: {integrity: sha512-Z/aQsGZk1gSxt2/DztXk92DuDD20J+rNudT7ZCdTrNOiK8uQppfvdjq9+DFQfpAnFPn3VZS+KQIr1S/W1KxhpQ==}
+  /i18next-http-backend@2.5.2:
+    resolution: {integrity: sha512-+K8HbDfrvc1/2X8jpb7RLhI9ZxBDpx3xogYkQwGKlWAUXLSEGXzgdt3EcUjLlBCdMwdQY+K+EUF6oh8oB6rwHw==}
     dependencies:
       cross-fetch: 4.0.0
     transitivePeerDependencies:
@@ -9642,7 +9642,7 @@ packages:
       file-selector: 0.6.0
       flat: 6.0.1
       i18next: 23.10.1
-      i18next-http-backend: 2.5.0
+      i18next-http-backend: 2.5.2
       keycloak-js: link:js/libs/keycloak-js
       lodash-es: 4.17.21
       monaco-editor: 0.47.0
