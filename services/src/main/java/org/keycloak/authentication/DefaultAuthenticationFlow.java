@@ -17,6 +17,9 @@
 
 package org.keycloak.authentication;
 
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.authenticators.conditional.ConditionalAuthenticator;
 import org.keycloak.authentication.authenticators.util.AuthenticatorUtils;
@@ -29,11 +32,14 @@ import org.keycloak.sessions.AuthenticationSessionModel;
 import org.keycloak.sessions.CommonClientSessionModel;
 import org.keycloak.utils.StringUtil;
 
-import jakarta.ws.rs.HttpMethod;
-import jakarta.ws.rs.core.MultivaluedMap;
-import jakarta.ws.rs.core.Response;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -320,17 +326,36 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
     boolean isConditionalSubflowDisabled(AuthenticationExecutionModel model) {
         if (model == null || !model.isAuthenticatorFlow() || !model.isConditional()) {
             return false;
+        }
+
+        BooleanSupplier isAuthnPolicyWithNestedFlow = () -> Optional.ofNullable(model.getParentFlow())
+                .filter(StringUtil::isNotBlank)
+                .map(f -> processor.getRealm().getAuthenticationFlowById(f))
+                .filter(f -> f.getAlias().startsWith("Authentication policies - PARENT")) // just for demonstrating purposes
+                .stream()
+                .findAny()
+                .isPresent();
+
+        Predicate<String> isSubFlowDisabled = (subFlowId) -> {
+            var modelList = processor.getRealm().getAuthenticationExecutionsStream(subFlowId).toList();
+            return modelList.stream()
+                    .filter(this::isConditionalAuthenticator)
+                    .filter(AuthenticationExecutionModel::isEnabled)
+                    .anyMatch(m -> conditionalNotMatched(m, modelList));
         };
-        List<AuthenticationExecutionModel> modelList = processor.getRealm()
-                .getAuthenticationExecutionsStream(model.getFlowId()).collect(Collectors.toList());
-        List<AuthenticationExecutionModel> conditionalAuthenticatorList = modelList.stream()
-                .filter(this::isConditionalAuthenticator)
-                .filter(s -> s.isEnabled())
-                .collect(Collectors.toList());
-        boolean conditionalSubflowDisabled = conditionalAuthenticatorList.isEmpty() || conditionalAuthenticatorList.stream()
-                .anyMatch(m -> conditionalNotMatched(m, modelList));
-        logger.tracef("Conditional subflow '%s' is %s", logExecutionAlias(model), conditionalSubflowDisabled ? "disabled" : "enabled");
-        return conditionalSubflowDisabled;
+
+        boolean conditionalSubFlowDisabled = isSubFlowDisabled.test(model.getFlowId());
+
+        // Check nested conditional flows for authentication policies
+        if (conditionalSubFlowDisabled && isAuthnPolicyWithNestedFlow.getAsBoolean()) {
+            conditionalSubFlowDisabled = processor.getRealm().getAuthenticationExecutionsStream(model.getFlowId())
+                    .filter(AuthenticationExecutionModel::isAuthenticatorFlow)
+                    .filter(AuthenticationExecutionModel::isConditional)
+                    .allMatch(f -> isSubFlowDisabled.test(f.getFlowId()));
+        }
+
+        logger.tracef("Conditional subflow '%s' is %s", logExecutionAlias(model), conditionalSubFlowDisabled ? "disabled" : "enabled");
+        return conditionalSubFlowDisabled;
     }
 
     private boolean isConditionalAuthenticator(AuthenticationExecutionModel model) {
