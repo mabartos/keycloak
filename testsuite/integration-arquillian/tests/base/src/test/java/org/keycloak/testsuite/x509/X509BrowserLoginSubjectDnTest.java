@@ -39,21 +39,11 @@ public class X509BrowserLoginSubjectDnTest extends AbstractX509AuthenticationTes
 
     @Drone
     @HtmlUnitBrowser
-    private WebDriver phantomJS;
+    private WebDriver htmlUnit;
 
     @Before
     public void replaceTheDefaultDriver() {
-        replaceDefaultWebDriver(phantomJS);
-    }
-
-    @BeforeClass
-    public static void checkAssumption() {
-        try {
-            CertificateFactory.getInstance("X.509", "SUN");
-        }
-        catch (CertificateException | NoSuchProviderException e) {
-            Assume.assumeNoException("Test assumes the SUN security provider", e);
-        }
+        replaceDefaultWebDriver(htmlUnit);
     }
 
     @BeforeClass

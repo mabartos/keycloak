@@ -17,7 +17,6 @@
 
 package org.keycloak.testsuite.x509;
 
-import java.security.KeyStore;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -31,7 +30,6 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.util.HtmlUnitBrowser;
 import org.openqa.selenium.WebDriver;
 
-
 /**
  * @author Sebastian Loesch
  * @date 02/14/2019
@@ -41,11 +39,11 @@ public class X509BrowserLoginIssuerDnTest extends AbstractX509AuthenticationTest
 
     @Drone
     @HtmlUnitBrowser
-    private WebDriver phantomJS;
+    private WebDriver htmlUnit;
 
     @Before
     public void replaceTheDefaultDriver() {
-        replaceDefaultWebDriver(phantomJS);
+        replaceDefaultWebDriver(htmlUnit);
     }
 
     @BeforeClass

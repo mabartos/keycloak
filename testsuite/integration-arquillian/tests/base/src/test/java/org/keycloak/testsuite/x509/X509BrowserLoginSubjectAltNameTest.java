@@ -35,11 +35,11 @@ public class X509BrowserLoginSubjectAltNameTest extends AbstractX509Authenticati
 
     @Drone
     @HtmlUnitBrowser
-    private WebDriver phantomJS;
+    private WebDriver htmlUnit;
 
     @Before
     public void replaceTheDefaultDriver() {
-        replaceDefaultWebDriver(phantomJS);
+        replaceDefaultWebDriver(htmlUnit);
     }
 
     @BeforeClass

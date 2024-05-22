@@ -58,17 +58,14 @@ import org.openqa.selenium.WebDriver;
 
 public class X509BrowserLoginTest extends AbstractX509AuthenticationTest {
 
-
     @Drone
     @HtmlUnitBrowser
-    private WebDriver phantomJS;
-
+    private WebDriver htmlUnit;
 
     @Before
     public void replaceTheDefaultDriver() {
-        replaceDefaultWebDriver(phantomJS);
+        replaceDefaultWebDriver(htmlUnit);
     }
-
 
     @Test
     public void loginAsUserFromCertSubjectEmail() throws Exception {

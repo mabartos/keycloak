@@ -59,11 +59,11 @@ public class X509OCSPResponderSpecificCertTest extends AbstractX509Authenticatio
 
     @Drone
     @HtmlUnitBrowser
-    private WebDriver phantomJS;
+    private WebDriver htmlUnit;
 
     @Before
     public void replaceTheDefaultDriver() {
-        replaceDefaultWebDriver(phantomJS);
+        replaceDefaultWebDriver(htmlUnit);
     }
 
     @Test

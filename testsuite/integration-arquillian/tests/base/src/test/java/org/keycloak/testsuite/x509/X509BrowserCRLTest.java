@@ -48,12 +48,12 @@ public class X509BrowserCRLTest extends AbstractX509AuthenticationTest {
 
     @Drone
     @HtmlUnitBrowser
-    private WebDriver phantomJS;
+    private WebDriver htmlUnit;
 
 
     @Before
     public void replaceTheDefaultDriver() {
-        replaceDefaultWebDriver(phantomJS);
+        replaceDefaultWebDriver(htmlUnit);
     }
 
 
