@@ -44,7 +44,7 @@ import java.nio.file.Paths;
 import java.util.function.Supplier;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.keycloak.testsuite.util.PhantomJSBrowser;
+import org.keycloak.testsuite.util.HtmlUnitBrowser;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -65,7 +65,7 @@ public class X509OCSPResponderTest extends AbstractX509AuthenticationTest {
     private Undertow ocspResponder;
 
     @Drone
-    @PhantomJSBrowser
+    @HtmlUnitBrowser
     private WebDriver phantomJS;
 
     @Before

@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.drone;
 
+import org.htmlunit.WebClientOptions;
 import org.jboss.arquillian.core.api.Instance;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.core.api.annotation.Observes;

@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.keycloak.testsuite.util.PhantomJSBrowser;
+import org.keycloak.testsuite.util.HtmlUnitBrowser;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -38,7 +38,7 @@ import org.openqa.selenium.WebDriver;
 public class X509BrowserLoginSubjectDnTest extends AbstractX509AuthenticationTest {
 
     @Drone
-    @PhantomJSBrowser
+    @HtmlUnitBrowser
     private WebDriver phantomJS;
 
     @Before
@@ -58,8 +58,7 @@ public class X509BrowserLoginSubjectDnTest extends AbstractX509AuthenticationTes
 
     @BeforeClass
     public static void onBeforeTestClass() {
-        configurePhantomJS("/ca.crt", "/certs/clients/test-user-san@localhost.cert.pem",
-                           "/certs/clients/test-user@localhost.key.pem", "password");
+        configureHtmlUnit("/certs/clients/test-user-san@localhost.p12", "password", "pkcs12");
     }
 
     private String setup(boolean canonicalDnEnabled) throws Exception {
