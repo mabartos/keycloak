@@ -17,6 +17,8 @@
 
 package org.keycloak.quarkus.runtime.configuration.mappers;
 
+import io.opentelemetry.sdk.autoconfigure.spi.traces.ConfigurableSamplerProvider;
+import io.quarkus.opentelemetry.runtime.config.build.SamplerType;
 import io.smallrye.config.ConfigValue;
 import org.keycloak.config.TracingOptions;
 import org.keycloak.quarkus.runtime.cli.PropertyException;
@@ -26,6 +28,9 @@ import org.keycloak.utils.StringUtil;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.ServiceLoader;
 
 import static org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper.fromOption;
 
@@ -42,7 +47,7 @@ public class TracingPropertyMappers {
                         .build(),
                 fromOption(TracingOptions.TRACING_ENDPOINT)
                         .isEnabled(TracingPropertyMappers::isTracingEnabled, TRACING_ENABLED_MSG)
-                        .to("quarkus.otel.exporter.otlp.endpoint")
+                        .to("quarkus.otel.exporter.otlp.traces.endpoint")
                         .paramLabel("url")
                         .validator(TracingPropertyMappers::validateEndpoint)
                         .build(),
@@ -55,6 +60,7 @@ public class TracingPropertyMappers {
                         .isEnabled(TracingPropertyMappers::isTracingEnabled, TRACING_ENABLED_MSG)
                         .to("quarkus.otel.traces.sampler")
                         .paramLabel("type")
+                        .validator(TracingPropertyMappers::validateSamplerType)
                         .build(),
                 fromOption(TracingOptions.TRACING_SAMPLER_RATIO)
                         .isEnabled(TracingPropertyMappers::isTracingEnabled, TRACING_ENABLED_MSG)
@@ -76,6 +82,31 @@ public class TracingPropertyMappers {
 
         if (!isValidUrl(value.getValue())) {
             throw new PropertyException("URL specified in 'tracing-endpoint' option is invalid.");
+        }
+    }
+
+    private static void validateSamplerType(PropertyMapper<String> mapper, ConfigValue value) {
+        if (value == null || StringUtil.isBlank(value.getValue())) {
+            throw new PropertyException("Sampler type specified in 'tracing-sampler-type' option must not be empty.");
+        }
+
+        var samplerType = value.getValue();
+        var isCommonType = Arrays.stream(SamplerType.values())
+                .map(SamplerType::getValue)
+                .map(String::toLowerCase)
+                .anyMatch(samplerType::equals);
+
+        if (!isCommonType) {
+            // check whether exists custom sampler with the name
+            var isSpiSampler = ServiceLoader.load(ConfigurableSamplerProvider.class)
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .map(ServiceLoader.Provider::get)
+                    .anyMatch(f -> samplerType.equals(f.getName()));
+
+            if (!isSpiSampler) {
+                throw new PropertyException("Sampler type specified in 'tracing-sampler-type' option cannot be recognized");
+            }
         }
     }
 

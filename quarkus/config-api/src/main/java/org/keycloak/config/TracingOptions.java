@@ -20,6 +20,7 @@ package org.keycloak.config;
 import io.quarkus.opentelemetry.runtime.config.build.SamplerType;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class TracingOptions {
 
@@ -43,11 +44,11 @@ public class TracingOptions {
             .expectedValues("grpc", "http/protobuf")
             .build();
 
+    private static final String SAMPLER_TYPES = Arrays.stream(SamplerType.values()).map(SamplerType::getValue).collect(Collectors.joining(", "));
     public static final Option<String> TRACING_SAMPLER_TYPE = new OptionBuilder<>("tracing-sampler-type", String.class)
             .category(OptionCategory.TRACING)
-            .description("OpenTelemetry sampler to use for tracing.")
-            .defaultValue(SamplerType.TRACE_ID_RATIO.getValue()) // TODO discuss what would be the most suitable here
-            .expectedValues(Arrays.stream(SamplerType.values()).map(SamplerType::getValue).toList())
+            .description(String.format("OpenTelemetry sampler to use for tracing. Possible values are: %s, or custom sampler SPI name.", SAMPLER_TYPES))
+            .defaultValue(SamplerType.TRACE_ID_RATIO.getValue())
             .buildTime(true)
             .build();
 
