@@ -20,6 +20,7 @@ package org.keycloak.quarkus.runtime.cli;
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.StreamSupport.stream;
+import static org.keycloak.config.LoggingOptions.LOG_CONSOLE_FORMAT;
 import static org.keycloak.quarkus.runtime.Environment.isRebuild;
 import static org.keycloak.quarkus.runtime.Environment.isRebuildCheck;
 import static org.keycloak.quarkus.runtime.Environment.isRebuilt;

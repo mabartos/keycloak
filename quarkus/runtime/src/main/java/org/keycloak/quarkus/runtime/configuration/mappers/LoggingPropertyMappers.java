@@ -1,6 +1,7 @@
 package org.keycloak.quarkus.runtime.configuration.mappers;
 
 import static java.util.Optional.of;
+import static org.keycloak.config.LoggingOptions.DEFAULT_LOG_FORMAT;
 import static org.keycloak.config.LoggingOptions.GELF_ACTIVATED;
 import static org.keycloak.quarkus.runtime.configuration.Configuration.isTrue;
 import static org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper.fromOption;
@@ -15,10 +16,13 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jboss.logmanager.LogContext;
 import org.keycloak.config.LoggingOptions;
+import org.keycloak.config.Option;
+import org.keycloak.config.TracingOptions;
 import org.keycloak.quarkus.runtime.Messages;
 import org.keycloak.quarkus.runtime.cli.PropertyException;
 
 import io.smallrye.config.ConfigSourceInterceptorContext;
+import org.keycloak.quarkus.runtime.configuration.Configuration;
 
 public final class LoggingPropertyMappers {
 
@@ -46,6 +50,11 @@ public final class LoggingPropertyMappers {
                         .isEnabled(LoggingPropertyMappers::isConsoleEnabled, CONSOLE_ENABLED_MSG)
                         .to("quarkus.log.console.format")
                         .paramLabel("format")
+                        .transformer((value, ctx) -> LoggingPropertyMappers.addTracingInfo(value, LoggingOptions.LOG_CONSOLE_INCLUDE_TRACE))
+                        .build(),
+                fromOption(LoggingOptions.LOG_CONSOLE_INCLUDE_TRACE)
+                        .isEnabled(() -> LoggingPropertyMappers.isConsoleEnabled() && TracingPropertyMappers.isTracingEnabled(),
+                                "Console log handler and tracing is activated")
                         .build(),
                 fromOption(LoggingOptions.LOG_CONSOLE_COLOR)
                         .isEnabled(LoggingPropertyMappers::isConsoleEnabled, CONSOLE_ENABLED_MSG)
@@ -72,6 +81,11 @@ public final class LoggingPropertyMappers {
                         .isEnabled(LoggingPropertyMappers::isFileEnabled, FILE_ENABLED_MSG)
                         .to("quarkus.log.file.format")
                         .paramLabel("format")
+                        .transformer((value, ctx) -> LoggingPropertyMappers.addTracingInfo(value, LoggingOptions.LOG_FILE_INCLUDE_TRACE))
+                        .build(),
+                fromOption(LoggingOptions.LOG_FILE_INCLUDE_TRACE)
+                        .isEnabled(() -> LoggingPropertyMappers.isFileEnabled() && TracingPropertyMappers.isTracingEnabled(),
+                                "File log handler and tracing is activated")
                         .build(),
                 fromOption(LoggingOptions.LOG_FILE_OUTPUT)
                         .isEnabled(LoggingPropertyMappers::isFileEnabled, FILE_ENABLED_MSG)
@@ -264,5 +278,20 @@ public final class LoggingPropertyMappers {
         }
 
         return of(Boolean.TRUE.toString());
+    }
+
+    /**
+     * Add tracing info to the log if the tracing, and {@code includeTraceOption} option is enabled
+     */
+    private static Optional<String> addTracingInfo(Optional<String> value, Option<Boolean> includeTraceOption) {
+        var isTracingEnabled = Configuration.isTrue(TracingOptions.TRACING_ENABLED);
+        var includeTrace = Configuration.isTrue(includeTraceOption);
+        var isChangedLogFormat = !DEFAULT_LOG_FORMAT.apply("").equals(value.get());
+
+        if (!isTracingEnabled || !includeTrace || isChangedLogFormat) {
+            return value;
+        }
+
+        return Optional.of(LoggingOptions.DEFAULT_LOG_TRACING_FORMAT);
     }
 }
