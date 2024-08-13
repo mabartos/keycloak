@@ -90,60 +90,7 @@ public class DefaultHttpClientFactory implements HttpClientFactory {
     public HttpClientProvider create(KeycloakSession session) {
         lazyInit(session);
 
-        return new HttpClientProvider() {
-            @Override
-            public CloseableHttpClient getHttpClient() {
-                return httpClient;
-            }
-
-            @Override
-            public void close() {
-
-            }
-
-            @Override
-            public int postText(String uri, String text) throws IOException {
-                HttpPost request = new HttpPost(uri);
-                request.setEntity(EntityBuilder.create().setText(text).setContentType(ContentType.TEXT_PLAIN).build());
-                try (CloseableHttpResponse response = httpClient.execute(request)) {
-                    try {
-                        return response.getStatusLine().getStatusCode();
-                    } finally {
-                        EntityUtils.consumeQuietly(response.getEntity());
-                    }
-                } catch (Throwable t) {
-                    logger.warn(t.getMessage(), t);
-                    throw t;
-                }
-            }
-
-            @Override
-            public String getString(String uri) throws IOException {
-                HttpGet request = new HttpGet(uri);
-                HttpResponse response = httpClient.execute(request);
-                String body = stringResponseHandler.handleResponse(response);
-                if (body == null) {
-                    throw new IOException("No content returned from HTTP call");
-                }
-                return body;
-            }
-
-            @Override
-            public InputStream getInputStream(String uri) throws IOException {
-                HttpGet request = new HttpGet(uri);
-                HttpResponse response = httpClient.execute(request);
-                InputStream body = inputStreamResponseHandler.handleResponse(response);
-                if (body == null) {
-                    throw new IOException("No content returned from HTTP call");
-                }
-                return body;
-            }
-
-            @Override
-            public long getMaxConsumedResponseSize() {
-                return maxConsumedResponseSize;
-            }
-        };
+        return new DefaultHttpClientProvider(httpClient, inputStreamResponseHandler, stringResponseHandler, maxConsumedResponseSize);
     }
 
     @Override
