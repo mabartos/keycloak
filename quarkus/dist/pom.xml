@@ -29,6 +29,14 @@
     <name>Keycloak Quarkus Server Distribution</name>
     <description/>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub mabartos Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/mabartos/keycloak</url>
+        </repository>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.keycloak</groupId>
