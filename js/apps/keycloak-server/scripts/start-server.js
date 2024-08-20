@@ -11,8 +11,8 @@ import { parseArgs } from "node:util";
 
 const DIR_NAME = path.dirname(fileURLToPath(import.meta.url));
 const SERVER_DIR = path.resolve(DIR_NAME, "../server");
-const LOCAL_QUARKUS = path.resolve(DIR_NAME, "../../../../quarkus/dist/target");
-const LOCAL_DIST_NAME = "keycloak-999.0.0-SNAPSHOT.tar.gz";
+const LOCAL_QUARKUS = path.resolve(DIR_NAME, "../../../../../keycloak-adaptive-authn/target/unpacked");
+const LOCAL_DIST_NAME = "keycloak-888.0.0-ADAPTIVE.tar.gz";
 const SCRIPT_EXTENSION = process.platform === "win32" ? ".bat" : ".sh";
 const ADMIN_USERNAME = "admin";
 const ADMIN_PASSWORD = "admin";
@@ -55,6 +55,7 @@ async function startServer() {
   const child = spawn(
     path.join(SERVER_DIR, `bin/kc${SCRIPT_EXTENSION}`),
     [
+      "--debug",
       "start-dev",
       `--features="login2,account3,admin-fine-grained-authz,transient-users,oid4vc-vci"`,
       ...keycloakArgs,
