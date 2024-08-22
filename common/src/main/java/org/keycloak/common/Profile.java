@@ -115,6 +115,8 @@ public class Profile {
 
         OID4VC_VCI("Support for the OID4VCI protocol as part of OID4VC.", Type.EXPERIMENTAL),
 
+        OPENTELEMETRY("OpenTelemetry Tracing support", Type.PREVIEW),
+
         DECLARATIVE_UI("declarative ui spi", Type.EXPERIMENTAL),
 
         ORGANIZATION("Organization support within realms", Type.PREVIEW),
@@ -382,7 +384,7 @@ public class Profile {
 
     private Profile(ProfileName profileName, Map<Feature, Boolean> features) {
         this.profileName = profileName;
-        this.features = Collections.unmodifiableMap(features);
+        this.features = new HashMap<>(features);
 
         logUnsupportedFeatures();
     }
@@ -393,6 +395,13 @@ public class Profile {
 
     public static boolean isFeatureEnabled(Feature feature) {
         return getInstance().features.get(feature);
+    }
+
+    public static void enableFeature(Feature feature) {
+        var featureEnabled = getInstance().features.get(feature);
+        if (!featureEnabled) {
+            getInstance().features.put(feature, true);
+        }
     }
 
     public ProfileName getName() {
@@ -428,7 +437,7 @@ public class Profile {
     }
 
     public Map<Feature, Boolean> getFeatures() {
-        return features;
+        return Collections.unmodifiableMap(features);
     }
 
     public enum ProfileName {

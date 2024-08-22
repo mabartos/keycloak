@@ -17,7 +17,11 @@
 
 package org.keycloak.quarkus.runtime.configuration.mappers;
 
+import io.smallrye.config.ConfigSourceInterceptorContext;
 import io.smallrye.config.ConfigValue;
+import org.keycloak.common.Profile;
+import org.keycloak.config.FeatureOptions;
+import org.keycloak.quarkus.runtime.Environment;
 import org.keycloak.quarkus.runtime.cli.PropertyException;
 import org.keycloak.quarkus.runtime.configuration.Configuration;
 import org.keycloak.utils.StringUtil;
@@ -25,7 +29,9 @@ import org.keycloak.utils.StringUtil;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Optional;
 
+import static org.keycloak.common.Profile.isFeatureEnabled;
 import static org.keycloak.config.TracingOptions.TRACING_COMPRESSION;
 import static org.keycloak.config.TracingOptions.TRACING_ENABLED;
 import static org.keycloak.config.TracingOptions.TRACING_ENDPOINT;
@@ -47,6 +53,8 @@ public class TracingPropertyMappers {
         return new PropertyMapper[]{
                 fromOption(TRACING_ENABLED)
                         .to("quarkus.otel.traces.enabled")
+                        .transformer(TracingPropertyMappers::enableFeature)
+                        .validator(TracingPropertyMappers::validateEnabled)
                         .build(),
                 fromOption(TRACING_ENDPOINT)
                         .isEnabled(TracingPropertyMappers::isTracingEnabled, TRACING_ENABLED_MSG)
@@ -91,6 +99,32 @@ public class TracingPropertyMappers {
                         .to("quarkus.datasource.jdbc.telemetry")
                         .build()
         };
+    }
+
+    private static Optional<String> enableFeature(Optional<String> value, ConfigSourceInterceptorContext context) {
+        var tracingEnabled = value.map(Boolean::parseBoolean).orElse(false);
+        if (tracingEnabled) {
+            Environment.getCurrentOrCreateFeatureProfile(); // initialize profile and features if not already done
+
+            if (!isFeatureEnabled(Profile.Feature.OPENTELEMETRY)) {
+                Profile.enableFeature(Profile.Feature.OPENTELEMETRY);
+            }
+        }
+        return Optional.of(Boolean.toString(tracingEnabled));
+    }
+
+    private static void validateEnabled(PropertyMapper<Boolean> mapper, ConfigValue value) {
+        var isOptionTrue = value != null && Boolean.parseBoolean(value.getValue());
+        if (isOptionTrue) {
+            var isFeatureExplicitlyDisabled = Configuration.getOptionalKcValue(FeatureOptions.FEATURES_DISABLED.getKey())
+                    .map(f -> f.contains(Profile.Feature.OPENTELEMETRY.getUnversionedKey()))
+                    .orElse(false);
+
+            if (isFeatureExplicitlyDisabled) {
+                throw new PropertyException(String.format("Feature '%s' cannot be explicitly disabled when '%s' option is set to true.",
+                        Profile.Feature.OPENTELEMETRY.getUnversionedKey(), mapper.getCliFormat()));
+            }
+        }
     }
 
     private static void validateEndpoint(PropertyMapper<String> mapper, ConfigValue value) {

@@ -35,6 +35,7 @@ public class TracingDistTest {
     private void assertTracingEnabled(CLIResult result) {
         result.assertMessage("opentelemetry");
         result.assertMessage("service.name=\"keycloak\"");
+        result.assertMessage("Preview features enabled: opentelemetry:v1");
     }
 
     private void assertTracingDisabled(CLIResult result) {
@@ -42,6 +43,7 @@ public class TracingDistTest {
         result.assertNoMessage("service.name=\"keycloak\"");
         result.assertNoMessage("Failed to export spans.");
         result.assertNoMessage("Connection refused: localhost/127.0.0.1:4317");
+        result.assertNoMessage("Preview features enabled: opentelemetry:v1");
     }
 
     @Test
@@ -56,15 +58,24 @@ public class TracingDistTest {
 
     @Test
     @Order(2)
-    @Launch({"start-dev", "--tracing-enabled=true", "--log-level=io.opentelemetry:fine"})
-    void enabledJdbc(LaunchResult result) {
+    @Launch({"start-dev", "--tracing-service-name=should-fail",})
+    void disabledOption(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;
 
-        cliResult.assertStartedDevMode();
-        assertTracingEnabled(cliResult);
+        cliResult.assertError("Disabled option: '--tracing-service-name'. Available only when Tracing is enabled");
     }
+
     @Test
     @Order(3)
+    @Launch({"start", "--hostname-strict=false", "--http-enabled=true", "--tracing-enabled=true", "--features-disabled=opentelemetry"})
+    void disabledFeature(LaunchResult result) {
+        CLIResult cliResult = (CLIResult) result;
+
+        cliResult.assertError("Feature 'opentelemetry' cannot be explicitly disabled when '--tracing-enabled' option is set to true.");
+    }
+
+    @Test
+    @Order(4)
     @Launch({"build", "--tracing-enabled=true"})
     void buildTracingEnabled(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;

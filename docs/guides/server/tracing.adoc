@@ -21,6 +21,8 @@ It is possible to enable exposing traces using the build time option `tracing-en
 
 <@kc.start parameters="--tracing-enabled=true"/>
 
+When the tracing is enabled, the preview feature `opentelemetry` is automatically enabled as well.
+
 By default, the trace exporters send out data in batches, using the `gRPC` protocol and endpoint `+http://localhost:4317+`.
 
 The default service name is `keycloak`, specified via the `tracing-service-name` property, which takes precedence over `service.name` defined in the `tracing-resource-attributes` property.
