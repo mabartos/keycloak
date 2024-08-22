@@ -50,10 +50,12 @@ public class TracingPropertyMappers {
     }
 
     public static PropertyMapper<?>[] getMappers() {
+        PropertyMappers.features().enableFeatureWhen(Profile.Feature.OPENTELEMETRY, () -> Configuration.isTrue(TRACING_ENABLED));
+
         return new PropertyMapper[]{
                 fromOption(TRACING_ENABLED)
                         .to("quarkus.otel.traces.enabled")
-                        .transformer(TracingPropertyMappers::enableFeature)
+                        //.transformer(TracingPropertyMappers::enableFeature)
                         .validator(TracingPropertyMappers::validateEnabled)
                         .build(),
                 fromOption(TRACING_ENDPOINT)

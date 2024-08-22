@@ -2,9 +2,10 @@ package org.keycloak.quarkus.runtime.configuration.mappers;
 
 import io.smallrye.config.ConfigSourceInterceptorContext;
 import io.smallrye.config.ConfigValue;
-
 import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.jboss.logging.Logger;
+import org.keycloak.common.Profile;
 import org.keycloak.common.util.CollectionUtil;
 import org.keycloak.config.ConfigSupportLevel;
 import org.keycloak.config.OptionCategory;
@@ -26,8 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -40,6 +42,7 @@ public final class PropertyMappers {
 
     public static String VALUE_MASK = "*******";
     private static final MappersConfig MAPPERS = new MappersConfig();
+    private static final MappersFeaturesConfig FEATURES = new MappersFeaturesConfig();
     private static final Logger log = Logger.getLogger(PropertyMappers.class);
 
     private PropertyMappers(){}
@@ -66,6 +69,10 @@ public final class PropertyMappers {
         MAPPERS.addAll(ImportPropertyMappers.getMappers());
         MAPPERS.addAll(TruststorePropertyMappers.getMappers());
         MAPPERS.addAll(BootstrapAdminPropertyMappers.getMappers());
+    }
+
+    public static MappersFeaturesConfig features() {
+        return FEATURES;
     }
 
     public static ConfigValue getValue(ConfigSourceInterceptorContext context, String name) {
@@ -337,6 +344,34 @@ public final class PropertyMappers {
             }
             operation.accept(mapper.getCliFormat(), mapper);
             operation.accept(mapper.getEnvVarFormat(), mapper);
+        }
+    }
+
+    public static class MappersFeaturesConfig {
+        private final MultivaluedMap<Profile.Feature, BooleanSupplier> enabledFeatures = new MultivaluedHashMap<>();
+        private final MultivaluedMap<Profile.Feature, BooleanSupplier> disabledFeatures = new MultivaluedHashMap<>();
+
+        public void enableFeatureWhen(Profile.Feature feature, BooleanSupplier condition) {
+            enabledFeatures.add(feature, condition);
+        }
+
+        public void disableFeatureWhen(Profile.Feature feature, BooleanSupplier condition) {
+            disabledFeatures.add(feature, condition);
+        }
+
+        public Set<String> getEnabledFeatures() {
+            return getFeatures(enabledFeatures);
+        }
+
+        public Set<String> getDisabledFeatures() {
+            return getFeatures(disabledFeatures);
+        }
+
+        private static Set<String> getFeatures(MultivaluedMap<Profile.Feature, BooleanSupplier> features) {
+            return features.entrySet().stream()
+                    .filter(f -> f.getValue().stream().anyMatch(BooleanSupplier::getAsBoolean))
+                    .map(f -> f.getKey().getVersionedKey())
+                    .collect(Collectors.toUnmodifiableSet());
         }
     }
 }

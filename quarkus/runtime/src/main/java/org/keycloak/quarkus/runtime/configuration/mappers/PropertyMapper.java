@@ -53,6 +53,7 @@ public class PropertyMapper<T> {
             () -> false,
             "",
             null,
+            false,
             null,
             null,
             false,
@@ -69,6 +70,7 @@ public class PropertyMapper<T> {
     private BooleanSupplier enabled;
     private String enabledWhen;
     private final BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper;
+    private final boolean alwaysTransform;
     private final String mapFrom;
     private final boolean mask;
     private final String paramLabel;
@@ -78,7 +80,7 @@ public class PropertyMapper<T> {
     private final String description;
 
     PropertyMapper(Option<T> option, String to, BooleanSupplier enabled, String enabledWhen,
-                   BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper,
+                   BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper, boolean alwaysTransform,
                    String mapFrom, String paramLabel, boolean mask, BiConsumer<PropertyMapper<T>, ConfigValue> validator,
                    String description) {
         this.option = option;
@@ -86,6 +88,7 @@ public class PropertyMapper<T> {
         this.enabled = enabled;
         this.enabledWhen = enabledWhen;
         this.mapper = mapper == null ? PropertyMapper::defaultTransformer : mapper;
+        this.alwaysTransform = alwaysTransform;
         this.mapFrom = mapFrom;
         this.paramLabel = paramLabel;
         this.mask = mask;
@@ -256,7 +259,7 @@ public class PropertyMapper<T> {
             return null;
         }
 
-        if (mapper == null || (mapFrom == null && name.equals(getFrom()))) {
+        if (mapper == null || (mapFrom == null && name.equals(getFrom()) && !alwaysTransform)) {
             // no mapper set or requesting a property that does not depend on other property, just return the value from the config source
             return ConfigValue.builder()
                     .withName(name)
@@ -292,6 +295,7 @@ public class PropertyMapper<T> {
         private final Option<T> option;
         private String to;
         private BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper;
+        private boolean alwaysTransform;
         private String mapFrom = null;
         private boolean isMasked = false;
         private BooleanSupplier isEnabled = () -> true;
@@ -310,9 +314,14 @@ public class PropertyMapper<T> {
             return this;
         }
 
-        public Builder<T> transformer(BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper) {
+        public Builder<T> transformer(BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper, boolean alwaysTransform) {
             this.mapper = mapper;
+            this.alwaysTransform = alwaysTransform;
             return this;
+        }
+
+        public Builder<T> transformer(BiFunction<Optional<String>, ConfigSourceInterceptorContext, Optional<String>> mapper) {
+            return transformer(mapper, false);
         }
 
         public Builder<T> paramLabel(String label) {
@@ -350,10 +359,10 @@ public class PropertyMapper<T> {
             this.validator = validator;
             return this;
         }
-        
+
         /**
          * Similar to {@link #enabledWhen}, but uses the condition as a validator. This allows the option
-         * to appear in help. 
+         * to appear in help.
          * @param isEnabled
          * @param enabledWhen
          * @return
@@ -372,7 +381,7 @@ public class PropertyMapper<T> {
             if (paramLabel == null && Boolean.class.equals(option.getType())) {
                 paramLabel = Boolean.TRUE + "|" + Boolean.FALSE;
             }
-            return new PropertyMapper<T>(option, to, isEnabled, enabledWhen, mapper, mapFrom, paramLabel, isMasked, validator, description);
+            return new PropertyMapper<T>(option, to, isEnabled, enabledWhen, mapper, alwaysTransform, mapFrom, paramLabel, isMasked, validator, description);
         }
     }
 
