@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.stream.Stream;
 
 import org.jboss.logmanager.LogContext;
+import org.jboss.logmanager.handlers.SyslogHandler;
 import org.keycloak.config.LoggingOptions;
 import org.keycloak.config.Option;
 import org.keycloak.config.TracingOptions;
@@ -114,6 +115,22 @@ public final class LoggingPropertyMappers {
                         .to("quarkus.log.syslog.app-name")
                         .paramLabel("name")
                         .build(),
+                fromOption(LoggingOptions.LOG_SYSLOG_TYPE)
+                        .isEnabled(LoggingPropertyMappers::isSyslogEnabled, SYSLOG_ENABLED_MSG)
+                        .to("quarkus.log.syslog.syslog-type")
+                        .paramLabel("type")
+                        .build(),
+                fromOption(LoggingOptions.LOG_SYSLOG_LEVEL)
+                        .isEnabled(LoggingPropertyMappers::isSyslogEnabled, SYSLOG_ENABLED_MSG)
+                        .to("quarkus.log.syslog.level")
+                        .paramLabel("level")
+                        .build(),
+                fromOption(LoggingOptions.LOG_SYSLOG_MAX_LENGTH)
+                        .isEnabled(LoggingPropertyMappers::isSyslogEnabled, SYSLOG_ENABLED_MSG)
+                        .transformer(LoggingPropertyMappers::transformSyslogMaxLength)
+                        .to("quarkus.log.syslog.max-length")
+                        .paramLabel("max-length")
+                        .build(),
                 fromOption(LoggingOptions.LOG_SYSLOG_PROTOCOL)
                         .isEnabled(LoggingPropertyMappers::isSyslogEnabled, SYSLOG_ENABLED_MSG)
                         .to("quarkus.log.syslog.protocol")
@@ -168,6 +185,25 @@ public final class LoggingPropertyMappers {
 
     private static Level toLevel(String categoryLevel) throws IllegalArgumentException {
         return LogContext.getLogContext().getLevelForName(categoryLevel.toUpperCase(Locale.ROOT));
+    }
+
+    private static Optional<String> transformSyslogMaxLength(Optional<String> value, ConfigSourceInterceptorContext context) {
+        if (value.isPresent()) {
+            return value;
+        }
+
+        var syslogType = Configuration.getOptionalKcValue(LoggingOptions.LOG_SYSLOG_TYPE)
+                .map(String::toUpperCase)
+                .map(SyslogHandler.SyslogType::valueOf)
+                .orElseThrow(() -> new IllegalArgumentException("You need to provide a valid Syslog type"));
+
+        return Optional.of(
+                switch (syslogType) {
+                    case RFC5424:
+                        yield "2048";
+                    case RFC3164:
+                        yield "1024";
+                });
     }
 
     private static void setCategoryLevel(String category, String level) {
