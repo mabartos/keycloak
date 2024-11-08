@@ -17,6 +17,8 @@
 
 package org.keycloak.events;
 
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.common.AttributesBuilder;
 import org.jboss.logging.Logger;
 import org.keycloak.common.ClientConnection;
 import org.keycloak.common.util.Time;
@@ -27,6 +29,9 @@ import org.keycloak.models.UserModel;
 import org.keycloak.models.UserSessionModel;
 
 import org.keycloak.models.utils.KeycloakModelUtils;
+import org.keycloak.tracing.TracingAttributes;
+import org.keycloak.tracing.TracingProvider;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,6 +39,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -258,6 +264,8 @@ public class EventBuilder {
             }
         }
 
+        traceEvent();
+
         for (EventListenerProvider l : targetListeners) {
             try {
                 l.onEvent(event);
@@ -265,6 +273,28 @@ public class EventBuilder {
                 log.error("Failed to send type to " + l, t);
             }
         }
+    }
+
+    private void traceEvent() {
+        final var ab = Attributes.builder();
+        ab.put(TracingAttributes.EVENT_ID, event.getId());
+        ab.put(TracingAttributes.REALM_ID, event.getRealmId());
+        ab.put(TracingAttributes.REALM_NAME, event.getRealmName());
+        ab.put(TracingAttributes.CLIENT_ID, event.getClientId());
+        ab.put(TracingAttributes.USER_ID, event.getUserId());
+        ab.put(TracingAttributes.SESSION_ID, event.getSessionId());
+        ab.put("ipAddress", event.getIpAddress());
+        ab.put(TracingAttributes.EVENT_ERROR, event.getError());
+
+        var details = event.getDetails();
+        if (details != null) { // fix for now; IMHO it should always return at least empty map
+            details.forEach((k, v) -> {
+                ab.put("details." + k, v);
+            });
+        }
+
+        var tracing = session.getProvider(TracingProvider.class);
+        tracing.getCurrentSpan().addEvent(event.getType().name(), ab.build(), event.getTime(), TimeUnit.MILLISECONDS);
     }
 
 }

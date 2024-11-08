@@ -17,12 +17,14 @@
 
 package org.keycloak.services;
 
+import io.opentelemetry.api.trace.Span;
 import jakarta.ws.rs.core.HttpHeaders;
 import org.keycloak.common.ClientConnection;
 import org.keycloak.http.HttpRequest;
 import org.keycloak.http.HttpResponse;
 import org.keycloak.locale.LocaleSelectorProvider;
 import org.keycloak.models.ClientModel;
+import org.keycloak.models.Constants;
 import org.keycloak.models.KeycloakContext;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakUriInfo;
@@ -31,6 +33,8 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.sessions.AuthenticationSessionModel;
 import org.keycloak.theme.Theme;
+import org.keycloak.tracing.TracingAttributes;
+import org.keycloak.tracing.TracingProvider;
 import org.keycloak.urls.UrlType;
 
 import java.net.URI;
@@ -109,6 +113,7 @@ public abstract class DefaultKeycloakContext implements KeycloakContext {
     public void setRealm(RealmModel realm) {
         this.realm = realm;
         this.uriInfo = null;
+        trace(this.realm);
     }
 
     @Override
@@ -119,6 +124,7 @@ public abstract class DefaultKeycloakContext implements KeycloakContext {
     @Override
     public void setClient(ClientModel client) {
         this.client = client;
+        trace(this.client);
     }
 
     @Override
@@ -158,6 +164,7 @@ public abstract class DefaultKeycloakContext implements KeycloakContext {
     @Override
     public void setAuthenticationSession(AuthenticationSessionModel authenticationSession) {
         this.authenticationSession = authenticationSession;
+        trace(this.authenticationSession);
     }
 
     @Override
@@ -205,4 +212,33 @@ public abstract class DefaultKeycloakContext implements KeycloakContext {
         this.response = httpResponse;
     }
 
+    // Tracing
+    private Span getCurrentSpan() {
+        return session.getProvider(TracingProvider.class).getCurrentSpan();
+    }
+
+    private void trace(AuthenticationSessionModel session) {
+        if (session != null) {
+            var span = getCurrentSpan();
+
+            if (session.getParentSession() != null) {
+                span.setAttribute(TracingAttributes.AUTH_SESSION_ID, session.getParentSession().getId());
+            }
+            if (session.getTabId() != null) {
+                span.setAttribute(TracingAttributes.KC_PREFIX + Constants.TAB_ID, session.getTabId());
+            }
+        }
+    }
+
+    private void trace(RealmModel realm) {
+        if (realm != null) {
+            getCurrentSpan().setAttribute(TracingAttributes.REALM_NAME, realm.getName());
+        }
+    }
+
+    private void trace(ClientModel client) {
+        if (client != null) {
+            getCurrentSpan().setAttribute(TracingAttributes.CLIENT_ID, client.getClientId());
+        }
+    }
 }
