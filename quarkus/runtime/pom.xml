@@ -635,12 +635,24 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Necessary for testing TracingProvider when GlobalTelemetry is used. Not an issue in a real distribution -->
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporter-sender-okhttp</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- twitter api -->
         <dependency>
             <groupId>org.twitter4j</groupId>
             <artifactId>twitter4j-core</artifactId>
         </dependency>
     </dependencies>
+
+    <properties>
+        <!-- Necessary for testing TracingProvider when GlobalTelemetry is used. Not an issue in a real distribution -->
+        <surefire.additional.args>-Dotel.java.global-autoconfigure.enabled=true</surefire.additional.args>
+    </properties>
 
     <build>
         <plugins>
