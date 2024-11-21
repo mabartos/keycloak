@@ -19,8 +19,10 @@ package org.keycloak.quarkus.runtime.tracing;
 
 import org.keycloak.Config;
 import org.keycloak.common.Profile;
+import org.keycloak.config.TracingOptions;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
+import org.keycloak.quarkus.runtime.configuration.Configuration;
 import org.keycloak.tracing.TracingProvider;
 import org.keycloak.tracing.TracingProviderFactory;
 
@@ -59,6 +61,6 @@ public class OTelTracingProviderFactory implements TracingProviderFactory {
 
     @Override
     public boolean isSupported(Config.Scope config) {
-        return Profile.isFeatureEnabled(Profile.Feature.OPENTELEMETRY);
+        return Profile.isFeatureEnabled(Profile.Feature.OPENTELEMETRY) && Configuration.isTrue(TracingOptions.TRACING_ENABLED);
     }
 }
