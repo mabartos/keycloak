@@ -1,0 +1,266 @@
+/*
+ * Copyright 2024 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.keycloak.testsuite.tracing;
+
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.TraceFlags;
+import io.opentelemetry.sdk.trace.ReadableSpan;
+import io.opentelemetry.sdk.trace.internal.data.ExceptionEventData;
+import io.opentelemetry.semconv.ExceptionAttributes;
+import org.hamcrest.CoreMatchers;
+import org.jboss.arquillian.container.test.api.ContainerController;
+import org.jboss.arquillian.test.api.ArquillianResource;
+import org.junit.Before;
+import org.junit.Test;
+import org.keycloak.representations.idm.RealmRepresentation;
+import org.keycloak.testsuite.AbstractTestRealmKeycloakTest;
+import org.keycloak.testsuite.arquillian.annotation.AuthServerContainerExclude;
+import org.keycloak.testsuite.arquillian.containers.AbstractQuarkusDeployableContainer;
+import org.keycloak.tracing.NoopTracingProvider;
+import org.keycloak.tracing.TracingAttributes;
+import org.keycloak.tracing.TracingProvider;
+
+import java.io.Serializable;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.emptyOrNullString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+
+@AuthServerContainerExclude(value = AuthServerContainerExclude.AuthServer.UNDERTOW)
+public class OTelTracingProviderTest extends AbstractTestRealmKeycloakTest {
+
+    @ArquillianResource
+    protected ContainerController controller;
+
+    private static boolean initialized;
+    private static final TracingProvider NOOP_PROVIDER = new NoopTracingProvider();
+
+    @Override
+    public void configureTestRealm(RealmRepresentation testRealm) {
+    }
+
+    @Before
+    public void setContainer() {
+        if (!initialized) {
+            startContainer();
+            initialized = true;
+        }
+    }
+
+    void startContainer() {
+        assertThat(suiteContext.getAuthServerInfo().isQuarkus(), CoreMatchers.is(true));
+
+        var containerQualifier = suiteContext.getAuthServerInfo().getQualifier();
+        AbstractQuarkusDeployableContainer container = (AbstractQuarkusDeployableContainer) suiteContext.getAuthServerInfo().getArquillianContainer().getDeployableContainer();
+        try {
+            controller.stop(containerQualifier);
+            container.setAdditionalBuildArgs(List.of("--features=opentelemetry", "--tracing-enabled=true"));
+            controller.start(containerQualifier);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void parentSpan() {
+        runOnServer(tracing -> {
+            Span current = tracing.getCurrentSpan();
+            assertThat(current, notNullValue());
+
+            assertThat(current instanceof ReadableSpan, is(true));
+            ReadableSpan readableSpan = (ReadableSpan) current;
+            assertThat(readableSpan.getAttribute(AttributeKey.stringKey("server.address")), is("localhost"));
+            assertThat(readableSpan.getAttribute(AttributeKey.stringKey("url.path")), containsString("run-on-server"));
+            assertThat(readableSpan.getAttribute(TracingAttributes.REALM_NAME), is(TEST_REALM_NAME));
+        });
+    }
+
+    @Test
+    public void differentTracer() {
+        runOnServer(tracing -> {
+            var tracer1 = tracing.getTracer("tracer1");
+            var tracer2 = tracing.getTracer("tracer2");
+            var tracer3 = tracing.getTracer("tracer1");
+
+            assertThat(tracer1, notNullValue());
+            assertThat(tracer2, notNullValue());
+            assertThat(tracer3, notNullValue());
+
+            assertThat(tracer1.equals(tracer2), is(false));
+            assertThat(tracer2.equals(tracer3), is(false));
+            assertThat(tracer3.equals(tracer1), is(true));
+
+            var tracerOldVersion = tracing.getTracer("tracer1", "25.0.0");
+            var tracerNewVersion = tracing.getTracer("tracer1", "26.0.0");
+
+            assertThat(tracerOldVersion, notNullValue());
+            assertThat(tracerNewVersion, notNullValue());
+
+            assertThat(tracerOldVersion.equals(tracerNewVersion), is(false));
+        });
+    }
+
+    @Test
+    public void spanInfo() {
+        runOnServer(tracing -> {
+            var span = tracing.startSpan("MyTracer", "sameSpan");
+            try {
+                var current = tracing.getCurrentSpan();
+                assertThat(current, notNullValue());
+                assertThat(current.equals(span), is(true));
+
+                var context = current.getSpanContext();
+                assertThat(context, is(span.getSpanContext()));
+                assertThat(context.getTraceFlags(), is(TraceFlags.getSampled()));
+                assertThat(current.isRecording(), is(true));
+
+                assertThat(current instanceof ReadableSpan, is(true));
+                var readableSpan = (ReadableSpan) current;
+                assertThat(readableSpan.getName(), is("sameSpan"));
+            } finally {
+                tracing.endSpan();
+            }
+
+            assertThat(span.isRecording(), is(false));
+
+            var current = tracing.getCurrentSpan();
+            assertThat(current, is(not(span)));
+        });
+    }
+
+    @Test
+    public void errorInSpan() {
+        runOnServer(tracing -> {
+            try {
+                var span = tracing.startSpan("MyTracer", "something");
+                try {
+                    var current = tracing.getCurrentSpan();
+                    assertThat(current, notNullValue());
+                    assertThat(current.equals(span), is(true));
+                    throw new RuntimeException("something bad happened");
+                } catch (Exception e) {
+                    tracing.error(e);
+                } finally {
+                    // not ended span here
+                }
+
+                var current = tracing.getCurrentSpan();
+                assertThat(current, is(span));
+
+                assertThat(current instanceof ReadableSpan, is(true));
+                var spanData = ((ReadableSpan) current).toSpanData();
+                assertThat(spanData.getName(), is("something"));
+                assertThat(spanData.getTotalRecordedEvents(), is(1));
+
+                var eventData = spanData.getEvents().get(0);
+                assertThat(eventData instanceof ExceptionEventData, is(true));
+
+                var exceptionData = (ExceptionEventData) eventData;
+                var exceptionAttributes = exceptionData.getAttributes();
+                assertThat(exceptionAttributes, notNullValue());
+
+                assertThat(exceptionAttributes.get(ExceptionAttributes.EXCEPTION_ESCAPED), is(true));
+                assertThat(exceptionAttributes.get(ExceptionAttributes.EXCEPTION_MESSAGE), is("something bad happened"));
+                assertThat(exceptionAttributes.get(ExceptionAttributes.EXCEPTION_STACKTRACE), not(emptyOrNullString()));
+                assertThat(exceptionAttributes.get(ExceptionAttributes.EXCEPTION_TYPE), is(RuntimeException.class.getCanonicalName()));
+            } finally {
+                tracing.endSpan();
+            }
+        });
+    }
+
+    @Test
+    public void traceSuccessful() {
+        runOnServer(tracing -> {
+            tracing.trace(OpenTelemetry.class, "successful", span -> {
+                assertThat(span, notNullValue());
+                assertThat(span, is(tracing.getCurrentSpan()));
+                assertThat(span.isRecording(), is(true));
+
+                assertThat(span instanceof ReadableSpan, is(true));
+                var spanData = ((ReadableSpan) span).toSpanData();
+                assertThat(spanData.getName(), is("OpenTelemetry.successful"));
+            });
+        });
+    }
+
+    @Test
+    public void traceSuccessfulValue() {
+        runOnServer(tracing -> {
+            var spanName = tracing.trace(OpenTelemetry.class, "successful", (span) -> {
+                assertThat(span, notNullValue());
+                assertThat(span, is(tracing.getCurrentSpan()));
+                assertThat(span.isRecording(), is(true));
+
+                assertThat(span instanceof ReadableSpan, is(true));
+                var spanData = ((ReadableSpan) span).toSpanData();
+                assertThat(spanData.getName(), is("OpenTelemetry.successful"));
+
+                return spanData.getName();
+            });
+
+            assertThat(spanName, notNullValue());
+            assertThat(spanName, is("OpenTelemetry.successful"));
+        });
+    }
+
+    @Test
+    public void traceWithError() {
+        runOnServer(tracing -> {
+            try {
+                tracing.trace(OTelTracingProviderTest.class, "errorSpan", span -> {
+                    assertThat(span, notNullValue());
+                    assertThat(span, is(tracing.getCurrentSpan()));
+                    assertThat(span.isRecording(), is(true));
+
+                    assertThat(span instanceof ReadableSpan, is(true));
+                    var spanData = ((ReadableSpan) span).toSpanData();
+                    assertThat(spanData.getName(), is("OTelTracingProviderTest.errorSpan"));
+
+                    if (true) {
+                        throw new IllegalStateException("some invalid error");
+                    }
+                });
+            } catch (IllegalStateException e) {
+                assertThat(e.getMessage(), is("some invalid error"));
+                return;
+            }
+            throw new AssertionError("The IllegalStateException was not propagated");
+        });
+    }
+
+    void runOnServer(TracingConsumer tracing) {
+        getTestingClient().server(TEST_REALM_NAME).run(session -> {
+            TracingProvider provider = session.getProvider(TracingProvider.class);
+            assertThat(provider, is(not(NOOP_PROVIDER)));
+            assertThat(provider.getClass().getSimpleName(), is("OTelTracingProvider"));
+            tracing.accept(provider);
+        });
+    }
+
+    @FunctionalInterface
+    interface TracingConsumer extends Serializable {
+        void accept(TracingProvider tracing);
+    }
+}
