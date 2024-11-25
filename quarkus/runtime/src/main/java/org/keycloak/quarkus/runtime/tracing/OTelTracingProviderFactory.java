@@ -17,6 +17,8 @@
 
 package org.keycloak.quarkus.runtime.tracing;
 
+import io.opentelemetry.api.OpenTelemetry;
+import jakarta.enterprise.inject.spi.CDI;
 import org.keycloak.Config;
 import org.keycloak.common.Profile;
 import org.keycloak.config.TracingOptions;
@@ -28,10 +30,16 @@ import org.keycloak.tracing.TracingProviderFactory;
 
 public class OTelTracingProviderFactory implements TracingProviderFactory {
     public static final String PROVIDER_ID = "opentelemetry";
+    private static OTelTracingProvider SINGLETON;
 
     @Override
     public TracingProvider create(KeycloakSession session) {
-        return new OTelTracingProvider();
+        if (SINGLETON == null) {
+            var openTelemetry = CDI.current().select(OpenTelemetry.class).get();
+            SINGLETON = new OTelTracingProvider(openTelemetry);
+        }
+
+        return SINGLETON;
     }
 
     @Override
@@ -46,7 +54,10 @@ public class OTelTracingProviderFactory implements TracingProviderFactory {
 
     @Override
     public void close() {
-
+        if (SINGLETON != null) {
+            // explicitly remove the OpenTelemetry bean
+            CDI.current().select(OpenTelemetry.class).destroy(SINGLETON.getOpenTelemetry());
+        }
     }
 
     @Override

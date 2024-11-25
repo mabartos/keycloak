@@ -635,6 +635,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporter-sender-okhttp</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- twitter api -->
         <dependency>
             <groupId>org.twitter4j</groupId>
