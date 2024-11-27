@@ -24,11 +24,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
+import org.jboss.arquillian.container.test.api.ContainerController;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.keycloak.common.Profile;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.GroupModel;
 import org.keycloak.models.KeycloakSessionFactory;
@@ -56,6 +60,8 @@ import org.keycloak.storage.ldap.mappers.membership.group.GroupLDAPStorageMapper
 import org.keycloak.storage.ldap.mappers.membership.group.GroupLDAPStorageMapperFactory;
 import org.keycloak.storage.ldap.mappers.membership.group.GroupMapperConfig;
 import org.keycloak.storage.user.SynchronizationResult;
+import org.keycloak.testsuite.arquillian.annotation.EnableFeature;
+import org.keycloak.testsuite.arquillian.containers.AbstractQuarkusDeployableContainer;
 import org.keycloak.testsuite.util.LDAPRule;
 import org.keycloak.testsuite.util.LDAPTestUtils;
 import org.keycloak.testsuite.util.WaitUtils;
@@ -63,15 +69,45 @@ import org.keycloak.testsuite.util.WaitUtils;
 import jakarta.ws.rs.BadRequestException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@EnableFeature(value = Profile.Feature.OPENTELEMETRY, skipRestart = true)
+
 public class LDAPSyncTest extends AbstractLDAPTest {
+    @ArquillianResource
+    protected ContainerController controller;
+
+    private static boolean initialized;
 
     @ClassRule
     public static LDAPRule ldapRule = new LDAPRule();
+
+    @Before
+    public void setContainer() {
+        assertThat(suiteContext.getAuthServerInfo().isQuarkus(), is(true));
+
+        if (!initialized) {
+            startContainer();
+            initialized = true;
+        }
+    }
+
+    void startContainer() {
+        var containerQualifier = suiteContext.getAuthServerInfo().getQualifier();
+        AbstractQuarkusDeployableContainer container = (AbstractQuarkusDeployableContainer) suiteContext.getAuthServerInfo().getArquillianContainer().getDeployableContainer();
+        try {
+            controller.stop(containerQualifier);
+            container.setAdditionalBuildArgs(List.of("--tracing-enabled=true", "--log-level=org.keycloak.quarkus.runtime.tracing:debug"));
+            controller.start(containerQualifier);
+            reconnectAdminClient();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     protected LDAPRule getLDAPRule() {
