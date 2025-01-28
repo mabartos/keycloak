@@ -309,7 +309,7 @@ public class AuthenticationProcessor {
     public URI getRefreshUrl(boolean authSessionIdParam) {
         UriBuilder uriBuilder = LoginActionsService.loginActionsBaseUrl(getUriInfo())
                 .path(AuthenticationProcessor.this.flowPath)
-                .queryParam(Constants.CLIENT_ID, getAuthenticationSession().getClient().getClientId())
+                .queryParam(Constants.CLIENT_ID, getAuthenticationSession().getClient().getClientAuthenticatorType())
                 .queryParam(Constants.TAB_ID, getAuthenticationSession().getTabId())
                 .queryParam(Constants.CLIENT_DATA, getClientData());
         if (authSessionIdParam) {
