@@ -7,12 +7,14 @@ import static org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper.
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 
 import io.quarkus.runtime.configuration.MemorySizeConverter;
+import io.smallrye.config.ConfigValue;
 import org.jboss.logmanager.LogContext;
 import org.keycloak.config.LoggingOptions;
 import org.keycloak.config.Option;
@@ -21,6 +23,7 @@ import org.keycloak.quarkus.runtime.cli.PropertyException;
 import org.keycloak.quarkus.runtime.configuration.Configuration;
 
 import io.smallrye.config.ConfigSourceInterceptorContext;
+import org.keycloak.quarkus.runtime.configuration.KeycloakPropertiesConfigSource;
 
 public final class LoggingPropertyMappers {
 
@@ -288,7 +291,13 @@ public final class LoggingPropertyMappers {
                 rootLevel = categoryLevel.levelName;
             }
         }
-        return rootLevel;
+
+        // If KC property is not set and the 'log-level' does not override the specific category, use value from Quarkus or properties files
+        return Optional.ofNullable(context.proceed("quarkus.log.category.\"" + category + "\".level"))
+                .filter(f -> f.getValue() != null)
+                .map(ConfigValue::getValue)
+                .map(level -> !level.equals("inherit") ? level : null)
+                .orElse(rootLevel);
     }
 
     private static List<CategoryLevel> parseLogLevels(String value) {
