@@ -22,6 +22,7 @@ import io.quarkus.runtime.configuration.QuarkusConfigFactory;
 import io.quarkus.test.junit.QuarkusMainTestExtension;
 import io.quarkus.test.junit.main.Launch;
 import io.quarkus.test.junit.main.LaunchResult;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
@@ -69,10 +70,17 @@ public class CLITestExtension extends QuarkusMainTestExtension {
     public void beforeEach(ExtensionContext context) throws Exception {
         DistributionTest distConfig = getDistributionConfig(context);
         Launch launch = context.getRequiredTestMethod().getAnnotation(Launch.class);
+        LaunchOptimizedStart launchOptimizedStart = context.getRequiredTestMethod().getAnnotation(LaunchOptimizedStart.class);
         getStore(context).put(SYS_PROPS, new HashMap<>(System.getProperties()));
 
-        if (launch != null && distConfig == null) {
-            ConfigArgsConfigSource.parseConfigArgs(List.of(launch.value()), (arg, value) -> {
+        if (launch != null && launchOptimizedStart != null) {
+            throw new RuntimeException("You cannot use @Launch and @LaunchOptimizedStart annotations simultaneously.");
+        }
+
+        String[] params = launch != null ? launch.value() : launchOptimizedStart != null ? ArrayUtils.addAll(launchOptimizedStart.initialParams(), launchOptimizedStart.value()) : new String[]{};
+
+        if (params.length == 0 && distConfig == null) {
+            ConfigArgsConfigSource.parseConfigArgs(List.of(params), (arg, value) -> {
                 if (arg.equals(CONFIG_FILE_SHORT_NAME) || arg.equals(CONFIG_FILE_LONG_NAME)) {
                     setProperty(KeycloakPropertiesConfigSource.KEYCLOAK_CONFIG_FILE_PROP, value);
                 } else if (arg.startsWith("-D")) {
@@ -110,10 +118,10 @@ public class CLITestExtension extends QuarkusMainTestExtension {
             }
 
             if (launch != null) {
-                result = dist.run(Stream.concat(List.of(launch.value()).stream(), List.of(distConfig.defaultOptions()).stream()).collect(Collectors.toList()));
+                result = dist.run(Stream.concat(Stream.of(params), Stream.of(distConfig.defaultOptions())).collect(Collectors.toList()));
             }
         } else {
-            ConfigArgsConfigSource.setCliArgs(launch == null ? new String[] {} : launch.value());
+            ConfigArgsConfigSource.setCliArgs(params);
             configureProfile(context);
             super.beforeEach(context);
         }
