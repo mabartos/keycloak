@@ -16,14 +16,21 @@
  */
 package org.keycloak.quarkus.runtime.configuration.mappers;
 
-import static java.util.Optional.ofNullable;
-import static org.keycloak.config.Option.WILDCARD_PLACEHOLDER_PATTERN;
-import static org.keycloak.quarkus.runtime.Environment.isRebuild;
-import static org.keycloak.quarkus.runtime.configuration.Configuration.OPTION_PART_SEPARATOR;
-import static org.keycloak.quarkus.runtime.configuration.Configuration.OPTION_PART_SEPARATOR_CHAR;
-import static org.keycloak.quarkus.runtime.configuration.Configuration.toCliFormat;
-import static org.keycloak.quarkus.runtime.configuration.Configuration.toEnvVarFormat;
-import static org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX;
+import io.smallrye.config.ConfigSourceInterceptorContext;
+import io.smallrye.config.ConfigValue;
+import io.smallrye.config.ConfigValue.ConfigValueBuilder;
+import io.smallrye.config.ExpressionConfigSourceInterceptor;
+import io.smallrye.config.Expressions;
+import org.keycloak.config.DeprecatedMetadata;
+import org.keycloak.config.Option;
+import org.keycloak.config.OptionCategory;
+import org.keycloak.quarkus.runtime.cli.PropertyException;
+import org.keycloak.quarkus.runtime.cli.ShortErrorMessageHandler;
+import org.keycloak.quarkus.runtime.configuration.ConfigArgsConfigSource;
+import org.keycloak.quarkus.runtime.configuration.Configuration;
+import org.keycloak.quarkus.runtime.configuration.KcEnvConfigSource;
+import org.keycloak.quarkus.runtime.configuration.KeycloakConfigSourceProvider;
+import org.keycloak.utils.StringUtil;
 
 import java.util.Iterator;
 import java.util.List;
@@ -37,23 +44,13 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import io.smallrye.config.ConfigSourceInterceptorContext;
-import io.smallrye.config.ConfigValue;
-import io.smallrye.config.ConfigValue.ConfigValueBuilder;
-import io.smallrye.config.ExpressionConfigSourceInterceptor;
-import io.smallrye.config.Expressions;
-import org.keycloak.config.DeprecatedMetadata;
-import org.keycloak.config.Option;
-import org.keycloak.config.OptionCategory;
-import org.keycloak.quarkus.runtime.Environment;
-import org.keycloak.quarkus.runtime.cli.PropertyException;
-import org.keycloak.quarkus.runtime.cli.ShortErrorMessageHandler;
-import org.keycloak.quarkus.runtime.configuration.ConfigArgsConfigSource;
-import org.keycloak.quarkus.runtime.configuration.Configuration;
-import org.keycloak.quarkus.runtime.configuration.KcEnvConfigSource;
-import org.keycloak.quarkus.runtime.configuration.KeycloakConfigSourceProvider;
-import org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider;
-import org.keycloak.utils.StringUtil;
+import static java.util.Optional.ofNullable;
+import static org.keycloak.config.Option.WILDCARD_PLACEHOLDER_PATTERN;
+import static org.keycloak.quarkus.runtime.configuration.Configuration.OPTION_PART_SEPARATOR;
+import static org.keycloak.quarkus.runtime.configuration.Configuration.OPTION_PART_SEPARATOR_CHAR;
+import static org.keycloak.quarkus.runtime.configuration.Configuration.toCliFormat;
+import static org.keycloak.quarkus.runtime.configuration.Configuration.toEnvVarFormat;
+import static org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX;
 
 public class PropertyMapper<T> {
 
@@ -186,6 +183,18 @@ public class PropertyMapper<T> {
 
     public String getDescription() {
         return this.description;
+    }
+
+    String getMapFrom() {
+        return mapFrom;
+    }
+
+    BiFunction<String, ConfigSourceInterceptorContext, String> getMapper() {
+        return mapper;
+    }
+
+    BiFunction<String, ConfigSourceInterceptorContext, String> getParentMapper() {
+        return parentMapper;
     }
 
     /**
@@ -338,6 +347,7 @@ public class PropertyMapper<T> {
         private String requiredWhen = "";
         private Function<Set<String>, Set<String>> wildcardKeysTransformer;
         private ValueMapper wildcardMapFrom;
+        private Character wildcardDelimiter;
 
         public Builder(Option<T> option) {
             this.option = option;
@@ -416,6 +426,7 @@ public class PropertyMapper<T> {
             return this;
         }
 
+
         /**
          * Set the validator, overwriting the current one.
          */
@@ -473,6 +484,11 @@ public class PropertyMapper<T> {
             return this;
         }
 
+        public Builder<T> allowedWildcardDelimiter(Character delimiter) {
+            this.wildcardDelimiter = delimiter;
+            return this;
+        }
+
         public PropertyMapper<T> build() {
             if (paramLabel == null && Boolean.class.equals(option.getType())) {
                 paramLabel = Boolean.TRUE + "|" + Boolean.FALSE;
@@ -480,7 +496,7 @@ public class PropertyMapper<T> {
             // The wildcard pattern (e.g. log-level-<category>) is matching only a-z, 0-0 and dots. For env vars, dots are replaced by underscores.
             var fromWildcardMatcher = WILDCARD_PLACEHOLDER_PATTERN.matcher(option.getKey());
             if (fromWildcardMatcher.find()) {
-                return new WildcardPropertyMapper<>(option, to, isEnabled, enabledWhen, mapper, mapFrom, parentMapper, paramLabel, isMasked, validator, description, isRequired, requiredWhen, fromWildcardMatcher, wildcardKeysTransformer, wildcardMapFrom);
+                return new WildcardPropertyMapper<>(option, to, isEnabled, enabledWhen, mapper, mapFrom, parentMapper, paramLabel, isMasked, validator, description, isRequired, requiredWhen, fromWildcardMatcher, wildcardKeysTransformer, wildcardMapFrom, wildcardDelimiter);
             }
             if (wildcardKeysTransformer != null || wildcardMapFrom != null) {
                 throw new AssertionError("Wildcard operations not expected with non-wildcard mapper");

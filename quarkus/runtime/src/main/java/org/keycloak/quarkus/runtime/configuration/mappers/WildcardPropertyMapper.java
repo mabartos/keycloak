@@ -1,7 +1,10 @@
 package org.keycloak.quarkus.runtime.configuration.mappers;
 
-import static org.keycloak.config.Option.WILDCARD_PLACEHOLDER_PATTERN;
-import static org.keycloak.quarkus.runtime.cli.Picocli.ARG_PREFIX;
+import io.smallrye.config.ConfigSourceInterceptorContext;
+import io.smallrye.config.ConfigValue;
+import org.keycloak.config.Option;
+import org.keycloak.quarkus.runtime.configuration.Configuration;
+import org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,20 +18,18 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.keycloak.config.Option;
-import org.keycloak.quarkus.runtime.configuration.Configuration;
-import org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider;
-
-import io.smallrye.config.ConfigSourceInterceptorContext;
-import io.smallrye.config.ConfigValue;
+import static org.keycloak.config.Option.WILDCARD_PLACEHOLDER_PATTERN;
+import static org.keycloak.quarkus.runtime.cli.Picocli.ARG_PREFIX;
 
 public class WildcardPropertyMapper<T> extends PropertyMapper<T> {
-
+    private static final Function<Character, String> MATCHER_REPLACEMENT = (delimiter) -> String.format("([\\\\\\\\a-zA-Z0-9%c]+)", delimiter);
     private final Matcher fromWildcardMatcher;
     private final Pattern fromWildcardPattern;
     private final Pattern envVarNameWildcardPattern;
     private Matcher toWildcardMatcher;
     private Pattern toWildcardPattern;
+
+    private final Character allowedWildcardDelimiter;
     private final Function<Set<String>, Set<String>> wildcardKeysTransformer;
     private final ValueMapper wildcardMapFrom;
 
@@ -36,12 +37,13 @@ public class WildcardPropertyMapper<T> extends PropertyMapper<T> {
             BiFunction<String, ConfigSourceInterceptorContext, String> mapper,
             String mapFrom, BiFunction<String, ConfigSourceInterceptorContext, String> parentMapper,
             String paramLabel, boolean mask, BiConsumer<PropertyMapper<T>, ConfigValue> validator,
-            String description, BooleanSupplier required, String requiredWhen, Matcher fromWildcardMatcher, Function<Set<String>, Set<String>> wildcardKeysTransformer, ValueMapper wildcardMapFrom) {
+                                  String description, BooleanSupplier required, String requiredWhen, Matcher fromWildcardMatcher, Function<Set<String>, Set<String>> wildcardKeysTransformer, ValueMapper wildcardMapFrom, Character allowedWildcardDelimiter) {
         super(option, to, enabled, enabledWhen, mapper, mapFrom, parentMapper, paramLabel, mask, validator, description, required, requiredWhen, null);
         this.wildcardMapFrom = wildcardMapFrom;
         this.fromWildcardMatcher = fromWildcardMatcher;
+        this.allowedWildcardDelimiter = allowedWildcardDelimiter != null ? allowedWildcardDelimiter : '.';
         // Includes handling for both "--" prefix for CLI options and "kc." prefix
-        this.fromWildcardPattern = Pattern.compile("(?:" + ARG_PREFIX + "|kc\\.)" + fromWildcardMatcher.replaceFirst("([\\\\\\\\.a-zA-Z0-9]+)"));
+        this.fromWildcardPattern = Pattern.compile("(?:" + ARG_PREFIX + "|kc\\.)" + fromWildcardMatcher.replaceFirst(MATCHER_REPLACEMENT.apply(allowedWildcardDelimiter)));
 
         // Not using toEnvVarFormat because it would process the whole string incl the <...> wildcard.
         Matcher envVarMatcher = WILDCARD_PLACEHOLDER_PATTERN.matcher(option.getKey().toUpperCase().replace("-", "_"));
@@ -53,7 +55,7 @@ public class WildcardPropertyMapper<T> extends PropertyMapper<T> {
                 throw new IllegalArgumentException("Attempted to map a wildcard option to a non-wildcard option");
             }
 
-            this.toWildcardPattern = Pattern.compile(toWildcardMatcher.replaceFirst("([\\\\\\\\.a-zA-Z0-9]+)"));
+            this.toWildcardPattern = Pattern.compile(toWildcardMatcher.replaceFirst(MATCHER_REPLACEMENT.apply(allowedWildcardDelimiter)));
         }
 
         this.wildcardKeysTransformer = wildcardKeysTransformer;
@@ -65,7 +67,7 @@ public class WildcardPropertyMapper<T> extends PropertyMapper<T> {
     }
 
     String getTo(String wildcardKey) {
-        return toWildcardMatcher.replaceFirst(wildcardKey);
+        return toWildcardMatcher != null ? toWildcardMatcher.replaceFirst(wildcardKey) : null;
     }
 
     String getFrom(String wildcardKey) {
@@ -141,7 +143,8 @@ public class WildcardPropertyMapper<T> extends PropertyMapper<T> {
             throw new IllegalStateException("Env var '" + key + "' does not match the expected pattern '" + envVarNameWildcardPattern + "'");
         }
         String value = matcher.group(1);
-        final String wildcardValue = value.toLowerCase().replace("_", "."); // we opiniotatedly convert env var names to CLI format with dots
+        // we opinioatedly convert env var names to CLI format with the allowed wildcard delimiter (f.e dots or minus sings)
+        final String wildcardValue = value.toLowerCase().replace("_", allowedWildcardDelimiter.toString());
         return forWildcardValue(wildcardValue);
     }
 
