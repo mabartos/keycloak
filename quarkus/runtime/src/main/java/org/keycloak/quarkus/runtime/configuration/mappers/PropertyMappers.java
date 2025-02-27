@@ -2,7 +2,6 @@ package org.keycloak.quarkus.runtime.configuration.mappers;
 
 import io.smallrye.config.ConfigSourceInterceptorContext;
 import io.smallrye.config.ConfigValue;
-
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import org.jboss.logging.Logger;
 import org.keycloak.common.util.CollectionUtil;
@@ -29,8 +28,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -194,7 +193,11 @@ public final class PropertyMappers {
     }
 
     public static WildcardPropertyMapper<?> getWildcardMappedFrom(Option<?> from) {
-        return MAPPERS.wildcardMapFrom.get(from.getKey());
+        return getWildcardMappedFrom(from.getKey());
+    }
+
+    public static WildcardPropertyMapper<?> getWildcardMappedFrom(String key) {
+        return MAPPERS.wildcardMapFrom.get(key);
     }
 
     public static boolean isSupported(PropertyMapper<?> mapper) {

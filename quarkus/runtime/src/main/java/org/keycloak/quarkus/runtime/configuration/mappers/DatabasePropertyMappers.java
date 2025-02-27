@@ -182,7 +182,7 @@ final class DatabasePropertyMappers {
                         .map(PropertyMapper::getOption)
                         .orElseThrow(() -> new RuntimeException(String.format("Cannot find parent option defined as '.mapFrom(%s)'", parent.getMapFrom())));
 
-                created.wildcardMapFrom(Objects.requireNonNull(getDatasourceOption(parentFromOption)), parent.getParentMapper() != null ? (name, value, context) -> parent.getParentMapper().apply(value, context) : null);
+                created.mapFrom(Objects.requireNonNull(getDatasourceOption(parentFromOption)), parent.getParentMapper() != null ? (value, context) -> parent.getParentMapper().apply(value, context) : null);
             }
 
             if (parent.getParamLabel() != null) {

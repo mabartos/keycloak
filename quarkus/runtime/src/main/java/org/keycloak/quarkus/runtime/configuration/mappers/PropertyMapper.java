@@ -27,7 +27,6 @@ import org.keycloak.config.OptionCategory;
 import org.keycloak.quarkus.runtime.cli.PropertyException;
 import org.keycloak.quarkus.runtime.cli.ShortErrorMessageHandler;
 import org.keycloak.quarkus.runtime.configuration.ConfigArgsConfigSource;
-import org.keycloak.quarkus.runtime.configuration.Configuration;
 import org.keycloak.quarkus.runtime.configuration.KcEnvConfigSource;
 import org.keycloak.quarkus.runtime.configuration.KeycloakConfigSourceProvider;
 import org.keycloak.utils.StringUtil;
@@ -41,7 +40,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -59,7 +57,7 @@ public class PropertyMapper<T> {
     private BooleanSupplier enabled;
     private String enabledWhen;
     private final BiFunction<String, ConfigSourceInterceptorContext, String> mapper;
-    private final String mapFrom;
+    protected String mapFrom;
     private final BiFunction<String, ConfigSourceInterceptorContext, String> parentMapper;
     private final boolean mask;
     private final String paramLabel;
@@ -117,6 +115,20 @@ public class PropertyMapper<T> {
             // not getting the value directly from SmallRye Config to avoid the risk of infinite recursion when Config is initializing
             String mapFromWithPrefix = NS_KEYCLOAK_PREFIX + mapFrom;
             config = context.restart(mapFromWithPrefix);
+
+            if (config == null || config.getValue() == null) {
+                config = context.restart(mapFrom);
+                /*var wildcard = PropertyMappers.getWildcardMappedFrom(mapFrom);
+                if (wildcard != null) {
+                    //wildcard.get
+                    //var value=context.restart()
+                }*/
+
+               /* config = Optional.ofNullable(PropertyMappers.getWildcardMapper(mapFrom))
+                        .flatMap(f -> f.getMappedKey(f.getOption().getKey()))
+                        .map(context::restart)
+                        .orElse(null);*/
+            }
             parentValue = true;
         }
 

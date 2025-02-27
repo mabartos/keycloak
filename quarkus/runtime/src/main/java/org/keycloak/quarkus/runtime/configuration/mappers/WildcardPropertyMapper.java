@@ -59,6 +59,7 @@ public class WildcardPropertyMapper<T> extends PropertyMapper<T> {
         }
 
         this.wildcardKeysTransformer = wildcardKeysTransformer;
+        //this.mapFrom = mapFrom != null ? getMappedKey(mapFrom).map(this::getFrom).orElse(null) : null;
     }
 
     @Override
@@ -87,7 +88,7 @@ public class WildcardPropertyMapper<T> extends PropertyMapper<T> {
      * E.g. for the option "log-level-<category>" and the option name "log-level-io.quarkus",
      * the wildcard value would be "io.quarkus".
      */
-    private Optional<String> getMappedKey(String originalKey) {
+    Optional<String> getMappedKey(String originalKey) {
         Matcher matcher = fromWildcardPattern.matcher(originalKey);
         if (matcher.matches()) {
             return Optional.of(matcher).map(m -> m.group(1));
@@ -102,8 +103,8 @@ public class WildcardPropertyMapper<T> extends PropertyMapper<T> {
 
         matcher = envVarNameWildcardPattern.matcher(originalKey);
         if (matcher.matches()) {
-            // we opiniotatedly convert env var names to CLI format with dots
-            return Optional.of(matcher).map(m -> m.group(1).toLowerCase().replace("_", "."));
+            // we opiniotatedly convert env var names to CLI format with the allowed wildcard delimiter (f.e. dots or minus sings)
+            return Optional.of(matcher).map(m -> m.group(1).toLowerCase().replace("_", allowedWildcardDelimiter.toString()));
         }
 
         return Optional.empty();
