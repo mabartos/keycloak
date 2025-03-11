@@ -53,3 +53,12 @@ Read more about this in the https://www.keycloak.org/operator/advanced-configura
 When adding new users, groups, or roles, the LDAP provider would always store them in the same base DN configured for the searches. However, in some deployments admins may want to configure a broader DN with `subtree` scope to fetch users (or groups/roles) from multiple sub-DNs, but they don't want new users (or groups/roles) to be stored in this base DN in LDAP. Instead, they would like to chose one of the sub-DNs for that.
 
 It is now possible to control where new users, groups, or roles will be created using the new `Relative User Creation DN` config option in the LDAP provider and also in the LDAP group and role mappers. For more details, check the link:{adminguide_link}#_ldap[LDAP admin guide]
+
+=== Deprecated properties in your `persistence.xml` file
+
+When creating an additional JPA persistence unit in your deployment via `persistence.xml`, you should change the property name for specifying the datasource name.
+
+Replace deprecated Hibernate property `hibernate.connection.datasource` with:
+
+* `jakarta.persistence.jtaDataSource` (when `transaction-type="JTA"`)
+* `jakarta.persistence.nonJtaDataSource`

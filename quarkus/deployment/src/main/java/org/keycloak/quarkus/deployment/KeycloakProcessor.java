@@ -381,9 +381,13 @@ class KeycloakProcessor {
                         .setInitListener(recorder.createDefaultUnitListener()));
             } else {
                 Properties properties = descriptor.getProperties();
+
+                boolean isJta = descriptor.getTransactionType() == PersistenceUnitTransactionType.JTA;
+                var datasourceName = getDatasourceName(properties, isJta);
+
                 // register a listener for customizing the unit configuration at runtime
                 runtimeConfigured.produce(new HibernateOrmIntegrationRuntimeConfiguredBuildItem("keycloak", descriptor.getName())
-                        .setInitListener(recorder.createUserDefinedUnitListener(properties.getProperty(AvailableSettings.JAKARTA_JTA_DATASOURCE))));
+                        .setInitListener(recorder.createUserDefinedUnitListener(datasourceName, isJta)));
                 userManagedEntities.addAll(descriptor.getManagedClassNames());
             }
         }
@@ -393,6 +397,19 @@ class KeycloakProcessor {
         }
 
         configureDefaultPersistenceUnitEntities(defaultUnitDescriptor, indexBuildItem, userManagedEntities);
+    }
+
+    private String getDatasourceName(Properties properties, boolean isJta) {
+        var datasourceName = properties.getProperty(isJta ? AvailableSettings.JAKARTA_JTA_DATASOURCE : AvailableSettings.JAKARTA_NON_JTA_DATASOURCE);
+
+        if (StringUtil.isBlank(datasourceName)) {
+            datasourceName = properties.getProperty(AvailableSettings.DATASOURCE);
+            if (StringUtil.isNotBlank(datasourceName)) {
+                logger.warnf("You use deprecated property '%s' in your persistence.xml file. Use '%s' property instead.", AvailableSettings.DATASOURCE,
+                        isJta ? AvailableSettings.JAKARTA_JTA_DATASOURCE : AvailableSettings.JAKARTA_NON_JTA_DATASOURCE);
+            }
+        }
+        return datasourceName;
     }
 
     @BuildStep

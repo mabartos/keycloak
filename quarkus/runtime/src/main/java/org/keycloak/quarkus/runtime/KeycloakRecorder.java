@@ -165,7 +165,7 @@ public class KeycloakRecorder {
         DeclarativeUserProfileProviderFactory.setDefaultConfig(configuration);
     }
 
-    public HibernateOrmIntegrationRuntimeInitListener createUserDefinedUnitListener(String name) {
+    public HibernateOrmIntegrationRuntimeInitListener createUserDefinedUnitListener(String name, boolean isJta) {
         return new HibernateOrmIntegrationRuntimeInitListener() {
             @Override
             public void contributeRuntimeProperties(BiConsumer<String, Object> propertyCollector) {
@@ -179,7 +179,7 @@ public class KeycloakRecorder {
                                 return name;
                             }
                         })) {
-                    propertyCollector.accept(AvailableSettings.JAKARTA_JTA_DATASOURCE, instance.get());
+                    propertyCollector.accept(isJta ? AvailableSettings.JAKARTA_JTA_DATASOURCE : AvailableSettings.JAKARTA_NON_JTA_DATASOURCE, instance.get());
                 }
             }
         };
