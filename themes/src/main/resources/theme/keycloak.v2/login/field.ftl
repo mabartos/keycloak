@@ -2,8 +2,8 @@
 
 <div class="${properties.kcFormGroupClass}">
     <div class="${properties.kcFormGroupLabelClass}">
-        <label for="${name}" class="${properties.kcFormGroupLabelClass}">
-        <span class="${properties.kcFormGroupLabelTextClass}">
+        <label for="${name}" class="${properties.kcFormLabelClass}">
+        <span class="${properties.kcFormLabelTextClass}">
             ${label}
         </span>
             <#if required>

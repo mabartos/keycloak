@@ -18,10 +18,12 @@
 
         </form>
     <#elseif section = "info" >
+        <p>
         <#if realm.duplicateEmailsAllowed>
             ${msg("emailInstructionUsername")}
         <#else>
             ${msg("emailInstruction")}
         </#if>
+        </p>
     </#if>
 </@layout.registrationLayout>
