@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.hamcrest.CoreMatchers;
+import org.jboss.logmanager.handlers.AsyncHandler;
 import org.junit.Test;
 import org.keycloak.config.LoggingOptions;
 import org.keycloak.quarkus.runtime.Environment;
@@ -319,4 +320,138 @@ public class LoggingConfigurationTest extends AbstractConfigurationTest {
         assertEquals("true", createConfig().getConfigValue("quarkus.log.console.enable").getValue());
     }
 
+    @Test
+    public void asyncDefaults() {
+        initConfig();
+
+        boolean defaultEnabled = false;
+        int defaultQueueLength = 512;
+        AsyncHandler.OverflowAction defaultStrategy = AsyncHandler.OverflowAction.BLOCK;
+
+        for (var handler : LoggingOptions.Handler.values()) {
+            assertAsyncProperties(handler, defaultEnabled, defaultQueueLength, defaultStrategy);
+        }
+    }
+
+    @Test
+    public void asyncProperties() {
+        boolean enabled = true;
+        int queueLength = 1024;
+        AsyncHandler.OverflowAction strategy = AsyncHandler.OverflowAction.DISCARD;
+
+        for (var handler : LoggingOptions.Handler.values()) {
+            setAsyncProperties(handler, enabled, queueLength, strategy);
+        }
+
+        initConfig();
+
+        for (var handler : LoggingOptions.Handler.values()) {
+            assertAsyncProperties(handler, enabled, queueLength, strategy);
+        }
+    }
+
+    @Test
+    public void asyncPropertiesIndividual() {
+        setAsyncProperties(LoggingOptions.Handler.console, true, 768, AsyncHandler.OverflowAction.DISCARD);
+        setAsyncProperties(LoggingOptions.Handler.file, false, 1523, AsyncHandler.OverflowAction.BLOCK);
+        setAsyncProperties(LoggingOptions.Handler.syslog, true, 888, AsyncHandler.OverflowAction.DISCARD);
+
+        initConfig();
+
+        assertAsyncProperties(LoggingOptions.Handler.console, true, 768, AsyncHandler.OverflowAction.DISCARD);
+        assertAsyncProperties(LoggingOptions.Handler.file, false, 1523, AsyncHandler.OverflowAction.BLOCK);
+        assertAsyncProperties(LoggingOptions.Handler.syslog, true, 888, AsyncHandler.OverflowAction.DISCARD);
+    }
+
+    @Test
+    public void asyncGlobalProperty() {
+        putEnvVar("KC_LOG_ASYNC", "true");
+
+        initConfig();
+
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.console, true);
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.file, true);
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.syslog, true);
+
+        onAfter();
+
+        putEnvVar("KC_LOG_ASYNC", "false");
+
+        initConfig();
+
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.console, false);
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.file, false);
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.syslog, false);
+    }
+
+    @Test
+    public void asyncGlobalPropertyOverrides() {
+        putEnvVar("KC_LOG_ASYNC", "true");
+        setAsyncLoggingEnabled(LoggingOptions.Handler.console, false);
+        initConfig();
+
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.console, false);
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.file, true);
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.syslog, true);
+
+        setAsyncLoggingEnabled(LoggingOptions.Handler.file, false);
+        initConfig();
+
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.console, false);
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.file, false);
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.syslog, true);
+
+        setAsyncLoggingEnabled(LoggingOptions.Handler.file, false);
+        initConfig();
+
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.console, false);
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.file, false);
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.syslog, true);
+
+        onAfter();
+
+        putEnvVar("KC_LOG_ASYNC", "false");
+        setAsyncLoggingEnabled(LoggingOptions.Handler.console, true);
+        initConfig();
+
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.console, true);
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.file, false);
+        assertAsyncLoggingEnabled(LoggingOptions.Handler.syslog, false);
+
+    }
+
+    protected void setAsyncLoggingEnabled(LoggingOptions.Handler handler, Boolean enabled) {
+        // default values
+        setAsyncProperties(handler, enabled, 512, AsyncHandler.OverflowAction.BLOCK);
+    }
+    
+    protected void setAsyncProperties(LoggingOptions.Handler handler, Boolean enabled, Integer queueLength, AsyncHandler.OverflowAction overflowStrategy) {
+        var handlerName = handler.name();
+        putEnvVars(Map.of(
+                "KC_LOG_%s_ASYNC".formatted(handlerName), enabled.toString(),
+                "KC_LOG_%s_ASYNC_QUEUE_LENGTH".formatted(handlerName), queueLength.toString(),
+                "KC_LOG_%s_ASYNC_OVERFLOW".formatted(handlerName), overflowStrategy.toString()
+        ));
+    }
+
+    protected void assertAsyncLoggingEnabled(LoggingOptions.Handler handler, Boolean expectedEnabled) {
+        var handlerName = handler.toString();
+        assertConfig("log-%s-async".formatted(handlerName), expectedEnabled.toString());
+        assertExternalConfig("quarkus.log.%s.async".formatted(handlerName), expectedEnabled.toString());
+    }
+
+    protected void assertAsyncProperties(LoggingOptions.Handler handler, Boolean enabled, Integer queueLength, AsyncHandler.OverflowAction overflowStrategy) {
+        assertAsyncLoggingEnabled(handler, enabled);
+
+        var handlerName = handler.toString();
+        assertConfig(Map.of(
+                "log-%s-async-queue-length".formatted(handlerName), queueLength.toString(),
+                "log-%s-async-overflow".formatted(handlerName), overflowStrategy.toString()
+        ));
+
+        assertExternalConfig(Map.of(
+                "quarkus.log.%s.async.queue-length".formatted(handlerName), queueLength.toString(),
+                "quarkus.log.%s.async.overflow".formatted(handlerName), overflowStrategy.toString()
+        ));
+    }
 }

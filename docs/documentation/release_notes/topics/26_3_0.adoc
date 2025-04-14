@@ -1,0 +1,6 @@
+= Asynchronous logging
+
+All available log handlers now support asynchronous logging capabilities.
+Asynchronous logging might be useful for deployments requiring **high throughput** and **low latency** to move log operations in a separate thread.
+
+For more details, see the https://www.keycloak.org/server/logging[Logging guide].

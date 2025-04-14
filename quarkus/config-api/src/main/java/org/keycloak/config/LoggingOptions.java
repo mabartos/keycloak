@@ -1,5 +1,6 @@
 package org.keycloak.config;
 
+import org.jboss.logmanager.handlers.AsyncHandler;
 import org.jboss.logmanager.handlers.SyslogHandler;
 
 import java.io.File;
@@ -63,6 +64,12 @@ public class LoggingOptions {
             .category(OptionCategory.LOGGING)
             .description("The log level of a category. Takes precedence over the 'log-level' option.")
             .caseInsensitiveExpectedValues(true)
+            .build();
+
+    public static final Option<Boolean> LOG_ASYNC = new OptionBuilder<>("log-async", Boolean.class)
+            .category(OptionCategory.LOGGING)
+            .defaultValue(false)
+            .description("Indicates whether to log asynchronously to all handlers.")
             .build();
 
     public enum Output {
@@ -130,6 +137,26 @@ public class LoggingOptions {
             .hidden()
             .build();
 
+    // Console Async
+    public static final Option<Boolean> LOG_CONSOLE_ASYNC = new OptionBuilder<>("log-console-async", Boolean.class)
+            .category(OptionCategory.LOGGING)
+            .defaultValue(false)
+            .description("Indicates whether to log asynchronously to console. If not set, value from the parent property '%s' is used.".formatted(LOG_ASYNC.getKey()))
+            .build();
+
+    public static final Option<Integer> LOG_CONSOLE_ASYNC_QUEUE_LENGTH = new OptionBuilder<>("log-console-async-queue-length", Integer.class)
+            .category(OptionCategory.LOGGING)
+            .defaultValue(512)
+            .description("The queue length to use before flushing writing when logging to console.")
+            .build();
+
+    public static final Option<AsyncHandler.OverflowAction> LOG_CONSOLE_ASYNC_OVERFLOW = new OptionBuilder<>("log-console-async-overflow", AsyncHandler.OverflowAction.class)
+            .category(OptionCategory.LOGGING)
+            .defaultValue(AsyncHandler.OverflowAction.BLOCK)
+            .description("Determine whether to block the publisher (rather than drop the message) when the queue is full when logging to console.")
+            .caseInsensitiveExpectedValues(true)
+            .build();
+
     // File
     public static final Option<Boolean> LOG_FILE_ENABLED = new OptionBuilder<>("log-file-enabled", Boolean.class)
             .category(OptionCategory.LOGGING)
@@ -173,6 +200,26 @@ public class LoggingOptions {
             .category(OptionCategory.LOGGING)
             .defaultValue(DEFAULT_CONSOLE_OUTPUT)
             .description("Set the log output to JSON or default (plain) unstructured logging.")
+            .build();
+
+    // File async
+    public static final Option<Boolean> LOG_FILE_ASYNC = new OptionBuilder<>("log-file-async", Boolean.class)
+            .category(OptionCategory.LOGGING)
+            .defaultValue(false)
+            .description("Indicates whether to log asynchronously to file log. If not set, value from the parent property '%s' is used.".formatted(LOG_ASYNC.getKey()))
+            .build();
+
+    public static final Option<Integer> LOG_FILE_ASYNC_QUEUE_LENGTH = new OptionBuilder<>("log-file-async-queue-length", Integer.class)
+            .category(OptionCategory.LOGGING)
+            .defaultValue(512)
+            .description("The queue length to use before flushing writing when logging to file log.")
+            .build();
+
+    public static final Option<AsyncHandler.OverflowAction> LOG_FILE_ASYNC_OVERFLOW = new OptionBuilder<>("log-file-async-overflow", AsyncHandler.OverflowAction.class)
+            .category(OptionCategory.LOGGING)
+            .defaultValue(AsyncHandler.OverflowAction.BLOCK)
+            .description("Determine whether to block the publisher (rather than drop the message) when the queue is full when logging to file log.")
+            .caseInsensitiveExpectedValues(true)
             .build();
 
     // Syslog
@@ -247,4 +294,23 @@ public class LoggingOptions {
             .description("Set the Syslog output to JSON or default (plain) unstructured logging.")
             .build();
 
+    // Syslog async
+    public static final Option<Boolean> LOG_SYSLOG_ASYNC = new OptionBuilder<>("log-syslog-async", Boolean.class)
+            .category(OptionCategory.LOGGING)
+            .defaultValue(false)
+            .description("Indicates whether to log asynchronously to Syslog. If not set, value from the parent property '%s' is used.".formatted(LOG_ASYNC.getKey()))
+            .build();
+
+    public static final Option<Integer> LOG_SYSLOG_ASYNC_QUEUE_LENGTH = new OptionBuilder<>("log-syslog-async-queue-length", Integer.class)
+            .category(OptionCategory.LOGGING)
+            .defaultValue(512)
+            .description("The queue length to use before flushing writing when logging to Syslog.")
+            .build();
+
+    public static final Option<AsyncHandler.OverflowAction> LOG_SYSLOG_ASYNC_OVERFLOW = new OptionBuilder<>("log-syslog-async-overflow", AsyncHandler.OverflowAction.class)
+            .category(OptionCategory.LOGGING)
+            .defaultValue(AsyncHandler.OverflowAction.BLOCK)
+            .description("Determine whether to block the publisher (rather than drop the message) when the queue is full when logging to Syslog.")
+            .caseInsensitiveExpectedValues(true)
+            .build();
 }
