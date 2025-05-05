@@ -51,12 +51,13 @@ import io.quarkus.runtime.configuration.ConfigurationException;
 import io.quarkus.vertx.http.deployment.HttpRootPathBuildItem;
 import io.quarkus.vertx.http.deployment.NonApplicationRootPathBuildItem;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.spi.PersistenceUnitTransactionType;
 import org.eclipse.microprofile.health.Readiness;
 import org.hibernate.cfg.AvailableSettings;
-import org.hibernate.jpa.boot.spi.PersistenceUnitDescriptor;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 import org.hibernate.jpa.boot.internal.PersistenceXmlParser;
+import org.hibernate.jpa.boot.spi.PersistenceUnitDescriptor;
 import org.infinispan.protostream.SerializationContextInitializer;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget;
@@ -131,8 +132,6 @@ import org.keycloak.utils.StringUtil;
 import org.keycloak.vault.FilesKeystoreVaultProviderFactory;
 import org.keycloak.vault.FilesPlainTextVaultProviderFactory;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.spi.PersistenceUnitTransactionType;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -460,20 +459,22 @@ class KeycloakProcessor {
     @Record(ExecutionTime.STATIC_INIT)
     @BuildStep
     @Consume(CryptoProviderInitBuildItem.class)
+    @Consume(KeycloakFactoriesBuildItem.class)
     @Produce(KeycloakSessionFactoryPreInitBuildItem.class)
-    void configureKeycloakSessionFactory(KeycloakRecorder recorder, List<PersistenceXmlDescriptorBuildItem> descriptors) {
+    void configureKeycloakSessionFactory(KeycloakRecorder recorder, List<PersistenceXmlDescriptorBuildItem> descriptors, KeycloakFactoriesBuildItem loadedFactories) {
         Map<Spi, Map<Class<? extends Provider>, Map<String, Class<? extends ProviderFactory>>>> factories = new HashMap<>();
         Map<Class<? extends Provider>, String> defaultProviders = new HashMap<>();
-        Map<String, ProviderFactory> preConfiguredProviders = new HashMap<>();
+        Map<String, ProviderFactory> preConfiguredProviders = new HashMap<>(loadedFactories.getPreConfiguredFactories());
 
-        for (Entry<Spi, Map<Class<? extends Provider>, Map<String, ProviderFactory>>> entry : loadFactories(preConfiguredProviders)
-                .entrySet()) {
+        for (Entry<Spi, Map<Class<? extends Provider>, Map<String, ProviderFactory>>> entry : loadedFactories.getFactories().entrySet()) {
             Spi spi = entry.getKey();
 
             checkProviders(spi, entry.getValue(), defaultProviders);
 
             for (Entry<Class<? extends Provider>, Map<String, ProviderFactory>> value : entry.getValue().entrySet()) {
-                for (ProviderFactory factory : value.getValue().values()) {
+                Config.Scope scope = Config.scope(spi.getName());
+                Collection<ProviderFactory> enabledFactories = value.getValue().values().stream().filter(f -> isEnabled(f, scope.scope(f.getId()))).toList();
+                for (ProviderFactory factory : enabledFactories) {
                     factories.computeIfAbsent(spi,
                             key -> new HashMap<>())
                             .computeIfAbsent(spi.getProviderClass(), aClass -> new HashMap<>()).put(factory.getId(),factory.getClass());
@@ -695,11 +696,12 @@ class KeycloakProcessor {
         recorder.configureProtoStreamSchemas(schemas);
     }
 
-    private Map<Spi, Map<Class<? extends Provider>, Map<String, ProviderFactory>>> loadFactories(
-            Map<String, ProviderFactory> preConfiguredProviders) {
+    @BuildStep
+    KeycloakFactoriesBuildItem loadFactories() {
         Config.init(new MicroProfileConfigProvider());
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         ProviderManager pm = getProviderManager(classLoader);
+        Map<String, ProviderFactory> preConfiguredProviders = new HashMap<>();
         Map<Spi, Map<Class<? extends Provider>, Map<String, ProviderFactory>>> factories = new HashMap<>();
 
         for (Spi spi : pm.loadSpis()) {
@@ -729,7 +731,7 @@ class KeycloakProcessor {
 
                 Config.Scope scope = Config.scope(spi.getName(), factory.getId());
 
-                if (isEnabled(factory, scope)) {
+                if (isEnabled(scope)) {
                     if (spi.isInternal() && !isInternal(factory)) {
                         ServicesLogger.LOGGER.spiMayChange(factory.getId(), factory.getClass().getName(), spi.getName());
                     }
@@ -744,7 +746,7 @@ class KeycloakProcessor {
             factories.put(spi, providers);
         }
 
-        return factories;
+        return new KeycloakFactoriesBuildItem(factories, preConfiguredProviders);
     }
 
     private Map<String, ProviderFactory<?>> loadDeployedScriptProviders(ClassLoader classLoader, Spi spi) {
@@ -883,8 +885,12 @@ class KeycloakProcessor {
         return spi instanceof ProtocolMapperSpi || spi instanceof PolicySpi || spi instanceof AuthenticatorSpi;
     }
 
+    private boolean isEnabled(Config.Scope scope) {
+        return scope.getBoolean("enabled", true);
+    }
+
     private boolean isEnabled(ProviderFactory factory, Config.Scope scope) {
-        if (!scope.getBoolean("enabled", true)) {
+        if (!isEnabled(scope)) {
             return false;
         }
         if (factory instanceof EnvironmentDependentProviderFactory environmentDependentProviderFactory) {
