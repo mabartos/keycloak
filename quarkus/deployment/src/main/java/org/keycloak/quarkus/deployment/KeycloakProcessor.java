@@ -75,6 +75,7 @@ import org.keycloak.authentication.authenticators.browser.DeployedScriptAuthenti
 import org.keycloak.authorization.policy.provider.PolicySpi;
 import org.keycloak.authorization.policy.provider.js.DeployedScriptPolicyFactory;
 import org.keycloak.common.Profile;
+import org.keycloak.common.crypto.CryptoProvider;
 import org.keycloak.common.crypto.FipsMode;
 import org.keycloak.common.util.MultiSiteUtils;
 import org.keycloak.common.util.StreamUtil;
@@ -140,6 +141,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -682,11 +684,25 @@ class KeycloakProcessor {
         }));
     }
 
+    @BuildStep
+    CryptoProvidersBuildItem loadCryptoProviders() {
+        final Map<FipsMode, Class<?>> providers = new HashMap<>();
+        Arrays.stream(FipsMode.values()).forEach(mode -> {
+            try {
+                providers.put(mode, Thread.currentThread().getContextClassLoader().loadClass(mode.getProviderClassName()));
+            } catch (ClassNotFoundException ignore) {
+                // some of these classes does not have to be present
+            }
+        });
+        return new CryptoProvidersBuildItem(providers);
+    }
+
     @Consume(ProfileBuildItem.class)
+    @Consume(CryptoProvidersBuildItem.class)
     @Produce(CryptoProviderInitBuildItem.class)
     @BuildStep
     @Record(ExecutionTime.STATIC_INIT)
-    void setCryptoProvider(KeycloakRecorder recorder) {
+    void setCryptoProvider(KeycloakRecorder recorder, CryptoProvidersBuildItem providers) {
         FipsMode fipsMode = getOptionalValue(NS_KEYCLOAK_PREFIX + SecurityOptions.FIPS_MODE.getKey())
                 .map(FipsMode::valueOfOption)
                 .orElse(FipsMode.DISABLED);
@@ -697,7 +713,7 @@ class KeycloakProcessor {
             throw new RuntimeException("FIPS mode cannot be enabled without enabling the FIPS feature --features=fips");
         }
 
-        recorder.setCryptoProvider(fipsMode);
+        recorder.setCryptoProvider(fipsMode, providers.getProviders());
     }
 
     @BuildStep(onlyIf = IsDevelopment.class)

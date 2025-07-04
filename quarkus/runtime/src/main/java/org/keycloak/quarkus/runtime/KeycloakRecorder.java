@@ -133,19 +133,18 @@ public class KeycloakRecorder {
         return propertyCollector -> propertyCollector.accept(AvailableSettings.DEFAULT_SCHEMA, Configuration.getRawValue("kc.db-schema"));
     }
 
-    public void setCryptoProvider(FipsMode fipsMode) {
-        String cryptoProvider = fipsMode.getProviderClassName();
+    public void setCryptoProvider(FipsMode fipsMode, Map<FipsMode, Class<?>> providers) {
+        Class<?> cryptoProviderClass = providers.get(fipsMode);
 
         try {
-            CryptoIntegration.setProvider(
-                    (CryptoProvider) Thread.currentThread().getContextClassLoader().loadClass(cryptoProvider).getDeclaredConstructor().newInstance());
-        } catch (ClassNotFoundException | NoClassDefFoundError cause) {
+            CryptoIntegration.setProvider((CryptoProvider) cryptoProviderClass.getDeclaredConstructor().newInstance());
+        } catch (NoClassDefFoundError cause) {
             if (fipsMode.isFipsEnabled()) {
                 throw new RuntimeException("Failed to configure FIPS. Make sure you have added the Bouncy Castle FIPS dependencies to the 'providers' directory.");
             }
-            throw new RuntimeException("Unexpected error when configuring the crypto provider: " + cryptoProvider, cause);
+            throw new RuntimeException("Unexpected error when configuring the crypto provider: " + fipsMode.getProviderClassName(), cause);
         } catch (Exception cause) {
-            throw new RuntimeException("Unexpected error when configuring the crypto provider: " + cryptoProvider, cause);
+            throw new RuntimeException("Unexpected error when configuring the crypto provider: " + fipsMode.getProviderClassName(), cause);
         }
     }
 
