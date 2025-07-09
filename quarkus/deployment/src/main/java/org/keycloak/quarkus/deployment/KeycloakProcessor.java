@@ -40,6 +40,7 @@ import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
 import io.quarkus.deployment.builditem.HotDeploymentWatchedFileBuildItem;
 import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
 import io.quarkus.deployment.builditem.StaticInitConfigBuilderBuildItem;
+import io.quarkus.deployment.pkg.builditem.ArtifactResultBuildItem;
 import io.quarkus.hibernate.orm.deployment.HibernateOrmConfig;
 import io.quarkus.hibernate.orm.deployment.PersistenceXmlDescriptorBuildItem;
 import io.quarkus.hibernate.orm.deployment.integration.HibernateOrmIntegrationRuntimeConfiguredBuildItem;
@@ -105,10 +106,12 @@ import org.keycloak.quarkus.runtime.KeycloakRecorder;
 import org.keycloak.quarkus.runtime.cli.Picocli;
 import org.keycloak.quarkus.runtime.configuration.Configuration;
 import org.keycloak.quarkus.runtime.configuration.KeycloakConfigSourceProvider;
+import org.keycloak.quarkus.runtime.configuration.KeycloakInternalDefaultsConfigSource;
 import org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider;
 import org.keycloak.quarkus.runtime.configuration.PersistedConfigSource;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
+import org.keycloak.quarkus.runtime.configuration.mappers.WildcardPropertyMapper;
 import org.keycloak.quarkus.runtime.integration.resteasy.KeycloakHandlerChainCustomizer;
 import org.keycloak.quarkus.runtime.integration.resteasy.KeycloakTracingCustomizer;
 import org.keycloak.quarkus.runtime.services.health.KeycloakReadyHealthCheck;
@@ -220,6 +223,7 @@ class KeycloakProcessor {
 
     @Record(ExecutionTime.STATIC_INIT)
     @BuildStep
+    @Consume(PreConfigBuildItem.class)
     @Produce(ConfigBuildItem.class)
     void initConfig(KeycloakRecorder recorder) {
         Config.init(new MicroProfileConfigProvider());
@@ -302,6 +306,23 @@ class KeycloakProcessor {
             } catch (ClassNotFoundException e) {
                 throwConfigError(String.format("Unable to find the JDBC driver (%s). You need to install it.", dbDriver.get()));
             }
+        }
+    }
+
+    @BuildStep
+    @Produce(PreConfigBuildItem.class)
+    void handleMultipleDatasources(DataSourcesBuildTimeConfig dataSourcesConfig) {
+        Set<String> datasources = dataSourcesConfig.dataSources().keySet();
+        if (datasources.size() > 1) {
+            logger.infof("Multiple datasources are specified: %s", String.join(", ", datasources));
+        }
+
+        for (var ds : datasources) {
+            var mapper = (WildcardPropertyMapper<?>) PropertyMappers.getWildcardMappers().stream()
+                    .filter(f -> f.getFrom().equals(NS_KEYCLOAK_PREFIX + DatabaseOptions.DB_ENABLED_DATASOURCE.getKey()))
+                    .findAny()
+                    .orElseThrow(() -> new IllegalStateException("Cannot find the 'db-enabled-<datasource>' property mapper"));
+            KeycloakInternalDefaultsConfigSource.addProperty(mapper.getFrom(ds), "true");
         }
     }
 

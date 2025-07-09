@@ -100,10 +100,17 @@ public class DatabaseOptions {
             .defaultValue(10000)
             .build();
 
+    public static final Option<Boolean> DB_ENABLED_DATASOURCE = new OptionBuilder<>("db-enabled-<datasource>", Boolean.class)
+            .category(OptionCategory.DATABASE_DATASOURCES)
+            .defaultValue(true)
+            .buildTime(true)
+            .description("If named datasource <datasource> should be completely disabled in build-time.")
+            .build();
+
     public static final Option<Boolean> DB_ACTIVE_DATASOURCE = new OptionBuilder<>("db-active-<datasource>", Boolean.class)
             .category(OptionCategory.DATABASE_DATASOURCES)
             .defaultValue(true)
-            .description("Deactivate specific named datasource <datasource>.")
+            .description("If named datasource <datasource> should be deactivated in runtime. If 'db-enabled-<datasource>' is true, the datasource is still handled in build time, but not used in runtime.")
             .build();
 
     public static final Option<String> DB_POSTGRESQL_TARGET_SERVER_TYPE = new OptionBuilder<>("db-postgres-target-server-type", String.class)

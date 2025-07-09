@@ -55,6 +55,8 @@ public class KeycloakConfigSourceProvider implements ConfigSourceProvider, Confi
 
         addConfigSources("Persisted", List.of(PersistedConfigSource.getInstance()));
 
+        addConfigSources("Internal Defaults", List.of(new KeycloakInternalDefaultsConfigSource()));
+
         KeycloakPropertiesConfigSource.InFileSystem inFileSystem = new KeycloakPropertiesConfigSource.InFileSystem();
         Path path = inFileSystem.getConfigurationFile();
         if (path != null) {

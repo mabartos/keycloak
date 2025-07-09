@@ -102,6 +102,8 @@ final class DatabasePropertyMappers {
                         .to("kc." + DatabaseOptions.DB_SQL_LOG_SLOW_QUERIES.getKey())
                         .paramLabel("milliseconds")
                         .build(),
+                fromOption(DatabaseOptions.DB_ENABLED_DATASOURCE)
+                        .build(),
                 fromOption(DatabaseOptions.DB_ACTIVE_DATASOURCE)
                         .to("quarkus.datasource.\"<datasource>\".active")
                         .build(),

@@ -48,6 +48,7 @@ import org.keycloak.quarkus.runtime.cli.Picocli;
 public final class PersistedConfigSource extends PropertiesConfigSource {
 
     public static final String NAME = "PersistedConfigSource";
+    public static final int ORDINAL = 200;
     public static final String PERSISTED_PROPERTIES = "META-INF/keycloak-persisted.properties";
     private static final PersistedConfigSource INSTANCE = new PersistedConfigSource();
 
@@ -60,7 +61,7 @@ public final class PersistedConfigSource extends PropertiesConfigSource {
     private static final ThreadLocal<Boolean> ENABLED = ThreadLocal.withInitial(() -> true);
 
     private PersistedConfigSource() {
-        super(readProperties(), NAME, 200);
+        super(readProperties(), NAME, ORDINAL);
     }
 
     public static PersistedConfigSource getInstance() {
