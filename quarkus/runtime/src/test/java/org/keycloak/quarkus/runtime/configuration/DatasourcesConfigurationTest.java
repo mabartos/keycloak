@@ -12,8 +12,10 @@ import org.mariadb.jdbc.MariaDbDataSource;
 import org.postgresql.xa.PGXADataSource;
 
 import java.util.Map;
+import java.util.stream.StreamSupport;
 
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -470,5 +472,39 @@ public class DatasourcesConfigurationTest extends AbstractConfigurationTest {
                 "db-debug-jpql-my-store", "true",
                 "db-log-slow-queries-threshold-my-store","5000"
         ));
+    }
+
+    @Test
+    public void propagatedPropertyNames() {
+        ConfigArgsConfigSource.setCliArgs("--db-kind-user-store=mysql");
+
+        var config = createConfig();
+        Iterable<String> propertyNames = config.getPropertyNames();
+
+        assertThat(propertyNames, hasItems(
+                "kc.db-kind-user-store",
+                "quarkus.datasource.\"user-store\".db-kind",
+                "quarkus.datasource.\"user-store\".jdbc.url",
+                "quarkus.datasource.\"user-store\".jdbc.transactions",
+                "quarkus.datasource.\"user-store\".jdbc.max-size",
+                "kc.db-log-slow-queries-threshold",
+                "kc.db-debug-jpql",
+                "quarkus.datasource.\"user-store\".active"
+        ));
+
+        // verify the db-kind is there only once
+        long quarkusDbKindCount = StreamSupport.stream(propertyNames.spliterator(), false)
+                .filter("quarkus.datasource.\"user-store\".db-kind"::equals)
+                .count();
+        assertThat(quarkusDbKindCount, is(1L));
+
+        assertThat(propertyNames, not(hasItems(
+                "kc.db-dialect-user-store",
+                "quarkus.datasource.\"user-store\".username",
+                "quarkus.datasource.\"user-store\".password",
+                "quarkus.datasource.\"user-store\".jdbc.driver",
+                "quarkus.datasource.\"user-store\".jdbc.initial-size",
+                "quarkus.datasource.\"user-store\".jdbc.min-size"
+        )));
     }
 }

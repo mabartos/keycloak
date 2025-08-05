@@ -16,6 +16,7 @@
  */
 package org.keycloak.quarkus.runtime.configuration;
 
+import static org.keycloak.config.DatabaseOptions.Datasources.isDatasourceOption;
 import static org.keycloak.quarkus.runtime.Environment.isRebuild;
 
 import java.util.Iterator;
@@ -25,6 +26,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.collections4.IteratorUtils;
+import org.keycloak.config.DatabaseOptions;
 import org.keycloak.config.OptionCategory;
 import org.keycloak.quarkus.runtime.Environment;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper;
@@ -35,6 +37,7 @@ import io.smallrye.config.ConfigSourceInterceptorContext;
 import io.smallrye.config.ConfigValue;
 import io.smallrye.config.Priorities;
 import jakarta.annotation.Priority;
+import org.keycloak.quarkus.runtime.configuration.mappers.WildcardPropertyMapper;
 
 /**
  * <p>This interceptor is responsible for mapping Keycloak properties to their corresponding properties in Quarkus.
@@ -84,7 +87,7 @@ public class PropertyMappingInterceptor implements ConfigSourceInterceptor {
      */
     @Override
     public Iterator<String> iterateNames(ConfigSourceInterceptorContext context) {
-        Iterable<String> iterable = () -> context.iterateNames();
+        Iterable<String> iterable = context::iterateNames;
 
         final Set<PropertyMapper<?>> allMappers = PropertyMappers.getMappers();
 
@@ -105,10 +108,23 @@ public class PropertyMappingInterceptor implements ConfigSourceInterceptor {
             }
             allMappers.remove(mapper);
 
-            // include additional mappings if we're on the from side of the mapping
-            // as the mapping may not be bi-directional
+            if (mapper.hasWildcard()) {
+                // we require setting DB kind for additional datasources, so we can advertise connected properties with defaults + (DB URL) to Quarkus
+                var isDbKindOption = isDatasourceOption(mapper.getOption().getKey(), DatabaseOptions.DB);
+                if (isDbKindOption) {
+                    // also return the connectedTo properties that have default values
+                    var wildcardMapper = (WildcardPropertyMapper<?>) mapper;
+                    var wildcardValue = wildcardMapper.extractWildcardValue(name).orElseThrow();
+                    var connectedTo = wildcardMapper.getConnectedMappers()
+                            .stream()
+                            .filter(f -> f.getDefaultValue().isPresent() || isDatasourceOption(f.getOption().getKey(), DatabaseOptions.DB_URL))
+                            .map(connectedMapper -> connectedMapper.getTo(wildcardValue));
 
-            if (!mapper.hasWildcard() && name.equals(mapper.getFrom())) {
+                    return Stream.concat(Stream.of(name, wildcardMapper.getTo(wildcardValue)), connectedTo);
+                }
+            } else if (name.equals(mapper.getFrom())) {
+                // include additional mappings if we're on the from side of the mapping as the mapping may not be bi-directional
+                // -----------------------------------------
                 // this is not a wildcard value, but may map to wildcards
                 // the current example is something like log-level=wildcardCat1:level,wildcardCat2:level
                 var wildCard = PropertyMappers.getWildcardMappedFrom(mapper.getOption());
@@ -132,11 +148,11 @@ public class PropertyMappingInterceptor implements ConfigSourceInterceptor {
 
         // include anything remaining that has a default value
         var defaultStream = allMappers.stream()
-                .filter(m -> !m.getDefaultValue().isEmpty() && !m.hasWildcard()
+                .filter(m -> m.getDefaultValue().isPresent() && !m.hasWildcard()
                         && m.getCategory() != OptionCategory.CONFIG) // advertising the keystore type causes the keystore to be used early
                 .flatMap(m -> toDistinctStream(m.getTo()));
 
-        return IteratorUtils.chainedIterator(baseStream.iterator(), defaultStream.iterator());
+        return IteratorUtils.chainedIterator(baseStream.distinct().iterator(), defaultStream.iterator());
     }
 
     private static Stream<String> toDistinctStream(String... values) {
