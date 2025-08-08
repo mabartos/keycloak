@@ -197,4 +197,58 @@ public class OpenTelemetryConfigurationTest extends AbstractConfigurationTest {
                 "quarkus.otel.exporter.otlp.logs.protocol", "http/protobuf"
         ));
     }
+
+    @Test
+    public void metricsDefault() {
+        initConfig();
+
+        assertConfig(Map.of(
+                "otel-metrics-enabled", "false",
+                "otel-metrics-endpoint", "http://localhost:4317",
+                "otel-metrics-protocol", "grpc",
+                "otel-metrics-export-interval", "60s"
+        ));
+
+        assertExternalConfig(Map.of(
+                "quarkus.otel.metrics.enabled", "false",
+                "quarkus.otel.enabled", "false",
+                "quarkus.otel.exporter.otlp.metrics.endpoint", "http://localhost:4317",
+                "quarkus.otel.exporter.otlp.metrics.protocol", "grpc",
+                "quarkus.otel.metric.export.interval", "60s"
+        ));
+    }
+
+    @Test
+    public void metricsPriority() {
+        ConfigArgsConfigSource.setCliArgs("--otel-metrics-enabled=true", "--otel-metrics-endpoint=localhost:2000", "--otel-metrics-protocol=http/protobuf");
+        initConfig();
+        assertConfig(Map.of(
+                "otel-metrics-enabled", "true",
+                "otel-metrics-endpoint", "localhost:2000",
+                "otel-metrics-protocol", "http/protobuf"
+        ));
+        assertExternalConfig(Map.of(
+                "quarkus.otel.metrics.enabled", "true",
+                "quarkus.otel.enabled", "true",
+                "quarkus.otel.exporter.otlp.metrics.endpoint", "localhost:2000",
+                "quarkus.otel.exporter.otlp.metrics.protocol", "http/protobuf"
+        ));
+        onAfter();
+
+        ConfigArgsConfigSource.setCliArgs("--otel-endpoint=http://keycloak.org:1234", "--otel-protocol=grpc", "--otel-metrics-enabled=true", "--otel-metrics-endpoint=my-domain:2001", "--otel-metrics-protocol=http/protobuf");
+        initConfig();
+        assertConfig(Map.of(
+                "otel-metrics-enabled", "true",
+                "otel-metrics-endpoint", "my-domain:2001",
+                "otel-metrics-protocol", "http/protobuf",
+                "otel-endpoint", "http://keycloak.org:1234",
+                "otel-protocol", "grpc"
+        ));
+        assertExternalConfig(Map.of(
+                "quarkus.otel.metrics.enabled", "true",
+                "quarkus.otel.enabled", "true",
+                "quarkus.otel.exporter.otlp.metrics.endpoint", "my-domain:2001",
+                "quarkus.otel.exporter.otlp.metrics.protocol", "http/protobuf"
+        ));
+    }
 }

@@ -1,5 +1,6 @@
 package org.keycloak.quarkus.runtime.configuration.mappers;
 
+import io.quarkus.runtime.configuration.DurationConverter;
 import io.smallrye.config.ConfigSourceInterceptorContext;
 import org.keycloak.common.Profile;
 import org.keycloak.config.OpenTelemetryOptions;
@@ -18,6 +19,10 @@ import static org.keycloak.config.OpenTelemetryOptions.OTEL_LOGS_ENABLED;
 import static org.keycloak.config.OpenTelemetryOptions.OTEL_LOGS_ENDPOINT;
 import static org.keycloak.config.OpenTelemetryOptions.OTEL_LOGS_LEVEL;
 import static org.keycloak.config.OpenTelemetryOptions.OTEL_LOGS_PROTOCOL;
+import static org.keycloak.config.OpenTelemetryOptions.OTEL_METRICS_ENABLED;
+import static org.keycloak.config.OpenTelemetryOptions.OTEL_METRICS_ENDPOINT;
+import static org.keycloak.config.OpenTelemetryOptions.OTEL_METRICS_EXPORT_INTERVAL;
+import static org.keycloak.config.OpenTelemetryOptions.OTEL_METRICS_PROTOCOL;
 import static org.keycloak.config.OpenTelemetryOptions.OTEL_PROTOCOL;
 import static org.keycloak.config.OpenTelemetryOptions.OTEL_RESOURCE_ATTRIBUTES;
 import static org.keycloak.config.OpenTelemetryOptions.OTEL_SERVICE_NAME;
@@ -28,9 +33,10 @@ import static org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper.
 
 public class OpenTelemetryPropertyMappers {
     private static final String OTEL_FEATURE_ENABLED_MSG = "'opentelemetry' feature is enabled";
-    private static final String OTEL_COLLECTOR_ENABLED_MSG = "any of available OpenTelemetry components (Logs, Traces) is turned on";
+    private static final String OTEL_COLLECTOR_ENABLED_MSG = "any of available OpenTelemetry components (Logs, Metrics, Traces) is turned on";
 
     private static final String OTEL_LOGS_ENABLED_MSG = "OpenTelemetry Logs is enabled";
+    private static final String OTEL_METRICS_ENABLED_MSG = "Metrics ('metrics-enabled') and OpenTelemetry Metrics ('otel-metrics-enabled') are enabled";
     private static final String OTEL_TRACES_ENABLED_MSG = "OpenTelemetry Traces is enabled";
 
     private OpenTelemetryPropertyMappers() {
@@ -91,6 +97,31 @@ public class OpenTelemetryPropertyMappers {
                         .transformer(LoggingPropertyMappers::upperCase)
                         .build(),
 
+                // Metrics
+                fromOption(OTEL_METRICS_ENABLED)
+                        .isEnabled(MetricsPropertyMappers::metricsEnabled, MetricsPropertyMappers.METRICS_ENABLED_MSG)
+                        .to("quarkus.otel.metrics.enabled")
+                        .build(),
+                fromOption(OTEL_METRICS_ENDPOINT)
+                        .isEnabled(OpenTelemetryPropertyMappers::isOpenTelemetryMetricsEnabled, OTEL_METRICS_ENABLED_MSG)
+                        .mapFrom(OpenTelemetryOptions.OTEL_ENDPOINT)
+                        .to("quarkus.otel.exporter.otlp.metrics.endpoint")
+                        .paramLabel("url")
+                        .validator(OpenTelemetryPropertyMappers::validateEndpoint)
+                        .build(),
+                fromOption(OTEL_METRICS_PROTOCOL)
+                        .isEnabled(OpenTelemetryPropertyMappers::isOpenTelemetryMetricsEnabled, OTEL_METRICS_ENABLED_MSG)
+                        .mapFrom(OpenTelemetryOptions.OTEL_PROTOCOL)
+                        .to("quarkus.otel.exporter.otlp.metrics.protocol")
+                        .paramLabel("protocol")
+                        .build(),
+                fromOption(OTEL_METRICS_EXPORT_INTERVAL)
+                        .isEnabled(OpenTelemetryPropertyMappers::isOpenTelemetryMetricsEnabled, OTEL_METRICS_ENABLED_MSG)
+                        .to("quarkus.otel.metric.export.interval")
+                        .paramLabel("duration")
+                        .validator(OpenTelemetryPropertyMappers::validateDuration)
+                        .build(),
+
                 // Traces
                 fromOption(OTEL_TRACES_ENABLED)
                         .build(),
@@ -109,7 +140,7 @@ public class OpenTelemetryPropertyMappers {
     }
 
     private static String checkIfDependantsAreEnabled(String value, ConfigSourceInterceptorContext context) {
-        if (isOpenTelemetryLogsEnabled() || isOpenTelemetryTracesEnabled()) {
+        if (isOpenTelemetryLogsEnabled() || isOpenTelemetryMetricsEnabled() || isOpenTelemetryTracesEnabled()) {
             return Boolean.TRUE.toString();
         }
         return Boolean.FALSE.toString();
@@ -131,6 +162,10 @@ public class OpenTelemetryPropertyMappers {
         return Configuration.isTrue(OTEL_LOGS_ENABLED);
     }
 
+    public static boolean isOpenTelemetryMetricsEnabled() {
+        return Configuration.isTrue(OTEL_METRICS_ENABLED);
+    }
+
     static void validateEndpoint(String value) {
         if (StringUtil.isBlank(value)) {
             throw new PropertyException("Specified Endpoint URL must not be empty.");
@@ -147,6 +182,17 @@ public class OpenTelemetryPropertyMappers {
             return true;
         } catch (MalformedURLException | URISyntaxException e) {
             return false;
+        }
+    }
+
+    private static void validateDuration(String value) {
+        try {
+            var duration = DurationConverter.parseDuration(value);
+            if (duration.isNegative() || duration.isZero()) {
+                throw new IllegalArgumentException();
+            }
+        } catch (IllegalArgumentException e) {
+            throw new PropertyException("Duration specified via '%s' is invalid.".formatted(OTEL_METRICS_EXPORT_INTERVAL.getKey()));
         }
     }
 }
