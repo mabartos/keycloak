@@ -1049,4 +1049,96 @@ public class PicocliTest extends AbstractConfigurationTest {
         assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.exporter.otlp.endpoint").getValue(), is("http://keycloak-keycloak-keycloak.org:3455")); // value inherited
         assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.exporter.otlp.traces.endpoint").getValue(), is("http://keycloak-keycloak-keycloak.org:3455")); // value inherited
     }
+
+    @Test
+    public void otelLogs() {
+        // check enabled
+        NonRunningPicocli nonRunningPicocli = pseudoLaunch("start-dev", "--log-export-enabled=true");
+        assertEquals(CommandLine.ExitCode.OK, nonRunningPicocli.exitCode);
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.enabled").getValue(), is("true"));
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.logs.enabled").getValue(), is("true"));
+        onAfter();
+
+        // multiple components enabled
+        nonRunningPicocli = pseudoLaunch("start-dev", "--log-export-enabled=true", "--tracing-enabled=false");
+        assertEquals(CommandLine.ExitCode.OK, nonRunningPicocli.exitCode);
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.enabled").getValue(), is("true"));
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.logs.enabled").getValue(), is("true"));
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.traces.enabled").getValue(), is("false"));
+        onAfter();
+
+        // wrong protocol
+        nonRunningPicocli = pseudoLaunch("start-dev", "--log-export-enabled=true", "--log-export-protocol=wrong");
+        assertEquals(CommandLine.ExitCode.USAGE, nonRunningPicocli.exitCode);
+        assertThat(nonRunningPicocli.getErrString(), containsString("Invalid value for option '--log-export-protocol': wrong. Expected values are: grpc, http/protobuf"));
+        onAfter();
+
+        // otel protocol
+        nonRunningPicocli = pseudoLaunch("start-dev", "--log-export-enabled=true", "--log-export-protocol=http/protobuf");
+        assertEquals(CommandLine.ExitCode.OK, nonRunningPicocli.exitCode);
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.enabled").getValue(), is("true"));
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.exporter.otlp.logs.protocol").getValue(), is("http/protobuf"));
+        onAfter();
+
+        // parent + child protocol
+        nonRunningPicocli = pseudoLaunch("start-dev", "--log-export-enabled=true", "--log-export-protocol=http/protobuf", "--telemetry-protocol=grpc");
+        assertEquals(CommandLine.ExitCode.OK, nonRunningPicocli.exitCode);
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.enabled").getValue(), is("true"));
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.exporter.otlp.protocol").getValue(), is("grpc"));
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.exporter.otlp.logs.protocol").getValue(), is("http/protobuf"));
+        onAfter();
+
+        // parent protocol
+        nonRunningPicocli = pseudoLaunch("start-dev", "--log-export-enabled=true", "--telemetry-protocol=http/protobuf");
+        assertEquals(CommandLine.ExitCode.OK, nonRunningPicocli.exitCode);
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.enabled").getValue(), is("true"));
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.exporter.otlp.protocol").getValue(), is("http/protobuf"));
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.exporter.otlp.logs.protocol").getValue(), is("http/protobuf"));
+        onAfter();
+
+        // wrong parent endpoint
+        nonRunningPicocli = pseudoLaunch("start-dev", "--log-export-enabled=true", "--telemetry-endpoint=not-url");
+        assertEquals(CommandLine.ExitCode.USAGE, nonRunningPicocli.exitCode);
+        assertThat(nonRunningPicocli.getErrString(), containsString("Specified Endpoint URL is invalid"));
+        onAfter();
+
+        // wrong endpoint
+        nonRunningPicocli = pseudoLaunch("start-dev", "--log-export-enabled=true", "--log-export-endpoint=not-url");
+        assertEquals(CommandLine.ExitCode.USAGE, nonRunningPicocli.exitCode);
+        assertThat(nonRunningPicocli.getErrString(), containsString("Specified Endpoint URL is invalid"));
+        onAfter();
+
+        // otel endpoint
+        nonRunningPicocli = pseudoLaunch("start-dev", "--log-export-enabled=true", "--log-export-endpoint=http://keycloak.org");
+        assertEquals(CommandLine.ExitCode.OK, nonRunningPicocli.exitCode);
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.exporter.otlp.logs.endpoint").getValue(), is("http://keycloak.org"));
+        onAfter();
+
+        // parent + child endpoint
+        nonRunningPicocli = pseudoLaunch("start-dev", "--log-export-enabled=true", "--telemetry-endpoint=http://keycloak-keycloak-keycloak.org:3455", "--log-export-endpoint=http://keycloak.org");
+        assertEquals(CommandLine.ExitCode.OK, nonRunningPicocli.exitCode);
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.exporter.otlp.endpoint").getValue(), is("http://keycloak-keycloak-keycloak.org:3455"));
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.exporter.otlp.logs.endpoint").getValue(), is("http://keycloak.org"));
+        onAfter();
+
+        // parent endpoint
+        nonRunningPicocli = pseudoLaunch("start-dev", "--log-export-enabled=true", "--telemetry-endpoint=http://keycloak-keycloak-keycloak.org:3455");
+        assertEquals(CommandLine.ExitCode.OK, nonRunningPicocli.exitCode);
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.exporter.otlp.endpoint").getValue(), is("http://keycloak-keycloak-keycloak.org:3455")); // value inherited
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.exporter.otlp.logs.endpoint").getValue(), is("http://keycloak-keycloak-keycloak.org:3455")); // value inherited
+        onAfter();
+
+        // wrong level
+        nonRunningPicocli = pseudoLaunch("start-dev", "--log-export-enabled=true", "--log-export-level=wrong");
+        assertEquals(CommandLine.ExitCode.USAGE, nonRunningPicocli.exitCode);
+        assertThat(nonRunningPicocli.getErrString(), containsString("Invalid value for option '--log-export-level': wrong. Expected values are (case insensitive): off, fatal, error, warn, info, debug, trace, all"));
+        onAfter();
+
+        // level
+        nonRunningPicocli = pseudoLaunch("start-dev", "--log-export-enabled=true", "--log-export-level=debug");
+        assertEquals(CommandLine.ExitCode.OK, nonRunningPicocli.exitCode);
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.enabled").getValue(), is("true"));
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.logs.enabled").getValue(), is("true"));
+        assertThat(nonRunningPicocli.config.getConfigValue("quarkus.otel.logs.level").getValue(), is("DEBUG"));
+    }
 }
