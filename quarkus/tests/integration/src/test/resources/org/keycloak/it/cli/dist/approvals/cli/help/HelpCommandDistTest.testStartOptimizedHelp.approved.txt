@@ -152,7 +152,8 @@ Database:
 Database - additional datasources (Preview):
 
 --db-active-<datasource> <true|false>
-                     Preview: Deactivate specific named datasource <datasource>. Default: true.
+                     Preview: If specific named datasource <datasource> should be active/enabled in
+                       runtime. Default: true.
 --db-debug-jpql-<datasource> <true|false>
                      Preview: Used for named <datasource>. Add JPQL information as comments to SQL
                        statements to debug JPA SQL statement generation. Default: false.
