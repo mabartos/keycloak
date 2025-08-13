@@ -1,7 +1,10 @@
 package org.keycloak.admin.api;
 
+import io.quarkus.runtime.Startup;
+import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Produces;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
@@ -12,6 +15,7 @@ import org.keycloak.admin.api.client.ClientsApi;
 import org.keycloak.admin.api.realm.RealmApi;
 import org.keycloak.admin.api.realm.RealmsApi;
 import org.keycloak.admin.api.root.AdminApi;
+import org.keycloak.admin.api.root.AdminRoot;
 import org.keycloak.provider.Provider;
 import org.keycloak.utils.KeycloakSessionUtil;
 
@@ -28,6 +32,12 @@ import java.util.Set;
  */
 @ApplicationScoped
 public class AdminApiProducer {
+
+    @Produces
+    @ApplicationScoped
+    AdminRoot getAdminRoot() {
+        return getBean(AdminRoot.class);
+    }
 
     @Produces
     @ApplicationScoped
