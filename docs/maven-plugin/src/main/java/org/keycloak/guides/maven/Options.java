@@ -5,6 +5,7 @@ import static org.keycloak.quarkus.runtime.configuration.Configuration.toDashCas
 import static org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX;
 
 import org.keycloak.config.ConfigSupportLevel;
+import org.keycloak.config.DatabaseOptions;
 import org.keycloak.config.DeprecatedMetadata;
 import org.keycloak.config.OptionCategory;
 import org.keycloak.provider.ProviderConfigProperty;
@@ -50,7 +51,8 @@ public class Options {
                         m.getExpectedValues(),
                         m.isStrictExpectedValues(),
                         m.getEnabledWhen().orElse(""),
-                        m.getDeprecatedMetadata().orElse(null)))
+                        m.getDeprecatedMetadata().orElse(null),
+                        getNamedKey(m.getOption()).orElse(null)))
                 .forEach(o -> options.computeIfAbsent(o.category, k -> new TreeSet<>(Comparator.comparing(Option::getKey))).add(o));
 
         ProviderManager providerManager = Providers.getProviderManager(Thread.currentThread().getContextClassLoader());
@@ -83,6 +85,7 @@ public class Options {
                                 m.getOptions() == null ? Collections.emptyList() : m.getOptions(),
                                 true,
                                 "",
+                                null,
                                 null))
                         .sorted(Comparator.comparing(Option::getKey)).collect(Collectors.toList());
 
@@ -98,6 +101,14 @@ public class Options {
                 }
             }
         }
+    }
+
+    private Optional<String> getNamedKey(org.keycloak.config.Option<?> option) {
+        // only for datasources now
+        if (option.getCategory() == OptionCategory.DATABASE) {
+            return DatabaseOptions.Datasources.getKeyForDatasource(option);
+        }
+        return Optional.empty();
     }
 
     public List<OptionCategory> getCategories() {
@@ -187,6 +198,8 @@ public class Options {
         private final String enabledWhen;
         private final DeprecatedMetadata deprecated;
 
+        private final String namedKey;
+
         public Option(String key,
                       OptionCategory category,
                       boolean build,
@@ -196,7 +209,8 @@ public class Options {
                       Iterable<String> expectedValues,
                       boolean strictExpectedValues,
                       String enabledWhen,
-                      DeprecatedMetadata deprecatedMetadata) {
+                      DeprecatedMetadata deprecatedMetadata,
+                      String namedKey) {
             this.key = key;
             this.category = category;
             this.build = build;
@@ -207,6 +221,7 @@ public class Options {
             this.strictExpectedValues = strictExpectedValues;
             this.enabledWhen = enabledWhen;
             this.deprecated = deprecatedMetadata;
+            this.namedKey = namedKey;
         }
 
         public boolean isBuild() {
@@ -269,6 +284,10 @@ public class Options {
 
         public DeprecatedMetadata getDeprecated() {
             return deprecated;
+        }
+
+        public String getNamedKey() {
+            return namedKey;
         }
     }
 
