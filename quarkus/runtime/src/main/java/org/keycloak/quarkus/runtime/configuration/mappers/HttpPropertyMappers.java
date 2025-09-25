@@ -154,6 +154,9 @@ public final class HttpPropertyMappers implements PropertyMapperGrouping {
                 fromOption(HttpOptions.HTTP_METRICS_SLOS)
                         .isEnabled(MetricsPropertyMappers::metricsEnabled, MetricsPropertyMappers.METRICS_ENABLED_MSG)
                         .paramLabel("list of buckets")
+                        .build(),
+                fromOption(HttpOptions.HTTP_OPTIMIZED_SERIALIZERS)
+                        .to("quarkus.rest.jackson.optimization.enable-reflection-free-serializers")
                         .build()
         );
     }

@@ -943,4 +943,17 @@ public class PicocliTest extends AbstractConfigurationTest {
         assertEquals(CommandLine.ExitCode.USAGE, nonRunningPicocli.exitCode);
         assertThat(nonRunningPicocli.getErrString(), containsString("Available only when health is enabled"));
     }
+
+    @Test
+    public void httpOptimizedSerializers() {
+        var nonRunningPicocli = pseudoLaunch("start-dev", "--http-optimized-serializers=true");
+        assertEquals(CommandLine.ExitCode.OK, nonRunningPicocli.exitCode);
+        assertConfig("http-optimized-serializers", "true");
+        assertExternalConfig("quarkus.rest.jackson.optimization.enable-reflection-free-serializers", "true");
+        onAfter();
+
+        nonRunningPicocli = pseudoLaunch("start-dev", "--http-optimized-serializers=something-wrong");
+        assertEquals(CommandLine.ExitCode.USAGE, nonRunningPicocli.exitCode);
+        assertThat(nonRunningPicocli.getErrString(), containsString("Invalid value for option '--http-optimized-serializers': 'something-wrong' is not a boolean"));
+    }
 }

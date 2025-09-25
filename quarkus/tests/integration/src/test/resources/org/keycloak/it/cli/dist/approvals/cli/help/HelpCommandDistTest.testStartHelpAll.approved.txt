@@ -303,6 +303,11 @@ HTTP(S):
                        Specify a list of comma-separated values defined in milliseconds. Example
                        with buckets from 5ms to 10s: 5,10,25,50,250,500,1000,2500,5000,10000
                        Available only when metrics are enabled.
+--http-optimized-serializers <true|false>
+                     PREVIEW. Use reflection-free Jackson JSON serializers for better performance
+                       of the HTTP layer. You should see higher requests throughput, more stable
+                       response times, and less usage of system resources. Disabled by default for
+                       now as we gather more feedback. Default: false.
 --http-pool-max-threads <threads>
                      The maximum number of threads. If this is not specified then it will be
                        automatically sized to the greater of 4 * the number of available processors

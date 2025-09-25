@@ -646,6 +646,19 @@ public class ConfigurationTest extends AbstractConfigurationTest {
         assertEquals("200k", config.getConfigValue("quarkus.http.limits.max-header-size").getValue());
     }
 
+    @Test
+    public void testHttpOptimizedSerializers() {
+        initConfig();
+        assertConfig("http-optimized-serializers", "false");
+        assertExternalConfig("quarkus.rest.jackson.optimization.enable-reflection-free-serializers", "false");
+        onAfter();
+
+        putEnvVar("KC_HTTP_OPTIMIZED_SERIALIZERS", "true");
+        initConfig();
+        assertConfig("http-optimized-serializers", "true");
+        assertExternalConfig("quarkus.rest.jackson.optimization.enable-reflection-free-serializers", "true");
+    }
+
     private static Config.Scope cacheEmbeddedConfiguration() {
         return initConfig(CacheEmbeddedConfigProviderSpi.SPI_NAME, DefaultCacheEmbeddedConfigProviderFactory.PROVIDER_ID);
     }

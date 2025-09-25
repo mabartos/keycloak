@@ -149,4 +149,11 @@ public class HttpOptions {
                     "Specify a list of comma-separated values defined in milliseconds. Example with buckets from 5ms to 10s: 5,10,25,50,250,500,1000,2500,5000,10000")
             .build();
 
+    public static final Option<Boolean> HTTP_OPTIMIZED_SERIALIZERS = new OptionBuilder<>("http-optimized-serializers", Boolean.class)
+            .category(OptionCategory.HTTP)
+            .description("PREVIEW. Use reflection-free Jackson JSON serializers for better performance of the HTTP layer. " +
+                    "You should see higher requests throughput, more stable response times, and less usage of system resources. " +
+                    "Disabled by default for now as we gather more feedback.")
+            .buildTime(true)
+            .build();
 }
