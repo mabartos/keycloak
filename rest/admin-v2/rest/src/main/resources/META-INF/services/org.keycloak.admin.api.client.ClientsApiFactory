@@ -1,1 +1,1 @@
-org.keycloak.admin.api.client.DefaultClientsApiFactory
+org.keycloak.admin.api.client.ClientsApiV2Factory

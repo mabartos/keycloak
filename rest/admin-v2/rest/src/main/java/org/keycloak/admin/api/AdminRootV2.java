@@ -3,9 +3,11 @@ package org.keycloak.admin.api;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.OPTIONS;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.ext.Provider;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.keycloak.admin.api.realm.RealmsApi;
 import org.keycloak.common.Profile;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.services.resources.admin.AdminCorsPreflightService;
@@ -18,16 +20,16 @@ public class AdminRootV2 {
     protected KeycloakSession session;
 
     @Path("")
-    public AdminApi latestAdminApi() {
+    public RealmsApi latestAdminApi() {
         checkApiEnabled();
         // we could return the latest Admin API if no version is specified
-        return session.getProvider(AdminApi.class);
+        return AdminApiProvider.realmsApi(session, RealmsApi.class);
     }
 
-    @Path("v2")
-    public AdminApi adminApi() {
+    @Path("{version: v[0-9]+}")
+    public RealmsApi realms(@PathParam("version") String version) {
         checkApiEnabled();
-        return session.getProvider(AdminApi.class);
+        return AdminApiProvider.realmsApi(session, RealmsApi.class, version);
     }
 
     @Path("{any:.*}")

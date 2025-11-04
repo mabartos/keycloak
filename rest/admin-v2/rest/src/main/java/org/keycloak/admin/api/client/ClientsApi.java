@@ -7,8 +7,8 @@ import jakarta.ws.rs.QueryParam;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.extensions.Extension;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.keycloak.admin.api.AdminApi;
 import org.keycloak.admin.api.FieldValidation;
-import org.keycloak.provider.Provider;
 import org.keycloak.representations.admin.v2.ClientRepresentation;
 
 import jakarta.ws.rs.Consumes;
@@ -22,7 +22,7 @@ import org.keycloak.services.resources.KeycloakOpenAPI;
 
 @Tag(name = KeycloakOpenAPI.Admin.Tags.CLIENTS_V2)
 @Extension(name = KeycloakOpenAPI.Profiles.ADMIN, value = "")
-public interface ClientsApi extends Provider {
+public interface ClientsApi extends AdminApi {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -38,6 +38,6 @@ public interface ClientsApi extends Provider {
                                       @QueryParam("fieldValidation") FieldValidation fieldValidation);
 
     @Path("{id}")
-    ClientApi client(@PathParam("id") String id);
+    ClientApiV2 client(@PathParam("id") String id);
 }
 

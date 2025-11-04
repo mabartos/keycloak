@@ -20,14 +20,14 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import org.keycloak.validation.jakarta.JakartaValidatorProvider;
 
-public class DefaultClientsApi implements ClientsApi {
+public class ClientsApiV2 implements ClientsApi {
     private final KeycloakSession session;
     private final RealmModel realm;
     private final HttpResponse response;
     private final ClientService clientService;
     private final JakartaValidatorProvider validator;
 
-    public DefaultClientsApi(KeycloakSession session) {
+    public ClientsApiV2(KeycloakSession session) {
         this.session = session;
         this.realm = Objects.requireNonNull(session.getContext().getRealm());
         this.clientService = session.getProvider(ClientService.class);
@@ -52,14 +52,9 @@ public class DefaultClientsApi implements ClientsApi {
     }
 
     @Override
-    public ClientApi client(@PathParam("id") String clientId) {
+    public ClientApiV2 client(@PathParam("id") String clientId) {
         var client = Optional.ofNullable(session.clients().getClientByClientId(realm, clientId)).orElseThrow(() -> new NotFoundException("Client cannot be found"));
         session.getContext().setClient(client);
-        return session.getProvider(ClientApi.class);
-    }
-
-    @Override
-    public void close() {
-
+        return new ClientApiV2(session);
     }
 }

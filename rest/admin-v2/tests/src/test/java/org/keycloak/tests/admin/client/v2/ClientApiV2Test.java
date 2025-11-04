@@ -29,7 +29,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.keycloak.admin.api.client.ClientApi;
+import org.keycloak.admin.api.client.ClientApiV2;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.admin.v2.ClientRepresentation;
@@ -111,7 +111,7 @@ public class ClientApiV2Test {
     public void jsonMergePatchClient() throws Exception {
         HttpPatch request = new HttpPatch(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients/account");
         setAuthHeader(request);
-        request.setHeader(HttpHeaders.CONTENT_TYPE, ClientApi.CONTENT_TYPE_MERGE_PATCH);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, ClientApiV2.CONTENT_TYPE_MERGE_PATCH);
 
         ClientRepresentation patch = new ClientRepresentation();
         patch.setDescription("I'm also a description");
