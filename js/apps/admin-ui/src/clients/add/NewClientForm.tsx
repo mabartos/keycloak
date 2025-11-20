@@ -21,7 +21,9 @@ import { toClients } from "../routes/Clients";
 import { CapabilityConfig } from "./CapabilityConfig";
 import { GeneralSettings } from "./GeneralSettings";
 import { LoginSettings } from "./LoginSettings";
-import { useState } from "react";
+import { ClientTypeSelector } from "./ClientTypeSelector";
+import { useState, useEffect } from "react";
+import { convertAttributeNameToForm } from "../../util";
 
 const NewClientFooter = (newClientForm: any) => {
   const { t } = useTranslation();
@@ -61,6 +63,7 @@ export default function NewClientForm() {
   const form = useForm<FormFields>({
     defaultValues: {
       protocol: "openid-connect",
+      clientType: "custom",
       clientId: "",
       name: "",
       description: "",
@@ -73,16 +76,60 @@ export default function NewClientForm() {
       frontchannelLogout: true,
       attributes: {
         saml_idp_initiated_sso_url_name: "",
+        [convertAttributeNameToForm("attributes.pkce.code.challenge.method")]: "",
       },
     },
   });
-  const { getValues, watch } = form;
+  const { getValues, watch, setValue } = form;
   const protocol = watch("protocol");
+  const clientType = watch("clientType");
+
+  // Apply defaults based on client type
+  useEffect(() => {
+    if (!clientType || clientType === "custom") return;
+
+    const pkceField = convertAttributeNameToForm<FormFields>(
+      "attributes.pkce.code.challenge.method",
+    );
+
+    switch (clientType) {
+      case "api":
+        // Backend service - confidential client
+        setValue("publicClient", false);
+        setValue("standardFlowEnabled", false);
+        setValue("serviceAccountsEnabled", true);
+        setValue(pkceField, "");
+        break;
+      case "web-app":
+        // Traditional web application - confidential client with standard flow
+        setValue("publicClient", false);
+        setValue("standardFlowEnabled", true);
+        setValue("serviceAccountsEnabled", false);
+        setValue(pkceField, "");
+        break;
+      case "spa":
+        // Single page application - public client with PKCE
+        setValue("publicClient", true);
+        setValue("standardFlowEnabled", true);
+        setValue("serviceAccountsEnabled", false);
+        setValue(pkceField, "S256");
+        break;
+      case "native":
+        // Mobile/desktop app - public client with PKCE
+        setValue("publicClient", true);
+        setValue("standardFlowEnabled", true);
+        setValue("directAccessGrantsEnabled", true);
+        setValue("serviceAccountsEnabled", false);
+        setValue(pkceField, "S256");
+        break;
+    }
+  }, [clientType, setValue]);
 
   const save = async () => {
     if (saving) return;
     setSaving(true);
-    const client = convertFormValuesToObject(getValues());
+    const formValues = getValues();
+    const { clientType, ...client } = convertFormValuesToObject(formValues);
     try {
       const newClient = await adminClient.clients.create({
         ...client,
@@ -110,6 +157,13 @@ export default function NewClientForm() {
             isProgressive
             footer={<NewClientFooter {...form} />}
           >
+            <WizardStep
+              name={t("clientTypeStep")}
+              id="clientType"
+              key="clientType"
+            >
+              <ClientTypeSelector />
+            </WizardStep>
             <WizardStep
               name={t("generalSettings")}
               id="generalSettings"

@@ -187,7 +187,9 @@ export type SaveOptions = {
 export type FormFields = Omit<
   ClientRepresentation,
   "authorizationSettings" | "resources"
->;
+> & {
+  clientType?: "api" | "web-app" | "spa" | "native" | "custom";
+};
 
 export default function ClientDetails() {
   const { adminClient } = useAdminClient();
