@@ -1,16 +1,14 @@
 package org.keycloak.models.mapper;
 
 import org.keycloak.models.ClientModel;
-import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.RealmModel;
 import org.keycloak.representations.admin.v2.ClientRepresentation;
 import org.keycloak.services.ServiceException;
 
 public interface ClientModelMapper {
 
-    ClientRepresentation fromModel(KeycloakSession session, ClientModel model);
+    ClientRepresentation fromModel(ClientModel model, ModelMapperContext context);
 
-    ClientModel toModel(KeycloakSession session, RealmModel realm, ClientModel existingModel, ClientRepresentation rep) throws ServiceException;
+    ClientModel toModel(ClientModel existingModel, ClientRepresentation rep, ModelMapperContext context) throws ServiceException;
 
-    ClientModel toModel(KeycloakSession session, RealmModel realm, ClientRepresentation rep) throws ServiceException;
+    ClientModel toModel(ClientRepresentation rep, ModelMapperContext context) throws ServiceException;
 }

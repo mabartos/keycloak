@@ -6,16 +6,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 
 import org.keycloak.models.ClientModel;
-import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.RealmModel;
 import org.keycloak.models.RoleModel;
 import org.keycloak.representations.admin.v2.ClientRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.services.ServiceException;
-import org.keycloak.services.managers.ClientManager;
-import org.keycloak.services.managers.RealmManager;
+import org.keycloak.services.resources.admin.ClientResource;
 
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Context;
@@ -30,16 +30,16 @@ public interface MapStructClientModelMapper extends ClientModelMapper {
 
     @Override
     @ModelToRep
-    ClientRepresentation fromModel(@Context KeycloakSession session, ClientModel model);
+    ClientRepresentation fromModel(ClientModel model, @Context ModelMapperContext context);
 
     // we don't want to ignore nulls so that we completely overwrite the state
     @Override
     @RepToModel
-    ClientModel toModel(@Context KeycloakSession session, @Context RealmModel realm, @MappingTarget ClientModel existingModel, ClientRepresentation rep) throws ServiceException;
+    ClientModel toModel(@MappingTarget ClientModel existingModel, ClientRepresentation rep, @Context ModelMapperContext context) throws ServiceException;
 
     @Override
     @RepToModel
-    ClientModel toModel(@Context KeycloakSession session, @Context RealmModel realm, ClientRepresentation rep) throws ServiceException;
+    ClientModel toModel(ClientRepresentation rep, @Context ModelMapperContext context) throws ServiceException;
 
     /*-------------------------------------*
      *              MAPPERS                *
@@ -73,35 +73,70 @@ public interface MapStructClientModelMapper extends ClientModelMapper {
      *          HELPER METHODS             *
      *-------------------------------------*/
     @ObjectFactory
-    default ClientModel createClientModel(@Context RealmModel realm, ClientRepresentation rep) {
+    default ClientModel createClientModel(ClientRepresentation rep, @Context ModelMapperContext context) {
         // dummy add/remove to obtain a detached model
+        var realm = ((MapStructClientModelContext) context).getRealm().orElseThrow(() -> new IllegalArgumentException("You need to specify the realm in the mapper context"));
         var model = realm.addClient(rep.getClientId());
         realm.removeClient(model.getId());
         return model;
     }
 
+    // reusing the v1 logic
     @AfterMapping
-    default void addRoles(@MappingTarget ClientModel model, ClientRepresentation rep, @Context RealmModel realm, @Context KeycloakSession session) {
+    default void addRoles(@MappingTarget ClientModel model, ClientRepresentation rep, @Context ModelMapperContext context) {
+        var mapperContext = (MapStructClientModelContext) context;
+        var clientResource = getFreshClientResource(mapperContext, rep.getClientId());
+
+        if (clientResource.isEmpty()) return;
+        var roleResource = clientResource.get().getRoleContainerResource();
+
+        // Create a client role if it does not exist. If the client is removed, even the roles should be removed due to the cascading.
         Optional.ofNullable(rep.getRoles())
                 .orElse(Collections.emptySet())
                 .stream()
-                .filter(role -> model.getRole(role) == null)
+                .filter(role -> {
+                    try {
+                        return roleResource.getRole(role) == null;
+                    } catch (NotFoundException e) {
+                        return true;
+                    }
+                })
                 .forEach(model::addRole);
+    }
 
-        // Service Account roles
+    // reusing the v1 logic
+    @AfterMapping
+    default void handleServiceAccount(@MappingTarget ClientModel model, ClientRepresentation rep, @Context ModelMapperContext context) {
+        var mapperContext = (MapStructClientModelContext) context;
+        var clientResource = getFreshClientResource(mapperContext, rep.getClientId());
+
         var serviceAccount = rep.getServiceAccount();
-        if (serviceAccount != null && serviceAccount.getEnabled() && !serviceAccount.getRoles().isEmpty()) {
-            new ClientManager(new RealmManager(session)).enableServiceAccount(model);
-            var sa = session.users().getServiceAccount(model);
+        if (serviceAccount != null && serviceAccount.getEnabled() != null) {
+            ClientResource.updateClientServiceAccount(mapperContext.getSession(), model, serviceAccount.getEnabled());
 
-            serviceAccount.getRoles().forEach(role -> {
-                var foundRole = realm.getRole(role);
-                if (foundRole == null) {
+            if (serviceAccount.getEnabled() && !serviceAccount.getRoles().isEmpty() && clientResource.isPresent()) {
+                var roleMappers = mapperContext.getRealmAdminResource().users().user(clientResource.get().getServiceAccountUser().getId()).getRoleMappings();
+                var rolesList = serviceAccount.getRoles().stream()
+                        .map(roleName -> new RoleRepresentation(roleName, "", false))
+                        .toList();
+                try {
+                    roleMappers.addRealmRoleMappings(rolesList);
+                } catch (NotFoundException e) {
                     throw new ServiceException("Cannot assign role to the service account (field 'serviceAccount.roles') as it does not exist", Response.Status.BAD_REQUEST);
                 }
-                sa.grantRole(foundRole);
-            });
+            }
         }
+    }
+
+    private Optional<ClientResource> getFreshClientResource(MapStructClientModelContext context, String clientId) {
+        return context.getClientResource().or(() -> {
+            try {
+                return Optional.of(context.getRealmAdminResource().getClients().getClient(clientId));
+            } catch (ClientErrorException e) {
+                return Optional.empty();
+            }
+        });
+
     }
 
     @Named("isPublicClientPrimitive")
@@ -121,7 +156,8 @@ public interface MapStructClientModelMapper extends ClientModelMapper {
     }
 
     @Named("getServiceAccountRoles")
-    default Set<String> getServiceAccountRoles(@Context KeycloakSession session, ClientModel client) {
+    default Set<String> getServiceAccountRoles(ClientModel client, @Context ModelMapperContext context) {
+        var session = ((MapStructClientModelContext) context).getSession();
         if (client.isServiceAccountsEnabled()) {
             return session.users().getServiceAccount(client)
                     .getRoleMappingsStream()
