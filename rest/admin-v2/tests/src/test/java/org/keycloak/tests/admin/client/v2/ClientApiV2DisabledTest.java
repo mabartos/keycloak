@@ -4,6 +4,7 @@ import org.keycloak.testframework.annotations.InjectHttpClient;
 import org.keycloak.testframework.annotations.KeycloakIntegrationTest;
 
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +23,15 @@ public class ClientApiV2DisabledTest {
     @Test
     public void getClient() throws Exception {
         HttpGet request = new HttpGet(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients/account");
+        try (var response = client.execute(request)) {
+            assertEquals(404, response.getStatusLine().getStatusCode());
+        }
+    }
+
+    @Test
+    public void preflight() throws Exception {
+        HttpOptions request = new HttpOptions(HOSTNAME_LOCAL_ADMIN + "/realms");
+        request.setHeader("Origin", "http://localhost:8080");
         try (var response = client.execute(request)) {
             assertEquals(404, response.getStatusLine().getStatusCode());
         }

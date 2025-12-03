@@ -22,7 +22,6 @@ import java.util.Set;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 
-import org.keycloak.admin.api.client.ClientApi;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.admin.v2.ClientRepresentation;
@@ -41,6 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpMessage;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -56,10 +56,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import static org.keycloak.admin.api.AdminApiRootV2.CONTENT_TYPE_MERGE_PATCH;
+import static org.keycloak.services.cors.Cors.ACCESS_CONTROL_ALLOW_METHODS;
+import static org.keycloak.services.cors.Cors.ORIGIN_HEADER;
+
 @KeycloakIntegrationTest(config = ClientApiV2Test.AdminV2Config.class)
 public class ClientApiV2Test {
 
-    public static final String HOSTNAME_LOCAL_ADMIN = "http://localhost:8080/admin/api/v2";
+    public static final String HOSTNAME_LOCAL_ADMIN = "http://localhost:8080/admin/api/clients/v2";
     private static ObjectMapper mapper;
 
     @InjectHttpClient
@@ -105,7 +109,7 @@ public class ClientApiV2Test {
     public void jsonMergePatchClient() throws Exception {
         HttpPatch request = new HttpPatch(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients/account");
         setAuthHeader(request);
-        request.setHeader(HttpHeaders.CONTENT_TYPE, ClientApi.CONTENT_TYPE_MERGE_PATCH);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE_MERGE_PATCH);
 
         ClientRepresentation patch = new ClientRepresentation();
         patch.setDescription("I'm also a description");
@@ -448,6 +452,58 @@ public class ClientApiV2Test {
             assertThat(updated.getServiceAccount().getRoles(), is(Set.of()));
         }
     }
+
+    @Test
+    public void versionedClientsApi() throws Exception {
+        HttpGet request = new HttpGet("http://localhost:8080/admin/api/clients/");
+        setAuthHeader(request);
+        try (var response = client.execute(request)) {
+            assertThat(response.getStatusLine().getStatusCode(), is(404));
+        }
+
+        request = new HttpGet(HOSTNAME_LOCAL_ADMIN);
+        setAuthHeader(request);
+        try (var response = client.execute(request)) {
+            assertThat(response.getStatusLine().getStatusCode(), is(405)); // 405 for now due to the preflight check (needs to be fixed)
+            EntityUtils.consumeQuietly(response.getEntity());
+        }
+
+        request = new HttpGet(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients");
+        setAuthHeader(request);
+        try (var response = client.execute(request)) {
+            assertThat(response.getStatusLine().getStatusCode(), is(200));
+            EntityUtils.consumeQuietly(response.getEntity());
+        }
+
+        request = new HttpGet("http://localhost:8080/admin/api/clients/v3");
+        setAuthHeader(request);
+        try (var response = client.execute(request)) {
+            assertThat(response.getStatusLine().getStatusCode(), is(404));
+        }
+    }
+
+   /* @Test
+    public void preflight() throws Exception {
+        HttpOptions request = new HttpOptions(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients");
+        request.setHeader(ORIGIN_HEADER, "http://localhost:8080");
+
+        try (var response = client.execute(request)) {
+            assertThat(response.getStatusLine().getStatusCode(), is(200));
+            var header = response.getFirstHeader(ACCESS_CONTROL_ALLOW_METHODS);
+            assertThat(header, notNullValue());
+            assertThat(header.getValue(), is("GET, POST"));
+        }
+
+        request = new HttpOptions(HOSTNAME_LOCAL_ADMIN + "/realms");
+        request.setHeader(ORIGIN_HEADER, "http://localhost:8080");
+
+        try (var response = client.execute(request)) {
+            assertThat(response.getStatusLine().getStatusCode(), is(200));
+            var header = response.getFirstHeader(ACCESS_CONTROL_ALLOW_METHODS);
+            assertThat(header, notNullValue());
+            assertThat(header.getValue(), is("DELETE, POST, GET, PUT"));
+        }
+    }*/
 
     private ClientRepresentation getTestingFullClientRep() {
         var rep = new ClientRepresentation();
