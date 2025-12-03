@@ -19,21 +19,25 @@ import org.keycloak.representations.admin.v2.validation.CreateClientDefault;
 import org.keycloak.services.ServiceException;
 import org.keycloak.services.client.ClientService;
 import org.keycloak.services.client.DefaultClientService;
+import org.keycloak.services.resources.admin.AdminAuth;
 import org.keycloak.services.resources.admin.ClientsResource;
 import org.keycloak.services.resources.admin.RealmAdminResource;
+import org.keycloak.services.resources.admin.fgap.AdminPermissionEvaluator;
 import org.keycloak.validation.jakarta.HibernateValidatorProvider;
 import org.keycloak.validation.jakarta.JakartaValidatorProvider;
 
 public class DefaultClientsApi implements ClientsApi {
     private final KeycloakSession session;
+    private final AdminPermissionEvaluator auth;
     private final RealmModel realm;
     private final ClientService clientService;
     private final JakartaValidatorProvider validator;
     private final RealmAdminResource realmAdminResource;
     private final ClientsResource clientsResource;
 
-    public DefaultClientsApi(KeycloakSession session, RealmAdminResource realmAdminResource) {
+    public DefaultClientsApi(KeycloakSession session, AdminPermissionEvaluator auth, RealmAdminResource realmAdminResource) {
         this.session = session;
+        this.auth = auth;
         this.realmAdminResource = realmAdminResource;
 
         this.realm = Objects.requireNonNull(session.getContext().getRealm());
@@ -45,6 +49,7 @@ public class DefaultClientsApi implements ClientsApi {
     @GET
     @Override
     public Stream<ClientRepresentation> getClients() {
+        auth.clients().canList();
         return clientService.getClients(realm, null, null, null);
     }
 
@@ -52,6 +57,7 @@ public class DefaultClientsApi implements ClientsApi {
     @Override
     public Response createClient(@Valid ClientRepresentation client) {
         try {
+            auth.clients().requireManage();
             DefaultClientApi.validateUnknownFields(client);
             validator.validate(client, CreateClientDefault.class);
             return Response.status(Response.Status.CREATED)

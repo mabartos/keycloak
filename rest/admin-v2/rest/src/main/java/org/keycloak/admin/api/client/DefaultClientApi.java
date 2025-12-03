@@ -23,6 +23,7 @@ import org.keycloak.services.client.ClientService;
 import org.keycloak.services.client.DefaultClientService;
 import org.keycloak.services.resources.admin.ClientResource;
 import org.keycloak.services.resources.admin.RealmAdminResource;
+import org.keycloak.services.resources.admin.fgap.AdminPermissionEvaluator;
 import org.keycloak.services.util.ObjectMapperResolver;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,6 +36,7 @@ import static org.keycloak.admin.api.AdminApiRootV2.CONTENT_TYPE_MERGE_PATCH;
 public class DefaultClientApi implements ClientApi {
 
     private final KeycloakSession session;
+    private final AdminPermissionEvaluator auth;
     private final RealmModel realm;
     private final ClientModel client;
     private final ClientService clientService;
@@ -45,14 +47,15 @@ public class DefaultClientApi implements ClientApi {
 
     private static final ObjectMapper MAPPER = new ObjectMapperResolver().getContext(null);
 
-    public DefaultClientApi(KeycloakSession session, RealmAdminResource realmAdminResource, ClientResource clientResource, String clientId) {
+    public DefaultClientApi(KeycloakSession session, AdminPermissionEvaluator auth, RealmAdminResource realmAdminResource, ClientResource clientResource, String clientId) {
         this.session = session;
+        this.auth = auth;
         this.clientResource = clientResource;
         this.clientId = clientId;
 
         this.realm = Objects.requireNonNull(session.getContext().getRealm());
         this.client = Objects.requireNonNull(session.getContext().getClient());
-        this.clientService = new DefaultClientService(session, realmAdminResource, clientResource);
+        this.clientService = new DefaultClientService(session, auth, realmAdminResource, clientResource);
 
         this.objectMapper = MAPPER;
     }

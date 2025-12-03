@@ -24,20 +24,23 @@ import org.keycloak.services.ServiceException;
 import org.keycloak.services.resources.admin.ClientResource;
 import org.keycloak.services.resources.admin.ClientsResource;
 import org.keycloak.services.resources.admin.RealmAdminResource;
+import org.keycloak.services.resources.admin.fgap.AdminPermissionEvaluator;
 import org.keycloak.validation.jakarta.HibernateValidatorProvider;
 import org.keycloak.validation.jakarta.JakartaValidatorProvider;
 
 // TODO
 public class DefaultClientService implements ClientService {
     private final KeycloakSession session;
+    private final AdminPermissionEvaluator auth;
     private final ClientModelMapper mapper;
     private final JakartaValidatorProvider validator;
     private final RealmAdminResource realmAdminResource;
     private final ClientsResource clientsResource;
     private ClientResource clientResource;
 
-    public DefaultClientService(KeycloakSession session, RealmAdminResource realmAdminResource, ClientResource clientResource) {
+    public DefaultClientService(KeycloakSession session, AdminPermissionEvaluator auth, RealmAdminResource realmAdminResource, ClientResource clientResource) {
         this.session = session;
+        this.auth = auth;
         this.realmAdminResource = realmAdminResource;
         this.clientResource = clientResource;
 
@@ -46,8 +49,8 @@ public class DefaultClientService implements ClientService {
         this.validator = new HibernateValidatorProvider();
     }
 
-    public DefaultClientService(KeycloakSession session, RealmAdminResource realmAdminResource) {
-        this(session, realmAdminResource, null);
+    public DefaultClientService(KeycloakSession session, AdminPermissionEvaluator auth, RealmAdminResource realmAdminResource) {
+        this(session, auth, realmAdminResource, null);
     }
 
     @Override
