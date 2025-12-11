@@ -17,15 +17,20 @@
 
 package org.keycloak.tests.admin.client.v2;
 
+import java.io.IOException;
 import java.util.Set;
 
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 
+import org.apache.http.client.methods.HttpOptions;
+
+import org.keycloak.admin.api.AdminApi;
 import org.keycloak.admin.api.client.ClientApi;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.common.Profile;
 import org.keycloak.representations.admin.v2.ClientRepresentation;
+import org.keycloak.services.cors.Cors;
 import org.keycloak.services.error.ViolationExceptionResponse;
 import org.keycloak.testframework.annotations.InjectAdminClient;
 import org.keycloak.testframework.annotations.InjectHttpClient;
@@ -56,10 +61,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import static org.keycloak.services.cors.Cors.ACCESS_CONTROL_ALLOW_METHODS;
+import static org.keycloak.services.cors.Cors.ORIGIN_HEADER;
+
 @KeycloakIntegrationTest(config = ClientApiV2Test.AdminV2Config.class)
 public class ClientApiV2Test {
 
-    public static final String HOSTNAME_LOCAL_ADMIN = "http://localhost:8080/admin/api/v2";
+    public static final String HOSTNAME_LOCAL_ADMIN = "http://localhost:8080/admin/master/api/clients/v2";
     private static ObjectMapper mapper;
 
     @InjectHttpClient
@@ -81,7 +89,7 @@ public class ClientApiV2Test {
 
     @Test
     public void getClient() throws Exception {
-        HttpGet request = new HttpGet(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients/account");
+        HttpGet request = new HttpGet(HOSTNAME_LOCAL_ADMIN + "/clients/account");
         setAuthHeader(request);
         try (var response = client.execute(request)) {
             assertEquals(200, response.getStatusLine().getStatusCode());
@@ -92,7 +100,7 @@ public class ClientApiV2Test {
 
     @Test
     public void jsonPatchClient() throws Exception {
-        HttpPatch request = new HttpPatch(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients/account");
+        HttpPatch request = new HttpPatch(HOSTNAME_LOCAL_ADMIN + "/clients/account");
         setAuthHeader(request);
         request.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_PATCH_JSON);
         try (var response = client.execute(request)) {
@@ -103,9 +111,9 @@ public class ClientApiV2Test {
 
     @Test
     public void jsonMergePatchClient() throws Exception {
-        HttpPatch request = new HttpPatch(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients/account");
+        HttpPatch request = new HttpPatch(HOSTNAME_LOCAL_ADMIN + "/clients/account");
         setAuthHeader(request);
-        request.setHeader(HttpHeaders.CONTENT_TYPE, ClientApi.CONTENT_TYPE_MERGE_PATCH);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, AdminApi.CONTENT_TYPE_MERGE_PATCH);
 
         ClientRepresentation patch = new ClientRepresentation();
         patch.setDescription("I'm also a description");
@@ -122,7 +130,7 @@ public class ClientApiV2Test {
 
     @Test
     public void putFailsWithDifferentClientId() throws Exception {
-        HttpPut request = new HttpPut(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients/account");
+        HttpPut request = new HttpPut(HOSTNAME_LOCAL_ADMIN + "/clients/account");
         setAuthHeader(request);
         request.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
@@ -138,7 +146,7 @@ public class ClientApiV2Test {
 
     @Test
     public void putCreateOrUpdates() throws Exception {
-        HttpPut request = new HttpPut(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients/other");
+        HttpPut request = new HttpPut(HOSTNAME_LOCAL_ADMIN + "/clients/other");
         setAuthHeader(request);
         request.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
@@ -167,7 +175,7 @@ public class ClientApiV2Test {
 
     @Test
     public void createClient() throws Exception {
-        HttpPost request = new HttpPost(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients");
+        HttpPost request = new HttpPost(HOSTNAME_LOCAL_ADMIN + "/clients");
         setAuthHeader(request);
         request.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
@@ -193,7 +201,7 @@ public class ClientApiV2Test {
 
     @Test
     public void deleteClient() throws Exception {
-        HttpPut createRequest = new HttpPut(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients/to-delete");
+        HttpPut createRequest = new HttpPut(HOSTNAME_LOCAL_ADMIN + "/clients/to-delete");
         setAuthHeader(createRequest);
         createRequest.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
@@ -207,13 +215,13 @@ public class ClientApiV2Test {
             assertEquals(201, response.getStatusLine().getStatusCode());
         }
 
-        HttpGet getRequest = new HttpGet(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients/to-delete");
+        HttpGet getRequest = new HttpGet(HOSTNAME_LOCAL_ADMIN + "/clients/to-delete");
         setAuthHeader(getRequest);
         try (var response = client.execute(getRequest)) {
             assertEquals(200, response.getStatusLine().getStatusCode());
         }
 
-        HttpDelete deleteRequest = new HttpDelete(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients/to-delete");
+        HttpDelete deleteRequest = new HttpDelete(HOSTNAME_LOCAL_ADMIN + "/clients/to-delete");
         setAuthHeader(deleteRequest);
         try (var response = client.execute(deleteRequest)) {
             assertEquals(204, response.getStatusLine().getStatusCode());
@@ -226,7 +234,7 @@ public class ClientApiV2Test {
 
     @Test
     public void clientRepresentationValidation() throws Exception {
-        HttpPost request = new HttpPost(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients");
+        HttpPost request = new HttpPost(HOSTNAME_LOCAL_ADMIN + "/clients");
         setAuthHeader(request);
         request.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
@@ -272,7 +280,7 @@ public class ClientApiV2Test {
 
     @Test
     public void authenticationRequired() throws Exception {
-        HttpGet request = new HttpGet(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients/account");
+        HttpGet request = new HttpGet(HOSTNAME_LOCAL_ADMIN + "/clients/account");
         setAuthHeader(request, noAccessAdminClient);
         try (var response = client.execute(request)) {
             assertEquals(401, response.getStatusLine().getStatusCode());
@@ -281,7 +289,7 @@ public class ClientApiV2Test {
 
     @Test
     public void createFullClient() throws Exception {
-        HttpPost request = new HttpPost(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients");
+        HttpPost request = new HttpPost(HOSTNAME_LOCAL_ADMIN + "/clients");
         setAuthHeader(request);
         request.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
@@ -297,7 +305,7 @@ public class ClientApiV2Test {
 
     @Test
     public void createFullClientWrongServiceAccountRoles() throws Exception {
-        HttpPost request = new HttpPost(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients");
+        HttpPost request = new HttpPost(HOSTNAME_LOCAL_ADMIN + "/clients");
         setAuthHeader(request);
         request.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
@@ -314,7 +322,7 @@ public class ClientApiV2Test {
     @Test
     public void declarativeRoleManagement() throws Exception {
         // 1. Create a client with initial roles
-        HttpPut createRequest = new HttpPut(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients/declarative-role-test");
+        HttpPut createRequest = new HttpPut(HOSTNAME_LOCAL_ADMIN + "/clients/declarative-role-test");
         setAuthHeader(createRequest);
         createRequest.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
@@ -332,7 +340,7 @@ public class ClientApiV2Test {
         }
 
         // 2. Update with completely new roles - should remove old ones and add new ones
-        HttpPut updateRequest = new HttpPut(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients/declarative-role-test");
+        HttpPut updateRequest = new HttpPut(HOSTNAME_LOCAL_ADMIN + "/clients/declarative-role-test");
         setAuthHeader(updateRequest);
         updateRequest.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
@@ -379,7 +387,7 @@ public class ClientApiV2Test {
     @Test
     public void declarativeServiceAccountRoleManagement() throws Exception {
         // 1. Create a client with service account and initial realm roles
-        HttpPut createRequest = new HttpPut(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients/sa-declarative-test");
+        HttpPut createRequest = new HttpPut(HOSTNAME_LOCAL_ADMIN + "/clients/sa-declarative-test");
         setAuthHeader(createRequest);
         createRequest.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
@@ -401,7 +409,7 @@ public class ClientApiV2Test {
         }
 
         // 2. Update with completely new roles - should remove old ones and add new ones
-        HttpPut updateRequest = new HttpPut(HOSTNAME_LOCAL_ADMIN + "/realms/master/clients/sa-declarative-test");
+        HttpPut updateRequest = new HttpPut(HOSTNAME_LOCAL_ADMIN + "/clients/sa-declarative-test");
         setAuthHeader(updateRequest);
         updateRequest.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
@@ -449,6 +457,47 @@ public class ClientApiV2Test {
         }
     }
 
+    @Test
+    public void versionedClientsApi() throws Exception {
+        final var ADMIN_API_URL = "http://localhost:8080/admin/master/api";
+
+        // no version specified - default
+        HttpGet request = new HttpGet(ADMIN_API_URL + "/clients/clients");
+        setAuthHeader(request);
+        try (var response = client.execute(request)) {
+            assertThat(response.getStatusLine().getStatusCode(), is(200));
+        }
+
+        // v2 specified
+        request = new HttpGet(ADMIN_API_URL + "/clients/v2/clients");
+        setAuthHeader(request);
+        try (var response = client.execute(request)) {
+            assertThat(response.getStatusLine().getStatusCode(), is(200));
+            EntityUtils.consumeQuietly(response.getEntity());
+        }
+
+        // unknown version
+        request = new HttpGet(ADMIN_API_URL + "/clients/v3/clients");
+        setAuthHeader(request);
+        try (var response = client.execute(request)) {
+            assertThat(response.getStatusLine().getStatusCode(), is(405)); // 405 for now due to the preflight check (needs to be fixed)
+        }
+    }
+
+    @Test
+    public void preflight() throws Exception {
+        HttpOptions request = new HttpOptions(HOSTNAME_LOCAL_ADMIN + "/clients");
+        request.setHeader(ORIGIN_HEADER, "http://localhost:8080");
+
+        // we can improve preflight logic in follow-up issues
+        try (var response = client.execute(request)) {
+            assertThat(response.getStatusLine().getStatusCode(), is(200));
+            var header = response.getFirstHeader(ACCESS_CONTROL_ALLOW_METHODS);
+            assertThat(header, notNullValue());
+            assertThat(header.getValue(), is("DELETE, POST, GET, PUT"));
+        }
+    }
+
     private ClientRepresentation getTestingFullClientRep() {
         var rep = new ClientRepresentation();
         rep.setClientId("my-client");
@@ -492,6 +541,7 @@ public class ClientApiV2Test {
     public static class AdminV2Config implements KeycloakServerConfig {
         @Override
         public KeycloakServerConfigBuilder configure(KeycloakServerConfigBuilder config) {
+            config.log().categoryLevel("org.keycloak.services.cors","trace");
             return config.features(Profile.Feature.CLIENT_ADMIN_API_V2);
         }
     }
