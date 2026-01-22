@@ -45,6 +45,10 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Handler;
 
+import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
+import io.quarkus.deployment.builditem.PreloadClassBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.PersistenceUnitTransactionType;
 
@@ -54,6 +58,7 @@ import org.keycloak.authentication.authenticators.browser.DeployedScriptAuthenti
 import org.keycloak.authorization.policy.provider.PolicySpi;
 import org.keycloak.authorization.policy.provider.js.DeployedScriptPolicyFactory;
 import org.keycloak.common.Profile;
+import org.keycloak.common.crypto.CryptoProvider;
 import org.keycloak.common.crypto.FipsMode;
 import org.keycloak.common.util.MultiSiteUtils;
 import org.keycloak.common.util.StreamUtil;
@@ -918,10 +923,8 @@ class KeycloakProcessor {
     }
 
     @Consume(ProfileBuildItem.class)
-    @Produce(CryptoProviderInitBuildItem.class)
     @BuildStep
-    @Record(ExecutionTime.STATIC_INIT)
-    void setCryptoProvider(KeycloakRecorder recorder) {
+    void setFipsMode(BuildProducer<FipsModeBuildItem> fipsModeBuildItemBuildProducer) {
         FipsMode fipsMode = getOptionalValue(NS_KEYCLOAK_PREFIX + SecurityOptions.FIPS_MODE.getKey())
                 .map(FipsMode::valueOfOption)
                 .orElse(FipsMode.DISABLED);
@@ -932,7 +935,22 @@ class KeycloakProcessor {
             throw new RuntimeException("FIPS mode cannot be enabled without enabling the FIPS feature --features=fips");
         }
 
-        recorder.setCryptoProvider(fipsMode);
+        fipsModeBuildItemBuildProducer.produce(new FipsModeBuildItem(fipsMode));
+    }
+
+    @Consume(FipsModeBuildItem.class)
+    @BuildStep
+    void registerProviders(FipsModeBuildItem fipsModeBuildItem, BuildProducer<PreloadClassBuildItem> preloadClasses) {
+        preloadClasses.produce(new PreloadClassBuildItem(fipsModeBuildItem.getFipsMode().getProviderClassName()));
+    }
+
+    @Consume(ProfileBuildItem.class)
+    @Consume(FipsModeBuildItem.class)
+    @Produce(CryptoProviderInitBuildItem.class)
+    @BuildStep
+    @Record(ExecutionTime.STATIC_INIT)
+    void setCryptoProvider(KeycloakRecorder recorder, FipsModeBuildItem fipsModeBuildItem) {
+        recorder.setCryptoProvider(fipsModeBuildItem.getFipsMode());
     }
 
     @BuildStep(onlyIf = IsDevelopment.class)
