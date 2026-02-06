@@ -49,12 +49,14 @@ import org.keycloak.testframework.annotations.InjectHttpClient;
 import org.keycloak.testframework.annotations.KeycloakIntegrationTest;
 import org.keycloak.testframework.server.KeycloakServerConfig;
 import org.keycloak.testframework.server.KeycloakServerConfigBuilder;
+import org.keycloak.tests.admin.client.policies.TestClientPolicyExecutor;
 import org.keycloak.util.JsonSerialization;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpMessage;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -414,6 +416,25 @@ public class ClientPoliciesV2Test {
         }
     }
 
+    @Test
+    public void onlyPoliciesWithSpecificTypeAreExecuted() throws Exception {
+        ClientPolicyExecutorRepresentation executorRep = new ClientPolicyExecutorRepresentation();
+        executorRep.setExecutorProviderId(TestClientPolicyExecutor.PROVIDER_ID);
+
+        TestClientPolicyExecutor.Configuration config = new TestClientPolicyExecutor.Configuration();
+        JsonNode configNode = JsonSerialization.mapper.readValue(
+                JsonSerialization.mapper.writeValueAsBytes(config), JsonNode.class);
+        executorRep.setConfiguration(configNode);
+
+        setupPolicy("Test Profile/Policy that handles the TestClientPolicyExecutor and verifies types", PROFILE_NAME, POLICY_NAME, executorRep);
+
+        HttpGet getClient = new HttpGet(HOSTNAME_LOCAL_ADMIN + "/account");
+        setAuthHeader(getClient);
+        try (var response = client.execute(getClient)) {
+            assertThat(response.getStatusLine().getStatusCode(), is(200));
+        }
+    }
+
     /**
      * Sets up a policy that does NOT allow client_id and secret authenticator.
      * Only JWT-based authenticators are allowed.
@@ -440,12 +461,6 @@ public class ClientPoliciesV2Test {
     }
 
     private void setupPolicy(String description, String profileName, String policyName, Consumer<SecureClientAuthenticatorExecutor.Configuration> configuration) throws Exception {
-        // Create profile
-        ClientProfileRepresentation profileRep = new ClientProfileRepresentation();
-        profileRep.setName(profileName);
-        profileRep.setDescription(description);
-        profileRep.setExecutors(new ArrayList<>());
-
         ClientPolicyExecutorRepresentation executorRep = new ClientPolicyExecutorRepresentation();
         executorRep.setExecutorProviderId(SecureClientAuthenticatorExecutorFactory.PROVIDER_ID);
 
@@ -461,7 +476,18 @@ public class ClientPoliciesV2Test {
         JsonNode configNode = JsonSerialization.mapper.readValue(
                 JsonSerialization.mapper.writeValueAsBytes(config), JsonNode.class);
         executorRep.setConfiguration(configNode);
-        profileRep.getExecutors().add(executorRep);
+
+        setupPolicy(description, profileName, policyName, executorRep);
+    }
+
+    private void setupPolicy(String description, String profileName, String policyName, ClientPolicyExecutorRepresentation executor) throws Exception {
+        // Create profile
+        ClientProfileRepresentation profileRep = new ClientProfileRepresentation();
+        profileRep.setName(profileName);
+        profileRep.setDescription(description);
+        profileRep.setExecutors(new ArrayList<>());
+
+        profileRep.getExecutors().add(executor);
 
         ClientProfilesRepresentation profilesRep = new ClientProfilesRepresentation();
         profilesRep.setProfiles(List.of(profileRep));
@@ -536,7 +562,8 @@ public class ClientPoliciesV2Test {
     public static class AdminV2Config implements KeycloakServerConfig {
         @Override
         public KeycloakServerConfigBuilder configure(KeycloakServerConfigBuilder config) {
-            return config.features(Profile.Feature.CLIENT_ADMIN_API_V2);
+            return config.features(Profile.Feature.CLIENT_ADMIN_API_V2)
+                    .dependency("org.keycloak", "keycloak-admin-v2-tests");
         }
     }
 }
