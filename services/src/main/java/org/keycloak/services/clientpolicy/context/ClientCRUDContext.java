@@ -18,6 +18,7 @@
 package org.keycloak.services.clientpolicy.context;
 
 import org.keycloak.models.ClientModel;
+import org.keycloak.models.NotStoredModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.JsonWebToken;
 import org.keycloak.representations.idm.ClientRepresentation;
@@ -33,7 +34,12 @@ public interface ClientCRUDContext extends ClientPolicyContext {
      *
      * @return {@link ClientRepresentation}
      */
+    @Deprecated
     default ClientRepresentation getProposedClientRepresentation() {
+        return null;
+    }
+
+    default ClientModel getProposedClient() {
         return null;
     }
 

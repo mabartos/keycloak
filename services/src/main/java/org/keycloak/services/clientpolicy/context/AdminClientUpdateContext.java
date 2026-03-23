@@ -18,18 +18,30 @@
 package org.keycloak.services.clientpolicy.context;
 
 import org.keycloak.models.ClientModel;
+import org.keycloak.models.utils.ModelToRepresentation;
+import org.keycloak.models.utils.RepresentationToModel;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.services.clientpolicy.ClientPolicyEvent;
 import org.keycloak.services.resources.admin.AdminAuth;
+import org.keycloak.utils.KeycloakSessionUtil;
 
 public class AdminClientUpdateContext extends AbstractAdminClientCRUDContext {
-
-    private final ClientRepresentation proposedClientRepresentation;
+    @Deprecated
+    private ClientRepresentation proposedClientRepresentation;
+    private final ClientModel proposedClient;
     private final ClientModel targetClient;
 
+    public AdminClientUpdateContext(ClientModel proposedClient, ClientModel targetClient, AdminAuth adminAuth) {
+        super(adminAuth);
+        this.proposedClient = proposedClient;
+        this.targetClient = targetClient;
+    }
+
+    @Deprecated
     public AdminClientUpdateContext(ClientRepresentation proposedClientRepresentation, ClientModel targetClient, AdminAuth adminAuth) {
         super(adminAuth);
         this.proposedClientRepresentation = proposedClientRepresentation;
+        this.proposedClient = null;
         this.targetClient = targetClient;
     }
 
@@ -39,8 +51,14 @@ public class AdminClientUpdateContext extends AbstractAdminClientCRUDContext {
     }
 
     @Override
+    @Deprecated
     public ClientRepresentation getProposedClientRepresentation() {
-        return proposedClientRepresentation;
+        return ModelToRepresentation.toRepresentation(proposedClient, KeycloakSessionUtil.getKeycloakSession());
+    }
+
+    @Override
+    public ClientModel getProposedClient() {
+        return proposedClient;
     }
 
     @Override
