@@ -46,6 +46,10 @@ import org.keycloak.utils.StringUtil;
 
 import org.jboss.logging.Logger;
 
+/**
+ * @deprecated Use {@link AbstractCaptchaFormAction} with the {@link org.keycloak.authentication.captcha.CaptchaProvider} SPI instead.
+ */
+@Deprecated
 public abstract class AbstractRegistrationRecaptcha implements FormAction, FormActionFactory {
 
     public static final String G_RECAPTCHA_RESPONSE = "g-recaptcha-response";

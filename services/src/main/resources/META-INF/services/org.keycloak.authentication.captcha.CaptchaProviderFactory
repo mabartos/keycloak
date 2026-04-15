@@ -1,0 +1,2 @@
+org.keycloak.authentication.captcha.ReCaptchaProviderFactory
+org.keycloak.authentication.captcha.ReCaptchaEnterpriseProviderFactory

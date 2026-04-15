@@ -3,6 +3,7 @@
 <#import "user-profile-commons.ftl" as userProfileCommons>
 <#import "register-commons.ftl" as registerCommons>
 <#import "password-validation.ftl" as validator>
+<#import "captcha-commons.ftl" as captcha>
 <@layout.registrationLayout displayMessage=messagesPerField.exists('global') displayRequiredFields=true; section>
 <!-- template: register.ftl -->
 
@@ -26,31 +27,9 @@
 
             <@registerCommons.termsAcceptance/>
 
-            <#if recaptchaRequired?? && (recaptchaVisible!false)>
-                <div class="form-group">
-                    <div class="${properties.kcInputWrapperClass!}">
-                        <div class="g-recaptcha" data-size="compact" data-sitekey="${recaptchaSiteKey}" data-action="${recaptchaAction}"></div>
-                    </div>
-                </div>
-            </#if>
+            <@captcha.widget />
 
-            <#if recaptchaRequired?? && !(recaptchaVisible!false)>
-                <script>
-                    function onSubmitRecaptcha(token) {
-                        document.getElementById("kc-register-form").requestSubmit();
-                    }
-                </script>
-                <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
-                    <button class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!} g-recaptcha"
-                            data-sitekey="${recaptchaSiteKey}" data-callback="onSubmitRecaptcha" data-action="${recaptchaAction}" type="submit" id="kc-submit">
-                        ${msg("doRegister")}
-                    </button>
-                </div>
-            <#else>
-                <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
-                    <input class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" type="submit" value="${msg("doRegister")}"/>
-                </div>
-            </#if>
+            <@captcha.submitButton formId="kc-register-form" label="doRegister" />
 
             <div class="${properties.kcFormGroupClass!} pf-v5-c-login__main-footer-band">
                 <div id="kc-form-options" class="${properties.kcFormOptionsClass!} pf-v5-c-login__main-footer-band-item">

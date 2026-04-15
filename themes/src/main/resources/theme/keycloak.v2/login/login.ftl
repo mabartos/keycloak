@@ -3,6 +3,7 @@
 <#import "buttons.ftl" as buttons>
 <#import "social-providers.ftl" as identityProviders>
 <#import "passkeys.ftl" as passkeys>
+<#import "captcha-commons.ftl" as captcha>
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('username','password') displayInfo=realm.password && realm.registrationAllowed && !registrationDisabled??; section>
 <!-- template: login.ftl -->
 
@@ -33,7 +34,14 @@
                     </#if>
 
                     <input type="hidden" id="id-hidden-input" name="credentialId" <#if auth.selectedCredential?has_content>value="${auth.selectedCredential}"</#if>/>
-                    <@buttons.loginButton />
+                    <@captcha.widget />
+                    <#if captcha.isInvisible()>
+                        <@buttons.actionGroup>
+                            <@captcha.button formId="kc-form-login" label="doLogIn" id="kc-login" name="login" class="${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!}" />
+                        </@buttons.actionGroup>
+                    <#else>
+                        <@buttons.loginButton />
+                    </#if>
                 </form>
             </#if>
             </div>

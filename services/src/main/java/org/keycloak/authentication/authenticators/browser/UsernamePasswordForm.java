@@ -23,8 +23,11 @@ import jakarta.ws.rs.core.Response;
 
 import org.keycloak.WebAuthnConstants;
 import org.keycloak.authentication.AuthenticationFlowContext;
+import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.AuthenticatorUtil;
+import org.keycloak.authentication.captcha.CaptchaConstants;
+import org.keycloak.authentication.captcha.CaptchaHelper;
 import org.keycloak.forms.login.LoginFormsProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
@@ -32,6 +35,7 @@ import org.keycloak.models.UserModel;
 import org.keycloak.models.credential.PasswordCredentialModel;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.services.managers.AuthenticationManager;
+import org.keycloak.services.messages.Messages;
 import org.keycloak.sessions.AuthenticationSessionModel;
 
 /**
@@ -61,7 +65,17 @@ public class UsernamePasswordForm extends AbstractUsernameFormAuthenticator impl
             // webauth form submission, try to action using the webauthn authenticator
             webauthnAuth.action(context);
             return;
-        } else if (!validateForm(context, formData)) {
+        }
+
+        // Validate CAPTCHA if enabled at realm level
+        if (!CaptchaHelper.validateCaptchaIfEnabled(context.getSession(), formData)) {
+            context.getEvent().error(org.keycloak.events.Errors.INVALID_USER_CREDENTIALS);
+            Response challengeResponse = challenge(context, Messages.CAPTCHA_FAILED);
+            context.failureChallenge(AuthenticationFlowError.INVALID_CREDENTIALS, challengeResponse);
+            return;
+        }
+
+        if (!validateForm(context, formData)) {
             // normal username and form authenticator
             return;
         }
@@ -127,6 +141,7 @@ public class UsernamePasswordForm extends AbstractUsernameFormAuthenticator impl
     protected Response challenge(AuthenticationFlowContext context, MultivaluedMap<String, String> formData) {
         LoginFormsProvider forms = context.form();
         if (!formData.isEmpty()) forms.setFormData(formData);
+        CaptchaHelper.addCaptchaToFormIfEnabled(context.getSession(), forms, CaptchaConstants.ACTION_LOGIN);
 
         return forms.createLoginUsernamePassword();
     }
@@ -137,6 +152,7 @@ public class UsernamePasswordForm extends AbstractUsernameFormAuthenticator impl
             // setup webauthn data when possible
             webauthnAuth.fillContextForm(context);
         }
+        CaptchaHelper.addCaptchaToFormIfEnabled(context.getSession(), context.form(), CaptchaConstants.ACTION_LOGIN);
         return super.challenge(context, error, field);
     }
 

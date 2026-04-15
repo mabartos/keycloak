@@ -29,6 +29,8 @@ import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.AuthenticatorFactory;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
 import org.keycloak.authentication.authenticators.browser.AbstractUsernameFormAuthenticator;
+import org.keycloak.authentication.captcha.CaptchaConstants;
+import org.keycloak.authentication.captcha.CaptchaHelper;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
 import org.keycloak.events.EventBuilder;
@@ -64,6 +66,7 @@ public class ResetCredentialChooseUser implements Authenticator, AuthenticatorFa
 
             logger.debugf("Forget-password triggered when reauthenticating user after first broker login. Prefilling reset-credential-choose-user screen with user '%s' ", existingUser.getUsername());
             context.setUser(existingUser);
+            CaptchaHelper.addCaptchaToFormIfEnabled(context.getSession(), context.form(), CaptchaConstants.ACTION_RESET);
             Response challenge = context.form().createPasswordReset();
             context.challenge(challenge);
             return;
@@ -90,6 +93,7 @@ public class ResetCredentialChooseUser implements Authenticator, AuthenticatorFa
             return;
         }
 
+        CaptchaHelper.addCaptchaToFormIfEnabled(context.getSession(), context.form(), CaptchaConstants.ACTION_RESET);
         Response challenge = context.form().createPasswordReset();
         context.challenge(challenge);
     }
@@ -98,6 +102,18 @@ public class ResetCredentialChooseUser implements Authenticator, AuthenticatorFa
     public void action(AuthenticationFlowContext context) {
         EventBuilder event = context.getEvent();
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
+
+        // Validate CAPTCHA if enabled at realm level
+        if (!CaptchaHelper.validateCaptchaIfEnabled(context.getSession(), formData)) {
+            event.error(Errors.INVALID_USER_CREDENTIALS);
+            CaptchaHelper.addCaptchaToFormIfEnabled(context.getSession(), context.form(), CaptchaConstants.ACTION_RESET);
+            Response challenge = context.form()
+                    .setError(Messages.CAPTCHA_FAILED)
+                    .createPasswordReset();
+            context.failureChallenge(AuthenticationFlowError.INVALID_CREDENTIALS, challenge);
+            return;
+        }
+
         String username = formData.getFirst("username");
         if (username == null || username.isEmpty()) {
             event.error(Errors.USERNAME_MISSING);

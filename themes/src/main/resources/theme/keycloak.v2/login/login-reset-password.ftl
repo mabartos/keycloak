@@ -1,6 +1,7 @@
 <#import "template.ftl" as layout>
 <#import "field.ftl" as field>
 <#import "buttons.ftl" as buttons>
+<#import "captcha-commons.ftl" as captcha>
 <@layout.registrationLayout displayInfo=true displayMessage=!messagesPerField.existsError('username'); section>
     <#if section = "header">
         ${msg("emailForgotTitle")}
@@ -11,10 +12,19 @@
             </#assign>
             <@field.input name="username" label=label value=auth.attemptedUsername!'' autofocus=true />
 
-            <@buttons.actionGroup>
-              <@buttons.button id="kc-form-buttons" label="doSubmit" class=["kcButtonPrimaryClass", "kcButtonBlockClass"]/>
-              <@buttons.buttonLink href=url.loginUrl label="backToLogin" class=["kcButtonSecondaryClass", "kcButtonBlockClass"]/>
-            </@buttons.actionGroup>
+            <@captcha.widget />
+
+            <#if captcha.isInvisible()>
+                <@buttons.actionGroup>
+                    <@captcha.button formId="kc-reset-password-form" label="doSubmit" id="kc-form-buttons" class="${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!}" />
+                    <@buttons.buttonLink href=url.loginUrl label="backToLogin" class=["kcButtonSecondaryClass", "kcButtonBlockClass"]/>
+                </@buttons.actionGroup>
+            <#else>
+                <@buttons.actionGroup>
+                    <@buttons.button id="kc-form-buttons" label="doSubmit" class=["kcButtonPrimaryClass", "kcButtonBlockClass"]/>
+                    <@buttons.buttonLink href=url.loginUrl label="backToLogin" class=["kcButtonSecondaryClass", "kcButtonBlockClass"]/>
+                </@buttons.actionGroup>
+            </#if>
 
         </form>
     <#elseif section = "info" >
