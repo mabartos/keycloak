@@ -1190,6 +1190,11 @@ public class RealmAdminResource {
                 && Objects.equals(Optional.ofNullable(settings.get("user")).orElse(""), realm.getSmtpConfig().getOrDefault("user", ""));
     }
 
+    @Path("captcha")
+    public CaptchaConfigResource getCaptchaConfig() {
+        return new CaptchaConfigResource(session, auth, adminEvent);
+    }
+
     @Path("identity-provider")
     public IdentityProvidersResource getIdentityProviderResource() {
         return new IdentityProvidersResource(realm, session, this.auth, adminEvent);

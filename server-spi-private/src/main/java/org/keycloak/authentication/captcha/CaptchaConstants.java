@@ -5,6 +5,9 @@ package org.keycloak.authentication.captcha;
  */
 public final class CaptchaConstants {
 
+    // Realm attribute name for the default CAPTCHA instance (stores component ID)
+    public static final String CAPTCHA_DEFAULT = "captcha.default";
+
     // Form attribute names
     public static final String CAPTCHA_REQUIRED = "captchaRequired";
     public static final String CAPTCHA_SITE_KEY = "captchaSiteKey";

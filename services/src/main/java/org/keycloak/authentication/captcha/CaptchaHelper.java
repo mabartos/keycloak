@@ -1,11 +1,11 @@
 package org.keycloak.authentication.captcha;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.jboss.logging.Logger;
+import org.keycloak.component.ComponentModel;
 import org.keycloak.forms.login.LoginFormsProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
@@ -14,46 +14,43 @@ import org.keycloak.services.validation.Validation;
 /**
  * Utility for integrating CAPTCHA with login and reset-password flows.
  *
- * <p>Checks realm-level CAPTCHA configuration (stored as realm attributes) and delegates
+ * <p>Resolves the default CAPTCHA provider instance from realm components and delegates
  * to the configured {@link CaptchaProvider} for form preparation and token validation.</p>
  *
- * <p>When CAPTCHA is not enabled (no realm attributes set), all methods are no-ops,
+ * <p>When no default CAPTCHA instance is configured, all methods are no-ops,
  * ensuring no breaking changes to existing flows.</p>
  */
 public class CaptchaHelper {
 
     private static final Logger logger = Logger.getLogger(CaptchaHelper.class);
 
-    public static final String CAPTCHA_ENABLED = "captchaEnabled";
-    public static final String CAPTCHA_PROVIDER = "captchaProvider";
-    private static final String CAPTCHA_CONFIG_PREFIX = "captcha.";
-
     private CaptchaHelper() {
     }
 
     /**
-     * Check if CAPTCHA is enabled for this realm.
+     * Check if a default CAPTCHA instance is configured for this realm.
      */
     public static boolean isCaptchaEnabled(KeycloakSession session) {
-        RealmModel realm = session.getContext().getRealm();
-        return Boolean.parseBoolean(realm.getAttribute(CAPTCHA_ENABLED));
+        return getDefaultComponentId(session) != null;
     }
 
     /**
-     * Add CAPTCHA widget to a form if enabled for the realm.
-     * No-op if CAPTCHA is not configured.
+     * Add CAPTCHA widget to a form if a default instance is configured.
+     * No-op if no CAPTCHA is configured.
      *
      * @param session the Keycloak session
      * @param form the login forms provider
      * @param defaultAction the default action name (e.g. "login", "reset")
      */
     public static void addCaptchaToFormIfEnabled(KeycloakSession session, LoginFormsProvider form, String defaultAction) {
-        if (!isCaptchaEnabled(session)) {
+        ComponentModel component = getDefaultComponent(session);
+        if (component == null) {
             return;
         }
 
-        CaptchaProvider provider = getCaptchaProvider(session);
-        Map<String, String> config = getCaptchaConfig(session);
+        CaptchaProvider provider = session.getProvider(CaptchaProvider.class, component.getProviderId());
+        Map<String, String> config = CaptchaConfigService.toInstance(component).getConfig();
+
         if (provider == null || !provider.isConfigValid(config)) {
             logger.debug("CAPTCHA is enabled but provider is not configured properly");
             return;
@@ -64,21 +61,22 @@ public class CaptchaHelper {
     }
 
     /**
-     * Validate CAPTCHA response from form data if enabled.
-     * Returns {@code true} if CAPTCHA is valid OR if CAPTCHA is not enabled.
+     * Validate CAPTCHA response from form data if a default instance is configured.
+     * Returns {@code true} if CAPTCHA is valid OR if no CAPTCHA is configured.
      *
      * @param session the Keycloak session
      * @param formData the submitted form data
-     * @param remoteAddr the client's remote IP address
-     * @return {@code true} if valid or not enabled
+     * @return {@code true} if valid or not configured
      */
     public static boolean validateCaptchaIfEnabled(KeycloakSession session, MultivaluedMap<String, String> formData) {
-        if (!isCaptchaEnabled(session)) {
+        ComponentModel component = getDefaultComponent(session);
+        if (component == null) {
             return true;
         }
 
-        CaptchaProvider provider = getCaptchaProvider(session);
-        Map<String, String> config = getCaptchaConfig(session);
+        CaptchaProvider provider = session.getProvider(CaptchaProvider.class, component.getProviderId());
+        Map<String, String> config = CaptchaConfigService.toInstance(component).getConfig();
+
         if (provider == null || !provider.isConfigValid(config)) {
             return true;
         }
@@ -92,21 +90,29 @@ public class CaptchaHelper {
         return provider.validateToken(token, config);
     }
 
-    private static CaptchaProvider getCaptchaProvider(KeycloakSession session) {
-        String providerId = session.getContext().getRealm().getAttribute(CAPTCHA_PROVIDER);
-        if (providerId == null) {
-            return null;
-        }
-        return session.getProvider(CaptchaProvider.class, providerId);
+    /**
+     * Get the component ID of the default CAPTCHA instance, or {@code null} if not set.
+     */
+    static String getDefaultComponentId(KeycloakSession session) {
+        return session.getContext().getRealm().getAttribute(CaptchaConstants.CAPTCHA_DEFAULT);
     }
 
-    private static Map<String, String> getCaptchaConfig(KeycloakSession session) {
+    /**
+     * Load the default CAPTCHA component, or {@code null} if not found.
+     */
+    private static ComponentModel getDefaultComponent(KeycloakSession session) {
+        String id = getDefaultComponentId(session);
+        if (id == null) {
+            return null;
+        }
+
         RealmModel realm = session.getContext().getRealm();
-        return realm.getAttributes().entrySet().stream()
-                .filter(e -> e.getKey().startsWith(CAPTCHA_CONFIG_PREFIX))
-                .collect(Collectors.toMap(
-                        e -> e.getKey().substring(CAPTCHA_CONFIG_PREFIX.length()),
-                        Map.Entry::getValue
-                ));
+        ComponentModel model = realm.getComponent(id);
+        if (model == null || !CaptchaProvider.class.getName().equals(model.getProviderType())) {
+            logger.warnf("Default CAPTCHA instance '%s' not found or not a CAPTCHA component", id);
+            return null;
+        }
+
+        return model;
     }
 }
