@@ -26,8 +26,12 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import jakarta.ws.rs.core.MultivaluedMap;
+
 import org.keycloak.OAuthErrorException;
+import org.keycloak.constants.AdapterConstants;
 import org.keycloak.models.CibaConfig;
+import org.keycloak.models.ClientModel;
 import org.keycloak.models.Constants;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.protocol.oidc.OIDCConfigAttributes;
@@ -40,6 +44,9 @@ import org.keycloak.services.clientpolicy.context.AdminClientUpdateContext;
 import org.keycloak.services.clientpolicy.context.ClientCRUDContext;
 import org.keycloak.services.clientpolicy.context.DynamicClientRegisterContext;
 import org.keycloak.services.clientpolicy.context.DynamicClientUpdateContext;
+import org.keycloak.services.clientpolicy.context.TokenRefreshContext;
+import org.keycloak.services.clientpolicy.context.TokenRequestContext;
+import org.keycloak.services.managers.ResourceAdminManager;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jboss.logging.Logger;
@@ -47,6 +54,7 @@ import org.jboss.logging.Logger;
 public class SecureClientUrisPatternExecutor implements ClientPolicyExecutorProvider<SecureClientUrisPatternExecutor.Configuration> {
 
     private static final Logger logger = Logger.getLogger(SecureClientUrisPatternExecutor.class);
+    private static final String CLIENT_SESSION_HOST_PROPERTY = "${application.session.host}";
 
     private final KeycloakSession session;
     private List<Pattern> allowedPatterns;
@@ -141,7 +149,42 @@ public class SecureClientUrisPatternExecutor implements ClientPolicyExecutorProv
                     throw new ClientPolicyException(OAuthErrorException.INVALID_REQUEST, "not allowed input format.");
                 }
                 return;
+            case TOKEN_REFRESH:
+                if (context instanceof TokenRefreshContext) {
+                    TokenRefreshContext refreshContext = (TokenRefreshContext) context;
+                    validateClientSessionHost(refreshContext.getParams(), refreshContext.getClient());
+                }
+                return;
+            case TOKEN_REQUEST:
+                if (context instanceof TokenRequestContext) {
+                    TokenRequestContext requestContext = (TokenRequestContext) context;
+                    validateClientSessionHost(requestContext.getParams(), requestContext.getClientSession().getClient());
+                }
+                return;
             default:
+        }
+    }
+
+    private void validateClientSessionHost(MultivaluedMap<String, String> params, ClientModel client) throws ClientPolicyException {
+        String host = params.getFirst(AdapterConstants.CLIENT_SESSION_HOST);
+        if (host == null || host.isEmpty()) {
+            return;
+        }
+
+        List<String> urlsToValidate = new ArrayList<>();
+
+        String backchannelLogoutUrl = ResourceAdminManager.getBackchannelLogoutUrl(session, client);
+        if (backchannelLogoutUrl != null && backchannelLogoutUrl.contains(CLIENT_SESSION_HOST_PROPERTY)) {
+            urlsToValidate.add(backchannelLogoutUrl.replace(CLIENT_SESSION_HOST_PROPERTY, host));
+        }
+
+        String managementUrl = ResourceAdminManager.getManagementUrl(session, client);
+        if (managementUrl != null && managementUrl.contains(CLIENT_SESSION_HOST_PROPERTY)) {
+            urlsToValidate.add(managementUrl.replace(CLIENT_SESSION_HOST_PROPERTY, host));
+        }
+
+        if (!urlsToValidate.isEmpty()) {
+            confirmSecureUris(urlsToValidate, "clientSessionHost");
         }
     }
 

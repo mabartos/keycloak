@@ -147,6 +147,10 @@ public class ResourceAdminManager {
                 // Send logout separately to each host (needed for single-sign-out in cluster for non-distributable apps - KEYCLOAK-748)
                 for (Map.Entry<String, List<String>> entry : adapterSessionIds.entrySet()) {
                     String host = entry.getKey();
+                    if (host == null || host.isEmpty()) {
+                        logger.warnf("Skipping logout for client '%s': missing session host for management URL substitution", resource.getClientId());
+                        continue;
+                    }
                     List<String> sessionIds = entry.getValue();
                     String currentHostMgmtUrl = managementUrl.replace(CLIENT_SESSION_HOST_PROPERTY, host);
                     sendLogoutRequest(realm, resource, sessionIds, userSessions, 0, currentHostMgmtUrl);
@@ -175,6 +179,10 @@ public class ResourceAdminManager {
         // KEYCLOAK-748)
         if (backchannelLogoutUrl.contains(CLIENT_SESSION_HOST_PROPERTY)) {
             String host = clientSession.getNote(AdapterConstants.CLIENT_SESSION_HOST);
+            if (host == null || host.isEmpty()) {
+                logger.warnf("Skipping backchannel logout for client '%s': missing session host for URL substitution", resource.getClientId());
+                return null;
+            }
             String currentHostMgmtUrl = backchannelLogoutUrl.replace(CLIENT_SESSION_HOST_PROPERTY, host);
             return sendBackChannelLogoutRequestToClientUri(resource, clientSession, currentHostMgmtUrl);
         } else {
