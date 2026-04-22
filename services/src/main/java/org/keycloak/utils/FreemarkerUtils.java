@@ -42,7 +42,7 @@ public class FreemarkerUtils {
      * @return template from classpath
      */
     public static String loadTemplateFromClasspath(Map<String, Object> contextMap, String templateFile, Class<?> clazz) throws TemplateException, IOException {
-        Configuration freemarkerConfig = new Configuration(Configuration.VERSION_2_3_32);
+        Configuration freemarkerConfig = new Configuration(Configuration.VERSION_2_3_34);
         freemarkerConfig.setClassForTemplateLoading(clazz, "");
         Template freemarkerTemplate = freemarkerConfig.getTemplate(templateFile);
 

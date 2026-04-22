@@ -23,7 +23,7 @@ public class FreeMarker {
     public FreeMarker(Path srcDir, Map<String, Object> attributes) throws IOException {
         this.attributes = attributes;
 
-        configuration = new Configuration(Configuration.VERSION_2_3_31);
+        configuration = new Configuration(Configuration.VERSION_2_3_34);
         configuration.setDirectoryForTemplateLoading(srcDir.toFile());
         configuration.setDefaultEncoding("UTF-8");
         configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
