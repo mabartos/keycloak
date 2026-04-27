@@ -100,6 +100,7 @@
                 userVerification : ${userVerification?c},
                 rpId : ${rpId?c},
                 createTimeout : ${createTimeout?c},
+                hints : [<#if hints??><#list hints as hint>${hint?c},</#list></#if>],
                 errmsg : ${msg("webauthn-unsupported-browser-text")?c}
             };
             authButton.addEventListener("click", () => {
@@ -112,6 +113,7 @@
                 userVerification : ${userVerification?c},
                 rpId : ${rpId?c},
                 createTimeout : ${createTimeout?c},
+                hints : [<#if hints??><#list hints as hint>${hint?c},</#list></#if>],
                 errmsg : ${msg("passkey-unsupported-browser-text")?c}
             };
 

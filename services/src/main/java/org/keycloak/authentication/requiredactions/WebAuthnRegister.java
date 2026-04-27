@@ -177,6 +177,7 @@ public class WebAuthnRegister implements RequiredActionProvider, CredentialRegis
                 .setAttribute(WebAuthnConstants.CREATE_TIMEOUT, createTimeout)
                 .setAttribute(WebAuthnConstants.EXCLUDE_CREDENTIAL_IDS, excludeCredentialIds)
                 .setAttribute(WebAuthnConstants.IS_SET_RETRY, isSetRetry)
+                .setAttribute(WebAuthnConstants.HINTS, policy.getHints())
                 .createForm("webauthn-register.ftl");
         context.challenge(form);
     }
@@ -281,10 +282,13 @@ public class WebAuthnRegister implements RequiredActionProvider, CredentialRegis
 
             WebAuthnCredentialModelInput credential = new WebAuthnCredentialModelInput(getCredentialType());
 
-            credential.setAttestedCredentialData(registrationData.getAttestationObject().getAuthenticatorData().getAttestedCredentialData());
-            credential.setCount(registrationData.getAttestationObject().getAuthenticatorData().getSignCount());
+            var authenticatorData = registrationData.getAttestationObject().getAuthenticatorData();
+            credential.setAttestedCredentialData(authenticatorData.getAttestedCredentialData());
+            credential.setCount(authenticatorData.getSignCount());
             credential.setAttestationStatementFormat(registrationData.getAttestationObject().getFormat());
             credential.setTransports(registrationData.getTransports());
+            credential.setBackupEligible(authenticatorData.isFlagBE());
+            credential.setBackupState(authenticatorData.isFlagBS());
 
             // Save new webAuthn credential
             WebAuthnCredentialProvider webAuthnCredProvider = (WebAuthnCredentialProvider) this.session.getProvider(CredentialProvider.class, getCredentialProviderId());

@@ -41,6 +41,8 @@ public class WebAuthnCredentialModelInput implements CredentialInput {
     private final String credentialType;
     private String attestationStatementFormat;
     private Set<AuthenticatorTransport> transports;
+    private Boolean backupEligible;
+    private Boolean backupState;
 
     public WebAuthnCredentialModelInput(String credentialType) {
         this.credentialType = credentialType;
@@ -128,6 +130,22 @@ public class WebAuthnCredentialModelInput implements CredentialInput {
 
     public void setTransports(Set<AuthenticatorTransport> transports) {
         this.transports = transports;
+    }
+
+    public Boolean getBackupEligible() {
+        return backupEligible;
+    }
+
+    public void setBackupEligible(Boolean backupEligible) {
+        this.backupEligible = backupEligible;
+    }
+
+    public Boolean getBackupState() {
+        return backupState;
+    }
+
+    public void setBackupState(Boolean backupState) {
+        this.backupState = backupState;
     }
 
     public String toString() {

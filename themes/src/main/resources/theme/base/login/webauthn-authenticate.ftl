@@ -87,6 +87,7 @@
                 userVerification : ${userVerification?c},
                 rpId : ${rpId?c},
                 createTimeout : ${createTimeout?c},
+                hints : [<#if hints??><#list hints as hint>${hint?c},</#list></#if>],
                 errmsg : ${msg("webauthn-unsupported-browser-text")?c}
             };
             authenticateByWebAuthn(input);

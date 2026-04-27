@@ -95,6 +95,10 @@ public class WebAuthnCredentialModel extends CredentialModel {
 
     public void updateCounter(long counter) {
         credentialData.setCounter(counter);
+        updateCredentialData();
+    }
+
+    public void updateCredentialData() {
         try {
             setCredentialData(JsonSerialization.writeValueAsString(credentialData));
         } catch (IOException e) {

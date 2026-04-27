@@ -81,6 +81,10 @@ export function doAuthenticate(input) {
         publicKey.userVerification = input.userVerification;
     }
 
+    if (input.hints && input.hints.length > 0) {
+        publicKey.hints = input.hints;
+    }
+
     return navigator.credentials.get({
         publicKey: publicKey,
         signal: signal(),

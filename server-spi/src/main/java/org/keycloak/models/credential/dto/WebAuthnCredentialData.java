@@ -37,6 +37,8 @@ public class WebAuthnCredentialData {
     private String credentialPublicKey;
     private String attestationStatementFormat;
     private Set<String> transports;
+    private Boolean backupEligible;
+    private Boolean backupState;
 
     @JsonCreator
     public WebAuthnCredentialData(@JsonProperty("aaguid") String aaguid,
@@ -93,6 +95,22 @@ public class WebAuthnCredentialData {
 
     public void setTransports(Set<String> transports) {
         this.transports = transports;
+    }
+
+    public Boolean getBackupEligible() {
+        return backupEligible;
+    }
+
+    public void setBackupEligible(Boolean backupEligible) {
+        this.backupEligible = backupEligible;
+    }
+
+    public Boolean getBackupState() {
+        return backupState;
+    }
+
+    public void setBackupState(Boolean backupState) {
+        this.backupState = backupState;
     }
 
     @Override

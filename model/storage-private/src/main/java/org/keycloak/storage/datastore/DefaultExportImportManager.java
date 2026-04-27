@@ -1354,6 +1354,12 @@ public class DefaultExportImportManager implements ExportImportManager {
         }
         webAuthnPolicy.setExtraOrigins(webAuthnPolicyExtraOrigins);
 
+        List<String> webAuthnPolicyHints = rep.getWebAuthnPolicyHints();
+        if (webAuthnPolicyHints == null) {
+            webAuthnPolicyHints = defaultConfig.getHints();
+        }
+        webAuthnPolicy.setHints(webAuthnPolicyHints);
+
         return webAuthnPolicy;
     }
 
@@ -1420,6 +1426,12 @@ public class DefaultExportImportManager implements ExportImportManager {
             webAuthnPolicyExtraOrigins = defaultConfig.getExtraOrigins();
         }
         webAuthnPolicy.setExtraOrigins(webAuthnPolicyExtraOrigins);
+
+        List<String> webAuthnPolicyHints = rep.getWebAuthnPolicyPasswordlessHints();
+        if (webAuthnPolicyHints == null) {
+            webAuthnPolicyHints = defaultConfig.getHints();
+        }
+        webAuthnPolicy.setHints(webAuthnPolicyHints);
 
         Boolean webAuthnPolicyPasswordlessPasskeysEnabled = rep.getWebAuthnPolicyPasswordlessPasskeysEnabled();
         if (webAuthnPolicyPasswordlessPasskeysEnabled == null) {

@@ -144,6 +144,7 @@ public class RealmRepresentation {
     protected Boolean webAuthnPolicyAvoidSameAuthenticatorRegister;
     protected List<String> webAuthnPolicyAcceptableAaguids;
     protected List<String> webAuthnPolicyExtraOrigins;
+    protected List<String> webAuthnPolicyHints;
 
     // WebAuthn passwordless properties below
 
@@ -158,6 +159,7 @@ public class RealmRepresentation {
     protected Boolean webAuthnPolicyPasswordlessAvoidSameAuthenticatorRegister;
     protected List<String> webAuthnPolicyPasswordlessAcceptableAaguids;
     protected List<String> webAuthnPolicyPasswordlessExtraOrigins;
+    protected List<String> webAuthnPolicyPasswordlessHints;
     protected Boolean webAuthnPolicyPasswordlessPasskeysEnabled;
     protected String webAuthnPolicyPasswordlessMediation;
 
@@ -1188,6 +1190,14 @@ public class RealmRepresentation {
         this.webAuthnPolicyExtraOrigins = extraOrigins;
     }
 
+    public List<String> getWebAuthnPolicyHints() {
+        return webAuthnPolicyHints;
+    }
+
+    public void setWebAuthnPolicyHints(List<String> webAuthnPolicyHints) {
+        this.webAuthnPolicyHints = webAuthnPolicyHints;
+    }
+
     // WebAuthn passwordless properties below
 
 
@@ -1277,6 +1287,14 @@ public class RealmRepresentation {
 
     public void setWebAuthnPolicyPasswordlessExtraOrigins(List<String> extraOrigins) {
         this.webAuthnPolicyPasswordlessExtraOrigins = extraOrigins;
+    }
+
+    public List<String> getWebAuthnPolicyPasswordlessHints() {
+        return webAuthnPolicyPasswordlessHints;
+    }
+
+    public void setWebAuthnPolicyPasswordlessHints(List<String> webAuthnPolicyPasswordlessHints) {
+        this.webAuthnPolicyPasswordlessHints = webAuthnPolicyPasswordlessHints;
     }
 
     public Boolean getWebAuthnPolicyPasswordlessPasskeysEnabled(){

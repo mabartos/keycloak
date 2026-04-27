@@ -45,6 +45,7 @@ public class WebAuthnPolicyTwoFactorDefaults extends WebAuthnPolicy {
         this.avoidSameAuthenticatorRegister = false;
         this.acceptableAaguids = Collections.emptyList();
         this.extraOrigins = Collections.emptyList();
+        this.hints = Collections.emptyList();
         this.passkeysEnabled = null;
         this.mediation = null;
     }
@@ -101,6 +102,11 @@ public class WebAuthnPolicyTwoFactorDefaults extends WebAuthnPolicy {
 
     @Override
     public void setExtraOrigins(List<String> extraOrigins) {
+        throwReadOnlyException();
+    }
+
+    @Override
+    public void setHints(List<String> hints) {
         throwReadOnlyException();
     }
 

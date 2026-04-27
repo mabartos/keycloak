@@ -148,6 +148,9 @@ public class WebAuthnCredentialProvider implements CredentialProvider<WebAuthnCr
                 transports
         );
 
+        model.getWebAuthnCredentialData().setBackupEligible(webAuthnModel.getBackupEligible());
+        model.getWebAuthnCredentialData().setBackupState(webAuthnModel.getBackupState());
+        model.updateCredentialData();
         model.setId(webAuthnModel.getCredentialDBId());
 
         return model;
@@ -243,8 +246,22 @@ public class WebAuthnCredentialProvider implements CredentialProvider<WebAuthnCr
                     // counters are an optional feature of the spec - if an authenticator does not support them, it
                     // will always send zero. MacOS/iOS does this for keys stored in the secure enclave (TouchID/FaceID)
                     long count = auth.getCount();
+                    boolean credentialUpdated = false;
                     if (count > 0) {
                         webAuthnCredModel.updateCounter(count + 1);
+                        credentialUpdated = true;
+                    }
+
+                    boolean currentBS = authenticationData.getAuthenticatorData().isFlagBS();
+                    WebAuthnCredentialData credData = webAuthnCredModel.getWebAuthnCredentialData();
+                    if (credData.getBackupState() == null || credData.getBackupState() != currentBS) {
+                        credData.setBackupState(currentBS);
+                        credData.setBackupEligible(authenticationData.getAuthenticatorData().isFlagBE());
+                        webAuthnCredModel.updateCredentialData();
+                        credentialUpdated = true;
+                    }
+
+                    if (credentialUpdated) {
                         user.credentialManager().updateStoredCredential(webAuthnCredModel);
                     }
 

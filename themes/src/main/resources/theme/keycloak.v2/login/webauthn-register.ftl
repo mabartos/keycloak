@@ -39,6 +39,7 @@
                     userVerificationRequirement : ${userVerificationRequirement?c},
                     createTimeout : ${createTimeout?c},
                     excludeCredentialIds : ${excludeCredentialIds?c},
+                    hints : [<#if hints??><#list hints as hint>${hint?c},</#list></#if>],
                     initLabel : ${msg("webauthn-registration-init-label")?c},
                     initLabelPrompt : ${msg("webauthn-registration-init-label-prompt")?c},
                     errmsg : ${msg("webauthn-unsupported-browser-text")?c}
