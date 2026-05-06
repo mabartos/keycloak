@@ -200,6 +200,7 @@ public class DefaultClientValidationProvider implements ClientValidationProvider
         validateDefaultAcrValues(context);
         validateMinimumAcrValue(context);
         validateClientSessionTimeout(context);
+        validateWarnings(context);
 
         return context.toResult();
     }
@@ -213,7 +214,8 @@ public class DefaultClientValidationProvider implements ClientValidationProvider
         validateAcrLoaMap(context);
         validateDefaultAcrValues(context);
         validateMinimumAcrValue(context);
-        //context.getSession().getContext().getRealm().
+        validateWarnings(context);
+
         return context.toResult();
     }
 
@@ -517,6 +519,60 @@ public class DefaultClientValidationProvider implements ClientValidationProvider
             }
         }
 
+    }
+
+    private void validateWarnings(ValidationContext<ClientModel> context) {
+        ClientModel client = context.getObjectToValidate();
+
+        if (OIDCLoginProtocol.LOGIN_PROTOCOL.equals(client.getProtocol())) {
+            validateRedirectUriWildcardWarnings(context, client);
+            validateInsecureFlowWarnings(context, client);
+            validatePkceWarnings(context, client);
+        }
+
+        if (client.isFullScopeAllowed()) {
+            context.addWarning("fullScopeAllowed",
+                    "Full scope is enabled. Be aware that enabling full scope is less secure than limiting scopes and should be used with caution.",
+                    "fullScopeAllowedWarning");
+        }
+    }
+
+    private void validateRedirectUriWildcardWarnings(ValidationContext<ClientModel> context, ClientModel client) {
+        Set<String> redirectUris = client.getRedirectUris();
+        if (redirectUris == null) return;
+
+        for (String uri : redirectUris) {
+            if (uri == null) continue;
+            if (uri.trim().equals("*") || uri.matches(".*[^/]\\*.*")) {
+                context.addWarning("redirectUris",
+                        "Redirect URI contains an unsafe wildcard pattern. A standalone '*' or '*' without a preceding '/' poses a security risk.",
+                        "redirectUriUnsafeWildcardWarning");
+                break;
+            }
+        }
+    }
+
+    private void validateInsecureFlowWarnings(ValidationContext<ClientModel> context, ClientModel client) {
+        if (client.isImplicitFlowEnabled()) {
+            context.addWarning("implicitFlowEnabled",
+                    "Implicit Flow is enabled. Be aware that this flow is less secure than other flows and should be used with caution.",
+                    "implicitFlowWarning");
+        }
+
+        if (client.isDirectAccessGrantsEnabled()) {
+            context.addWarning("directAccessGrantsEnabled",
+                    "Direct Access Grants is enabled. Be aware that this flow is less secure than other flows and should be used with caution.",
+                    "directAccessGrantsWarning");
+        }
+    }
+
+    private void validatePkceWarnings(ValidationContext<ClientModel> context, ClientModel client) {
+        String pkceMethod = client.getAttribute(OIDCConfigAttributes.PKCE_CODE_CHALLENGE_METHOD);
+        if ("plain".equals(pkceMethod)) {
+            context.addWarning("pkceCodeChallengeMethod",
+                    "PKCE is using 'plain' challenge method. Be aware that using 'plain' is less secure than S256 and should be used with caution.",
+                    "pkceCodeChallengeMethodWarning");
+        }
     }
 
     private Integer parseIntAttribute(String value) {

@@ -31,12 +31,14 @@ public abstract class DefaultValidationContext<T> implements ValidationContext<T
     private final KeycloakSession session;
     private final T objectToValidate;
     private final Set<ValidationError> errors;
+    private final Set<ValidationError> warnings;
 
     public DefaultValidationContext(Event event, KeycloakSession session, T objectToValidate) {
         this.event = event;
         this.session = session;
         this.objectToValidate = objectToValidate;
         this.errors = new HashSet<>();
+        this.warnings = new HashSet<>();
     }
 
     @Override
@@ -71,7 +73,23 @@ public abstract class DefaultValidationContext<T> implements ValidationContext<T
     }
 
     @Override
+    public ValidationContext<T> addWarning(String message) {
+        return addWarning(null, message, null);
+    }
+
+    @Override
+    public ValidationContext<T> addWarning(String fieldId, String message) {
+        return addWarning(fieldId, message, null);
+    }
+
+    @Override
+    public ValidationContext<T> addWarning(String fieldId, String message, String localizedMessageKey, Object... localizedMessageParams) {
+        warnings.add(new ValidationError(fieldId, message, localizedMessageKey, localizedMessageParams));
+        return this;
+    }
+
+    @Override
     public ValidationResult toResult() {
-        return new ValidationResult(new HashSet<>(errors));
+        return new ValidationResult(new HashSet<>(errors), new HashSet<>(warnings));
     }
 }

@@ -35,5 +35,9 @@ public interface ValidationContext<T> {
     ValidationContext<T> addError(String fieldId, String message);
     ValidationContext<T> addError(String fieldId, String message, String localizedMessageKey, Object... localizedMessageParams);
 
+    ValidationContext<T> addWarning(String message);
+    ValidationContext<T> addWarning(String fieldId, String message);
+    ValidationContext<T> addWarning(String fieldId, String message, String localizedMessageKey, Object... localizedMessageParams);
+
     ValidationResult toResult();
 }

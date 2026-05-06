@@ -205,6 +205,7 @@ public class ClientResource {
         ClientRepresentation representation = ModelToRepresentation.toRepresentation(client, session);
 
         representation.setAccess(auth.clients().getAccess(client));
+        representation.setWarnings(ValidationUtil.getClientWarnings(session, client));
 
         return representation;
     }

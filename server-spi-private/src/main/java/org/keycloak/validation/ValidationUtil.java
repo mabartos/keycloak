@@ -16,6 +16,9 @@
  */
 package org.keycloak.validation;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import jakarta.ws.rs.BadRequestException;
 
 import org.keycloak.models.ClientModel;
@@ -45,6 +48,24 @@ public class ValidationUtil {
                 errorHandler.onError(result);
             }
         }
+    }
+
+    public static Map<String, String> getClientWarnings(KeycloakSession session, ClientModel client) {
+        ClientValidationProvider provider = session.getProvider(ClientValidationProvider.class);
+        if (provider == null) {
+            return Map.of();
+        }
+
+        ValidationResult result = provider.validate(
+                new ClientValidationContext(ValidationContext.Event.UPDATE, session, client));
+
+        Map<String, String> warnings = new LinkedHashMap<>();
+        for (ValidationError warning : result.getWarnings()) {
+            if (warning.getFieldId() != null) {
+                warnings.putIfAbsent(warning.getFieldId(), warning.getMessage());
+            }
+        }
+        return warnings;
     }
 
     public interface ErrorHandler {

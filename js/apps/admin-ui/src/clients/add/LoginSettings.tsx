@@ -9,6 +9,7 @@ import { FormFields } from "../ClientDetails";
 
 type LoginSettingsProps = {
   protocol?: string;
+  warnings?: Record<string, string>;
 };
 
 function hasUnsafeWildcard(uris: string[]): boolean {
@@ -17,6 +18,7 @@ function hasUnsafeWildcard(uris: string[]): boolean {
 
 export const LoginSettings = ({
   protocol = "openid-connect",
+  warnings,
 }: LoginSettingsProps) => {
   const { t } = useTranslation();
   const { watch } = useFormContext<FormFields>();
@@ -24,7 +26,8 @@ export const LoginSettings = ({
   const standardFlowEnabled = watch("standardFlowEnabled");
   const implicitFlowEnabled = watch("implicitFlowEnabled");
   const redirectUris = watch("redirectUris") || [];
-  const unsafeRedirectUri = hasUnsafeWildcard(redirectUris);
+  const unsafeRedirectUri =
+    !!warnings?.redirectUris || hasUnsafeWildcard(redirectUris);
 
   const postLogoutRedirectUris = watch(
     convertAttributeNameToForm("attributes.post.logout.redirect.uris") as any,

@@ -79,6 +79,7 @@ public class ClientRepresentation {
 
     private ResourceServerRepresentation authorizationSettings;
     private Map<String, Boolean> access;
+    private Map<String, String> warnings;
     protected String origin;
 
 
@@ -420,6 +421,13 @@ public class ClientRepresentation {
         this.access = access;
     }
 
+    public Map<String, String> getWarnings() {
+        return warnings;
+    }
+
+    public void setWarnings(Map<String, String> warnings) {
+        this.warnings = warnings;
+    }
 
     /**
      * Returns id of ClientStorageProvider that loaded this user

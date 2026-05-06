@@ -42,5 +42,6 @@ export default interface ClientRepresentation {
   serviceAccountsEnabled?: boolean;
   standardFlowEnabled?: boolean;
   surrogateAuthRequired?: boolean;
+  warnings?: Record<string, string>;
   webOrigins?: string[];
 }

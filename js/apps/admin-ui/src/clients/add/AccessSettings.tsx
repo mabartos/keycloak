@@ -28,7 +28,9 @@ export const AccessSettings = ({
       fineGrainedAccess={client.access?.configure}
       role="manage-clients"
     >
-      {!client.bearerOnly && <LoginSettings protocol={protocol} />}
+      {!client.bearerOnly && (
+        <LoginSettings protocol={protocol} warnings={client.warnings} />
+      )}
       {protocol !== "saml" && (
         <TextControl
           type="url"

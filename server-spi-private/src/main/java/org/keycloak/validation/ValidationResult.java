@@ -29,10 +29,16 @@ import java.util.stream.Collectors;
 public class ValidationResult {
     private final boolean valid;
     private final Set<ValidationError> errors;
+    private final Set<ValidationError> warnings;
 
     public ValidationResult(Set<ValidationError> errors) {
-        this.valid = errors.size() == 0;
+        this(errors, Collections.emptySet());
+    }
+
+    public ValidationResult(Set<ValidationError> errors, Set<ValidationError> warnings) {
+        this.valid = errors.isEmpty();
         this.errors = Collections.unmodifiableSet(errors);
+        this.warnings = Collections.unmodifiableSet(warnings);
     }
 
     public boolean isValid() {
@@ -41,6 +47,26 @@ public class ValidationResult {
 
     public Set<ValidationError> getErrors() {
         return errors;
+    }
+
+    public Set<ValidationError> getWarnings() {
+        return warnings;
+    }
+
+    public boolean hasWarnings() {
+        return !warnings.isEmpty();
+    }
+
+    public boolean fieldHasWarning(String fieldId) {
+        if (fieldId == null) {
+            return false;
+        }
+        for (ValidationError warning : warnings) {
+            if (fieldId.equals(warning.getFieldId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String getAllErrorsAsString() {

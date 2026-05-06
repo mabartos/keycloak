@@ -23,11 +23,13 @@ import { useAccess } from "../../context/access/Access";
 type CapabilityConfigProps = {
   unWrap?: boolean;
   protocol?: string;
+  warnings?: Record<string, string>;
 };
 
 export const CapabilityConfig = ({
   unWrap,
   protocol: type,
+  warnings,
 }: CapabilityConfigProps) => {
   const { t } = useTranslation();
   const { control, watch, setValue } = useFormContext<FormFields>();
@@ -201,7 +203,10 @@ export const CapabilityConfig = ({
                         <HelpItem
                           helpText={t("directAccessHelp")}
                           fieldLabelId="directAccess"
-                          isRecommendation={directAccessGrantsEnabled}
+                          isRecommendation={
+                            !!warnings?.directAccessGrantsEnabled ||
+                            directAccessGrantsEnabled
+                          }
                         />
                       </InputGroupItem>
                     </InputGroup>
@@ -228,7 +233,10 @@ export const CapabilityConfig = ({
                         <HelpItem
                           helpText={t("implicitFlowHelp")}
                           fieldLabelId="implicitFlow"
-                          isRecommendation={implicitFlowEnabled}
+                          isRecommendation={
+                            !!warnings?.implicitFlowEnabled ||
+                            implicitFlowEnabled
+                          }
                         />
                       </InputGroupItem>
                     </InputGroup>
@@ -438,7 +446,10 @@ export const CapabilityConfig = ({
               id="keyForCodeExchange"
               label={t("keyForCodeExchange")}
               labelIcon={t("keyForCodeExchangeHelp")}
-              isRecommendation={pkceEnabled === "plain"}
+              isRecommendation={
+                !!warnings?.pkceCodeChallengeMethod ||
+                pkceEnabled === "plain"
+              }
               controller={{ control }}
               name={pkceCodeChallengeMethodField}
               options={[
