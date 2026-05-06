@@ -38,6 +38,8 @@ export const CapabilityConfig = ({
     "attributes.pkce.code.challenge.method",
   );
   const pkceEnabled = watch(pkceCodeChallengeMethodField);
+  const directAccessGrantsEnabled = watch("directAccessGrantsEnabled");
+  const implicitFlowEnabled = watch("implicitFlowEnabled");
   const jwtAuthorizationGrantEnabled = watch(
     convertAttributeNameToForm<FormFields>(
       "attributes.oauth2.jwt.authorization.grant.enabled",
@@ -199,6 +201,7 @@ export const CapabilityConfig = ({
                         <HelpItem
                           helpText={t("directAccessHelp")}
                           fieldLabelId="directAccess"
+                          isRecommendation={directAccessGrantsEnabled}
                         />
                       </InputGroupItem>
                     </InputGroup>
@@ -225,6 +228,7 @@ export const CapabilityConfig = ({
                         <HelpItem
                           helpText={t("implicitFlowHelp")}
                           fieldLabelId="implicitFlow"
+                          isRecommendation={implicitFlowEnabled}
                         />
                       </InputGroupItem>
                     </InputGroup>
@@ -434,6 +438,7 @@ export const CapabilityConfig = ({
               id="keyForCodeExchange"
               label={t("keyForCodeExchange")}
               labelIcon={t("keyForCodeExchangeHelp")}
+              isRecommendation={pkceEnabled === "plain"}
               controller={{ control }}
               name={pkceCodeChallengeMethodField}
               options={[

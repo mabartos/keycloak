@@ -44,6 +44,7 @@ export type SelectControlProps<
     options: OptionType;
     selectedOptions?: OptionType;
     labelIcon?: string;
+    isRecommendation?: boolean;
     controller: Omit<ControllerProps, "name" | "render">;
     onFilter?: (value: string) => void;
     variant?: Variant;

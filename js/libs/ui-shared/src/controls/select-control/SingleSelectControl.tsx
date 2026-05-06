@@ -33,6 +33,7 @@ export const SingleSelectControl = <
   selectedOptions = [],
   controller,
   labelIcon,
+  isRecommendation,
   isDisabled,
   isFullWidth = true,
   onSelect,
@@ -53,6 +54,7 @@ export const SingleSelectControl = <
       isRequired={required}
       error={get(errors, name)}
       labelIcon={labelIcon}
+      isRecommendation={isRecommendation}
     >
       <Controller
         {...controller}

@@ -11,6 +11,10 @@ type LoginSettingsProps = {
   protocol?: string;
 };
 
+function hasUnsafeWildcard(uris: string[]): boolean {
+  return uris.some((uri) => uri?.trim() === "*" || /[^/]\*/.test(uri ?? ""));
+}
+
 export const LoginSettings = ({
   protocol = "openid-connect",
 }: LoginSettingsProps) => {
@@ -19,6 +23,17 @@ export const LoginSettings = ({
 
   const standardFlowEnabled = watch("standardFlowEnabled");
   const implicitFlowEnabled = watch("implicitFlowEnabled");
+  const redirectUris = watch("redirectUris") || [];
+  const unsafeRedirectUri = hasUnsafeWildcard(redirectUris);
+
+  const postLogoutRedirectUris = watch(
+    convertAttributeNameToForm("attributes.post.logout.redirect.uris") as any,
+  );
+  const unsafePostLogoutRedirectUri = hasUnsafeWildcard(
+    typeof postLogoutRedirectUris === "string"
+      ? postLogoutRedirectUris.split("##")
+      : postLogoutRedirectUris || [],
+  );
 
   return (
     <>
@@ -41,8 +56,13 @@ export const LoginSettings = ({
             fieldId="kc-redirect"
             labelIcon={
               <HelpItem
-                helpText={t("validRedirectURIsHelp")}
+                helpText={
+                  unsafeRedirectUri
+                    ? t("redirectUriUnsafeWildcardWarning")
+                    : t("validRedirectURIsHelp")
+                }
                 fieldLabelId="validRedirectUri"
+                isRecommendation={unsafeRedirectUri}
               />
             }
           >
@@ -58,8 +78,13 @@ export const LoginSettings = ({
             fieldId="kc-postLogoutRedirect"
             labelIcon={
               <HelpItem
-                helpText={t("validPostLogoutRedirectURIsHelp")}
+                helpText={
+                  unsafePostLogoutRedirectUri
+                    ? t("redirectUriUnsafeWildcardWarning")
+                    : t("validPostLogoutRedirectURIsHelp")
+                }
                 fieldLabelId="validPostLogoutRedirectUri"
+                isRecommendation={unsafePostLogoutRedirectUri}
               />
             }
           >

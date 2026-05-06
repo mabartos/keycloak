@@ -86,6 +86,7 @@ export const DedicatedScope = ({ client, onChange }: DedicatedScopeProps) => {
             <HelpItem
               helpText={t("fullScopeAllowedHelp")}
               fieldLabelId="fullScopeAllowed"
+              isRecommendation={client.fullScopeAllowed}
             />
           }
           fieldId="fullScopeAllowed"
