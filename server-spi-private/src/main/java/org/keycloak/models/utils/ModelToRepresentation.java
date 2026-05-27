@@ -1056,6 +1056,7 @@ public class ModelToRepresentation {
         rep.setProviderId(model.getProviderId());
         rep.setAlias(model.getAlias());
         rep.setDescription(model.getDescription());
+        rep.setShowCredentialSelector(model.isShowCredentialSelector());
         rep.setAuthenticationExecutions(realm.getAuthenticationExecutionsStream(model.getId())
                 .map(e -> toRepresentation(session, realm, e)).collect(Collectors.toList()));
         return rep;

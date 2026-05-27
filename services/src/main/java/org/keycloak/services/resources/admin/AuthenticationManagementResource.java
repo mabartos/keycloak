@@ -718,6 +718,7 @@ public class AuthenticationManagementResource {
                 }
                 rep.setDisplayName(flowRef.getAlias());
                 rep.setDescription(flowRef.getDescription());
+                rep.setShowCredentialSelector(flowRef.isShowCredentialSelector());
                 rep.setConfigurable(false);
                 rep.setId(execution.getId());
                 rep.setAuthenticationFlow(execution.isAuthenticatorFlow());
@@ -843,6 +844,10 @@ public class AuthenticationManagementResource {
         // check if the description changed
         if (!checkFlow.getDescription().equals(rep.getDescription())) {
             checkFlow.setDescription(rep.getDescription());
+        }
+
+        if (rep.getShowCredentialSelector() != null) {
+            checkFlow.setShowCredentialSelector(rep.getShowCredentialSelector());
         }
 
         //update the flow

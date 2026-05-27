@@ -32,6 +32,7 @@ public class AuthenticationFlowModel implements Serializable {
     private String providerId;
     private boolean topLevel;
     private boolean builtIn;
+    private boolean showCredentialSelector;
 
     public String getId() {
         return id;
@@ -79,6 +80,14 @@ public class AuthenticationFlowModel implements Serializable {
 
     public void setBuiltIn(boolean builtIn) {
         this.builtIn = builtIn;
+    }
+
+    public boolean isShowCredentialSelector() {
+        return showCredentialSelector;
+    }
+
+    public void setShowCredentialSelector(boolean showCredentialSelector) {
+        this.showCredentialSelector = showCredentialSelector;
     }
 
     public static class AuthenticationFlowComparator implements Comparator<AuthenticationFlowModel> {

@@ -66,6 +66,8 @@ public class AuthenticationFlowEntity {
     @Column(name="BUILT_IN")
     protected boolean builtIn;
 
+    @Column(name="SHOW_CRED_SELECTOR")
+    protected boolean showCredentialSelector;
 
     @OneToMany(fetch = FetchType.LAZY, cascade ={CascadeType.REMOVE}, orphanRemoval = true, mappedBy = "parentFlow")
     Collection<AuthenticationExecutionEntity> executions = new LinkedList<>();
@@ -134,6 +136,14 @@ public class AuthenticationFlowEntity {
 
     public void setBuiltIn(boolean builtIn) {
         this.builtIn = builtIn;
+    }
+
+    public boolean isShowCredentialSelector() {
+        return showCredentialSelector;
+    }
+
+    public void setShowCredentialSelector(boolean showCredentialSelector) {
+        this.showCredentialSelector = showCredentialSelector;
     }
 
     @Override

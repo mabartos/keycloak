@@ -32,6 +32,7 @@ public class AuthenticationFlowRepresentation implements Serializable {
     private String providerId;
     private boolean topLevel;
     private boolean builtIn;
+    private boolean showCredentialSelector;
     protected List<AuthenticationExecutionExportRepresentation> authenticationExecutions;
 
     public String getId() {
@@ -80,6 +81,14 @@ public class AuthenticationFlowRepresentation implements Serializable {
 
     public void setBuiltIn(boolean builtIn) {
         this.builtIn = builtIn;
+    }
+
+    public boolean isShowCredentialSelector() {
+        return showCredentialSelector;
+    }
+
+    public void setShowCredentialSelector(boolean showCredentialSelector) {
+        this.showCredentialSelector = showCredentialSelector;
     }
 
     public List<AuthenticationExecutionExportRepresentation> getAuthenticationExecutions() {

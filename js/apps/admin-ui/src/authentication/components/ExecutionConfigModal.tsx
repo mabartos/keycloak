@@ -1,6 +1,11 @@
 import type AuthenticatorConfigInfoRepresentation from "@keycloak/keycloak-admin-client/lib/defs/authenticatorConfigInfoRepresentation";
 import type AuthenticatorConfigRepresentation from "@keycloak/keycloak-admin-client/lib/defs/authenticatorConfigRepresentation";
-import { TextControl, useAlerts, useFetch } from "@keycloak/keycloak-ui-shared";
+import {
+  SwitchControl,
+  TextControl,
+  useAlerts,
+  useFetch,
+} from "@keycloak/keycloak-ui-shared";
 import {
   ActionGroup,
   AlertVariant,
@@ -23,14 +28,17 @@ import type { ExpandableExecution } from "../execution-model";
 type ExecutionConfigModalForm = {
   alias: string;
   config: { [index: string]: string };
+  showCredentialSelector?: boolean;
 };
 
 type ExecutionConfigModalProps = {
   execution: ExpandableExecution;
+  onRowChange: (execution: ExpandableExecution) => void;
 };
 
 export const ExecutionConfigModal = ({
   execution,
+  onRowChange,
 }: ExecutionConfigModalProps) => {
   const { adminClient } = useAdminClient();
 
@@ -109,8 +117,15 @@ export const ExecutionConfigModal = ({
     if (config) setupForm(config);
   }, [config]);
 
+  useEffect(() => {
+    if (execution.authenticationFlow) {
+      setValue("showCredentialSelector", execution.showCredentialSelector);
+    }
+  }, [execution]);
+
   const save = async (saved: ExecutionConfigModalForm) => {
-    const changedConfig = convertFormValuesToObject(saved);
+    const { showCredentialSelector, ...rest } = saved;
+    const changedConfig = convertFormValuesToObject(rest);
     try {
       if (config) {
         const newConfig = {
@@ -129,6 +144,9 @@ export const ExecutionConfigModal = ({
         const { id } =
           await adminClient.authenticationManagement.createConfig(newConfig);
         setConfig({ ...newConfig.config, id, alias: newConfig.alias });
+      }
+      if (execution.authenticationFlow) {
+        onRowChange({ ...execution, showCredentialSelector });
       }
       addAlert(t("configSaveSuccess"), AlertVariant.success);
       setShow(false);
@@ -164,6 +182,15 @@ export const ExecutionConfigModal = ({
                 rules={{ required: t("required") }}
                 isDisabled={!!config}
               />
+              {execution.authenticationFlow && (
+                <SwitchControl
+                  name="showCredentialSelector"
+                  label={t("showCredentialSelector")}
+                  labelIcon={t("showCredentialSelectorHelp")}
+                  labelOn={t("on")}
+                  labelOff={t("off")}
+                />
+              )}
               <DynamicComponents
                 stringify
                 properties={configDescription.properties || []}

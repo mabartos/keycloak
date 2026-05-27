@@ -453,6 +453,11 @@ public class DefaultAuthenticationFlow implements AuthenticationFlow {
                 //move to next
                 return null;
             }
+            if (flow.isShowCredentialSelector() && finalSelectionOptions.size() > 1) {
+                processor.getAuthenticationSession().setAuthNote(AuthenticationProcessor.AUTHENTICATION_SELECTOR_SCREEN_DISPLAYED, "true");
+                processor.getAuthenticationSession().setAuthNote(AuthenticationProcessor.CURRENT_AUTHENTICATION_EXECUTION, model.getId());
+                return createSelectAuthenticatorsScreen(model);
+            }
             model = finalSelectionOptions.get(0).getAuthenticationExecution();
             factory = (AuthenticatorFactory) processor.getSession().getKeycloakSessionFactory().getProviderFactory(Authenticator.class, model.getAuthenticator());
             if (factory == null) {

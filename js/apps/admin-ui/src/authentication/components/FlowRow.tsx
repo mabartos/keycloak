@@ -100,7 +100,10 @@ export const FlowRow = ({
             </>
           )}
           <Td isActionCell>
-            <ExecutionConfigModal execution={execution} />
+            <ExecutionConfigModal
+              execution={execution}
+              onRowChange={onRowChange}
+            />
           </Td>
 
           {execution.authenticationFlow && !builtIn && (

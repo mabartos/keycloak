@@ -1012,6 +1012,7 @@ public class RepresentationToModel {
         model.setProviderId(rep.getProviderId());
         model.setAlias(rep.getAlias());
         model.setDescription(rep.getDescription());
+        model.setShowCredentialSelector(rep.isShowCredentialSelector());
         return model;
 
     }

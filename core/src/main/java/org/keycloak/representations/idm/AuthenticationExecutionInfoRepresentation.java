@@ -40,6 +40,7 @@ public class AuthenticationExecutionInfoRepresentation implements Serializable {
     protected int level;
     protected int index;
     protected int priority;
+    protected Boolean showCredentialSelector;
 
     public String getId() {
         return id;
@@ -151,5 +152,13 @@ public class AuthenticationExecutionInfoRepresentation implements Serializable {
 
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public Boolean getShowCredentialSelector() {
+        return showCredentialSelector;
+    }
+
+    public void setShowCredentialSelector(Boolean showCredentialSelector) {
+        this.showCredentialSelector = showCredentialSelector;
     }
 }

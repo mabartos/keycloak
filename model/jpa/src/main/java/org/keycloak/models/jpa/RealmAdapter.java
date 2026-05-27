@@ -1604,6 +1604,7 @@ public class RealmAdapter implements StorageProviderRealmModel, JpaModel<RealmEn
         model.setDescription(entity.getDescription());
         model.setBuiltIn(entity.isBuiltIn());
         model.setTopLevel(entity.isTopLevel());
+        model.setShowCredentialSelector(entity.isShowCredentialSelector());
         return model;
     }
 
@@ -1634,7 +1635,7 @@ public class RealmAdapter implements StorageProviderRealmModel, JpaModel<RealmEn
         entity.setProviderId(model.getProviderId());
         entity.setBuiltIn(model.isBuiltIn());
         entity.setTopLevel(model.isTopLevel());
-
+        entity.setShowCredentialSelector(model.isShowCredentialSelector());
     }
 
     private AuthenticationFlowEntity getAuthenticationFlowEntity(String id, boolean readForRemove) {
@@ -1656,6 +1657,7 @@ public class RealmAdapter implements StorageProviderRealmModel, JpaModel<RealmEn
         entity.setProviderId(model.getProviderId());
         entity.setBuiltIn(model.isBuiltIn());
         entity.setTopLevel(model.isTopLevel());
+        entity.setShowCredentialSelector(model.isShowCredentialSelector());
         entity.setRealm(realm);
         realm.getAuthenticationFlows().add(entity);
         em.persist(entity);
