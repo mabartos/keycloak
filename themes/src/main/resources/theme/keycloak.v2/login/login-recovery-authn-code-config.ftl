@@ -1,4 +1,6 @@
 <#import "template.ftl" as layout>
+<#import "field.ftl" as field>
+<#import "buttons.ftl" as buttons>
 <#import "password-commons.ftl" as passwordCommons>
 <@layout.registrationLayout; section>
 <!-- template: login-recovery-authn-code-config.ftl -->
@@ -44,12 +46,8 @@
         </button>
     </div>
 
-    <!-- confirmation checkbox -->
-    <div class="${properties.kcFormOptionsClass!} pf-v5-u-mt-md">
-        <input class="${properties.kcCheckInputClass!}" type="checkbox" id="kcRecoveryCodesConfirmationCheck" name="kcRecoveryCodesConfirmationCheck"
-        onchange="document.getElementById('saveRecoveryAuthnCodesBtn').disabled = !this.checked;"
-        />
-        <label for="kcRecoveryCodesConfirmationCheck">${msg("recovery-codes-confirmation-message")}</label>
+    <div class="${properties.kcFormGroupClass!}">
+        <@field.checkbox name="kcRecoveryCodesConfirmationCheck" label=msg("recovery-codes-confirmation-message") onchange="document.getElementById('saveRecoveryAuthnCodesBtn').disabled = !this.checked;"/>
     </div>
 
     <form action="${url.loginAction}" class="${properties.kcFormGroupClass!}" id="kc-recovery-codes-settings-form" method="post">
@@ -58,23 +56,14 @@
         <input type="hidden" id="userLabel" name="userLabel" value="${msg("recovery-codes-label-default")}" />
         <@passwordCommons.logoutOtherSessions/>
 
-        <#if isAppInitiatedAction??>
-            <input type="submit"
-            class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonLargeClass!}"
-            id="saveRecoveryAuthnCodesBtn" value="${msg("recovery-codes-action-complete")}"
-            disabled
-            />
-            <button type="submit"
-                class="${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!} pf-m-link"
-                id="cancelRecoveryAuthnCodesBtn" name="cancel-aia" value="true">${msg("recovery-codes-action-cancel")}
-            </button>
-        <#else>
-            <input type="submit"
-            class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}"
-            id="saveRecoveryAuthnCodesBtn" value="${msg("recovery-codes-action-complete")}"
-            disabled
-            />
-        </#if>
+        <@buttons.actionGroup horizontal=true>
+            <#if isAppInitiatedAction??>
+                <@buttons.button id="saveRecoveryAuthnCodesBtn" label="recovery-codes-action-complete" class=["kcButtonPrimaryClass"] disabled="disabled"/>
+                <@buttons.button id="cancelRecoveryAuthnCodesBtn" label="recovery-codes-action-cancel" name="cancel-aia" value="true" class=["kcButtonSecondaryClass"]/>
+            <#else>
+                <@buttons.button id="saveRecoveryAuthnCodesBtn" label="recovery-codes-action-complete" class=["kcButtonPrimaryClass", "kcButtonBlockClass"] disabled="disabled"/>
+            </#if>
+        </@buttons.actionGroup>
     </form>
 
     <script>

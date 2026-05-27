@@ -143,7 +143,7 @@
   </@group>
 </#macro>
 
-<#macro checkbox name label value=false required=false>
+<#macro checkbox name label value=false required=false extra...>
   <div class="${properties.kcCheckboxClass}">
     <label for="${name}" class="${properties.kcCheckboxClass}">
       <input
@@ -152,6 +152,7 @@
         id="${name}"
         name="${name}"
         <#if value>checked</#if>
+        <#list extra as attrName, attrVal>${attrName}="${attrVal}"</#list>
       />
       <span class="${properties.kcCheckboxLabelClass}">${label}</span>
       <#if required>

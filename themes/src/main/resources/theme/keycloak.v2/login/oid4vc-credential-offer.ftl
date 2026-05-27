@@ -1,5 +1,6 @@
 <#import "template.ftl" as layout>
 <#import "field.ftl" as field>
+<#import "buttons.ftl" as buttons>
 <#import "password-commons.ftl" as passwordCommons>
 <@layout.registrationLayout displayRequiredFields=false displayMessage=!messagesPerField.existsError('credentialOffer'); section>
 <!-- template: oid4vc-credential-offer.ftl -->
@@ -19,25 +20,14 @@
         </ol>
 
         <form action="${url.loginAction}" class="${properties.kcFormClass!}" id="kc-cred-offer-settings-form" method="post" novalidate="novalidate">
-            <div class="pf-v5-c-form__group pf-m-action">
-                <div class="pf-v5-c-form__actions">
-                    <#if isAppInitiatedAction??>
-                        <input type="submit"
-                            class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonLargeClass!}"
-                            id="continue-vc-offer" value="${msg("doContinue")}"
-                        />
-                        <button type="submit"
-                                class="${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!} ${properties.kcButtonLargeClass!}"
-                                id="cancel-vc-offer" name="cancel-aia" value="true">${msg("doCancel")}
-                        </button>
-                    <#else>
-                        <input type="submit"
-                            class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}"
-                            id="continue-vc-offer" value="${msg("doContinue")}"
-                        />
-                    </#if>
-                </div>
-            </div>
+            <@buttons.actionGroup horizontal=true>
+                <#if isAppInitiatedAction??>
+                    <@buttons.button id="continue-vc-offer" label="doContinue" class=["kcButtonPrimaryClass"]/>
+                    <@buttons.button id="cancel-vc-offer" label="doCancel" name="cancel-aia" value="true" class=["kcButtonSecondaryClass"]/>
+                <#else>
+                    <@buttons.button id="continue-vc-offer" label="doContinue" class=["kcButtonPrimaryClass", "kcButtonBlockClass"]/>
+                </#if>
+            </@buttons.actionGroup>
         </form>
     </#if>
 </@layout.registrationLayout>
