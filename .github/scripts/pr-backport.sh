@@ -58,6 +58,7 @@ if [ "$MERGE_COMMIT" == "" ]; then
 fi
 
 PR_BRANCH=backport-$PR-$TARGET
+PR_TITLE="[$TARGET] $(gh pr view $PR --json title | jq -r .title)"
 PR_BODY=$(gh pr view $PR --json body | jq -r .body)
 
 echo_header "Details"
@@ -86,7 +87,7 @@ echo_header "Push '$PR_BRANCH' to 'origin' remote"
 git push origin $PR_BRANCH:$PR_BRANCH --set-upstream
 
 echo_header "Opening web browser to create pull request"
-gh pr create -B $TARGET_BRANCH -f -w
+gh pr create -B $TARGET_BRANCH -t "$PR_TITLE" -b "$PR_BODY" -w
 
 echo_header "Checkout to $WORK_BRANCH branch"
 git checkout $WORK_BRANCH
