@@ -1,4 +1,5 @@
 import "@patternfly/patternfly/patternfly-addons.css";
+import "@patternfly/patternfly/patternfly-charts-theme-dark.css";
 import "@patternfly/react-core/dist/styles/base.css";
 
 import { StrictMode } from "react";

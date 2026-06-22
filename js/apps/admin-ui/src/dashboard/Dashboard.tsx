@@ -43,7 +43,9 @@ import { useServerInfo } from "../context/server-info/ServerInfoProvider";
 import type { Environment } from "../environment-types";
 import helpUrls from "../help-urls";
 import { resolveDisplayName } from "../util";
+import useIsFeatureEnabled, { Feature } from "../utils/useIsFeatureEnabled";
 import useLocaleSort, { mapByKey } from "../utils/useLocaleSort";
+import { AnalyticsDashboard, SummaryStatCard } from "./analytics/AnalyticsDashboard";
 import { ProviderInfo } from "./ProviderInfo";
 import { DashboardTab, toDashboard } from "./routes/Dashboard";
 
@@ -105,9 +107,13 @@ const FeatureItem = ({ feature }: FeatureItemProps) => {
 
 const Dashboard = () => {
   const { t } = useTranslation();
+  const { environment } = useEnvironment<Environment>();
   const { realm, realmRepresentation: realmInfo } = useRealm();
   const serverInfo = useServerInfo();
   const localeSort = useLocaleSort();
+  const brandImage = environment.logo ? environment.logo : "/icon.svg";
+  const isFeatureEnabled = useIsFeatureEnabled();
+  const isAnalyticsEnabled = isFeatureEnabled(Feature.AnalyticsDashboards);
 
   const sortedFeatures = useMemo(
     () => localeSort(serverInfo.features ?? [], mapByKey("name")),
@@ -165,32 +171,27 @@ const Dashboard = () => {
             title={<TabTitleText>{t("welcomeTabTitle")}</TabTitleText>}
             {...welcomeTab}
           >
-            <PageSection variant="light">
-              <div className="pf-v5-l-grid pf-v5-u-ml-lg">
-                <div className="pf-v5-l-grid__item pf-m-12-col">
-                  <Title
-                    data-testid="welcomeTitle"
-                    className="pf-v5-u-font-weight-bold"
-                    headingLevel="h2"
-                    size="3xl"
-                  >
-                    {t("welcomeTo", { realmDisplayInfo })}
-                  </Title>
-                </div>
-                <div className="pf-v5-l-grid__item keycloak__dashboard_welcome_tab">
-                  <Text component={TextVariants.h3}>{t("welcomeText")}</Text>
-                </div>
-                <div className="pf-v5-l-grid__item pf-m-10-col pf-v5-u-mt-md">
-                  <Button
-                    className="pf-v5-u-px-lg pf-v5-u-py-sm"
-                    component="a"
-                    href={helpUrls.documentation}
-                    target="_blank"
-                    variant="primary"
-                  >
-                    {t("viewDocumentation")}
-                  </Button>
-                </div>
+            <PageSection variant="light" className="keycloak__dashboard_welcome">
+              <EmptyState variant="lg">
+                <Brand
+                  src={environment.resourceUrl + brandImage}
+                  alt="Keycloak icon"
+                  className="keycloak__dashboard_icon"
+                />
+                <EmptyStateHeader
+                  titleText={t("welcomeTo", { realmDisplayInfo })}
+                  headingLevel="h1"
+                />
+                <EmptyStateBody>{t("welcomeText")}</EmptyStateBody>
+                <Button
+                  className="pf-v5-u-px-lg pf-v5-u-py-sm"
+                  component="a"
+                  href={helpUrls.documentation}
+                  target="_blank"
+                  variant="primary"
+                >
+                  {t("viewDocumentation")}
+                </Button>
                 <ActionList className="pf-v5-u-mt-sm">
                   <ActionListItem>
                     <Button
@@ -223,8 +224,9 @@ const Dashboard = () => {
                     </Button>
                   </ActionListItem>
                 </ActionList>
-              </div>
+              </EmptyState>
             </PageSection>
+            {isAnalyticsEnabled && <AnalyticsDashboard />}
           </Tab>
           <Tab
             id="info"
@@ -233,6 +235,42 @@ const Dashboard = () => {
             {...infoTab}
           >
             <PageSection variant="light">
+              <Grid hasGutter className="pf-v5-u-mb-lg">
+                <GridItem lg={3} md={6} sm={12}>
+                  <SummaryStatCard
+                    value={serverInfo.cpuInfo?.processorCount ?? "—"}
+                    label={t("processorCount")}
+                  />
+                </GridItem>
+                <GridItem lg={3} md={6} sm={12}>
+                  <SummaryStatCard
+                    value={serverInfo.memoryInfo?.usedFormated ?? "—"}
+                    label={t("usedMemory")}
+                    variant="warning"
+                  />
+                </GridItem>
+                <GridItem lg={3} md={6} sm={12}>
+                  <SummaryStatCard
+                    value={enabledFeatures.length}
+                    label={t("enabledFeatures")}
+                    variant="success"
+                  />
+                </GridItem>
+                <GridItem lg={3} md={6} sm={12}>
+                  <SummaryStatCard
+                    value={
+                      enabledFeatures.filter(
+                        (f) =>
+                          f.type === FeatureType.Preview ||
+                          f.type === FeatureType.PreviewDisabledByDefault ||
+                          f.type === FeatureType.Experimental,
+                      ).length
+                    }
+                    label={t("analyticsPreviewExperimental")}
+                    variant="danger"
+                  />
+                </GridItem>
+              </Grid>
               <Grid hasGutter>
                 <GridItem lg={2} sm={12}>
                   <Card className="keycloak__dashboard_card">
@@ -357,10 +395,12 @@ export default function DashboardSection() {
   const { realm } = useRealm();
   const { environment } = useEnvironment<Environment>();
   const isMasterRealm = realm === environment.masterRealm;
+  const isFeatureEnabled = useIsFeatureEnabled();
+  const isAnalyticsEnabled = isFeatureEnabled(Feature.AnalyticsDashboards);
   return (
     <>
-      {!isMasterRealm && <EmptyDashboard />}
-      {isMasterRealm && <Dashboard />}
+      {!isMasterRealm && !isAnalyticsEnabled && <EmptyDashboard />}
+      {(isMasterRealm || isAnalyticsEnabled) && <Dashboard />}
     </>
   );
 }

@@ -1,7 +1,9 @@
 package org.keycloak.admin.ui.rest;
 
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.Path;
 
+import org.keycloak.common.Profile;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.services.resources.admin.AdminEventBuilder;
@@ -58,6 +60,14 @@ public final class AdminExtResource {
     @Path("/role-mapping-delete")
     public RoleMappingDeleteResource roleMappingDelete() {
         return new RoleMappingDeleteResource(session, realm, auth, adminEvent);
+    }
+
+    @Path("/analytics")
+    public AnalyticsResource analytics() {
+        if (!Profile.isFeatureEnabled(Profile.Feature.ANALYTICS_DASHBOARDS)) {
+            throw new NotFoundException();
+        }
+        return new AnalyticsResource(session, realm, auth);
     }
 
     @Path("/sessions")

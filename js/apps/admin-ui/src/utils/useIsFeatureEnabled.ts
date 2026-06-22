@@ -26,6 +26,7 @@ export enum Feature {
   ScimApi = "SCIM_API",
   IdentityBrokeringAPIV1 = "IDENTITY_BROKERING_API_V1",
   IdentityBrokeringAPIV2 = "IDENTITY_BROKERING_API_V2",
+  AnalyticsDashboards = "ANALYTICS_DASHBOARDS",
 }
 
 export const unversionedName = (name: string) => name.replace(/_V\d+$/, "");

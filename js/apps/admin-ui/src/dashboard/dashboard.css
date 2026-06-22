@@ -10,3 +10,20 @@
   max-width: 38%;
   margin-top: var(--pf-v5-global--spacer--md);
 }
+
+.keycloak__dashboard_welcome .pf-v5-c-empty-state {
+  padding: var(--pf-v5-global--spacer--xl) 0;
+}
+
+.keycloak__dashboard_welcome .pf-v5-c-empty-state__title-text {
+  font-size: var(--pf-v5-global--FontSize--2xl);
+}
+
+.keycloak__dashboard_welcome .pf-v5-c-empty-state__body {
+  margin-bottom: var(--pf-v5-global--spacer--lg);
+}
+
+.keycloak__dashboard_welcome .pf-v5-c-action-list {
+  justify-content: center;
+  margin-top: var(--pf-v5-global--spacer--md);
+}
