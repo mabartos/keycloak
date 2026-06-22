@@ -1,0 +1,97 @@
+.keycloak-analytics__summary-section {
+  padding-top: var(--pf-v5-global--spacer--sm);
+  padding-bottom: var(--pf-v5-global--spacer--sm);
+}
+
+.keycloak-analytics__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--pf-v5-global--spacer--md);
+}
+
+.keycloak-analytics__charts-wrapper {
+  position: relative;
+}
+
+.keycloak-analytics__content--blurred {
+  filter: blur(6px);
+  pointer-events: none;
+  user-select: none;
+  min-height: 400px;
+}
+
+.keycloak-analytics__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: var(--pf-v5-global--BorderRadius--sm);
+}
+
+.pf-v5-theme-dark .keycloak-analytics__overlay {
+  background-color: rgba(21, 21, 21, 0.4);
+}
+
+/* KPI stat cards with colored left accent border */
+.keycloak-analytics__stat-card {
+  border-left: 4px solid var(--pf-v5-global--primary-color--100);
+}
+
+.keycloak-analytics__stat-card .pf-v5-c-card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--pf-v5-global--spacer--lg) var(--pf-v5-global--spacer--md);
+}
+
+.keycloak-analytics__stat-card--success {
+  border-left-color: var(--pf-v5-global--success-color--100);
+}
+
+.keycloak-analytics__stat-card--warning {
+  border-left-color: var(--pf-v5-global--warning-color--100);
+}
+
+.keycloak-analytics__stat-card--danger {
+  border-left-color: var(--pf-v5-global--danger-color--100);
+}
+
+.keycloak-analytics__stat-value {
+  font-size: var(--pf-v5-global--FontSize--3xl);
+  font-weight: var(--pf-v5-global--FontWeight--bold);
+  color: var(--pf-v5-global--Color--100);
+  line-height: 1.2;
+}
+
+.keycloak-analytics__stat-label {
+  font-size: var(--pf-v5-global--FontSize--sm);
+  color: var(--pf-v5-global--Color--200);
+  margin-top: var(--pf-v5-global--spacer--xs);
+  text-align: center;
+}
+
+/* Chart containers */
+.keycloak-analytics__chart-container {
+  width: 100%;
+  height: 350px;
+}
+
+.keycloak-analytics__chart-container--small {
+  width: 100%;
+  height: 250px;
+}
+
+.keycloak-analytics__chart-container--donut {
+  width: 100%;
+  max-width: 350px;
+  height: 230px;
+  margin: 0 auto;
+}

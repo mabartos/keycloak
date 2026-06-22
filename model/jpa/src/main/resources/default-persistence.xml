@@ -73,6 +73,8 @@
         <!-- JpaAuditProviders -->
         <class>org.keycloak.events.jpa.EventEntity</class>
         <class>org.keycloak.events.jpa.AdminEventEntity</class>
+        <class>org.keycloak.events.jpa.AuthStatsDailyEntity</class>
+        <class>org.keycloak.events.jpa.MfaEnrollmentDailyEntity</class>
 
         <!-- Cluster Events -->
         <class>org.keycloak.cluster.jpa.ClusterEventEntity</class>
