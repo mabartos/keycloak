@@ -1,5 +1,12 @@
 import type RealmRepresentation from "@keycloak/keycloak-admin-client/lib/defs/realmRepresentation";
-import { Button, FormGroup, PageSection, Switch } from "@patternfly/react-core";
+import {
+  Button,
+  Flex,
+  FlexItem,
+  FormGroup,
+  PageSection,
+  Switch,
+} from "@patternfly/react-core";
 import { CogIcon } from "@patternfly/react-icons";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -9,6 +16,7 @@ import { useAlerts } from "@keycloak/keycloak-ui-shared";
 import { toAuthentication } from "../authentication/routes/Authentication";
 import { FormAccess } from "../components/form/FormAccess";
 import { useRealm } from "../context/realm-context/RealmContext";
+import { LoginPreviewWindow } from "./themes/LoginPreviewWindow";
 import useIsFeatureEnabled, { Feature } from "../utils/useIsFeatureEnabled";
 
 type RealmSettingsLoginTabProps = {
@@ -55,6 +63,8 @@ export const RealmSettingsLoginTab = ({
 
   return (
     <PageSection variant="light">
+      <Flex>
+        <FlexItem>
       <FormPanel
         className="kc-login-screen"
         title={t("loginScreenCustomization")}
@@ -326,6 +336,17 @@ export const RealmSettingsLoginTab = ({
           </FormGroup>
         </FormAccess>
       </FormPanel>
+        </FlexItem>
+        <FlexItem style={{ zIndex: 0, maxWidth: "36rem" }}>
+          <LoginPreviewWindow
+            cssVars={{}}
+            registrationAllowed={realm.registrationAllowed}
+            resetPasswordAllowed={realm.resetPasswordAllowed}
+            rememberMe={realm.rememberMe}
+            passkeysEnabled={passkeysEnabled}
+          />
+        </FlexItem>
+      </Flex>
     </PageSection>
   );
 };

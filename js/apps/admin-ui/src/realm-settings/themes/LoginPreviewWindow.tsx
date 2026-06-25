@@ -6,9 +6,19 @@ import { usePreviewBackground } from "./BackgroundContext";
 
 type LoginPreviewWindowProps = {
   cssVars: Record<string, string>;
+  registrationAllowed?: boolean;
+  resetPasswordAllowed?: boolean;
+  rememberMe?: boolean;
+  passkeysEnabled?: boolean;
 };
 
-export const LoginPreviewWindow = ({ cssVars }: LoginPreviewWindowProps) => {
+export const LoginPreviewWindow = ({
+  cssVars,
+  registrationAllowed,
+  resetPasswordAllowed,
+  rememberMe,
+  passkeysEnabled,
+}: LoginPreviewWindowProps) => {
   const { environment } = useEnvironment<Environment>();
   const contextLogo = usePreviewLogo();
   const contextBackground = usePreviewBackground();
@@ -183,7 +193,29 @@ export const LoginPreviewWindow = ({ cssVars }: LoginPreviewWindowProps) => {
                             >
                               <div
                                 className={properties.kcInputHelperTextClass}
-                              ></div>
+                              >
+                                {rememberMe && (
+                                  <div className={properties.kcCheckboxClass}>
+                                    <label className={properties.kcCheckboxClass}>
+                                      <input
+                                        className={properties.kcCheckboxInputClass}
+                                        type="checkbox"
+                                        readOnly
+                                      />
+                                      <span className={properties.kcCheckboxLabelClass}>
+                                        Remember me
+                                      </span>
+                                    </label>
+                                  </div>
+                                )}
+                                {resetPasswordAllowed && (
+                                  <div className={properties.kcInputHelperTextItemClass}>
+                                    <span className={properties.kcInputHelperTextItemTextClass}>
+                                      <a href="#">Forgot password?</a>
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                             <div id="input-error-container-password"></div>
                           </div>
@@ -201,16 +233,33 @@ export const LoginPreviewWindow = ({ cssVars }: LoginPreviewWindowProps) => {
                               </button>
                             </div>
                           </div>
+                          {passkeysEnabled && (
+                            <div className={properties.kcFormGroupClass}>
+                              <button
+                                className={`${properties.kcButtonSecondaryClass} ${properties.kcButtonBlockClass}`}
+                                type="button"
+                              >
+                                Sign in with a passkey
+                              </button>
+                            </div>
+                          )}
                         </form>
                       </div>
                     </div>
 
-                    <div className={properties.kcLoginMainFooter}>
-                      {/* Social providers or additional info would go here */}
-                    </div>
                   </div>
 
-                  <div className={properties.kcLoginMainFooter}></div>
+                  {registrationAllowed && (
+                    <div className={properties.kcLoginMainFooter}>
+                      <div className={properties.kcLoginMainFooterBand}>
+                        <div className={properties.kcLoginMainFooterBandItem}>
+                          <span className={properties.kcLoginMainFooterHelperText}>
+                            New user? <a href="#">Register</a>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </main>
               </div>
             </div>

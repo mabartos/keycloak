@@ -342,6 +342,9 @@ export const ThemeColors = ({
                     logoWidth: style["logoWidth"],
                     logoHeight: style["logoHeight"],
                   }}
+                  registrationAllowed={realm.registrationAllowed}
+                  resetPasswordAllowed={realm.resetPasswordAllowed}
+                  rememberMe={realm.rememberMe}
                 />
               </Tab>
               <Tab title={t("adminConsolePreview")} eventKey={1}>
