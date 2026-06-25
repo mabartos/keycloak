@@ -20,4 +20,8 @@ public class ClientSecretConstants {
      */
     public static final String CLIENT_SECRET_AUTHENTICATION_ALLOWED_METHOD = "client.secret.authentication.allowed.method";
 
+    // Per-client rotation configuration
+    public static final String CLIENT_SECRET_ROTATION_CONFIG_ENABLED = "client.secret.rotation.config.enabled";
+    public static final String CLIENT_SECRET_ROTATION_CONFIG_PREFIX = "client.secret.rotation.config.";
+
 }

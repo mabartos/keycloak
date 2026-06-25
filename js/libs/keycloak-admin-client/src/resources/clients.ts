@@ -211,6 +211,18 @@ export class Clients extends Resource<{ realm?: string }> {
     urlParamKeys: ["id"],
   });
 
+  public getSecretRotationConfig = this.makeRequest<
+    { id: string },
+    {
+      source: "policy" | "client" | "none";
+      configuration?: Record<string, unknown>;
+    }
+  >({
+    method: "GET",
+    path: "/{id}/secret-rotation-config",
+    urlParamKeys: ["id"],
+  });
+
   /**
    * Client Scopes
    */

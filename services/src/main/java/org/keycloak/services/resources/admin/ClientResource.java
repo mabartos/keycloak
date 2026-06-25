@@ -70,16 +70,21 @@ import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.ClientScopeRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.ManagementPermissionReference;
+import org.keycloak.representations.idm.SecretRotationConfigRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.representations.idm.UserSessionRepresentation;
 import org.keycloak.services.ErrorResponse;
 import org.keycloak.services.ErrorResponseException;
+import org.keycloak.services.clientpolicy.ClientPoliciesUtil;
+import org.keycloak.services.clientpolicy.ClientPolicyContext;
 import org.keycloak.services.clientpolicy.ClientPolicyException;
 import org.keycloak.services.clientpolicy.context.AdminClientUnregisterContext;
 import org.keycloak.services.clientpolicy.context.AdminClientUpdateContext;
 import org.keycloak.services.clientpolicy.context.AdminClientUpdatedContext;
 import org.keycloak.services.clientpolicy.context.AdminClientViewContext;
 import org.keycloak.services.clientpolicy.context.ClientSecretRotationContext;
+import org.keycloak.services.clientpolicy.executor.ClientPolicyExecutorProvider;
+import org.keycloak.services.clientpolicy.executor.ClientSecretRotationExecutor;
 import org.keycloak.services.clientregistration.ClientRegistrationTokenUtils;
 import org.keycloak.services.clientregistration.policy.RegistrationAuth;
 import org.keycloak.services.managers.ClientManager;
@@ -89,6 +94,7 @@ import org.keycloak.services.resources.KeycloakOpenAPI;
 import org.keycloak.services.resources.admin.fgap.AdminPermissionEvaluator;
 import org.keycloak.services.resources.admin.fgap.AdminPermissionManagement;
 import org.keycloak.services.resources.admin.fgap.AdminPermissions;
+import org.keycloak.util.JsonSerialization;
 import org.keycloak.utils.ProfileHelper;
 import org.keycloak.utils.ReservedCharValidator;
 import org.keycloak.validation.ValidationUtil;
@@ -168,12 +174,10 @@ public class ClientResource {
                         Response.Status.BAD_REQUEST);
             });
 
-            session.clientPolicy().triggerOnEvent(new AdminClientUpdatedContext(rep, client, auth.adminAuth()));
+            AdminClientUpdatedContext updatedContext = new AdminClientUpdatedContext(rep, client, auth.adminAuth());
+            session.clientPolicy().triggerOnEvent(updatedContext);
 
-            if (!(boolean) session.getAttribute(ClientSecretConstants.CLIENT_SECRET_ROTATION_ENABLED)){
-                logger.debugv("Removing the previous rotation info for client {0}{1}, if there is",client.getClientId(),client.getName());
-                OIDCClientSecretConfigWrapper.fromClientModel(client).removeClientSecretRotationInfo();
-            }
+            handlePerClientSecretRotation(updatedContext);
             session.removeAttribute(ClientSecretConstants.CLIENT_SECRET_ROTATION_ENABLED);
 
             adminEvent.operation(OperationType.UPDATE).resourcePath(session.getContext().getUri()).representation(rep).success();
@@ -312,10 +316,7 @@ public class ClientResource {
             rep.setType(CredentialRepresentation.SECRET);
             rep.setValue(secret);
 
-            if (!(boolean) session.getAttribute(ClientSecretConstants.CLIENT_SECRET_ROTATION_ENABLED)){
-                logger.debugv("Removing the previous rotation info for client {0}{1}, if there is",client.getClientId(),client.getName());
-                OIDCClientSecretConfigWrapper.fromClientModel(client).removeClientSecretRotationInfo();
-            }
+            handlePerClientSecretRotation(secretRotationContext);
 
             adminEvent.operation(OperationType.ACTION).resourcePath(session.getContext().getUri()).representation(rep).success();
             session.removeAttribute(ClientSecretConstants.CLIENT_SECRET_ROTATION_ENABLED);
@@ -367,6 +368,58 @@ public class ClientResource {
         logger.debug("getClientSecret");
         UserCredentialModel model = UserCredentialModel.secret(client.getSecret());
         return ModelToRepresentation.toRepresentation(model);
+    }
+
+    @Path("secret-rotation-config")
+    @GET
+    @NoCache
+    @Produces(MediaType.APPLICATION_JSON)
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.CLIENTS)
+    @Operation(summary = "Get the secret rotation configuration for this client")
+    public SecretRotationConfigRepresentation getSecretRotationConfig() {
+        auth.clients().requireView(client);
+
+        if (!Profile.isFeatureEnabled(Profile.Feature.CLIENT_SECRET_ROTATION)) {
+            throw new NotFoundException("Client secret rotation feature is not enabled");
+        }
+
+        SecretRotationConfigRepresentation result = new SecretRotationConfigRepresentation();
+
+        ClientPolicyExecutorProvider<?> executor = ClientPoliciesUtil.getSecretRotationExecutorForClient(session, realm, client);
+        if (executor instanceof ClientSecretRotationExecutor rotationExecutor) {
+            result.setSource("policy");
+            result.setConfiguration(JsonSerialization.mapper.convertValue(rotationExecutor.getConfiguration(), Map.class));
+            return result;
+        }
+
+        OIDCClientSecretConfigWrapper wrapper = OIDCClientSecretConfigWrapper.fromClientModel(client);
+        if (wrapper.hasPerClientRotationConfig()) {
+            result.setSource("client");
+            result.setConfiguration(JsonSerialization.mapper.convertValue(wrapper.toPerClientExecutorConfiguration(), Map.class));
+        } else {
+            result.setSource("none");
+        }
+
+        return result;
+    }
+
+    private void handlePerClientSecretRotation(ClientPolicyContext context) throws ClientPolicyException {
+        boolean policyHandled = Boolean.TRUE.equals(session.getAttribute(ClientSecretConstants.CLIENT_SECRET_ROTATION_ENABLED));
+        if (policyHandled) {
+            return;
+        }
+
+        OIDCClientSecretConfigWrapper wrapper = OIDCClientSecretConfigWrapper.fromClientModel(client);
+        if (Profile.isFeatureEnabled(Profile.Feature.CLIENT_SECRET_ROTATION)
+                && wrapper.hasPerClientRotationConfig()
+                && !client.isPublicClient() && !client.isBearerOnly()) {
+            ClientSecretRotationExecutor executor = new ClientSecretRotationExecutor(session);
+            executor.setupConfiguration(wrapper.toPerClientExecutorConfiguration());
+            executor.executeOnEvent(context);
+        } else {
+            logger.debugv("Removing the previous rotation info for client {0}{1}, if there is", client.getClientId(), client.getName());
+            wrapper.removeClientSecretRotationInfo();
+        }
     }
 
     /**

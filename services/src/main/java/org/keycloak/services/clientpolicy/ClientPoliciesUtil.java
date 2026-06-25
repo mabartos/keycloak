@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import org.keycloak.common.Profile;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.component.JsonConfigComponentModel;
+import org.keycloak.models.ClientModel;
 import org.keycloak.models.Constants;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
@@ -48,7 +49,9 @@ import org.keycloak.representations.idm.ClientProfilesRepresentation;
 import org.keycloak.securityprofile.SecurityProfileProvider;
 import org.keycloak.services.clientpolicy.condition.ClientPolicyConditionProvider;
 import org.keycloak.services.clientpolicy.condition.ClientPolicyConditionProviderFactory;
+import org.keycloak.services.clientpolicy.context.ClientPolicyCheckContext;
 import org.keycloak.services.clientpolicy.executor.ClientPolicyExecutorProvider;
+import org.keycloak.services.clientpolicy.executor.ClientSecretRotationExecutorFactory;
 import org.keycloak.util.JsonSerialization;
 import org.keycloak.utils.FileUtils;
 
@@ -646,6 +649,101 @@ public class ClientPoliciesUtil {
 
     static void setClientPoliciesJsonString(RealmModel realm, String json) {
         realm.setAttribute(Constants.CLIENT_POLICIES, json);
+    }
+
+    /**
+     * Checks whether any enabled client policy with a secret-rotation executor applies to the given client.
+     */
+    public static boolean isSecretRotationPolicyManagedForClient(KeycloakSession session, RealmModel realm, ClientModel client) {
+        return getSecretRotationExecutorForClient(session, realm, client) != null;
+    }
+
+    /**
+     * Returns the first secret-rotation executor (with its configuration) from a policy that applies to the given client,
+     * or null if no matching policy exists.
+     */
+    public static ClientPolicyExecutorProvider getSecretRotationExecutorForClient(KeycloakSession session, RealmModel realm, ClientModel client) {
+        if (!Profile.isFeatureEnabled(Profile.Feature.CLIENT_POLICIES)) {
+            return null;
+        }
+
+        List<ClientPolicy> policies = getEnabledClientPolicies(session, realm);
+        if (policies.isEmpty()) {
+            return null;
+        }
+
+        ClientPolicyCheckContext checkContext = new ClientPolicyCheckContext(client);
+
+        for (ClientPolicy policy : policies) {
+            if (!isSatisfiedForCheck(policy, checkContext)) {
+                continue;
+            }
+            ClientPolicyExecutorProvider executor = findSecretRotationExecutor(session, realm, policy);
+            if (executor != null) {
+                return executor;
+            }
+        }
+        return null;
+    }
+
+    private static boolean isSatisfiedForCheck(ClientPolicy policy, ClientPolicyContext context) {
+        if (policy.getConditions() == null || policy.getConditions().isEmpty()) {
+            return false;
+        }
+
+        boolean ret = false;
+        for (ClientPolicyConditionProvider condition : policy.getConditions()) {
+            try {
+                ClientPolicyVote vote = condition.applyPolicy(context);
+                if (condition.isNegativeLogic()) {
+                    if (vote == ClientPolicyVote.YES) {
+                        vote = ClientPolicyVote.NO;
+                    } else if (vote == ClientPolicyVote.NO) {
+                        vote = ClientPolicyVote.YES;
+                    }
+                }
+                if (vote == ClientPolicyVote.ABSTAIN) {
+                    ClientPolicyMode mode = policy.getMode() != null ? policy.getMode() : ClientPolicyMode.DEFAULT;
+                    if (mode == ClientPolicyMode.STRICT) {
+                        return false;
+                    }
+                    continue;
+                } else if (vote == ClientPolicyVote.NO) {
+                    return false;
+                }
+                ret = true;
+            } catch (ClientPolicyException e) {
+                logger.tracev("Condition evaluation failed during rotation check: policy={0}, condition={1}", policy.getName(), condition.getProviderId());
+                return false;
+            }
+        }
+        return ret;
+    }
+
+    private static ClientPolicyExecutorProvider findSecretRotationExecutor(KeycloakSession session, RealmModel realm, ClientPolicy policy) {
+        if (policy.getProfiles() == null || policy.getProfiles().isEmpty()) {
+            return null;
+        }
+
+        try {
+            ClientProfilesRepresentation profilesRep = getClientProfilesRepresentation(session, realm);
+            List<ClientProfileRepresentation> globalProfiles = getGlobalClientProfiles(session);
+
+            for (String profileName : policy.getProfiles()) {
+                ClientProfile profile = getClientProfileModel(session, realm, profilesRep, globalProfiles, profileName);
+                if (profile == null || profile.getExecutors() == null) {
+                    continue;
+                }
+                for (ClientPolicyExecutorProvider executor : profile.getExecutors()) {
+                    if (ClientSecretRotationExecutorFactory.PROVIDER_ID.equals(executor.getProviderId())) {
+                        return executor;
+                    }
+                }
+            }
+        } catch (ClientPolicyException e) {
+            logger.tracev("Failed to check for secret rotation executor: {0}", e.getMessage());
+        }
+        return null;
     }
 
 }

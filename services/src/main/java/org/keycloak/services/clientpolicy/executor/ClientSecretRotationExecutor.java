@@ -72,13 +72,15 @@ public class ClientSecretRotationExecutor implements
 
     @Override
     public void setupConfiguration(ClientSecretRotationExecutor.Configuration config) {
-
         if (config == null) {
             configuration = new Configuration().parseWithDefaultValues();
         } else {
             configuration = config.parseWithDefaultValues();
         }
+    }
 
+    public Configuration getConfiguration() {
+        return configuration;
     }
 
     private boolean isClientWithSecret(ClientModel client) {

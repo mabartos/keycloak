@@ -13,6 +13,7 @@ import org.keycloak.models.ClientSecretConstants;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.delegate.ClientModelLazyDelegate;
 import org.keycloak.representations.idm.ClientRepresentation;
+import org.keycloak.services.clientpolicy.executor.ClientSecretRotationExecutor;
 import org.keycloak.utils.StringUtil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,6 +26,11 @@ import static org.keycloak.models.ClientSecretConstants.CLIENT_SECRET_AUTHENTICA
 import static org.keycloak.models.ClientSecretConstants.CLIENT_SECRET_CREATION_TIME;
 import static org.keycloak.models.ClientSecretConstants.CLIENT_SECRET_EXPIRATION;
 import static org.keycloak.models.ClientSecretConstants.CLIENT_SECRET_REMAINING_EXPIRATION_TIME;
+import static org.keycloak.models.ClientSecretConstants.CLIENT_SECRET_ROTATION_CONFIG_ENABLED;
+import static org.keycloak.models.ClientSecretConstants.CLIENT_SECRET_ROTATION_CONFIG_PREFIX;
+import static org.keycloak.services.clientpolicy.executor.ClientSecretRotationExecutorFactory.SECRET_EXPIRATION_PERIOD;
+import static org.keycloak.services.clientpolicy.executor.ClientSecretRotationExecutorFactory.SECRET_REMAINING_ROTATION_PERIOD;
+import static org.keycloak.services.clientpolicy.executor.ClientSecretRotationExecutorFactory.SECRET_ROTATED_EXPIRATION_PERIOD;
 
 /**
  * @author <a href="mailto:masales@redhat.com">Marcelo Sales</a>
@@ -219,6 +225,21 @@ public class OIDCClientSecretConfigWrapper extends AbstractClientConfigWrapper {
 
         return MessageDigest.isEqual(secret.getBytes(), getClientRotatedSecret(session).getBytes());
 
+    }
+
+    public boolean hasPerClientRotationConfig() {
+        return "true".equals(getAttribute(CLIENT_SECRET_ROTATION_CONFIG_ENABLED));
+    }
+
+    public ClientSecretRotationExecutor.Configuration toPerClientExecutorConfiguration() {
+        ClientSecretRotationExecutor.Configuration config = new ClientSecretRotationExecutor.Configuration();
+        String expiration = getAttribute(CLIENT_SECRET_ROTATION_CONFIG_PREFIX + SECRET_EXPIRATION_PERIOD);
+        if (expiration != null) config.setExpirationPeriod(Integer.parseInt(expiration));
+        String rotated = getAttribute(CLIENT_SECRET_ROTATION_CONFIG_PREFIX + SECRET_ROTATED_EXPIRATION_PERIOD);
+        if (rotated != null) config.setRotatedExpirationPeriod(Integer.parseInt(rotated));
+        String remain = getAttribute(CLIENT_SECRET_ROTATION_CONFIG_PREFIX + SECRET_REMAINING_ROTATION_PERIOD);
+        if (remain != null) config.setRemainExpirationPeriod(Integer.parseInt(remain));
+        return config.parseWithDefaultValues();
     }
 
     public String toJson() {

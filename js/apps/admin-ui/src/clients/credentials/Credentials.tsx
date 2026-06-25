@@ -31,9 +31,11 @@ import { FormAccess } from "../../components/form/FormAccess";
 import { useServerInfo } from "../../context/server-info/ServerInfoProvider";
 import { FormFields } from "../ClientDetails";
 import { ClientSecret } from "./ClientSecret";
+import { SecretRotationConfig } from "./SecretRotationConfig";
 import { SignedJWT } from "./SignedJWT";
 import { X509 } from "./X509";
 import { convertAttributeNameToForm } from "../../util";
+import useIsFeatureEnabled, { Feature } from "../../utils/useIsFeatureEnabled";
 
 type AccessToken = {
   registrationAccessToken: string;
@@ -47,6 +49,7 @@ export type CredentialsProps = {
 
 export const Credentials = ({ client, save, refresh }: CredentialsProps) => {
   const { adminClient } = useAdminClient();
+  const isFeatureEnabled = useIsFeatureEnabled();
 
   const { t } = useTranslation();
   const { addAlert, addError } = useAlerts();
@@ -213,12 +216,17 @@ export const Credentials = ({ client, save, refresh }: CredentialsProps) => {
               </Form>
             )}
             {selectedProvider?.supportsSecret && (
-              <ClientSecret
-                client={client}
-                secret={secret}
-                toggle={toggleClientSecretConfirm}
-                refresh={refresh}
-              />
+              <>
+                <ClientSecret
+                  client={client}
+                  secret={secret}
+                  toggle={toggleClientSecretConfirm}
+                  refresh={refresh}
+                />
+                {isFeatureEnabled(Feature.ClientSecretRotation) && (
+                  <SecretRotationConfig client={client} />
+                )}
+              </>
             )}
             <ActionGroup>
               <Button variant="primary" type="submit" isDisabled={!isDirty}>
