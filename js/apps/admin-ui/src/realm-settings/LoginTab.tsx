@@ -1,11 +1,15 @@
 import type RealmRepresentation from "@keycloak/keycloak-admin-client/lib/defs/realmRepresentation";
-import { FormGroup, PageSection, Switch } from "@patternfly/react-core";
+import { Button, FormGroup, PageSection, Switch } from "@patternfly/react-core";
+import { CogIcon } from "@patternfly/react-icons";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { FormPanel, HelpItem } from "@keycloak/keycloak-ui-shared";
 import { useAdminClient } from "../admin-client";
 import { useAlerts } from "@keycloak/keycloak-ui-shared";
+import { toAuthentication } from "../authentication/routes/Authentication";
 import { FormAccess } from "../components/form/FormAccess";
 import { useRealm } from "../context/realm-context/RealmContext";
+import useIsFeatureEnabled, { Feature } from "../utils/useIsFeatureEnabled";
 
 type RealmSettingsLoginTabProps = {
   realm: RealmRepresentation;
@@ -21,9 +25,12 @@ export const RealmSettingsLoginTab = ({
   const { adminClient } = useAdminClient();
 
   const { t } = useTranslation();
-
   const { addAlert, addError } = useAlerts();
   const { realm: realmName } = useRealm();
+  const isFeatureEnabled = useIsFeatureEnabled();
+  const passkeysVisible = isFeatureEnabled(Feature.Passkeys);
+  const passkeysEnabled =
+    realm.webAuthnPolicyPasswordlessPasskeysEnabled ?? false;
 
   const updateSwitchValue = async (switches: SwitchType | SwitchType[]) => {
     const name = Array.isArray(switches)
@@ -126,6 +133,49 @@ export const RealmSettingsLoginTab = ({
               aria-label={t("rememberMe")}
             />
           </FormGroup>
+          {passkeysVisible && (
+            <FormGroup
+              label={t("webAuthnPolicyPasskeysEnabled")}
+              fieldId="kc-passkeys-enabled"
+              labelIcon={
+                <HelpItem
+                  helpText={t("webAuthnPolicyPasskeysEnabledHelp")}
+                  fieldLabelId="webAuthnPolicyPasskeysEnabled"
+                />
+              }
+              hasNoPaddingTop
+            >
+              <Switch
+                id="kc-passkeys-enabled-switch"
+                data-testid="passkeys-enabled-switch"
+                value={passkeysEnabled ? "on" : "off"}
+                label={t("on")}
+                labelOff={t("off")}
+                isChecked={passkeysEnabled}
+                onChange={async (_event, value) => {
+                  await updateSwitchValue({
+                    webAuthnPolicyPasswordlessPasskeysEnabled: value,
+                  } as SwitchType);
+                }}
+                aria-label={t("webAuthnPolicyPasskeysEnabled")}
+              />{" "}
+              <Button
+                variant="plain"
+                aria-label={t("passkeysSettingsTooltip")}
+                component={(props) => (
+                  <Link
+                    {...props}
+                    to={toAuthentication({
+                      realm: realmName,
+                      tab: "policies",
+                    })}
+                  />
+                )}
+              >
+                <CogIcon />
+              </Button>
+            </FormGroup>
+          )}
         </FormAccess>
       </FormPanel>
       <FormPanel className="kc-email-settings" title={t("emailSettings")}>

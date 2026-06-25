@@ -187,6 +187,26 @@ export const WebauthnPolicy = ({
         className="keycloak__webauthn_policies_authentication__form"
       >
         <FormProvider {...form}>
+          {isPasswordLess && isFeatureEnabled(Feature.Passkeys) && (
+            <>
+              <SwitchControl
+                name={`${namePrefix}PasskeysEnabled`}
+                label={t("webAuthnPolicyPasskeysEnabled")}
+                labelIcon={t("webAuthnPolicyPasskeysEnabledHelp")}
+                labelOn={t("on")}
+                labelOff={t("off")}
+              />
+              {watch(`${namePrefix}PasskeysEnabled`) && (
+                <WebauthnSelect
+                  name={`${namePrefix}Mediation`}
+                  label={t("webAuthnPolicyMediation")}
+                  labelIcon={t("webAuthnPolicyMediationHelp")}
+                  options={MEDIATION_OPTIONS}
+                  labelPrefix="mediation"
+                />
+              )}
+            </>
+          )}
           <TextControl
             name={`${namePrefix}RpEntityName`}
             label={t("webAuthnPolicyRpEntityName")}
@@ -313,26 +333,6 @@ export const WebauthnPolicy = ({
               addButtonLabel="addOrigins"
             />
           </FormGroup>
-          {isPasswordLess && isFeatureEnabled(Feature.Passkeys) && (
-            <>
-              <SwitchControl
-                name={`${namePrefix}PasskeysEnabled`}
-                label={t("webAuthnPolicyPasskeysEnabled")}
-                labelIcon={t("webAuthnPolicyPasskeysEnabledHelp")}
-                labelOn={t("on")}
-                labelOff={t("off")}
-              />
-              {watch(`${namePrefix}PasskeysEnabled`) && (
-                <WebauthnSelect
-                  name={`${namePrefix}Mediation`}
-                  label={t("webAuthnPolicyMediation")}
-                  labelIcon={t("webAuthnPolicyMediationHelp")}
-                  options={MEDIATION_OPTIONS}
-                  labelPrefix="mediation"
-                />
-              )}
-            </>
-          )}
         </FormProvider>
 
         <ActionGroup>
