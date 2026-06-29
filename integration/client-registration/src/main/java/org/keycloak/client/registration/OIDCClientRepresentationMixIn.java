@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 abstract class OIDCClientRepresentationMixIn {
 
     @JsonIgnore
-    private Integer client_id_issued_at;
+    private Long client_id_issued_at;
 
     @JsonIgnore
     private Long client_secret_expires_at;
