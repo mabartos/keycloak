@@ -403,6 +403,26 @@ The resulting token will then include:
 
 Other useful claims to add include `may_act.email` (user property `email`) or `may_act.iss` (for cross-realm delegation scenarios).
 
+==== Configuring enforced claims
+
+During token exchange, {project_name} validates that certain claims in `may_act` match the actor token. The enforced claim names are controlled by the `may_act enforce_claims` mapper on the `delegation` client scope. By default, `sub` and `iss` are enforced. Since `iss` is not included in `may_act` by default (no mapper adds it), it is silently skipped unless explicitly mapped. If an enforced claim is absent from `may_act`, it is always silently skipped. If the mapper is removed, {project_name} falls back to enforcing `sub` and `iss`.
+
+[source,json]
+----
+{
+  "may_act": {
+    "sub": "f1234567-89ab-cdef-0123-456789abcdef",
+    "enforce_claims": ["sub", "iss"]
+  }
+}
+----
+
+To enforce additional claims during token exchange:
+
+. Navigate to *Client scopes* -> *delegation* -> *Mappers* -> *may_act enforce_claims*.
+. Edit the *Token Claim Value* to include the additional claim names, for example `["sub","iss","preferred_username"]`.
+. Ensure the corresponding claim is also added to `may_act` via a mapper (see <<Adding additional claims to `may_act`>>).
+
 [[_legacy-token-exchange]]
 == Legacy token exchange
 

@@ -409,7 +409,7 @@ public class TokenExchangeDelegationTest {
                 .actorToken(actorToken).actorTokenType(OAuth2Constants.ACCESS_TOKEN_TYPE)
                 .send();
         assertExchangeError(tokenExchangeRes, "otheruser", Errors.INVALID_TOKEN,
-                "Actor user is not allowed by the may_act claim inside the subject_token");
+                "Enforced claim 'sub' in may_act does not match actor token claim 'sub'");
 
         // logout
         LogoutResponse logout = oauth.doLogout(res.getRefreshToken());
@@ -459,9 +459,148 @@ public class TokenExchangeDelegationTest {
         AccessTokenResponse tokenExchangeRes = oauth.client("test-app", "test-secret").tokenExchangeRequest(res.getAccessToken())
                 .actorToken(actorToken).actorTokenType(OAuth2Constants.ACCESS_TOKEN_TYPE)
                 .send();
-        assertExchangeError(tokenExchangeRes, Errors.INVALID_TOKEN, "Invalid issuer in the may_act claim of the subject_token");
+        assertExchangeError(tokenExchangeRes, Errors.INVALID_TOKEN,
+                "Enforced claim 'iss' in may_act does not match actor token claim 'iss'");
 
         // logout
+        LogoutResponse logout = oauth.doLogout(res.getRefreshToken());
+        Assertions.assertTrue(logout.isSuccess(), logout.getError() + " - " + logout.getErrorDescription());
+    }
+
+    @Test
+    public void delegationWithCustomEnforcedClaims() {
+        addImpersonationToAdministrator();
+        String delegationScopeId = findDelegationScopeId();
+
+        // add a preferred_username mapper to may_act
+        ProtocolMapperModel usernameMapper = ParameterizedScopeUserPropertyMapper.create(
+                "may_act preferred_username", "username",
+                MAY_ACT + "." + PREFERRED_USERNAME, "String",
+                true, true, true);
+        try (var response = realm.admin().clientScopes().get(delegationScopeId).getProtocolMappers()
+                .createMapper(ModelToRepresentation.toRepresentation(usernameMapper))) {
+            Assertions.assertEquals(201, response.getStatus());
+        }
+        realm.cleanup().add(r -> {
+            r.clientScopes().get(delegationScopeId).getProtocolMappers().getMappers().stream()
+                    .filter(m -> "may_act preferred_username".equals(m.getName()))
+                    .findFirst()
+                    .ifPresent(m -> r.clientScopes().get(delegationScopeId).getProtocolMappers().delete(m.getId()));
+        });
+
+        // update enforce_claims mapper to also include preferred_username
+        updateEnforceClaimsMapper(delegationScopeId, "[\"sub\",\"iss\",\"preferred_username\"]");
+
+        // login with delegation
+        final String scope = OIDCLoginProtocolFactory.DELEGATION_SCOPE + ClientScopeModel.VALUE_SEPARATOR + administrator.getUsername();
+        AccessTokenResponse res = loginWithDelegation(scope);
+        Assertions.assertTrue(res.isSuccess(), res.getError() + " - " + res.getErrorDescription());
+        assertMayActPresent(oauth.verifyToken(res.getAccessToken()), administrator.getId(), null, administrator.getUsername());
+
+        // exchange with correct actor — all enforced claims match
+        tokenExchangeDelegationSuccess(res.getAccessToken(), getActorToken(),
+                teToken -> assertActPresent(teToken, administrator.getId(), null, administrator.getUsername()));
+
+        // exchange with wrong actor — sub mismatch
+        String otherActorToken = getActorToken("otheruser", PASSWORD);
+        AccessTokenResponse tokenExchangeRes = oauth.client("test-app", "test-secret").tokenExchangeRequest(res.getAccessToken())
+                .actorToken(otherActorToken).actorTokenType(OAuth2Constants.ACCESS_TOKEN_TYPE).send();
+        assertExchangeError(tokenExchangeRes, "otheruser", Errors.INVALID_TOKEN,
+                "Enforced claim 'sub' in may_act does not match actor token claim 'sub'");
+
+        LogoutResponse logout = oauth.doLogout(res.getRefreshToken());
+        Assertions.assertTrue(logout.isSuccess(), logout.getError() + " - " + logout.getErrorDescription());
+    }
+
+    @Test
+    public void delegationFallbackWithoutEnforceClaims() {
+        addImpersonationToAdministrator();
+        String delegationScopeId = findDelegationScopeId();
+
+        // remove the enforce_claims mapper — provider should fall back to default sub/iss enforcement
+        ProtocolMapperRepresentation enforceMapper = realm.admin().clientScopes().get(delegationScopeId)
+                .getProtocolMappers().getMappers().stream()
+                .filter(m -> OIDCLoginProtocolFactory.DELEGATION_ENFORCE_CLAIMS.equals(m.getName()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("enforce_claims mapper not found"));
+        realm.admin().clientScopes().get(delegationScopeId).getProtocolMappers().delete(enforceMapper.getId());
+        realm.cleanup().add(r -> r.clientScopes().get(delegationScopeId).getProtocolMappers()
+                .createMapper(enforceMapper));
+
+        // login with delegation
+        final String scope = OIDCLoginProtocolFactory.DELEGATION_SCOPE + ClientScopeModel.VALUE_SEPARATOR + administrator.getUsername();
+        AccessTokenResponse res = loginWithDelegation(scope);
+        Assertions.assertTrue(res.isSuccess(), res.getError() + " - " + res.getErrorDescription());
+
+        // exchange with correct actor — default sub/iss enforcement applies and matches
+        tokenExchangeDelegationSuccess(res.getAccessToken(), getActorToken());
+
+        // exchange with wrong actor — sub mismatch via default enforcement
+        String otherActorToken = getActorToken("otheruser", PASSWORD);
+        AccessTokenResponse tokenExchangeRes = oauth.client("test-app", "test-secret").tokenExchangeRequest(res.getAccessToken())
+                .actorToken(otherActorToken).actorTokenType(OAuth2Constants.ACCESS_TOKEN_TYPE).send();
+        assertExchangeError(tokenExchangeRes, "otheruser", Errors.INVALID_TOKEN,
+                "Enforced claim 'sub' in may_act does not match actor token claim 'sub'");
+
+        LogoutResponse logout = oauth.doLogout(res.getRefreshToken());
+        Assertions.assertTrue(logout.isSuccess(), logout.getError() + " - " + logout.getErrorDescription());
+    }
+
+    @Test
+    public void delegationEnforcedClaimSkippedWhenAbsent() {
+        addImpersonationToAdministrator();
+        String delegationScopeId = findDelegationScopeId();
+
+        // update enforce_claims to include email, but do NOT add an email mapper to may_act
+        // since may_act won't contain email, the enforcement for email should be silently skipped
+        updateEnforceClaimsMapper(delegationScopeId, "[\"sub\",\"iss\",\"email\"]");
+
+        final String scope = OIDCLoginProtocolFactory.DELEGATION_SCOPE + ClientScopeModel.VALUE_SEPARATOR + administrator.getUsername();
+        AccessTokenResponse res = loginWithDelegation(scope);
+        Assertions.assertTrue(res.isSuccess(), res.getError() + " - " + res.getErrorDescription());
+
+        // exchange should succeed — email is not in may_act so the enforced claim is skipped
+        tokenExchangeDelegationSuccess(res.getAccessToken(), getActorToken());
+
+        LogoutResponse logout = oauth.doLogout(res.getRefreshToken());
+        Assertions.assertTrue(logout.isSuccess(), logout.getError() + " - " + logout.getErrorDescription());
+    }
+
+    @Test
+    public void delegationEnforcedClaimMismatch() {
+        addImpersonationToAdministrator();
+        String delegationScopeId = findDelegationScopeId();
+
+        // add a hardcoded email mapper with a wrong value to may_act
+        ProtocolMapperRepresentation emailMapper = new ProtocolMapperRepresentation();
+        emailMapper.setName("may_act email");
+        emailMapper.setProtocol("openid-connect");
+        emailMapper.setProtocolMapper("oidc-hardcoded-claim-mapper");
+        Map<String, String> emailConfig = new HashMap<>();
+        emailConfig.put(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME, MAY_ACT + ".email");
+        emailConfig.put(HardcodedClaim.CLAIM_VALUE, "wrong@example.com");
+        emailConfig.put(OIDCAttributeMapperHelper.JSON_TYPE, "String");
+        emailConfig.put(OIDCAttributeMapperHelper.INCLUDE_IN_ACCESS_TOKEN, Boolean.TRUE.toString());
+        emailMapper.setConfig(emailConfig);
+        String emailMapperId = ApiUtil.getCreatedId(
+                realm.admin().clientScopes().get(delegationScopeId).getProtocolMappers().createMapper(emailMapper));
+        realm.cleanup().add(r -> r.clientScopes().get(delegationScopeId).getProtocolMappers().delete(emailMapperId));
+
+        // update enforce_claims to include email
+        updateEnforceClaimsMapper(delegationScopeId, "[\"sub\",\"iss\",\"email\"]");
+
+        // login with delegation
+        final String scope = OIDCLoginProtocolFactory.DELEGATION_SCOPE + ClientScopeModel.VALUE_SEPARATOR + administrator.getUsername();
+        AccessTokenResponse res = loginWithDelegation(scope);
+        Assertions.assertTrue(res.isSuccess(), res.getError() + " - " + res.getErrorDescription());
+
+        // exchange with correct actor — sub/iss match but email mismatches
+        String actorToken = getActorToken();
+        AccessTokenResponse tokenExchangeRes = oauth.client("test-app", "test-secret").tokenExchangeRequest(res.getAccessToken())
+                .actorToken(actorToken).actorTokenType(OAuth2Constants.ACCESS_TOKEN_TYPE).send();
+        assertExchangeError(tokenExchangeRes, Errors.INVALID_TOKEN,
+                "Enforced claim 'email' in may_act does not match actor token claim 'email'");
+
         LogoutResponse logout = oauth.doLogout(res.getRefreshToken());
         Assertions.assertTrue(logout.isSuccess(), logout.getError() + " - " + logout.getErrorDescription());
     }
@@ -603,6 +742,22 @@ public class TokenExchangeDelegationTest {
 
     private static void assertMayActNotPresent(AccessToken token) {
         Assertions.assertNull(token.getOtherClaims().get(MAY_ACT), "may_act claim should not be present");
+    }
+
+    private void updateEnforceClaimsMapper(String delegationScopeId, String value) {
+        ClientScopeResource scopeResource = realm.admin().clientScopes().get(delegationScopeId);
+        ProtocolMapperRepresentation enforceMapper = scopeResource.getProtocolMappers().getMappers().stream()
+                .filter(m -> OIDCLoginProtocolFactory.DELEGATION_ENFORCE_CLAIMS.equals(m.getName()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("enforce_claims mapper not found"));
+        String originalValue = enforceMapper.getConfig().get(HardcodedClaim.CLAIM_VALUE);
+        enforceMapper.getConfig().put(HardcodedClaim.CLAIM_VALUE, value);
+        scopeResource.getProtocolMappers().update(enforceMapper.getId(), enforceMapper);
+        realm.cleanup().add(r -> {
+            enforceMapper.getConfig().put(HardcodedClaim.CLAIM_VALUE, originalValue);
+            r.clientScopes().get(delegationScopeId).getProtocolMappers()
+                    .update(enforceMapper.getId(), enforceMapper);
+        });
     }
 
     private String findDelegationScopeId() {
