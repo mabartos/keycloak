@@ -1547,6 +1547,16 @@ public class SamlProtocolTest {
         }
 
         @Override
+        public void setBrandedIdpUiEnabled(boolean enabled) {
+            // noop
+        }
+
+        @Override
+        public boolean isBrandedIdpUiEnabled() {
+            return false;
+        }
+
+        @Override
         public RequiredActionConfigModel getRequiredActionConfigById(String id) {
             return null;
         }

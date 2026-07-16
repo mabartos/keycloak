@@ -245,6 +245,7 @@ public class RealmRepresentation {
     protected List<ClientTemplateRepresentation> clientTemplates;
 
     private Boolean scimApiEnabled;
+    private Boolean brandedIdpUiEnabled;
 
     public String getId() {
         return id;
@@ -1561,6 +1562,14 @@ public class RealmRepresentation {
 
     public Boolean isScimApiEnabled() {
         return scimApiEnabled;
+    }
+
+    public void setBrandedIdpUiEnabled(Boolean brandedIdpUiEnabled) {
+        this.brandedIdpUiEnabled = brandedIdpUiEnabled;
+    }
+
+    public Boolean isBrandedIdpUiEnabled() {
+        return brandedIdpUiEnabled;
     }
 
     public enum BruteForceStrategy {

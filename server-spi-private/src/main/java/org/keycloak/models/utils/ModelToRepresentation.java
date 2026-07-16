@@ -210,6 +210,7 @@ public class ModelToRepresentation {
         REALM_EXCLUDED_ATTRIBUTES.add("adminPermissionsEnabled");
         REALM_EXCLUDED_ATTRIBUTES.add("adminPermissionsClientId");
         REALM_EXCLUDED_ATTRIBUTES.add("scimEnabled");
+        REALM_EXCLUDED_ATTRIBUTES.add("brandedIdpUiEnabled");
     }
 
     public static Set<String> CLIENT_EXCLUDED_ATTRIBUTES = new HashSet<>();
@@ -537,6 +538,7 @@ public class ModelToRepresentation {
         rep.setAdminPermissionsEnabled(realm.isAdminPermissionsEnabled());
         rep.setVerifiableCredentialsEnabled(realm.isVerifiableCredentialsEnabled());
         rep.setScimApiEnabled(realm.isScimApiEnabled());
+        rep.setBrandedIdpUiEnabled(realm.isBrandedIdpUiEnabled());
         rep.setDefaultSignatureAlgorithm(realm.getDefaultSignatureAlgorithm());
         rep.setRevokeRefreshToken(realm.isRevokeRefreshToken());
         rep.setRefreshTokenMaxReuse(realm.getRefreshTokenMaxReuse());

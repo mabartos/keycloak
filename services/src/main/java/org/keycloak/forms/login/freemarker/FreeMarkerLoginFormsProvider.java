@@ -516,6 +516,8 @@ public class FreeMarkerLoginFormsProvider implements LoginFormsProvider {
             }
 
             attributes.put("social", idpBean);
+            attributes.put("brandedIdpUi",
+                    Profile.isFeatureEnabled(Feature.BRANDED_IDP_UI) && realm.isBrandedIdpUiEnabled());
             attributes.put("url", new UrlBean(realm, theme, baseUri, this.actionUri));
             attributes.put("requiredActionUrl", new RequiredActionUrlFormatterMethod(realm, baseUri));
             attributes.put("auth", new AuthenticationContextBean(context, page));

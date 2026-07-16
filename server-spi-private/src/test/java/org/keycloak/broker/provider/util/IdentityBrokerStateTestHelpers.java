@@ -1885,5 +1885,15 @@ public class IdentityBrokerStateTestHelpers {
         public boolean isScimApiEnabled() {
             return false;
         }
+
+        @Override
+        public void setBrandedIdpUiEnabled(boolean enabled) {
+
+        }
+
+        @Override
+        public boolean isBrandedIdpUiEnabled() {
+            return false;
+        }
     }
 }

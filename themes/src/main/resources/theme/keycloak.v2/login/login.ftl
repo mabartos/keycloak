@@ -2,6 +2,7 @@
 <#import "field.ftl" as field>
 <#import "buttons.ftl" as buttons>
 <#import "social-providers.ftl" as identityProviders>
+<#import "social-providers-branded.ftl" as brandedIdentityProviders>
 <#import "passkeys.ftl" as passkeys>
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('username','password') displayInfo=realm.password && realm.registrationAllowed && !registrationDisabled??; section>
 <!-- template: login.ftl -->
@@ -41,7 +42,11 @@
         <@passkeys.conditionalUIData />
     <#elseif section = "socialProviders" >
         <#if realm.password && social.providers?? && social.providers?has_content>
-            <@identityProviders.show social=social/>
+            <#if brandedIdpUi?? && brandedIdpUi>
+                <@brandedIdentityProviders.show social=social/>
+            <#else>
+                <@identityProviders.show social=social/>
+            </#if>
         </#if>
     <#elseif section = "info" >
         <#if realm.password && realm.registrationAllowed && !registrationDisabled??>

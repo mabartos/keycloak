@@ -63,4 +63,5 @@ public interface RealmAttributes {
     String ADMIN_PERMISSIONS_ENABLED = "adminPermissionsEnabled";
     String ADMIN_PERMISSIONS_CLIENT_ID = "adminPermissionsClientId";
     String SCIM_API_ENABLED = "scimApiEnabled";
+    String BRANDED_IDP_UI_ENABLED = "brandedIdpUiEnabled";
 }

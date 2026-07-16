@@ -1942,6 +1942,18 @@ public class RealmAdapter implements CachedRealmModel {
         updated.setScimApiEnabled(enabled);
     }
 
+    @Override
+    public boolean isBrandedIdpUiEnabled() {
+        if (isUpdated()) return featureAwareIsEnabled(Feature.BRANDED_IDP_UI, updated.isBrandedIdpUiEnabled());
+        return featureAwareIsEnabled(Feature.BRANDED_IDP_UI, cached.isBrandedIdpUiEnabled());
+    }
+
+    @Override
+    public void setBrandedIdpUiEnabled(boolean enabled) {
+        getDelegateForUpdate();
+        updated.setBrandedIdpUiEnabled(enabled);
+    }
+
     private boolean featureAwareIsEnabled(Profile.Feature feature, boolean isEnabled) {
         if (!Profile.isFeatureEnabled(feature)) return false;
         return isEnabled;

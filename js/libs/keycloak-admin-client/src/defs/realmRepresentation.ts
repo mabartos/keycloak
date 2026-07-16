@@ -134,6 +134,7 @@ export default interface RealmRepresentation {
   waitIncrementSeconds?: number;
   webAuthnPolicyPasswordlessPasskeysEnabled?: boolean;
   scimApiEnabled?: boolean;
+  brandedIdpUiEnabled?: boolean;
 }
 
 export type PartialImportRealmRepresentation = RealmRepresentation & {

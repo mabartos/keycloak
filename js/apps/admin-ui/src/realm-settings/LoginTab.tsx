@@ -29,6 +29,7 @@ export const RealmSettingsLoginTab = ({
   const { realm: realmName } = useRealm();
   const isFeatureEnabled = useIsFeatureEnabled();
   const passkeysVisible = isFeatureEnabled(Feature.Passkeys);
+  const brandedIdpUiVisible = isFeatureEnabled(Feature.BrandedIdpUi);
   const updateSwitchValue = async (switches: SwitchType | SwitchType[]) => {
     const name = Array.isArray(switches)
       ? Object.keys(switches[0])[0]
@@ -169,6 +170,32 @@ export const RealmSettingsLoginTab = ({
                   }),
                   hash: WEBAUTHN_PASSWORDLESS_POLICY,
                 }}
+              />
+            </FormGroup>
+          )}
+          {brandedIdpUiVisible && (
+            <FormGroup
+              label={t("brandedIdpUiEnabled")}
+              fieldId="kc-branded-idp-ui"
+              labelIcon={
+                <HelpItem
+                  helpText={t("brandedIdpUiEnabledHelp")}
+                  fieldLabelId="brandedIdpUiEnabled"
+                />
+              }
+              hasNoPaddingTop
+            >
+              <Switch
+                id="kc-branded-idp-ui-switch"
+                data-testid="branded-idp-ui-switch"
+                value={realm.brandedIdpUiEnabled ? "on" : "off"}
+                label={t("on")}
+                labelOff={t("off")}
+                isChecked={realm.brandedIdpUiEnabled ?? false}
+                onChange={async (_event, value) => {
+                  await updateSwitchValue({ brandedIdpUiEnabled: value });
+                }}
+                aria-label={t("brandedIdpUiEnabled")}
               />
             </FormGroup>
           )}

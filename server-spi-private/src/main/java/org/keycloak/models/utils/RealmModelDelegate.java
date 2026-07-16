@@ -1208,4 +1208,14 @@ public class RealmModelDelegate implements RealmModel {
     public boolean isScimApiEnabled() {
         return delegate.isScimApiEnabled();
     }
+
+    @Override
+    public void setBrandedIdpUiEnabled(boolean enabled) {
+        delegate.setBrandedIdpUiEnabled(enabled);
+    }
+
+    @Override
+    public boolean isBrandedIdpUiEnabled() {
+        return delegate.isBrandedIdpUiEnabled();
+    }
 }

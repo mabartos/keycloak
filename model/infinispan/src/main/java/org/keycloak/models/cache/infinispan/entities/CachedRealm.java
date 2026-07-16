@@ -79,6 +79,7 @@ public class CachedRealm extends AbstractExtendableRevisioned {
     protected boolean adminPermissionsEnabled;
     protected boolean verifiableCredentialsEnabled;
     protected boolean scimApiEnabled;
+    protected boolean brandedIdpUiEnabled;
     //--- brute force settings
     protected boolean bruteForceProtected;
     protected boolean permanentLockout;
@@ -198,6 +199,7 @@ public class CachedRealm extends AbstractExtendableRevisioned {
         adminPermissionsEnabled = model.isAdminPermissionsEnabled();
         verifiableCredentialsEnabled = model.isVerifiableCredentialsEnabled();
         scimApiEnabled = model.isScimApiEnabled();
+        brandedIdpUiEnabled = model.isBrandedIdpUiEnabled();
         //--- brute force settings
         bruteForceProtected = model.isBruteForceProtected();
         permanentLockout = model.isPermanentLockout();
@@ -776,5 +778,9 @@ public class CachedRealm extends AbstractExtendableRevisioned {
 
     public boolean isScimApiEnabled() {
         return scimApiEnabled;
+    }
+
+    public boolean isBrandedIdpUiEnabled() {
+        return brandedIdpUiEnabled;
     }
 }

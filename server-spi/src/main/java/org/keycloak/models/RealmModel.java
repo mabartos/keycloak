@@ -129,6 +129,10 @@ public interface RealmModel extends RoleContainerModel {
 
     boolean isScimApiEnabled();
 
+    void setBrandedIdpUiEnabled(boolean enabled);
+
+    boolean isBrandedIdpUiEnabled();
+
     void setAttribute(String name, String value);
     default void setAttribute(String name, Boolean value) {
         setAttribute(name, value.toString());

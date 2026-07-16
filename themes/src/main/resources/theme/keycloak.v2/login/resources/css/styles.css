@@ -142,3 +142,51 @@ hr {
 #kc-form-webauthn {
     gap: 0.875rem;
 }
+
+/* ===== Branded Identity Provider Buttons ===== */
+
+.kc-branded-social-providers svg {
+    filter: none !important;
+}
+
+.kc-branded-idp-button {
+    display: flex;
+    align-items: center;
+    gap: var(--pf-v5-global--spacer--sm);
+    width: 100%;
+    padding: var(--pf-v5-global--spacer--sm) var(--pf-v5-global--spacer--md);
+    border: 1px solid var(--pf-v5-global--BorderColor--100);
+    border-radius: var(--pf-v5-global--BorderRadius--sm);
+    background: var(--pf-v5-global--BackgroundColor--100);
+    color: var(--pf-v5-global--Color--100);
+    text-decoration: none;
+    font-size: var(--pf-v5-global--FontSize--md);
+    font-family: var(--pf-v5-global--FontFamily--sans-serif);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.kc-branded-idp-button:hover {
+    background: var(--pf-v5-global--BackgroundColor--200);
+    text-decoration: none;
+    color: var(--pf-v5-global--Color--100);
+}
+
+.kc-branded-idp-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--pf-v5-global--FontSize--xl);
+    height: var(--pf-v5-global--FontSize--xl);
+    flex-shrink: 0;
+}
+
+.kc-branded-idp-icon svg {
+    width: var(--pf-v5-global--icon--FontSize--md);
+    height: var(--pf-v5-global--icon--FontSize--md);
+}
+
+.kc-branded-idp-name {
+    flex: 1;
+    text-align: center;
+}

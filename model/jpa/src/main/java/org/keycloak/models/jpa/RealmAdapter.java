@@ -1354,6 +1354,16 @@ public class RealmAdapter implements StorageProviderRealmModel, JpaModel<RealmEn
     }
 
     @Override
+    public void setBrandedIdpUiEnabled(boolean enabled) {
+        setAttribute(RealmAttributes.BRANDED_IDP_UI_ENABLED, enabled);
+    }
+
+    @Override
+    public boolean isBrandedIdpUiEnabled() {
+        return getAttribute(RealmAttributes.BRANDED_IDP_UI_ENABLED, Boolean.FALSE);
+    }
+
+    @Override
     public ClientModel getMasterAdminClient() {
         String masterAdminClientId = realm.getMasterAdminClient();
         if (masterAdminClientId == null) {
