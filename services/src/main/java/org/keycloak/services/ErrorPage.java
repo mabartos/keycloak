@@ -28,6 +28,7 @@ import org.keycloak.sessions.AuthenticationSessionModel;
 public class ErrorPage {
 
     public static Response error(KeycloakSession session, AuthenticationSessionModel authenticationSession, Response.Status status, String message, Object... parameters) {
+        session.getTransactionManager().setRollbackOnly();
         return session.getProvider(LoginFormsProvider.class).setAuthenticationSession(authenticationSession).setError(message, parameters).createErrorPage(status);
     }
 
