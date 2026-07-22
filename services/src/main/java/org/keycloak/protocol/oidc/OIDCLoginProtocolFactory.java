@@ -46,6 +46,8 @@ import org.keycloak.protocol.oidc.mappers.AddressMapper;
 import org.keycloak.protocol.oidc.mappers.AllowedWebOriginsProtocolMapper;
 import org.keycloak.protocol.oidc.mappers.AudienceResolveProtocolMapper;
 import org.keycloak.protocol.oidc.mappers.FullNameMapper;
+import org.keycloak.protocol.oidc.mappers.ParameterizedScopeClientUserPropertyMapper;
+import org.keycloak.protocol.oidc.mappers.ParameterizedScopeMapper;
 import org.keycloak.protocol.oidc.mappers.ParameterizedScopeUserPropertyMapper;
 import org.keycloak.protocol.oidc.mappers.SubMapper;
 import org.keycloak.protocol.oidc.mappers.UserAttributeMapper;
@@ -53,6 +55,7 @@ import org.keycloak.protocol.oidc.mappers.UserClientRoleMappingMapper;
 import org.keycloak.protocol.oidc.mappers.UserPropertyMapper;
 import org.keycloak.protocol.oidc.mappers.UserRealmRoleMappingMapper;
 import org.keycloak.protocol.oidc.mappers.UserSessionNoteMapper;
+import org.keycloak.protocol.oidc.scope.ClientDelegationScopeType;
 import org.keycloak.protocol.oidc.scope.DelegationScopeType;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.provider.ProviderConfigurationBuilder;
@@ -112,6 +115,8 @@ public class OIDCLoginProtocolFactory extends AbstractLoginProtocolFactory {
     public static final String ALLOWED_WEB_ORIGINS = "allowed web origins";
     public static final String ACR = "acr loa level";
     public static final String DELEGATION_MAY_ACT_SUB = "may_act sub";
+    public static final String CLIENT_DELEGATION_MAY_ACT_SUB = "client may_act sub";
+    public static final String CLIENT_DELEGATION_MAY_ACT_CLIENT_ID = "client may_act client_id";
     public static final String ORGANIZATION = "organization";
     // microprofile-jwt claims
     public static final String UPN = "upn";
@@ -123,6 +128,7 @@ public class OIDCLoginProtocolFactory extends AbstractLoginProtocolFactory {
     public static final String ACR_SCOPE = "acr";
     public static final String BASIC_SCOPE = "basic";
     public static final String DELEGATION_SCOPE = "delegation";
+    public static final String CLIENT_DELEGATION_SCOPE = "delegation:client";
 
     public static final String PROFILE_SCOPE_CONSENT_TEXT = "${profileScopeConsentText}";
     public static final String EMAIL_SCOPE_CONSENT_TEXT = "${emailScopeConsentText}";
@@ -279,6 +285,14 @@ public class OIDCLoginProtocolFactory extends AbstractLoginProtocolFactory {
             model = ParameterizedScopeUserPropertyMapper.create(
                     DELEGATION_MAY_ACT_SUB, "id", MAY_ACT + "." + SUBJECT, "String", true, true, true);
             builtins.put(DELEGATION_MAY_ACT_SUB, model);
+
+            model = ParameterizedScopeClientUserPropertyMapper.create(
+                    CLIENT_DELEGATION_MAY_ACT_SUB, "id", MAY_ACT + "." + SUBJECT, "String", true, true, true);
+            builtins.put(CLIENT_DELEGATION_MAY_ACT_SUB, model);
+
+            model = ParameterizedScopeMapper.create(
+                    CLIENT_DELEGATION_MAY_ACT_CLIENT_ID, MAY_ACT + ".client_id", "String", true, true, true);
+            builtins.put(CLIENT_DELEGATION_MAY_ACT_CLIENT_ID, model);
         }
 
         model = UserSessionNoteMapper.createClaimMapper(IDToken.AUTH_TIME, AuthenticationManager.AUTH_TIME,
@@ -391,6 +405,18 @@ public class OIDCLoginProtocolFactory extends AbstractLoginProtocolFactory {
             delegationScope.setProtocol(getId());
             delegationScope.setConsentScreenText("${delegationScopeConsentText}");
             delegationScope.addProtocolMapper(builtins.get(DELEGATION_MAY_ACT_SUB));
+
+            ClientScopeModel clientDelegationScope = newRealm.addClientScope(CLIENT_DELEGATION_SCOPE);
+            clientDelegationScope.setDescription("OpenID Connect scope for agent/client token exchange delegation");
+            clientDelegationScope.setIsParameterizedScope(true);
+            clientDelegationScope.setDisplayOnConsentScreen(true);
+            clientDelegationScope.setAttribute(ClientScopeModel.IS_ALWAYS_CONSENT, Boolean.TRUE.toString());
+            clientDelegationScope.setAttribute(ClientScopeModel.PARAMETERIZED_SCOPE_TYPE, ClientDelegationScopeType.TYPE);
+            clientDelegationScope.setIncludeInTokenScope(true);
+            clientDelegationScope.setProtocol(getId());
+            clientDelegationScope.setConsentScreenText("${clientDelegationScopeConsentText}");
+            clientDelegationScope.addProtocolMapper(builtins.get(CLIENT_DELEGATION_MAY_ACT_SUB));
+            clientDelegationScope.addProtocolMapper(builtins.get(CLIENT_DELEGATION_MAY_ACT_CLIENT_ID));
         }
     }
 

@@ -73,7 +73,7 @@ public class ParameterizedScopeUserPropertyMapper extends ParameterizedScopeMapp
 
         List<Object> resolvedValues = new ArrayList<>();
         for (String parameterValue : parameterValues) {
-            UserModel targetUser = keycloakSession.users().getUserByUsername(realm, parameterValue);
+            UserModel targetUser = resolveUser(keycloakSession, realm, parameterValue);
             if (targetUser == null) {
                 continue;
             }
@@ -100,6 +100,10 @@ public class ParameterizedScopeUserPropertyMapper extends ParameterizedScopeMapp
         if (!resolvedValues.isEmpty()) {
             OIDCAttributeMapperHelper.mapClaim(token, mappingModel, resolvedValues);
         }
+    }
+
+    protected UserModel resolveUser(KeycloakSession keycloakSession, RealmModel realm, String parameterValue) {
+        return keycloakSession.users().getUserByUsername(realm, parameterValue);
     }
 
     public static ProtocolMapperModel create(String name, String userAttribute,

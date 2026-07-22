@@ -45,6 +45,12 @@ export const CapabilityConfig = ({
     ),
     false,
   );
+  const standardTokenExchangeEnabled = watch(
+    convertAttributeNameToForm<FormFields>(
+      "attributes.standard.token.exchange.enabled",
+    ),
+    false,
+  );
   const externalTokenEnabled = watch(
     convertAttributeNameToForm<FormFields>("attributes.external.token.enabled"),
     false,
@@ -106,6 +112,12 @@ export const CapabilityConfig = ({
                       setValue(
                         convertAttributeNameToForm<FormFields>(
                           "attributes.standard.token.exchange.enabled",
+                        ),
+                        false,
+                      );
+                      setValue(
+                        convertAttributeNameToForm<FormFields>(
+                          "attributes.client.delegation.enabled",
                         ),
                         false,
                       );
@@ -299,7 +311,17 @@ export const CapabilityConfig = ({
                               field.value.toString() === "true" &&
                               !clientAuthentication
                             }
-                            onChange={field.onChange}
+                            onChange={(_event, value) => {
+                              field.onChange(value);
+                              if (!value) {
+                                setValue(
+                                  convertAttributeNameToForm<FormFields>(
+                                    "attributes.client.delegation.enabled",
+                                  ),
+                                  false,
+                                );
+                              }
+                            }}
                             isDisabled={clientAuthentication}
                           />
                         </InputGroupItem>
@@ -314,6 +336,39 @@ export const CapabilityConfig = ({
                   />
                 </GridItem>
               )}
+              {isFeatureEnabled(Feature.TokenExchangeDelegation) &&
+                standardTokenExchangeEnabled?.toString() === "true" &&
+                !clientAuthentication && (
+                  <GridItem lg={8} sm={6}>
+                    <Controller
+                      name={convertAttributeNameToForm<
+                        Required<ClientRepresentation["attributes"]>
+                      >("attributes.client.delegation.enabled")}
+                      defaultValue={false}
+                      control={control}
+                      render={({ field }) => (
+                        <InputGroup>
+                          <InputGroupItem>
+                            <Checkbox
+                              data-testid="client-delegation-enabled"
+                              label={t("clientDelegationEnabled")}
+                              id="kc-client-delegation-enabled"
+                              name="client-delegation-enabled"
+                              isChecked={field.value.toString() === "true"}
+                              onChange={field.onChange}
+                            />
+                          </InputGroupItem>
+                          <InputGroupItem>
+                            <HelpItem
+                              helpText={t("clientDelegationEnabledHelp")}
+                              fieldLabelId="clientDelegationEnabled"
+                            />
+                          </InputGroupItem>
+                        </InputGroup>
+                      )}
+                    />
+                  </GridItem>
+                )}
               {isFeatureEnabled(Feature.JWTAuthorizationGrant) && (
                 <GridItem lg={8} sm={6}>
                   <Controller
