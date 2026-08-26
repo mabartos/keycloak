@@ -66,6 +66,9 @@ public class DefaultFreeMarkerProvider implements FreeMarkerProvider {
 
         cfg.setNewBuiltinClassResolver(TemplateClassResolver.ALLOWS_NOTHING_RESOLVER);
         cfg.setTemplateLoader(new ThemeTemplateLoader(theme));
+        cfg.setLocalizedLookup(false);
+        cfg.setLogTemplateExceptions(false);
+        cfg.setTemplateUpdateDelayMilliseconds(Long.MAX_VALUE);
         return cfg.getTemplate(templateName, "UTF-8");
     }
 

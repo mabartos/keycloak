@@ -874,7 +874,11 @@ public class TokenManager {
 
         Set<String> alwaysConsent = retrieveSessionConsents(clientSession);
 
-        UserConsentModel grantedConsent = UserConsentManager.getConsentByClient(session, client.getRealm(), user, client.getId());
+        // Only load consent from DB when the client actually requires consent;
+        // the alwaysConsent check in isGrantedConsent does not use grantedConsent
+        UserConsentModel grantedConsent = client.isConsentRequired()
+                ? UserConsentManager.getConsentByClient(session, client.getRealm(), user, client.getId())
+                : null;
 
         if (Profile.isFeatureEnabled(Profile.Feature.PARAMETERIZED_SCOPES)) {
             AuthorizationRequestContext ctx = AuthorizationContextUtil.getAuthorizationRequestContextFromScopesWithClient(
