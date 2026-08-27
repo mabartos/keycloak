@@ -30,7 +30,10 @@ import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.authorization.fgap.AdminPermissionsSchema;
 import org.keycloak.models.AdminRoles;
+import org.keycloak.models.ClientModel;
 import org.keycloak.models.Constants;
+import org.keycloak.models.RealmModel;
+import org.keycloak.models.UserModel;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.GroupRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -40,12 +43,16 @@ import org.keycloak.representations.idm.authorization.GroupPolicyRepresentation;
 import org.keycloak.representations.idm.authorization.Logic;
 import org.keycloak.representations.idm.authorization.ScopePermissionRepresentation;
 import org.keycloak.representations.idm.authorization.UserPolicyRepresentation;
+import org.keycloak.services.resources.admin.fgap.AdminPermissions;
 import org.keycloak.testframework.annotations.InjectAdminClient;
 import org.keycloak.testframework.annotations.InjectKeycloakUrls;
 import org.keycloak.testframework.annotations.InjectUser;
 import org.keycloak.testframework.annotations.KeycloakIntegrationTest;
 import org.keycloak.testframework.realm.ManagedUser;
 import org.keycloak.testframework.realm.UserBuilder;
+import org.keycloak.testframework.remote.providers.runonserver.RunOnServer;
+import org.keycloak.testframework.remote.runonserver.InjectRunOnServer;
+import org.keycloak.testframework.remote.runonserver.RunOnServerClient;
 import org.keycloak.testframework.server.KeycloakUrls;
 import org.keycloak.testframework.util.ApiUtil;
 
@@ -80,6 +87,9 @@ public class UserResourceTypeEvaluationTest extends AbstractPermissionTest {
 
     @InjectKeycloakUrls
     KeycloakUrls keycloakUrls;
+
+    @InjectRunOnServer(permittedPackages = "org.keycloak.tests")
+    RunOnServerClient runOnServer;
 
     private final String usersType = AdminPermissionsSchema.USERS.getType();
 
@@ -596,5 +606,62 @@ public class UserResourceTypeEvaluationTest extends AbstractPermissionTest {
             representation = keycloak.realm(realm.getName()).users().get(userAlice.getId()).toRepresentation();
             assertThat(representation, notNullValue());
         }
+    }
+
+    /**
+     * Verifies that {@code canImpersonate(user, client)} evaluates permission
+     * policies against the admin (subject) identity, not the target user identity.
+     *
+     * @see <a href="https://github.com/keycloak/keycloak/issues/51488">#51488</a>
+     */
+    @Test
+    public void testImpersonateWithClientEvaluatesAdminIdentity() {
+        UserRepresentation myadmin = realm.admin().users().search("myadmin").get(0);
+        UserPolicyRepresentation policy = createUserPolicy(realm, adminPermissionsClient,
+                "Allow Myadmin Impersonate", myadmin.getId());
+        createAllPermission(adminPermissionsClient, usersType, policy, Set.of(IMPERSONATE));
+
+        String realmName = realm.getName();
+        String myadminId = myadmin.getId();
+        String aliceId = userAlice.getId();
+
+        runOnServer.run((RunOnServer) session -> {
+            RealmModel realmModel = session.realms().getRealmByName(realmName);
+            session.getContext().setRealm(realmModel);
+
+            UserModel adminUser = session.users().getUserById(realmModel, myadminId);
+            UserModel targetUser = session.users().getUserById(realmModel, aliceId);
+            ClientModel client = realmModel.getClientByClientId("myclient");
+
+            var evaluator = AdminPermissions.evaluator(session, realmModel, realmModel, adminUser);
+
+            assertTrue(evaluator.users().canImpersonate(targetUser, null),
+                    "canImpersonate(user, null) should succeed for admin with IMPERSONATE permission");
+
+            assertTrue(evaluator.users().canImpersonate(targetUser, client),
+                    "canImpersonate(user, client) should succeed for admin with IMPERSONATE permission");
+        });
+    }
+
+    @Test
+    public void testImpersonateWithClientDeniedWithoutPermission() {
+        String realmName = realm.getName();
+        String aliceId = userAlice.getId();
+
+        runOnServer.run((RunOnServer) session -> {
+            RealmModel realmModel = session.realms().getRealmByName(realmName);
+            session.getContext().setRealm(realmModel);
+
+            UserModel adminUser = session.users().getUserByUsername(realmModel, "myadmin");
+            UserModel targetUser = session.users().getUserById(realmModel, aliceId);
+            ClientModel client = realmModel.getClientByClientId("myclient");
+
+            var evaluator = AdminPermissions.evaluator(session, realmModel, realmModel, adminUser);
+
+            assertFalse(evaluator.users().canImpersonate(targetUser, null),
+                    "canImpersonate should be denied without IMPERSONATE permission");
+            assertFalse(evaluator.users().canImpersonate(targetUser, client),
+                    "canImpersonate with client should be denied without IMPERSONATE permission");
+        });
     }
 }

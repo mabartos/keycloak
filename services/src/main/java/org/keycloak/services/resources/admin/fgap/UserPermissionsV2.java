@@ -25,7 +25,6 @@ import jakarta.ws.rs.ForbiddenException;
 import org.keycloak.authorization.AuthorizationProvider;
 import org.keycloak.authorization.common.DefaultEvaluationContext;
 import org.keycloak.authorization.fgap.AdminPermissionsSchema;
-import org.keycloak.authorization.identity.UserModelIdentity;
 import org.keycloak.authorization.model.Policy;
 import org.keycloak.authorization.model.Resource;
 import org.keycloak.models.AdminRoles;
@@ -128,7 +127,7 @@ class UserPermissionsV2 extends UserPermissions {
         }
 
         DefaultEvaluationContext context = requester == null ? null :
-                new DefaultEvaluationContext(new UserModelIdentity(root.realm, user), Map.of(CLIENT_ID_ATTRIBUTE, List.of(requester.getClientId())), session);
+                new DefaultEvaluationContext(root.identity(), Map.of(CLIENT_ID_ATTRIBUTE, List.of(requester.getClientId())), session);
 
         return eval.hasPermission(new UserModelRecord(user), context, AdminPermissionsSchema.IMPERSONATE);
     }
