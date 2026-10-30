@@ -338,6 +338,20 @@ Updating an existing client scope does not revalidate its stored mappers.
 Existing deployments continue to start, because mappers that are read from the database at startup are not validated.
 If you provision realms from an exported JSON file, import the file once after upgrading to find out whether it contains a mapper that is now rejected.
 
+=== User Interface
+
+==== New Base login theme
+// https://github.com/keycloak/keycloak/issues/54546
+// https://github.com/keycloak/keycloak/issues/54547
+
+The new Base login theme provides reusable templates and components for current and future login themes, with styling configurable through theme properties.
+Custom themes can override individual macros or properties instead of copying complete pages, reducing maintenance and helping them inherit validation, accessibility, and authentication improvements.
+The `keycloak.v2` login theme now inherits these shared templates and retains its styling through theme properties.
+
+The previous Base login templates are no longer provided.
+Custom login themes with `parent=base` now inherit the new markup.
+Review and update their template overrides and CSS to match the new structure.
+
 // ------------------------ Notable changes ------------------------ //
 == Notable changes
 
