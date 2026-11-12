@@ -186,10 +186,36 @@ hr {
     }
 }
 
-@media (min-width: 768px) {
-    div.pf-v6-c-login__main-header:has(.pf-v6-c-login__main-header-utilities) {
-        grid-template-columns: 70% 30%;
-    }
+.pf-v6-c-login__main-header:has(.pf-v6-c-login__main-header-utilities) {
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.kc-locale {
+    position: relative;
+    max-width: min(16rem, 40vw);
+}
+
+.kc-locale [aria-expanded="true"] .pf-v6-c-menu-toggle__toggle-icon {
+    transform: rotate(180deg);
+}
+
+.kc-locale-menu {
+    position: absolute;
+    inset-block-start: calc(100% + var(--pf-t--global--spacer--xs));
+    inset-inline-end: 0;
+    z-index: var(--pf-t--global--z-index--md);
+    width: max-content;
+    max-width: min(24rem, calc(100vw - 2rem));
+}
+
+.kc-locale-menu .pf-v6-c-menu__content {
+    max-height: min(18rem, 50vh);
+    overflow-y: auto;
+}
+
+.kc-locale-menu .pf-v6-c-menu__item-text {
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 #kc-form-webauthn {

@@ -83,7 +83,7 @@ public abstract class LanguageComboboxAwarePage extends AbstractPage {
             String url = langLink.getAttribute("value");
             DroneUtils.getCurrentDriver().navigate().to(new URI(DroneUtils.getCurrentDriver().getCurrentUrl()).resolve(url).toString());
         } catch (NoSuchElementException ex) {
-            WebElement langLink = localeDropdownBase.findElement(By.xpath("//a[text()[contains(.,'" + language + "')]]"));
+            WebElement langLink = localeDropdownBase.findElement(By.xpath(".//a[contains(normalize-space(.),'" + language + "')]"));
             String url = langLink.getAttribute("href");
             DroneUtils.getCurrentDriver().navigate().to(url);
         } catch (URISyntaxException ex) {

@@ -17,6 +17,7 @@ class MenuButtonLinks {
     this.domNode = domNode;
     this.buttonNode = domNode.querySelector("button");
     this.menuNode = domNode.querySelector('[role="menu"]');
+    this.popupNode = domNode.querySelector("[data-menu-popup]") || this.menuNode;
     this.menuitemNodes = [];
     this.firstMenuitem = false;
     this.lastMenuitem = false;
@@ -45,11 +46,11 @@ class MenuButtonLinks {
     }
 
     domNode.addEventListener("focusin", () => this.onFocusin());
-    domNode.addEventListener("focusout", () => this.onFocusout());
+    domNode.addEventListener("focusout", (e) => this.onFocusout(e));
 
     window.addEventListener(
-      "mousedown",
-      (e) => this.onBackgroundMousedown(e),
+      "pointerdown",
+      (e) => this.onBackgroundPointerdown(e),
       true
     );
   }
@@ -140,14 +141,18 @@ class MenuButtonLinks {
   // Popup menu methods
 
   openPopup = () => {
-    this.menuNode.style.display = "block";
+    this.popupNode.hidden = false;
+    if (this.popupNode === this.menuNode) {
+      this.popupNode.style.display = "block";
+    }
     this.buttonNode.setAttribute("aria-expanded", "true");
   };
 
   closePopup = () => {
     if (this.isOpen()) {
       this.buttonNode.setAttribute("aria-expanded", "false");
-      this.menuNode.style.removeProperty("display");
+      this.popupNode.hidden = true;
+      this.popupNode.style.removeProperty("display");
     }
   };
 
@@ -161,8 +166,11 @@ class MenuButtonLinks {
     this.domNode.classList.add("focus");
   };
 
-  onFocusout = () => {
+  onFocusout = (event) => {
     this.domNode.classList.remove("focus");
+    if (!this.domNode.contains(event.relatedTarget)) {
+      this.closePopup();
+    }
   };
 
   onButtonKeydown = (event) => {
@@ -242,6 +250,7 @@ class MenuButtonLinks {
       switch (key) {
         case " ":
           window.location.href = tgt.href;
+          flag = true;
           break;
 
         case "Esc":
@@ -299,7 +308,7 @@ class MenuButtonLinks {
     tgt.focus();
   }
 
-  onBackgroundMousedown(event) {
+  onBackgroundPointerdown(event) {
     if (!this.domNode.contains(event.target)) {
       if (this.isOpen()) {
         this.closePopup();
@@ -309,7 +318,7 @@ class MenuButtonLinks {
   }
 }
 
-const menuButtons = document.querySelectorAll(".menu-button-links");
+const menuButtons = document.querySelectorAll(".menu-button-links, [data-menu-button-links]");
 for (const button of menuButtons) {
   new MenuButtonLinks(button);
 }
