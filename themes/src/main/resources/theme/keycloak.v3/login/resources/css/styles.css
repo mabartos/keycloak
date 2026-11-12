@@ -340,3 +340,160 @@ p.instruction:has(+ .pf-v6-c-login__main-footer),
   margin-bottom: var(--pf-t--global--spacer--md);
 }
 
+/* Full-screen layout for phones and compact windows. */
+@media (max-width: 767.98px) {
+    .login-pf,
+    .login-pf body {
+        background: var(--pf-t--global--background--color--primary--default);
+    }
+
+    .pf-v6-c-login {
+        --pf-v6-c-login__header--PaddingInlineStart: 0;
+        --pf-v6-c-login__header--PaddingInlineEnd: 0;
+        --pf-v6-c-login__header--c-brand--MarginBlockEnd: 0;
+        --pf-v6-c-login__main-header--PaddingBlockStart: 0;
+        --pf-v6-c-login__main-header--PaddingInlineStart: 0;
+        --pf-v6-c-login__main-header--PaddingInlineEnd: 0;
+        --pf-v6-c-login__main-header--PaddingBlockEnd: var(--pf-t--global--spacer--lg);
+        --pf-v6-c-login__main-body--PaddingInlineStart: 0;
+        --pf-v6-c-login__main-body--PaddingInlineEnd: 0;
+        --pf-v6-c-login__main-body--PaddingBlockEnd: 0;
+        --pf-v6-c-login__main-footer-band--PaddingInlineStart: 0;
+        --pf-v6-c-login__main-footer-band--PaddingInlineEnd: 0;
+        --pf-v6-c-login__main-footer-band--PaddingBlockStart: var(--pf-t--global--spacer--md);
+        --pf-v6-c-login__main-footer-band-item--PaddingBlockStart: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding-block-start: max(var(--pf-t--global--spacer--lg), env(safe-area-inset-top));
+        padding-block-end: max(var(--pf-t--global--spacer--lg), env(safe-area-inset-bottom));
+        padding-left: max(var(--pf-t--global--spacer--lg), env(safe-area-inset-left));
+        padding-right: max(var(--pf-t--global--spacer--lg), env(safe-area-inset-right));
+    }
+
+    .pf-v6-c-login__container {
+        position: relative;
+        display: flex;
+        flex: 1 0 auto;
+        flex-direction: column;
+        gap: var(--pf-t--global--spacer--xl);
+        max-width: none;
+        min-width: 0;
+    }
+
+    .pf-v6-c-login__header {
+        min-height: 3rem;
+    }
+
+    #kc-header-wrapper {
+        color: var(--pf-t--global--text--color--regular) !important;
+        text-align: start;
+        overflow-wrap: anywhere;
+    }
+
+    .pf-v6-c-login__container:has(.pf-v6-c-login__main-header-utilities) #kc-header-wrapper {
+        max-width: 50%;
+    }
+
+    div.kc-logo-text {
+        width: 100%;
+        max-width: 15rem;
+        height: 3rem;
+        margin-inline: 0;
+        background-position: left center;
+    }
+
+    [dir="rtl"] div.kc-logo-text {
+        background-position: right center;
+    }
+
+    .pf-v6-c-login__main {
+        position: static;
+        display: flex;
+        flex: 1 0 auto;
+        flex-direction: column;
+        align-self: stretch;
+        min-width: 0;
+        margin: 0;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        backdrop-filter: none;
+        overflow-wrap: anywhere;
+    }
+
+    .pf-v6-c-login__main-header,
+    .pf-v6-c-login__main-header:has(.pf-v6-c-login__main-header-utilities) {
+        position: static;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .pf-v6-c-login__main-header-utilities {
+        position: absolute;
+        inset-block-start: 0;
+        inset-inline-end: 0;
+        max-width: 45%;
+    }
+
+    .kc-locale {
+        max-width: 100%;
+    }
+
+    .pf-v6-c-login__main-header-utilities .pf-v6-c-menu-toggle {
+        min-height: 3rem;
+    }
+
+    .pf-v6-c-login__main > .pf-v6-c-login__main-body,
+    .pf-v6-c-login__main-body :is(div, form):has(.pf-v6-c-form__actions, p > .pf-v6-c-button):not(.pf-v6-c-form__group, .pf-v6-c-form__actions, [hidden]) {
+        display: flex;
+        flex: 1 0 auto;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .pf-v6-c-login__main-footer-band:first-child {
+        margin-block-start: var(--pf-t--global--spacer--md);
+    }
+
+    .pf-v6-c-login__main-body .pf-v6-c-form__group:has(> .pf-v6-c-form__actions),
+    .pf-v6-c-login__main-body :not(.pf-v6-c-form__group) > .pf-v6-c-form__actions,
+    .pf-v6-c-login__main-body p:has(> .pf-v6-c-button) {
+        margin-block-start: auto;
+    }
+
+    .pf-v6-c-form__actions {
+        flex-direction: column;
+        gap: var(--pf-t--global--spacer--sm);
+    }
+
+    .pf-v6-c-form__actions > .pf-v6-c-button {
+        width: 100%;
+    }
+
+    .pf-v6-c-login .pf-v6-c-button {
+        min-height: 3rem;
+        white-space: normal;
+    }
+
+    .pf-v6-c-login__main pre {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .pf-v6-c-form-control {
+        min-height: 3rem;
+    }
+
+    .pf-v6-c-form-control > :is(input, select, textarea) {
+        font-size: 1rem;
+    }
+
+    #kc-recovery-codes-list {
+        columns: 1;
+    }
+}
+
