@@ -64,6 +64,27 @@
   </@group>
 </#macro>
 
+<#-- Use <@field.otp name="otp" label=msg("loginOtpOneTime") digits=6/> for a segmented one-time code. -->
+<#macro otp name label digits required=false fieldName=name error=messagesPerField.get(fieldName) autofocus=false errorId="input-error-${name}" credentialField="">
+  <@group name=name label=label error=error required=required errorId=errorId>
+    <div class="${properties.kcOtpInputClass!}" data-otp-input data-otp-digits="${digits?c}"
+         data-otp-cell-class="${properties.kcOtpCellClass!}"<#if credentialField?has_content> data-otp-credential-field="${credentialField}"</#if>>
+      <span class="${properties.kcInputClass!} <#if error?has_content>${properties.kcError!}</#if>" data-otp-control>
+        <input id="${name}" name="${name}" type="text" autocomplete="one-time-code" inputmode="numeric"
+               autocapitalize="none" spellcheck="false" data-otp-value<#if autofocus> autofocus</#if>
+               <#if required>aria-required="true"</#if>
+               <#if error?has_content>aria-invalid="true" aria-describedby="${errorId}"</#if>/>
+        <@errorIcon error=error/>
+      </span>
+      <div class="${properties.kcOtpSlotsClass!}" data-otp-slots aria-hidden="true" hidden></div>
+    </div>
+  </@group>
+  <#if !otpInputScriptLoaded??>
+    <script type="module" src="${url.resourcesPath}/js/otp-input.js"></script>
+    <#global otpInputScriptLoaded=true>
+  </#if>
+</#macro>
+
 <#-- Use <@field.password name="password" label=msg("password")>; nest optional helper text or controls. -->
 <#macro password name label value="" required=false forgotPassword=false fieldName=name error=messagesPerField.get(fieldName) autocomplete="off" autofocus=false>
   <#local helperItems><#compress><#nested></#compress></#local>

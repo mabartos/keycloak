@@ -78,11 +78,13 @@ public class TotpLoginBean {
 
         private final String id;
         private final String userLabel;
+        private final int digits;
 
         public OTPCredential(CredentialModel credentialModel) {
             this.id = credentialModel.getId();
             // TODO: Credentials without a name should be displayed in the UI in gray
             this.userLabel = credentialModel.getUserLabel();
+            this.digits = OTPCredentialModel.createFromCredentialModel(credentialModel).getOTPCredentialData().getDigits();
         }
 
         public String getId() {
@@ -91,6 +93,10 @@ public class TotpLoginBean {
 
         public String getUserLabel() {
             return userLabel;
+        }
+
+        public int getDigits() {
+            return digits;
         }
     }
 }

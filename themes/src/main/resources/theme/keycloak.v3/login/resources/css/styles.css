@@ -218,6 +218,111 @@ hr {
     overflow-wrap: anywhere;
 }
 
+/* OTP code input */
+
+.kc-otp-input[data-otp-enhanced] {
+    position: relative;
+    width: max-content;
+    max-width: 100%;
+    margin-inline: auto;
+}
+
+.kc-otp-input[data-otp-enhanced] [data-otp-control] {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.kc-otp-input[data-otp-enhanced] [data-otp-control]::before,
+.kc-otp-input[data-otp-enhanced] [data-otp-control]::after,
+.kc-otp-input[data-otp-enhanced] [data-otp-control] > :not(input) {
+    display: none;
+}
+
+.kc-otp-input[data-otp-enhanced] [data-otp-value] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: transparent;
+    caret-color: transparent;
+    forced-color-adjust: none;
+    background: transparent;
+    border: 0;
+    outline: none;
+    box-shadow: none;
+    font-size: 1rem;
+    cursor: text;
+    direction: ltr;
+}
+
+.kc-otp-input[data-otp-enhanced] [data-otp-value]::selection {
+    color: transparent;
+    background: transparent;
+}
+
+.kc-otp-slots {
+    display: flex;
+    gap: var(--pf-t--global--spacer--sm);
+    direction: ltr;
+    pointer-events: none;
+}
+
+.kc-otp-slots[hidden] {
+    display: none;
+}
+
+.kc-otp-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 1 3rem;
+    width: 3rem;
+    min-width: 0;
+    height: 3rem;
+    color: var(--pf-t--global--text--color--regular);
+    background-color: var(--pf-t--global--background--color--control--default);
+    border: 1px solid var(--pf-t--global--border--color--default);
+    border-radius: var(--pf-t--global--border--radius--small);
+    font-family: var(--pf-t--global--font--family--mono);
+    font-size: var(--pf-t--global--font--size--body--lg);
+}
+
+.kc-otp-input:has([aria-invalid="true"]) .kc-otp-cell {
+    border-color: var(--pf-t--global--border--color--status--danger--default);
+}
+
+.kc-otp-input:focus-within .kc-otp-cell[data-active] {
+    outline: 2px solid var(--pf-t--global--color--brand--default);
+    outline-offset: 2px;
+}
+
+.kc-otp-input:focus-within .kc-otp-cell[data-selected] {
+    background-color: var(--pf-t--global--background--color--action--plain--clicked);
+}
+
+.kc-otp-input:focus-within .kc-otp-cell[data-active]:empty::after {
+    content: "";
+    height: 1.25em;
+    border-inline-start: 1px solid currentColor;
+    animation: kc-otp-caret 1s step-end infinite;
+}
+
+@keyframes kc-otp-caret {
+    50% {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kc-otp-cell::after {
+        animation: none;
+    }
+}
+
 #kc-form-webauthn {
     gap: 0.875rem;
 }

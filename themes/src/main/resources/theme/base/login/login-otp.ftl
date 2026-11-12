@@ -22,7 +22,17 @@
                 <input id="selectedCredentialId" type="hidden" name="selectedCredentialId" value="${otpLogin.selectedCredentialId!''}">
             </#if>
 
-            <@field.input name="otp" label=msg("loginOtpOneTime") autocomplete="one-time-code" inputmode="numeric" fieldName="totp" autofocus=(otpLogin.userOtpCredentials?size lte 1) />
+            <#-- Keep the ordinary input when credential lengths are unavailable. -->
+            <#assign otpDigits = 0>
+            <#if !otpLogin.userOtpCredentials?filter(c -> !(c.digits??))?has_content>
+                <#list otpLogin.userOtpCredentials as credential>
+                    <#if credential?is_first || credential.id == (otpLogin.selectedCredentialId!'')>
+                        <#assign otpDigits = credential.digits>
+                    </#if>
+                </#list>
+            </#if>
+            <@field.otp name="otp" label=msg("loginOtpOneTime") digits=otpDigits fieldName="totp"
+                credentialField="selectedCredentialId" autofocus=(otpLogin.userOtpCredentials?size lte 1) />
 
             <@buttons.loginButton />
         </form>

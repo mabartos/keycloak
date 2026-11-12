@@ -56,8 +56,8 @@
         </ol>
 
         <form action="${url.loginAction}" class="${properties.kcFormClass!}" id="kc-totp-settings-form" method="post" novalidate="novalidate">
-            <@field.input name="totp" label=msg("authenticatorCode") required=true autocomplete="one-time-code"
-                inputmode="numeric" errorId="input-error-otp-code" />
+            <@field.otp name="totp" label=msg("authenticatorCode") digits=totp.policy.digits required=true
+                errorId="input-error-otp-code" />
             <input type="hidden" id="totpSecret" name="totpSecret" value="${totp.totpSecret}" />
             <#if mode??><input type="hidden" id="mode" name="mode" value="${mode}"/></#if>
 

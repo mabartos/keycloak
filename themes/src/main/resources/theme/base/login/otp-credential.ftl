@@ -12,7 +12,7 @@
             <div class="${properties.kcOtpCredentialActionsClass!}">
                 <div class="${properties.kcOtpCredentialSelectableActionsClass!}">
                     <div class="${properties.kcOtpCredentialRadioClass!}">
-                        <input id="kc-otp-credential-${index}" class="${properties.kcOtpCredentialRadioInputClass!}" type="radio" name="selectedCredentialId" value="${credential.id}" aria-labelledby="kc-otp-credential-title-${index}" <#if selected>checked="checked"</#if>>
+                        <input id="kc-otp-credential-${index}" class="${properties.kcOtpCredentialRadioInputClass!}" type="radio" name="selectedCredentialId" value="${credential.id}" aria-labelledby="kc-otp-credential-title-${index}"<#if credential.digits??> data-otp-digits="${credential.digits?c}"</#if> <#if selected>checked="checked"</#if>>
                         <label for="kc-otp-credential-${index}" class="${properties.kcOtpCredentialRadioLabelClass!}"></label>
                     </div>
                 </div>
