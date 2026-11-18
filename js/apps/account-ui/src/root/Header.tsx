@@ -6,7 +6,7 @@ import {
 import { Button } from "@patternfly/react-core";
 import { ExternalLinkSquareAltIcon } from "@patternfly/react-icons";
 import { useTranslation } from "react-i18next";
-import { useHref } from "react-router-dom";
+import { useHref, useLinkClickHandler } from "react-router-dom";
 
 import { AccountEnvironment } from "..";
 import { joinPath } from "../utils/joinPath";
@@ -35,15 +35,18 @@ const ReferrerLink = () => {
 };
 
 export const Header = () => {
-  const { environment, keycloak } = useEnvironment();
+  const { environment, keycloak } = useEnvironment<AccountEnvironment>();
   const { t } = useTranslation();
 
   const brandImage = environment.logo || "logo.svg";
-  const logoUrl = environment.logoUrl ? environment.logoUrl : "/";
+  const logoUrl = environment.logoUrl || new URL(environment.baseUrl).pathname;
   const internalLogoHref = useHref(logoUrl);
+  const handleLogoClick = useLinkClickHandler(logoUrl);
 
-  // User can indicate that he wants an internal URL by starting it with "/"
-  const indexHref = logoUrl.startsWith("/") ? internalLogoHref : logoUrl;
+  // User can indicate an internal URL by starting it with a single "/".
+  const isInternalLogoUrl =
+    logoUrl.startsWith("/") && !logoUrl.startsWith("//");
+  const indexHref = isInternalLogoUrl ? internalLogoHref : logoUrl;
 
   return (
     <KeycloakMasthead
@@ -52,6 +55,7 @@ export const Header = () => {
       features={{ hasManageAccount: false }}
       brand={{
         href: indexHref,
+        onClick: isInternalLogoUrl ? handleLogoClick : undefined,
         src: joinPath(environment.resourceUrl, brandImage),
         alt: t("logo"),
         className: style.brand,
