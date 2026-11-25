@@ -31,8 +31,6 @@ import org.keycloak.protocol.ProtocolMapperUtils;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.IDToken;
 
-import static org.keycloak.utils.JsonUtils.splitClaimPath;
-
 /**
  * Base class for mapping of user role mappings to an ID and Access Token claim.
  *
@@ -94,7 +92,7 @@ public abstract class AbstractUserRoleMappingMapper extends AbstractOIDCProtocol
             }
         }
 
-        List<String> split = splitClaimPath(protocolClaim);
+        List<String> split = OIDCAttributeMapperHelper.writableTokenClaimPath(protocolClaim);
 
         // Special case
         if (checkAccessToken(token, split, attributeValue)) {

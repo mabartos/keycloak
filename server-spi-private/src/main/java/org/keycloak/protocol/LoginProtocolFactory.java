@@ -26,6 +26,7 @@ import org.keycloak.events.EventBuilder;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.ClientScopeModel;
 import org.keycloak.models.KeycloakSession;
+import org.keycloak.models.ProtocolMapperContainerModel;
 import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
@@ -80,6 +81,10 @@ public interface LoginProtocolFactory extends ProviderFactory<LoginProtocol> {
      * @throws WebApplicationException or some of it's subclass if validation fails
      */
     default void validateClientScope(KeycloakSession session, ClientScopeRepresentation clientScope) throws WebApplicationException {
+    }
+
+    /** Validates the mapper's target against claims reserved by this protocol. */
+    default void validateProtocolMapper(ProtocolMapperContainerModel container, ProtocolMapperModel mapper) throws ProtocolMapperConfigException {
     }
 
     /**

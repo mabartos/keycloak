@@ -13,6 +13,7 @@ import org.keycloak.models.UserModel;
 import org.keycloak.models.UserSessionModel;
 import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.protocol.ProtocolMapperUtils;
+import org.keycloak.protocol.oidc.scope.DelegationScopeType;
 import org.keycloak.protocol.oidc.scope.ParameterizedScopeTypeProvider;
 import org.keycloak.protocol.oidc.scope.UsernameScopeType;
 import org.keycloak.provider.ProviderConfigProperty;
@@ -85,7 +86,8 @@ public class ParameterizedScopeUserPropertyMapper extends ParameterizedScopeMapp
                 continue;
             }
 
-            Collection<String> attributeValue = KeycloakModelUtils.resolveAttribute(targetUser, attributeName, false);
+            Collection<String> attributeValue = UserModel.ID.equals(attributeName) && scopeType instanceof DelegationScopeType
+                    ? List.of(targetUser.getId()) : KeycloakModelUtils.resolveAttribute(targetUser, attributeName, false);
             if (CollectionUtil.isNotEmpty(attributeValue)) {
                 resolvedValues.addAll(attributeValue);
                 continue;

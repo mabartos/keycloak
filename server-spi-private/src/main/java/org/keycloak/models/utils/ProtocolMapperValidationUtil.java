@@ -23,6 +23,8 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ProtocolMapperContainerModel;
 import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.models.RealmModel;
+import org.keycloak.protocol.LoginProtocol;
+import org.keycloak.protocol.LoginProtocolFactory;
 import org.keycloak.protocol.ProtocolMapper;
 import org.keycloak.protocol.ProtocolMapperConfigException;
 
@@ -62,11 +64,21 @@ public class ProtocolMapperValidationUtil {
         }
 
         Map<String, String> originalConfig = new HashMap<>(model.getConfig());
-        mapper.validateConfig(session, realm, container, model);
+        validateConfig(session, realm, container, model, mapper);
         // Validators can initialize configuration, for example the pairwise subject mapper's salt.
         // Models read from the container are detached, so these changes must be saved explicitly.
         if (!originalConfig.equals(model.getConfig())) {
             container.updateProtocolMapper(model);
         }
     }
+
+    public static void validateConfig(KeycloakSession session, RealmModel realm, ProtocolMapperContainerModel container,
+                                      ProtocolMapperModel model, ProtocolMapper mapper) throws ProtocolMapperConfigException {
+        LoginProtocolFactory protocol = (LoginProtocolFactory) session.getKeycloakSessionFactory().getProviderFactory(LoginProtocol.class, mapper.getProtocol());
+        if (protocol != null) {
+            protocol.validateProtocolMapper(container, model);
+        }
+        mapper.validateConfig(session, realm, container, model);
+    }
+
 }

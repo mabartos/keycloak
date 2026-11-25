@@ -24,14 +24,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.keycloak.models.ClientModel;
+import org.keycloak.models.ClientScopeModel;
+import org.keycloak.models.ProtocolMapperContainerModel;
 import org.keycloak.models.ProtocolMapperModel;
+import org.keycloak.models.UserModel;
 import org.keycloak.protocol.ProtocolMapper;
+import org.keycloak.protocol.ProtocolMapperConfigException;
 import org.keycloak.protocol.ProtocolMapperUtils;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
+import org.keycloak.protocol.oidc.OIDCLoginProtocolFactory;
+import org.keycloak.protocol.oidc.scope.ClientDelegationScopeType;
+import org.keycloak.protocol.oidc.scope.DelegationScopeType;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.IDToken;
@@ -43,6 +52,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jboss.logging.Logger;
 
+import static org.keycloak.OAuth2Constants.CLIENT_ID;
+import static org.keycloak.representations.JsonWebToken.SUBJECT;
 import static org.keycloak.utils.JsonUtils.splitClaimPath;
 
 
@@ -101,6 +112,15 @@ public class OIDCAttributeMapperHelper {
      */
     private static final Map<String, PropertySetter<AccessTokenResponse>> responsePropertySetters;
 
+    private static final Map<String, Set<String>> DENIED_DELEGATION_CLAIMS = Map.ofEntries(
+            denyClaim(IDToken.ACT),
+            denyClaim(IDToken.MAY_ACT, ParameterizedScopeUserPropertyMapper.PROVIDER_ID,
+                    ParameterizedScopeClientSubMapper.PROVIDER_ID, ParameterizedScopeMapper.PROVIDER_ID));
+
+    private static Map.Entry<String, Set<String>> denyClaim(String claim, String... allowedMapperIds) {
+        return Map.entry(claim, Set.of(allowedMapperIds));
+    }
+
     static {
         // allowed claims that can be set in the IDToken/AccessToken object
         Map<String, PropertySetter<IDToken>> tmpToken = new HashMap<>();
@@ -140,6 +160,7 @@ public class OIDCAttributeMapperHelper {
         tmpToken.put("scope", notAllowedInToken);
         tmpToken.put(IDToken.NONCE, notAllowedInToken);
         tmpToken.put(IDToken.SESSION_STATE, notAllowedInToken);
+        DENIED_DELEGATION_CLAIMS.keySet().forEach(claim -> tmpToken.put(claim, notAllowedInToken));
         tokenPropertySetters = Collections.unmodifiableMap(tmpToken);
 
         // in the AccessTokenResponse do not allow modifications for server assigned properties
@@ -156,6 +177,7 @@ public class OIDCAttributeMapperHelper {
         tmpResponse.put("refresh_expires_in", notAllowedInResponse);
         tmpResponse.put("not-before-policy", notAllowedInResponse);
         tmpResponse.put("scope", notAllowedInResponse);
+        DENIED_DELEGATION_CLAIMS.keySet().forEach(claim -> tmpResponse.put(claim, notAllowedInResponse));
         responsePropertySetters = Collections.unmodifiableMap(tmpResponse);
     }
 
@@ -299,7 +321,7 @@ public class OIDCAttributeMapperHelper {
      * @return a mutable Map that can be manipulated; changes will be reflected in the token
      */
     public static Map<String, Object> getOrInitializeOrganizationClaimAsMap(IDToken token, ProtocolMapperModel effectiveModel) {
-        List<String> claimPath = splitClaimPath(effectiveModel.getConfig().get(TOKEN_CLAIM_NAME));
+        List<String> claimPath = writableTokenClaimPath(effectiveModel.getConfig().get(TOKEN_CLAIM_NAME));
         Object existingClaim = getNestedClaimValue(token.getOtherClaims(), claimPath);
         Map<String, Object> result;
 
@@ -337,6 +359,47 @@ public class OIDCAttributeMapperHelper {
         return current.get(path.get(path.size() - 1));
     }
 
+    static List<String> writableTokenClaimPath(String claimName) {
+        List<String> path = splitClaimPath(claimName);
+        return !path.isEmpty() && DENIED_DELEGATION_CLAIMS.containsKey(path.get(0)) ? List.of() : path;
+    }
+
+    public static void validateClaimName(ProtocolMapperContainerModel container, ProtocolMapperModel mapper) throws ProtocolMapperConfigException {
+        String name = mapper.getConfig() == null ? null : mapper.getConfig().get(TOKEN_CLAIM_NAME);
+        if (name != null) {
+            List<String> path = splitClaimPath(name);
+            if (!path.isEmpty() && DENIED_DELEGATION_CLAIMS.containsKey(path.get(0)) && !allowsDelegationClaim(path, mapper, container)) {
+                throw new ProtocolMapperConfigException("Claim '" + name + "' is reserved for delegation");
+            }
+        }
+    }
+
+    private static boolean allowsDelegationClaim(List<String> path, ProtocolMapperModel mapper, ProtocolMapperContainerModel container) {
+        String provider = mapper.getProtocolMapper();
+        Set<String> allowedMapperIds = DENIED_DELEGATION_CLAIMS.get(path.get(0));
+        if (allowedMapperIds == null || provider == null || !allowedMapperIds.contains(provider)) {
+            return false;
+        }
+        if (!(container instanceof ClientScopeModel scope) || scope instanceof ClientModel || !scope.isParameterizedScope()
+                || path.size() != 2 || !"String".equals(mapper.getConfig().get(JSON_TYPE))) {
+            return false;
+        }
+
+        String member = path.get(1);
+        if (DENIED_DELEGATION_CLAIMS.containsKey(member)) {
+            return false;
+        }
+        if (OIDCLoginProtocolFactory.USER_DELEGATION_SCOPE.equals(scope.getName()) && DelegationScopeType.TYPE.equals(scope.getParameterizedScopeType())) {
+            return ParameterizedScopeUserPropertyMapper.PROVIDER_ID.equals(provider) && !CLIENT_ID.equals(member)
+                    && (!SUBJECT.equals(member) || UserModel.ID.equals(mapper.getConfig().get(ProtocolMapperUtils.USER_ATTRIBUTE)));
+        }
+        if (OIDCLoginProtocolFactory.CLIENT_DELEGATION_SCOPE.equals(scope.getName()) && ClientDelegationScopeType.TYPE.equals(scope.getParameterizedScopeType())) {
+            return SUBJECT.equals(member) ? ParameterizedScopeClientSubMapper.PROVIDER_ID.equals(provider)
+                    : ParameterizedScopeMapper.PROVIDER_ID.equals(provider);
+        }
+        return false;
+    }
+
     public static void mapClaim(IDToken token, ProtocolMapperModel mappingModel, Object attributeValue) {
         mapClaim(token, mappingModel, attributeValue, tokenPropertySetters, token.getOtherClaims());
     }
@@ -364,7 +427,8 @@ public class OIDCAttributeMapperHelper {
 
         String firstClaim = split.iterator().next();
         PropertySetter<T> setter = setters.get(firstClaim);
-        if (setter != null) {
+        if (setter != null && !(token instanceof IDToken && mappingModel instanceof ParameterizedScopeMapper.ResolvedScopeMapperModel resolved
+                && allowsDelegationClaim(split, resolved, resolved.scope))) {
             // assign using the property setters over the token
             if (split.size() > 1) {
                 logger.warnf("Claim '%s' contains more than one level in a setter. Ignoring the assignment for mapper '%s'.",

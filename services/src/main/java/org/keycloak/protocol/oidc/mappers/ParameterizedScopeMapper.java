@@ -65,7 +65,7 @@ public class ParameterizedScopeMapper extends AbstractOIDCProtocolMapper
         }
 
         List<String> parameterValues = resolveParameterValues(clientScope, clientSessionCtx);
-        ProtocolMapperModel model = new ProtocolMapperModel(mappingModel);
+        ProtocolMapperModel model = new ResolvedScopeMapperModel(mappingModel, clientScope);
         model.getConfig().put(ProtocolMapperUtils.MULTIVALUED, Boolean.toString(TokenManager.isRepeatableScope(keycloakSession, clientScope)));
         if (!parameterValues.isEmpty()) {
             setClaim(token, model, userSession, keycloakSession, clientScope, parameterValues);
@@ -84,6 +84,16 @@ public class ParameterizedScopeMapper extends AbstractOIDCProtocolMapper
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession,
                             KeycloakSession keycloakSession, List<String> parameterValues) {
         OIDCAttributeMapperHelper.mapClaim(token, mappingModel, parameterValues);
+    }
+
+    // The scope comes from the authorized request and is never read from mapper configuration.
+    static final class ResolvedScopeMapperModel extends ProtocolMapperModel {
+        final transient ClientScopeModel scope;
+
+        private ResolvedScopeMapperModel(ProtocolMapperModel model, ClientScopeModel scope) {
+            super(model);
+            this.scope = scope;
+        }
     }
 
     protected Optional<ClientScopeModel> resolveClientScope(ProtocolMapperModel mappingModel, ClientSessionContext clientSessionCtx) {
