@@ -43,6 +43,7 @@ import org.keycloak.models.UserSessionModel;
 import org.keycloak.protocol.oidc.OIDCAdvancedConfigWrapper;
 import org.keycloak.protocol.oidc.TokenExchangeContext;
 import org.keycloak.protocol.oidc.TokenManager;
+import org.keycloak.protocol.oidc.agents.AgentAuthorization;
 import org.keycloak.protocol.oidc.encode.AccessTokenContext;
 import org.keycloak.protocol.oidc.encode.TokenContextEncoderProvider;
 import org.keycloak.representations.AccessToken;
@@ -407,6 +408,9 @@ public class StandardTokenExchangeProvider extends AbstractTokenExchangeProvider
 
             try {
                 session.clientPolicy().triggerOnEvent(new TokenExchangeResponseContext(formParams, clientSessionCtx, responseBuilder));
+                if (Profile.isFeatureEnabled(Profile.Feature.AI_AGENTS) && OAuth2Constants.IDENTITY_ASSERTION_JWT_TOKEN_TYPE.equals(requestedTokenType)) {
+                    AgentAuthorization.authorizeAssertion(realm, client, targetUser, subjectToken, params.getAudience().get(0), params.getScope(), responseBuilder.getAccessToken());
+                }
             } catch (ClientPolicyException cpe) {
                 event.detail(Details.REASON, Details.CLIENT_POLICY_ERROR);
                 event.detail(Details.CLIENT_POLICY_ERROR, cpe.getError());

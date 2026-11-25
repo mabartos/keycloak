@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.keycloak.models.ClientModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.protocol.oidc.grants.OAuth2GrantType;
 import org.keycloak.protocol.oidc.grants.OAuth2GrantTypeFactory;
 import org.keycloak.representations.oidc.OIDCClientRepresentation;
 import org.keycloak.services.clientpolicy.ClientPolicyException;
+import org.keycloak.services.clientpolicy.context.PreAuthorizationRequestContext;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jboss.logging.Logger;
@@ -35,6 +37,22 @@ import org.jboss.logging.Logger;
 public class ClientIdMetadataDocumentExecutor extends AbstractClientIdMetadataDocumentExecutor<ClientIdMetadataDocumentExecutor.Configuration> {
 
     private static final Logger logger = Logger.getLogger(ClientIdMetadataDocumentExecutor.class);
+
+    private boolean managedRequest;
+
+    public void executeManagedRequest(Configuration config, PreAuthorizationRequestContext request) throws ClientPolicyException {
+        managedRequest = true;
+        setupConfiguration(config);
+        executeOnEvent(request);
+    }
+
+    @Override
+    protected void enforceResourceIndicator(PreAuthorizationRequestContext request, ClientModel client) throws ClientPolicyException {
+        // Managed resources are bound at issuance without adding a persistent client audience mapper.
+        if (!managedRequest) {
+            super.enforceResourceIndicator(request, client);
+        }
+    }
 
     protected Logger getLogger() {
         return logger;

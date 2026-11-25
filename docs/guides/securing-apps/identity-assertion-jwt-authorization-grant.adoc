@@ -29,9 +29,7 @@ Unlike traditional identity chaining where applications might rely on proprietar
 Technically, an Identity Assertion in this context is a specifically formatted JSON Web Token (JWT) issued by the Centralized Identity Provider. It represents the authenticated user (via the `sub` claim) and is explicitly targeted at the receiving application (via the `aud` claim). It must be cryptographically signed by the Issuer so the Receiver can securely validate its authenticity before exchanging it for a local access token.
 
 **Current Implementation Status in Keycloak**
-As this is an evolving draft, Keycloak's implementation of ID-JAG is being delivered in phases:
-* **Implemented (Receiver Side):** Keycloak can currently act as the *Receiver* (Domain B), successfully accepting an ID-JAG Identity Assertion from an external Issuer and granting a local access token.
-* **Not Yet Implemented (Issuer Side):** Native, out-of-the-box support for Keycloak to act as the *Issuer* (generating the specific ID-JAG Identity Assertion on demand) is not yet fully implemented.
+With the experimental `identity-assertion-jwt` feature, {project_name} can issue an assertion through token exchange and redeem a trusted issuer's assertion through JWT Authorization Grant.
 
 == Use Case Example: MCP (Model Context Protocol)
 
@@ -53,21 +51,20 @@ image::idjag-components.svg[ID-JAG Architecture Diagram]
 
 This section details how to configure your Keycloak instance as the Identity Provider to generate and issue the signed ID-JAG JWT assertion representing the authenticated user.
 
-[NOTE]
-====
-*Status: TBD* +
-The specific configuration steps and implementation details for the ID-JAG Issuer side will be updated here once the implementation is fully completed. +
-====
-
 === Prerequisites for Issuer
 
-// To be updated when implementation is complete
-Configuration for the Issuer side is not yet available and will be documented once the implementation is complete.
+// The issuer uses the standard token exchange endpoint.
+Enable `identity-assertion-jwt`, configure a confidential caller with standard token exchange enabled and register the receiving authorization server's issuer URL as an OIDC client ID.
+The issuer needs an asymmetric ID token signing algorithm.
 
 === Configuration Steps
 
-// To be updated when implementation is complete
-Configuration steps for the Issuer side will be added once the implementation is complete.
+// The assertion uses the claims of the evaluated exchange token.
+Make the receiving authorization server available as an audience to the calling client and subject user.
+Configure the `basic` client scope (or a subject protocol mapper) and a string `client_id` claim for the client's registered identifier at the receiving server.
+A managed enterprise connection can supply this identifier. See <@links.securingapps id="mcp-authz-server"/>.
+Exchange the caller's ID token using `grant_type=urn:ietf:params:oauth:grant-type:token-exchange`, `subject_token_type=urn:ietf:params:oauth:token-type:id_token`, `requested_token_type=urn:ietf:params:oauth:token-type:id-jag` and one `audience` equal to the receiving issuer.
+The returned `access_token` field contains the signed assertion to present at the receiving token endpoint.
 
 == Configuring the Receiver
 

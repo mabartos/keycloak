@@ -10,6 +10,7 @@ import { Groups } from "./resources/groups.js";
 import { IdentityProviders } from "./resources/identityProviders.js";
 import { Realms } from "./resources/realms.js";
 import { Organizations } from "./resources/organizations.js";
+import { AiAgents } from "./resources/aiAgents.js";
 import { Workflows } from "./resources/workflows.js";
 import { Roles } from "./resources/roles.js";
 import { ServerInfo } from "./resources/serverInfo.js";
@@ -50,6 +51,7 @@ export class KeycloakAdminClient {
   public groups: Groups;
   public roles: Roles;
   public organizations: Organizations;
+  public aiAgents: AiAgents;
   public workflows: Workflows;
   public clients: Clients;
   public realms: Realms;
@@ -95,6 +97,7 @@ export class KeycloakAdminClient {
     this.groups = new Groups(this);
     this.roles = new Roles(this);
     this.organizations = new Organizations(this);
+    this.aiAgents = new AiAgents(this);
     this.workflows = new Workflows(this);
     this.clients = new Clients(this);
     this.realms = new Realms(this);

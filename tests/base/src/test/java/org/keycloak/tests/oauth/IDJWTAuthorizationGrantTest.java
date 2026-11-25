@@ -1,6 +1,10 @@
 package org.keycloak.tests.oauth;
 
+import java.util.List;
+import java.util.Map;
+
 import org.keycloak.OAuth2Constants;
+import org.keycloak.admin.client.Keycloak;
 import org.keycloak.broker.oidc.OIDCIdentityProviderConfig;
 import org.keycloak.broker.oidc.OIDCIdentityProviderFactory;
 import org.keycloak.common.Profile;
@@ -10,6 +14,8 @@ import org.keycloak.events.EventType;
 import org.keycloak.models.IdentityProviderModel;
 import org.keycloak.protocol.oidc.OIDCConfigAttributes;
 import org.keycloak.representations.AccessToken;
+import org.keycloak.testframework.annotations.InjectAdminClient;
+import org.keycloak.testframework.annotations.InjectKeycloakUrls;
 import org.keycloak.testframework.annotations.InjectRealm;
 import org.keycloak.testframework.annotations.InjectUser;
 import org.keycloak.testframework.annotations.KeycloakIntegrationTest;
@@ -22,6 +28,7 @@ import org.keycloak.testframework.realm.RealmBuilder;
 import org.keycloak.testframework.realm.UserBuilder;
 import org.keycloak.testframework.server.KeycloakServerConfig;
 import org.keycloak.testframework.server.KeycloakServerConfigBuilder;
+import org.keycloak.testframework.server.KeycloakUrls;
 import org.keycloak.testsuite.util.oauth.AccessTokenResponse;
 
 import org.hamcrest.MatcherAssert;
@@ -41,6 +48,33 @@ public class IDJWTAuthorizationGrantTest extends BaseAbstractJWTAuthorizationGra
     @InjectUser(config = IDJWTAuthorizationGrantTest.FederatedUserConfiguration.class)
     protected ManagedUser user;
   
+    @InjectAdminClient
+    Keycloak admin;
+
+    @InjectKeycloakUrls
+    KeycloakUrls urls;
+
+    @Test
+    public void testRedeemEnterpriseAssertionForRegisteredResource() {
+        String resource = "https://tickets.example.test/mcp";
+        String caller = "clientid_issued_by_resource_authz_to_client_app";
+        List<String> scopes = List.of("openid", "profile", "email", "roles", "acr", "basic", "web-origins");
+        try (AgentDirectoryAdmin api = new AgentDirectoryAdmin(admin, urls, realm)) {
+            api.put("agents", Map.of("name", "Assistant", "clientId", caller));
+            api.put("servers", Map.of("name", "Tickets", "resource", resource));
+            api.put("connections", Map.of("caller", caller, "resource", resource, "mode", "enterprise", "scopes", scopes));
+            AccessToken jwt = createAuthorizationGrantToken("basic-user-id", oAuthClient.getEndpoints().getIssuer(), IDP_ISSUER,
+                    Time.currentTime() + 300L, (long) Time.currentTime(), String.join(" ", scopes));
+            jwt.setOtherClaims(OAuth2Constants.CLIENT_ID, caller);
+            String assertion = getIdentityProvider().encodeIDJAG(jwt);
+            AccessTokenResponse response = oAuthClient.client(caller, "test-secret").jwtAuthorizationGrantRequest(assertion).resource(resource).send();
+            AccessToken token = assertSuccess(caller, response);
+            Assertions.assertArrayEquals(new String[]{resource}, token.getAudience());
+            Assertions.assertTrue(token.getExp() <= jwt.getExp());
+            Assertions.assertFalse(oAuthClient.jwtAuthorizationGrantRequest(assertion).resource(resource).send().isSuccess());
+        }
+    }
+
     @Test
     public void testNullIssInToken() {
         AccessToken jwt = createAuthorizationGrantToken("basic-user-id",oAuthClient.getEndpoints().getIssuer(),IDP_ISSUER,Time.currentTime() + 300L,(long) Time.currentTime(), null);
@@ -214,7 +248,7 @@ public class IDJWTAuthorizationGrantTest extends BaseAbstractJWTAuthorizationGra
 
         @Override
         public KeycloakServerConfigBuilder configure(KeycloakServerConfigBuilder config) {
-            return config.features(Profile.Feature.IDENTITY_ASSERTION_JWT);
+            return config.features(Profile.Feature.IDENTITY_ASSERTION_JWT, Profile.Feature.AI_AGENTS, Profile.Feature.RESOURCE_INDICATORS);
         }
     }
 }

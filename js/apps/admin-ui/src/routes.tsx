@@ -6,6 +6,7 @@ import { PageNotFoundSection } from "./PageNotFoundSection";
 import authenticationRoutes from "./authentication/routes";
 import clientScopesRoutes from "./client-scopes/routes";
 import clientRoutes from "./clients/routes";
+import { agentsRoute } from "./ai-agents/routes";
 import dashboardRoutes from "./dashboard/routes";
 import eventRoutes from "./events/routes";
 import groupsRoutes from "./groups/routes";
@@ -40,6 +41,7 @@ export const NotFoundRoute: AppRouteObject = {
 };
 
 export const routes: AppRouteObject[] = [
+  agentsRoute,
   ...authenticationRoutes,
   ...clientRoutes,
   ...clientScopesRoutes,

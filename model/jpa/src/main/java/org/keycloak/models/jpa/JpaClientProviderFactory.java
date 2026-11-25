@@ -32,6 +32,7 @@ import org.keycloak.common.Profile;
 import org.keycloak.connections.jpa.JpaConnectionProvider;
 import org.keycloak.models.ClientProvider;
 import org.keycloak.models.ClientProviderFactory;
+import org.keycloak.models.Constants;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.models.RealmModel;
@@ -67,6 +68,9 @@ public class JpaClientProviderFactory implements ClientProviderFactory {
             // needed to find SSF streams configured on SSF Receiver clients
             s.add("ssf.enabled");
             s.add("ssf.stream.id");
+        }
+        if (Profile.isFeatureEnabled(Profile.Feature.AI_AGENTS)) {
+            s.add(Constants.AGENT_CLIENT_ATTRIBUTE);
         }
         clientSearchableAttributes = Collections.unmodifiableSet(s);
     }

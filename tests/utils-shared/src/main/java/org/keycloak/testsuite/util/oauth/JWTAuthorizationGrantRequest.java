@@ -9,6 +9,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 public class JWTAuthorizationGrantRequest extends AbstractHttpPostRequest<JWTAuthorizationGrantRequest, AccessTokenResponse> {
 
     private String assertion;
+    private String resource;
 
     JWTAuthorizationGrantRequest(String assertion, AbstractOAuthClient<?> client) {
         super(client);
@@ -25,7 +26,15 @@ public class JWTAuthorizationGrantRequest extends AbstractHttpPostRequest<JWTAut
         return this;
     }
 
+    public JWTAuthorizationGrantRequest resource(String resource) {
+        this.resource = resource;
+        return this;
+    }
+
     protected void initRequest() {
+        if (resource != null) {
+            parameter(OAuth2Constants.RESOURCE, resource);
+        }
         parameter(OAuth2Constants.GRANT_TYPE, OAuth2Constants.JWT_AUTHORIZATION_GRANT);
         parameter("assertion", assertion);
         scope();

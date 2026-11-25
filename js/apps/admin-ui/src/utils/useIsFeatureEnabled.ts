@@ -2,6 +2,10 @@ import { useServerInfo } from "../context/server-info/ServerInfoProvider";
 import { useAccess } from "../context/access/Access";
 
 export enum Feature {
+  AiAgents = "AI_AGENTS",
+  Cimd = "CIMD",
+  IdentityAssertionJwt = "IDENTITY_ASSERTION_JWT",
+  TokenExchangeDelegation = "TOKEN_EXCHANGE_DELEGATION",
   AccountV3 = "ACCOUNT_V3",
   AdminFineGrainedAuthz = "ADMIN_FINE_GRAINED_AUTHZ",
   AdminFineGrainedAuthzV2 = "ADMIN_FINE_GRAINED_AUTHZ_V2",

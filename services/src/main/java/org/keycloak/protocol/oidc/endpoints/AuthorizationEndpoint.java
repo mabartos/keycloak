@@ -49,6 +49,7 @@ import org.keycloak.organization.utils.Organizations;
 import org.keycloak.protocol.AuthorizationEndpointBase;
 import org.keycloak.protocol.oidc.OIDCAdvancedConfigWrapper;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
+import org.keycloak.protocol.oidc.agents.AgentAuthorization;
 import org.keycloak.protocol.oidc.endpoints.request.AuthorizationEndpointRequest;
 import org.keycloak.protocol.oidc.endpoints.request.AuthorizationEndpointRequestParserProcessor;
 import org.keycloak.protocol.oidc.endpoints.request.RequestUriType;
@@ -144,7 +145,11 @@ public class AuthorizationEndpoint extends AuthorizationEndpointBase {
         checkRealm();
 
         try {
-            session.clientPolicy().triggerOnEvent(new PreAuthorizationRequestContext(clientId, params));
+            PreAuthorizationRequestContext context = new PreAuthorizationRequestContext(clientId, params);
+            if (Profile.isFeatureEnabled(Profile.Feature.AI_AGENTS)) {
+                AgentAuthorization.authorize(session, context);
+            }
+            session.clientPolicy().triggerOnEvent(context);
         } catch (ClientPolicyException cpe) {
             event.detail(Details.REASON, Details.CLIENT_POLICY_ERROR);
             event.detail(Details.CLIENT_POLICY_ERROR, cpe.getError());

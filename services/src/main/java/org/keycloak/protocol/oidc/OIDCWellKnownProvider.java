@@ -242,8 +242,11 @@ public class OIDCWellKnownProvider implements WellKnownProvider {
             }
         }
 
-        config = checkConfigOverride(config);
-        return config;
+        if (Profile.isFeatureEnabled(Profile.Feature.AI_AGENTS) && Profile.isFeatureEnabled(Profile.Feature.IDENTITY_ASSERTION_JWT)
+                && Profile.isFeatureEnabled(Profile.Feature.JWT_AUTHORIZATION_GRANT)) {
+            config.setOtherClaims("authorization_grant_profiles_supported", List.of("urn:ietf:params:oauth:grant-profile:id-jag"));
+        }
+        return checkConfigOverride(config);
     }
 
     protected List<String> getPromptValuesSupported(RealmModel realm) {

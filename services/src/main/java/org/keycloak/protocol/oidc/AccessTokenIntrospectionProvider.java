@@ -25,6 +25,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.keycloak.OAuth2Constants;
 import org.keycloak.TokenVerifier;
+import org.keycloak.common.Profile;
 import org.keycloak.common.VerificationException;
 import org.keycloak.crypto.CryptoUtils;
 import org.keycloak.crypto.SignatureVerifierContext;
@@ -41,6 +42,8 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.UserSessionModel;
 import org.keycloak.protocol.LoginProtocol;
+import org.keycloak.protocol.oidc.agents.AgentDirectory;
+import org.keycloak.protocol.oidc.agents.AgentDirectory.Server;
 import org.keycloak.protocol.oidc.verifier.TokenVerifierProvider;
 import org.keycloak.protocol.oidc.verifier.TokenVerifierProviderManager;
 import org.keycloak.representations.AccessToken;
@@ -330,6 +333,14 @@ public class AccessTokenIntrospectionProvider<T extends AccessToken> implements 
         String[] audiences = token.getAudience() != null ? token.getAudience() : transformedToken.getAudience();
         if (audiences != null && Arrays.asList(audiences).contains(authenticatedClient.getClientId())) {
             return true;
+        }
+
+        if (Profile.isFeatureEnabled(Profile.Feature.AI_AGENTS) && token.getAudience() != null && token.getAudience().length == 1) {
+            Server target = new AgentDirectory(realm).server(token.getAudience()[0]);
+            if (target != null && target.isBoundTo(authenticatedClient)) {
+                transformedToken.audience(token.getAudience());
+                return true;
+            }
         }
 
         // Get server-wide configuration from OIDCLoginProtocol

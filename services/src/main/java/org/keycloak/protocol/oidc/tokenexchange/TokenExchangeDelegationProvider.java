@@ -18,6 +18,7 @@
  */
 package org.keycloak.protocol.oidc.tokenexchange;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,16 +32,27 @@ import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
 import org.keycloak.common.Profile;
 import org.keycloak.common.constants.ServiceAccountConstants;
+import org.keycloak.common.util.Time;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
+import org.keycloak.jose.jws.crypto.HashUtils;
+import org.keycloak.models.ClientModel;
+import org.keycloak.models.ClientScopeModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.UserSessionModel;
 import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.protocol.oidc.OIDCAdvancedConfigWrapper;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
+import org.keycloak.protocol.oidc.OIDCLoginProtocolFactory;
 import org.keycloak.protocol.oidc.TokenExchangeContext;
 import org.keycloak.protocol.oidc.TokenManager;
+import org.keycloak.protocol.oidc.agents.AgentAuthorization;
+import org.keycloak.protocol.oidc.agents.AgentDirectory;
+import org.keycloak.protocol.oidc.agents.AgentDirectory.Connection;
+import org.keycloak.protocol.oidc.agents.AgentDirectory.Mode;
+import org.keycloak.protocol.oidc.agents.AgentDirectory.Server;
 import org.keycloak.representations.AccessToken;
+import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.IDToken;
 import org.keycloak.representations.JsonWebToken;
 import org.keycloak.services.CorsErrorResponseException;
@@ -58,6 +70,7 @@ import org.keycloak.services.resources.admin.fgap.AdminPermissions;
  */
 public class TokenExchangeDelegationProvider extends StandardTokenExchangeProvider {
 
+    private Connection managedConnection;
     private AccessToken actorAccessToken;
     private AccessToken subjectAccessToken;
 
@@ -135,6 +148,9 @@ public class TokenExchangeDelegationProvider extends StandardTokenExchangeProvid
 
         // validate the delegation itself, either against the "may_act" claim or as a continuation of an existing chain
         TokenExchangeDelegationRequestContext delegationContext = createDelegationContext(isClientDelegation);
+        if (Profile.isFeatureEnabled(Profile.Feature.AI_AGENTS)) {
+            authorizeManagedConnection(delegationContext, subjectAuthResult, actorUser);
+        }
         triggerDelegationRequestEvent(delegationContext);
         validateDelegation(delegationContext, subjectUser, actorUser);
 
@@ -174,6 +190,66 @@ public class TokenExchangeDelegationProvider extends StandardTokenExchangeProvid
         // requested_issuer are rejected for both standard and delegation exchange
         return new TokenExchangeDelegationRequestContext(context, isClientDelegation, mayActPresent,
                 DelegationChain.actors(priorAct));
+    }
+
+    private void authorizeManagedConnection(TokenExchangeDelegationRequestContext request, AuthenticationManager.AuthResult subject, UserModel actor) {
+        AgentDirectory directory = new AgentDirectory(realm);
+        List<String> resources = request.getRequestedResources();
+        boolean managedSubject = subjectAccessToken.getOtherClaims().containsKey(IDToken.ACT)
+                && session.singleUseObjects().contains(managedTokenKey(params.getSubjectToken()));
+        Server target = resources.size() == 1 ? directory.connectionTarget(client.getClientId(), resources.get(0), Mode.delegated) : null;
+        if (!managedSubject && target == null && directory.agent(client.getClientId()) == null
+                && resources.stream().noneMatch(resource -> directory.connectionTarget(client.getClientId(), resource, Mode.delegated) != null)) {
+            return;
+        }
+        managedConnection = directory.find(client, target, Mode.delegated);
+        if (managedConnection == null || !client.getId().equals(actor.getServiceAccountClientLink())
+                || !client.getClientId().equals(actorAccessToken.getIssuedFor()) || !managedConnection.permitsUser(realm, subject.user())
+                || !target.isBoundTo(realm.getClientById(target.clientUuid())) || !request.getRequestedAudiences().equals(List.of(target.clientId()))) {
+            throw delegationRejected("No delegated connection for this caller, resource and audience");
+        }
+        if (!managedConnection.allows(params.getScope()) || !AgentAuthorization.containsScopes(subjectAccessToken.getScope(), params.getScope())) {
+            String reason = "The delegated scopes exceed the connection or subject token";
+            event.detail(Details.REASON, reason);
+            event.error(Errors.INVALID_REQUEST);
+            throw new CorsErrorResponseException(cors, OAuthErrorException.INVALID_SCOPE, reason, Response.Status.BAD_REQUEST);
+        }
+        if (request.isMayActPresent()) {
+            if (!request.getPriorActors().isEmpty() || !hasDelegationConsent(subject)) {
+                throw delegationRejected("A managed delegation must start with consent for this actor");
+            }
+        } else if (!managedSubject) {
+            throw delegationRejected("The subject token was not issued by a managed delegation");
+        }
+        request.restrictChainingAllowed(true);
+    }
+
+    private boolean hasDelegationConsent(AuthenticationManager.AuthResult subject) {
+        ClientModel origin = realm.getClientByClientId(subjectAccessToken.getIssuedFor());
+        ClientScopeModel model = KeycloakModelUtils.getClientScopeByName(realm, OIDCLoginProtocolFactory.CLIENT_DELEGATION_SCOPE);
+        if (origin == null || model == null || subject.session() == null) {
+            return false;
+        }
+        String scope = model.getName() + ClientScopeModel.VALUE_SEPARATOR + client.getClientId();
+        return (model.isAlwaysConsent() || origin.isConsentRequired() && model.isDisplayOnConsentScreen())
+                && AgentAuthorization.containsScopes(subjectAccessToken.getScope(), scope)
+                && TokenManager.isValidScope(session, scope, origin, subject.user())
+                && TokenManager.verifyConsentStillAvailable(session, subject.user(), origin, subject.session().getAuthenticatedClientSessionByClient(origin.getId()), scope);
+    }
+
+    private String managedTokenKey(String token) {
+        return "agent-delegation." + realm.getId() + "." + HashUtils.sha256UrlEncodedHash(token, StandardCharsets.UTF_8);
+    }
+
+    @Override
+    protected void forbiddenIfClientIsNotWithinTokenAudience(AccessToken token) {
+        if (managedConnection != null && token == subjectAccessToken && token.getAudience() != null && token.getAudience().length == 1) {
+            Server receiver = new AgentDirectory(realm).server(token.getAudience()[0]);
+            if (receiver != null && receiver.isBoundTo(client)) {
+                return;
+            }
+        }
+        super.forbiddenIfClientIsNotWithinTokenAudience(token);
     }
 
     private void triggerDelegationRequestEvent(TokenExchangeDelegationRequestContext delegationContext) {
@@ -336,6 +412,22 @@ public class TokenExchangeDelegationProvider extends StandardTokenExchangeProvid
         // a delegated token records the chain in "act", a "may_act" alongside it would make the next hop ambiguous
         responseBuilder.getAccessToken().getOtherClaims().remove(IDToken.MAY_ACT);
         responseBuilder.getAccessToken().getOtherClaims().put(IDToken.ACT, buildActClaim());
+        if (managedConnection != null) {
+            responseBuilder.getClientSessionCtx().setAttribute(AgentAuthorization.DELEGATED_RESOURCE, managedConnection.resource());
+            responseBuilder.getClientSessionCtx().setAttribute(OAuth2Constants.RESOURCE, managedConnection.resource());
+            responseBuilder.getClientSessionCtx().setAttribute(AgentAuthorization.SUBJECT_SCOPES, subjectAccessToken.getScope());
+        }
+    }
+
+    @Override
+    protected Response buildTokenExchangeResponse(TokenManager.AccessTokenResponseBuilder builder, String requestedType, List<ClientModel> targets) {
+        Response response = super.buildTokenExchangeResponse(builder, requestedType, targets);
+        if (managedConnection != null) {
+            AccessTokenResponse issued = (AccessTokenResponse) response.getEntity();
+            long lifespan = Math.max(1, builder.getAccessToken().getExp() - Time.currentTimeSeconds());
+            session.singleUseObjects().put(managedTokenKey(issued.getToken()), lifespan, Map.of());
+        }
+        return response;
     }
 
     @SuppressWarnings("unchecked")

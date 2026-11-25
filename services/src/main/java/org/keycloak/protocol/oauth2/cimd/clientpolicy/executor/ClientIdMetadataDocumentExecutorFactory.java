@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.provider.ProviderConfigProperty;
-import org.keycloak.services.clientpolicy.executor.ClientPolicyExecutorProvider;
 
 /**
  * The class is a factory class of {@link ClientIdMetadataDocumentExecutor}.
@@ -55,7 +54,7 @@ public class ClientIdMetadataDocumentExecutorFactory extends AbstractClientIdMet
     }
 
     @Override
-    public ClientPolicyExecutorProvider<ClientIdMetadataDocumentExecutor.Configuration> create(KeycloakSession session) {
+    public ClientIdMetadataDocumentExecutor create(KeycloakSession session) {
         return new ClientIdMetadataDocumentExecutor(session, providerConfig);
     }
 

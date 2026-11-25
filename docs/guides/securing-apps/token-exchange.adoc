@@ -302,7 +302,7 @@ image::token-exchange-switch-refresh.png[Enabling refresh token in Token Exchang
 * Token exchange never creates a new link:{adminguide_link}#managing-user-sessions[user session]. In case that `requested_token_type` is a refresh token, it may eventually create a new client session in the user session
 for the requester client (if the client session was not yet created).
 
-* {project_name} Token exchange does not yet have support for the `resource` parameter.
+* Managed MCP delegation accepts the target resource URL in `resource` together with the target client ID in `audience`. See <@links.securingapps id="mcp-authz-server"/>. Ordinary standard token exchange uses `audience` to select the target.
 
 * The token exchange specification mentions the concepts of https://datatracker.ietf.org/doc/html/rfc8693#name-delegation-vs-impersonation[impersonation and delegation]. {project_name} has support for
 impersonation and preview support for delegation through the <<_token-exchange-delegation,Token Exchange Delegation>> feature.

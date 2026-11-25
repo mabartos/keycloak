@@ -44,6 +44,7 @@ import org.keycloak.models.UserSessionModel;
 import org.keycloak.protocol.oidc.OIDCAdvancedConfigWrapper;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.protocol.oidc.TokenManager;
+import org.keycloak.protocol.oidc.agents.AgentAuthorization;
 import org.keycloak.representations.JsonWebToken;
 import org.keycloak.services.CorsErrorResponseException;
 import org.keycloak.services.Urls;
@@ -191,9 +192,16 @@ public class JWTAuthorizationGrantType extends OAuth2GrantTypeBase {
             event.session(userSession);
             ClientSessionContext clientSessionCtx = TokenManager.attachAuthenticationSession(this.session, userSession,
                     authSession, authorizationGrantContext.getRestrictedScopes(), false);
+            String resource = formParams.getFirst(OAuth2Constants.RESOURCE);
+            boolean managed = Profile.isFeatureEnabled(Profile.Feature.AI_AGENTS) && authorizationGrantContext instanceof IDJWTAuthorizationGrantValidator
+                    && AgentAuthorization.authorizeAssertionRedemption(realm, client, user, authorizationGrantContext.getJWT(), resource, scopeParam);
+            if (managed) {
+                clientSessionCtx.setAttribute(AgentAuthorization.ASSERTED_RESOURCE, resource);
+                clientSessionCtx.setAttribute(AgentAuthorization.SUBJECT_SCOPES, authorizationGrantContext.getJWT().getOtherClaims().get(OAuth2Constants.SCOPE));
+            }
             TokenManager.AccessTokenResponseBuilder responseBuilder = createTokenResponseBuilder(user, userSession, clientSessionCtx, scopeParam,
                     accessTokenResponseBuilder -> new JWTAuthorizationGrantResponseContext(formParams, clientSessionCtx, accessTokenResponseBuilder));
-            if (jwtAuthorizationGrantProvider.isLimitAccessTokenExpiration()) {
+            if (managed || jwtAuthorizationGrantProvider.isLimitAccessTokenExpiration()) {
                 if (authorizationGrantContext.getJWT().getExp() < responseBuilder.getAccessToken().getExp()) {
                     responseBuilder.getAccessToken().exp(authorizationGrantContext.getJWT().getExp());
                 }

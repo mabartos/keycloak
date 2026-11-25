@@ -2,7 +2,7 @@ import react from "@vitejs/plugin-react-swc";
 import { readFileSync } from "node:fs";
 import path from "path";
 import { getProperties } from "properties-file";
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import { checker } from "vite-plugin-checker";
 import dts from "vite-plugin-dts";
 import { configDefaults } from "vitest/config";
@@ -24,13 +24,20 @@ export default defineConfig(({ mode }) => {
       },
       load(id) {
         if (id === "message-bundle") {
-          let properties = {};
+          const properties = {};
           if (process.env.NODE_ENV === "development") {
-            properties = getProperties(
-              readFileSync(
-                "./maven-resources/theme/keycloak.v2/admin/messages/messages_en.properties",
-              ),
-            );
+            for (const theme of [
+              "../../../themes/src/main/resources/theme/base",
+              "maven-resources/theme/keycloak.v2",
+            ]) {
+              const file = path.resolve(
+                __dirname,
+                theme,
+                "admin/messages/messages_en.properties",
+              );
+              this.addWatchFile(file);
+              Object.assign(properties, getProperties(readFileSync(file)));
+            }
           }
           return {
             code: `export default ${JSON.stringify(properties)};`,
@@ -38,7 +45,7 @@ export default defineConfig(({ mode }) => {
         }
         return null;
       },
-    },
+    } satisfies Plugin,
   ];
   const input = env.LIB ? undefined : "src/main.tsx";
   if (env.LIB) {

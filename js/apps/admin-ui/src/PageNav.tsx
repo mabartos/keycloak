@@ -132,6 +132,9 @@ export const PageNav = () => {
                 realmRepresentation.organizationsEnabled && (
                   <LeftNav title="organizations" path="/organizations" />
                 )}
+              {isFeatureEnabled(Feature.AiAgents) && (
+                <LeftNav title="aiAgents" path="/ai-agents" />
+              )}
               <LeftNav title="clients" path="/clients" />
               <LeftNav title="clientScopes" path="/client-scopes" />
               <LeftNav title="realmRoles" path="/roles" />

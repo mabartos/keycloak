@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import jakarta.ws.rs.NotFoundException;
 
 import org.keycloak.OAuthErrorException;
+import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.ClientResource;
 import org.keycloak.authorization.fgap.AdminPermissionsSchema;
 import org.keycloak.common.Profile;
@@ -37,8 +38,10 @@ import org.keycloak.services.clientpolicy.executor.ClientDelegationExecutor;
 import org.keycloak.services.clientpolicy.executor.ClientDelegationExecutorFactory;
 import org.keycloak.services.clientpolicy.executor.DownscopeAssertionGrantEnforcerExecutorFactory;
 import org.keycloak.services.clientpolicy.executor.RejectMayActClaimExecutorFactory;
+import org.keycloak.testframework.annotations.InjectAdminClient;
 import org.keycloak.testframework.annotations.InjectClient;
 import org.keycloak.testframework.annotations.InjectEvents;
+import org.keycloak.testframework.annotations.InjectKeycloakUrls;
 import org.keycloak.testframework.annotations.InjectRealm;
 import org.keycloak.testframework.annotations.KeycloakIntegrationTest;
 import org.keycloak.testframework.events.EventAssertion;
@@ -57,9 +60,11 @@ import org.keycloak.testframework.realm.RealmConfig;
 import org.keycloak.testframework.realm.UserBuilder;
 import org.keycloak.testframework.server.KeycloakServerConfig;
 import org.keycloak.testframework.server.KeycloakServerConfigBuilder;
+import org.keycloak.testframework.server.KeycloakUrls;
 import org.keycloak.testframework.ui.annotations.InjectPage;
 import org.keycloak.testframework.ui.page.OAuthGrantPage;
 import org.keycloak.tests.admin.authz.fgap.PermissionTestUtils;
+import org.keycloak.tests.oauth.AgentDirectoryAdmin;
 import org.keycloak.tests.utils.admin.AdminApiUtil;
 import org.keycloak.testsuite.util.AccountHelper;
 import org.keycloak.testsuite.util.oauth.AccessTokenResponse;
@@ -132,6 +137,47 @@ public class ClientDelegationChainTest {
 
     @InjectPage
     OAuthGrantPage grantPage;
+
+    @InjectAdminClient
+    Keycloak admin;
+
+    @InjectKeycloakUrls
+    KeycloakUrls urls;
+
+    @Test
+    public void directoryAuthorizesEachHop() {
+        String mcp = "https://tools.example.test/mcp";
+        String downstream = "urn:client:" + DOWNSTREAM_CLIENT_ID;
+        List<String> scopes = List.of("openid", "acr", "profile", "roles", "basic");
+        String email = mcpApp.admin().getDefaultClientScopes().stream().filter(scope -> "email".equals(scope.getName())).findFirst().orElseThrow().getId();
+        mcpApp.admin().removeDefaultClientScope(email);
+        try (AgentDirectoryAdmin api = new AgentDirectoryAdmin(admin, urls, realm)) {
+            api.put("agents", Map.of("name", "Assistant", "clientId", AGENT_CLIENT_ID));
+            api.put("servers", Map.of("name", "Tools", "resource", mcp, "clientId", MCP_CLIENT_ID));
+            api.put("connections", Map.of("caller", AGENT_CLIENT_ID, "resource", mcp, "mode", "delegated", "scopes", scopes));
+            String secondGrant = api.put("connections", Map.of("caller", MCP_CLIENT_ID, "resource", downstream, "mode", "delegated", "scopes", scopes));
+
+            String subject = login(AGENT_DELEGATION_SCOPE).getAccessToken();
+            String agent = clientCredentialsToken(AGENT_CLIENT_ID, AGENT_CLIENT_SECRET);
+            String server = clientCredentialsToken(MCP_CLIENT_ID, MCP_CLIENT_SECRET);
+            AccessTokenResponse first = oauth.client(AGENT_CLIENT_ID, AGENT_CLIENT_SECRET).tokenExchangeRequest(subject, ACCESS_TOKEN_TYPE)
+                    .actorToken(agent).actorTokenType(ACCESS_TOKEN_TYPE).audience(MCP_CLIENT_ID).resource(mcp).send();
+            Assertions.assertTrue(first.isSuccess(), first.getErrorDescription());
+            Assertions.assertArrayEquals(new String[]{mcp}, oauth.verifyToken(first.getAccessToken()).getAudience());
+            AccessTokenResponse second = oauth.client(MCP_CLIENT_ID, MCP_CLIENT_SECRET).tokenExchangeRequest(first.getAccessToken(), ACCESS_TOKEN_TYPE)
+                    .actorToken(server).actorTokenType(ACCESS_TOKEN_TYPE).audience(DOWNSTREAM_CLIENT_ID).resource(downstream).send();
+            Assertions.assertTrue(second.isSuccess(), second.getErrorDescription());
+            AccessToken token = oauth.verifyToken(second.getAccessToken());
+            Assertions.assertArrayEquals(new String[]{DOWNSTREAM_CLIENT_ID}, token.getAudience());
+            assertActChain(token, MCP_CLIENT_ID, AGENT_CLIENT_ID);
+            Assertions.assertEquals(204, api.delete("connections", secondGrant));
+            AccessTokenResponse denied = oauth.tokenExchangeRequest(first.getAccessToken(), ACCESS_TOKEN_TYPE)
+                    .actorToken(server).actorTokenType(ACCESS_TOKEN_TYPE).audience(DOWNSTREAM_CLIENT_ID).resource(downstream).send();
+            Assertions.assertFalse(denied.isSuccess());
+        } finally {
+            mcpApp.admin().addDefaultClientScope(email);
+        }
+    }
 
     @BeforeEach
     public void beforeEach() {
@@ -876,7 +922,7 @@ public class ClientDelegationChainTest {
 
         @Override
         public KeycloakServerConfigBuilder configure(KeycloakServerConfigBuilder config) {
-            return config.features(Profile.Feature.PARAMETERIZED_SCOPES, Profile.Feature.TOKEN_EXCHANGE_DELEGATION);
+            return config.features(Profile.Feature.PARAMETERIZED_SCOPES, Profile.Feature.TOKEN_EXCHANGE_DELEGATION, Profile.Feature.AI_AGENTS, Profile.Feature.RESOURCE_INDICATORS);
         }
     }
 

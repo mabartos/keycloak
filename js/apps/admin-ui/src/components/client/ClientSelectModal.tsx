@@ -5,23 +5,22 @@ import { Button, Modal, ModalVariant } from "@patternfly/react-core";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAdminClient } from "../../admin-client";
+import { translationFormatter } from "../../utils/translationFormatter";
 
 type ClientSelectModalProps = {
   onClose: () => void;
   onSelect: (clients: ClientRepresentation[]) => void;
   isRadio?: boolean;
+  isRowDisabled?: (client: ClientRepresentation) => boolean;
 };
 
-export const ClientSelectModal = ({
-  onClose,
+export const ClientSelectTable = ({
   onSelect,
   isRadio = false,
-}: ClientSelectModalProps) => {
+  isRowDisabled,
+}: Omit<ClientSelectModalProps, "onClose">) => {
   const { t } = useTranslation();
   const { adminClient } = useAdminClient();
-  const [selectedClients, setSelectedClients] = useState<
-    ClientRepresentation[]
-  >([]);
 
   const loader = async (
     first?: number,
@@ -40,6 +39,34 @@ export const ClientSelectModal = ({
 
     return adminClient.clients.find(params);
   };
+
+  return (
+    <KeycloakDataTable
+      onSelect={onSelect}
+      searchPlaceholderKey="searchForClient"
+      isPaginated
+      canSelectAll={!isRadio}
+      isRadio={isRadio}
+      isRowDisabled={isRowDisabled}
+      loader={loader}
+      ariaLabelKey="clientList"
+      columns={[
+        { name: "clientId" },
+        { name: "name", cellFormatters: [translationFormatter(t)] },
+      ]}
+    />
+  );
+};
+
+export const ClientSelectModal = ({
+  onClose,
+  onSelect,
+  ...tableProps
+}: ClientSelectModalProps) => {
+  const { t } = useTranslation();
+  const [selectedClients, setSelectedClients] = useState<
+    ClientRepresentation[]
+  >([]);
 
   return (
     <Modal
@@ -71,16 +98,7 @@ export const ClientSelectModal = ({
         </Button>,
       ]}
     >
-      <KeycloakDataTable
-        onSelect={(rows) => setSelectedClients([...rows])}
-        searchPlaceholderKey="searchForClient"
-        isPaginated
-        canSelectAll={!isRadio}
-        isRadio={isRadio}
-        loader={loader}
-        ariaLabelKey="clientList"
-        columns={[{ name: "clientId" }, { name: "name" }]}
-      />
+      <ClientSelectTable {...tableProps} onSelect={setSelectedClients} />
     </Modal>
   );
 };

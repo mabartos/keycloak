@@ -45,6 +45,16 @@ public class TokenExchangeDelegationRequestContext implements ClientModelContext
         return tokenExchangeContext.getParams().getScope();
     }
 
+    public List<String> getRequestedAudiences() {
+        List<String> audiences = tokenExchangeContext.getParams().getAudience();
+        return audiences == null ? List.of() : List.copyOf(audiences);
+    }
+
+    public List<String> getRequestedResources() {
+        List<String> resources = tokenExchangeContext.getParams().getResource();
+        return resources == null ? List.of() : List.copyOf(resources);
+    }
+
     /**
      * True when the actor is a service account, so this hop is client delegation rather than admin delegation.
      */

@@ -1476,6 +1476,12 @@ public class RealmAdminResource {
         return new ClientProfilesResource(session, auth);
     }
 
+    @Path("ai-agents")
+    public AgentDirectoryResource getAgentDirectory() {
+        ProfileHelper.requireFeature(Profile.Feature.AI_AGENTS);
+        return new AgentDirectoryResource(session, auth, adminEvent);
+    }
+
     @Path("client-types")
     public ClientTypesResource getClientTypesResource() {
         ProfileHelper.requireFeature(Profile.Feature.CLIENT_TYPES);

@@ -2,9 +2,11 @@ package org.keycloak.protocol.oidc.resourceindicators;
 
 import org.keycloak.OAuth2Constants;
 import org.keycloak.OAuthErrorException;
+import org.keycloak.common.Profile;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.Constants;
 import org.keycloak.models.KeycloakSession;
+import org.keycloak.protocol.oidc.agents.AgentAuthorization;
 import org.keycloak.protocol.oidc.token.TokenInterceptorException;
 import org.keycloak.protocol.oidc.token.TokenPostProcessor;
 import org.keycloak.protocol.oidc.token.TokenPostProcessorContext;
@@ -37,6 +39,9 @@ public class ResourceIndicatorsPostProcessor implements TokenPostProcessor {
         }
 
         if (originalResourceParam == null && requestedResource == null) {
+            if (Profile.isFeatureEnabled(Profile.Feature.AI_AGENTS) && context.accessToken() != null) {
+                AgentAuthorization.bindResource(session, context, null, grantType);
+            }
             return;
         }
 
@@ -54,7 +59,10 @@ public class ResourceIndicatorsPostProcessor implements TokenPostProcessor {
 
         String audienceToSet = null;
         String[] audience = context.accessToken().getAudience();
-        if (audience != null && isClientUrn(requestedResource)) {
+        if (Profile.isFeatureEnabled(Profile.Feature.AI_AGENTS) && AgentAuthorization.bindResource(session, context, requestedResource, grantType)
+                && !isClientUrn(requestedResource)) {
+            audienceToSet = requestedResource;
+        } else if (audience != null && isClientUrn(requestedResource)) {
             audienceToSet = findAudienceByClientUrn(requestedResource, audience);
         } else if (audience != null) {
             audienceToSet = findCustomAudience(requestedResource, audience);

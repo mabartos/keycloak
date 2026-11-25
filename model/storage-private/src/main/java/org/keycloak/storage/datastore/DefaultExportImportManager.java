@@ -832,9 +832,13 @@ public class DefaultExportImportManager implements ExportImportManager {
         if (rep.getAttributes() != null) {
             Set<String> attrsToRemove = stripRealmAttributesIncludedAsFields(realm.getAttributes()).keySet();
             attrsToRemove.removeAll(rep.getAttributes().keySet());
+            // Agent connections are updated individually through their admin resource.
+            attrsToRemove.removeIf(name -> name.startsWith(Constants.AGENT_DIRECTORY_ATTRIBUTE_PREFIX));
 
             for (Map.Entry<String, String> entry : rep.getAttributes().entrySet()) {
-                realm.setAttribute(entry.getKey(), entry.getValue());
+                if (!entry.getKey().startsWith(Constants.AGENT_DIRECTORY_ATTRIBUTE_PREFIX)) {
+                    realm.setAttribute(entry.getKey(), entry.getValue());
+                }
             }
 
             for (String attr : attrsToRemove) {

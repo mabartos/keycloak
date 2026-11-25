@@ -108,6 +108,135 @@ According to these criteria, the following table shows which MCP version {projec
 
 |===
 
+[[managed-agent-connections]]
+== Managing agent connections in the Admin Console
+
+Enable the experimental `ai-agents` and `resource-indicators` features to use the *AI agents* page.
+Client policies must also be enabled (the default).
+The following development configuration also enables metadata document clients, delegated exchange and enterprise access:
+
+[source,bash]
+----
+bin/kc.sh start-dev --features=ai-agents,resource-indicators,cimd,parameterized-scopes,token-exchange-delegation,identity-assertion-jwt
+----
+
+. Under *AI agents*, select *Register agent*.
+  Choose *Create a new OpenID Connect client*, enter the client ID and the agent's exact redirect URI, and select *Create client*.
+  {project_name} creates a public client with authorization code flow and S256 PKCE. Implicit flow, direct access grants and service accounts are disabled.
+  Select *Client details* to change the settings or add more redirect URIs.
+  Choose *Existing realm client* to add a public or confidential client to the Agents tab using its existing settings.
+  A server-side agent that uses delegated exchange or ID-JAG needs a confidential client.
+  The tab identifies these clients by the `ai.agent=true` client attribute.
+  For an agent that publishes a Client ID Metadata Document (CIMD), choose *Client ID Metadata Document* and enter its exact HTTPS metadata URL.
+  Keycloak uses that URL as the client ID and provisions the client from its document on the first authorized sign-in.
+  You can register the metadata URL in advance. Enable the `cimd` server feature before the agent signs in.
+  For a public desktop application, enable loopback callbacks if its metadata uses them.
+  Public managed CIMD clients use S256 PKCE.
+. Register the MCP server using its canonical HTTPS resource URL, including its path.
+  *Discover metadata* reads OAuth protected resource metadata in the administrator's browser and suggests scopes and authorization server issuers.
+  You can enter these values manually when the server is unreachable from your browser or does not allow cross-origin requests.
+  Choose *This realm* for local issuance.
+  Bind the server to its existing OIDC client if it will introspect tokens or receive delegated tokens.
+. Under *Connections*, select *Create connection*.
+  Choose the application requesting the token under *Calling client* and the service receiving it under *Destination*.
+  Select *Choose calling client* or *Choose destination* to open the picker.
+  Choose a registered agent or MCP server, or select an OpenID Connect client from *Realm clients*.
+  When no entries are registered on that side, the picker opens the realm client list directly.
+  Select the displayed name or icon to change your choice before saving.
+  You can also choose *Connect a resource* on an agent or *Add a caller* on an MCP server to preselect that endpoint.
+  For example, a support assistant can call a tickets API registered as a realm client.
+  For a client destination, request `resource=urn:client:<client-id>` and configure the destination client ID as an available audience for the caller and user.
+  Keycloak issues a token with the destination client ID as its audience.
+  Allow the scopes that may appear in the token, including required default client scopes and `openid` when requested.
+  Advertised scopes are suggestions. Each connection has its own scope list and optional required realm role.
+. To let an MCP server call a downstream service, open its *Downstream connections* and create a connection using its bound realm client as the caller.
+
+[cols="1,3",options="header"]
+|===
+|Access mode |Token flow
+
+|Interactive sign-in
+|Send the registered `resource` in the authorization request and use the authorization code flow.
+The resulting access token has the MCP resource URL or the destination client ID as its sole audience.
+Refresh checks the current connection, role and scope limits.
+
+|Delegated exchange
+|Configure the calling client's service account, standard token exchange, realm fine-grained admin permissions and delegation permission for the subject user.
+The target's OIDC client ID must be an available audience for the caller and user.
+Start with the user's consent to the parameterized `delegation:client:<caller-client-id>` scope.
+At each exchange send the subject access token, the caller's service account actor token, the target client ID as `audience` and the target URL or client resource URN as `resource`.
+A subsequent hop uses the previously issued token as its subject.
+The target receives a token with the resource URL or client ID as the audience and the actor chain in `act`.
+Each hop is constrained by its connection, the incoming token's scopes and applicable delegation client policies.
+
+|Enterprise access (ID-JAG)
+|At the enterprise issuer, register the external authorization server's HTTPS issuer as an OIDC client ID and make it an available audience for the caller and user.
+Register the MCP server with that external issuer and set the caller's client ID at the receiving authorization server on the connection.
+The confidential caller exchanges its own session-bound ID token for `urn:ietf:params:oauth:token-type:id-jag` using the issuer as its sole `audience`.
+The issuer selects the connection by caller and issuer, so a caller can have one external connection per issuer.
+The signed assertion names the receiving authorization server and downstream client.
+At the receiving server, configure JWT Authorization Grant and issuer trust for that confidential client.
+When the receiver uses this directory, register the downstream client as a caller, the MCP resource under *This realm* and a local enterprise connection.
+Redeem the assertion there with the exact `resource` to receive the MCP access token.
+The receiving authorization server enforces resource access.
+|===
+
+Removing a connection takes effect on subsequent issuance and refresh requests.
+An access token already delivered to a resource server remains subject to its normal expiration and validation rules.
+The directory governs OAuth token issuance. Network access from the MCP process is configured in its deployment.
+
+=== Admin REST API
+
+The directory is scoped to `/admin/realms/{realm}/ai-agents`.
+Reading requires `view-realm` and changing entries requires `manage-realm`.
+Use `GET` on the directory to list registrations and connections.
+The following example grants an existing client interactive access to a resource:
+
+[source,http]
+----
+PUT /admin/realms/demo/ai-agents/agents
+Content-Type: application/json
+
+{"clientId":"support-assistant"}
+----
+
+[source,http]
+----
+PUT /admin/realms/demo/ai-agents/servers
+Content-Type: application/json
+
+{"name":"Tickets","resource":"https://tools.example.com/tickets","supportedScopes":["tickets.read"]}
+----
+
+[source,http]
+----
+PUT /admin/realms/demo/ai-agents/connections
+Content-Type: application/json
+
+{"caller":"support-assistant","resource":"https://tools.example.com/tickets","mode":"interactive","scopes":["openid","profile","email","tickets.read"]}
+----
+
+To connect two existing realm clients, send a single request:
+
+[source,http]
+----
+PUT /admin/realms/demo/ai-agents/connections
+Content-Type: application/json
+
+{"caller":"support-portal","resource":"urn:client:tickets-api","mode":"interactive","scopes":["openid","profile","email"]}
+----
+
+This binds the connection to the existing client instances.
+It applies to token requests for this caller, resource indicator and access mode.
+Other realm clients continue to use their configured audience permissions.
+
+Repeat a PUT with the same identity to update a registration or connection.
+The identity of a connection is its caller, resource and mode.
+Each response includes an `id` for deletion via `DELETE /admin/realms/{realm}/ai-agents/{agents|servers|connections}/{id}`.
+Removing a locally marked client from the Agents tab removes its `ai.agent` attribute.
+Its OAuth client and connections remain available.
+Remove dependent connections before removing a CIMD registration or a registered resource.
+
 == Setup
 
 === For MCP 2025-03-26
