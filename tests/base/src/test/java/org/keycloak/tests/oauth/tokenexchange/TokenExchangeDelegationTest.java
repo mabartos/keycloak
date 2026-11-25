@@ -69,6 +69,8 @@ import org.keycloak.testframework.realm.RealmBuilder;
 import org.keycloak.testframework.realm.RealmConfig;
 import org.keycloak.testframework.realm.UserBuilder;
 import org.keycloak.testframework.realm.UserConfig;
+import org.keycloak.testframework.remote.runonserver.InjectRunOnServer;
+import org.keycloak.testframework.remote.runonserver.RunOnServerClient;
 import org.keycloak.testframework.server.KeycloakServerConfig;
 import org.keycloak.testframework.server.KeycloakServerConfigBuilder;
 import org.keycloak.testframework.ui.annotations.InjectPage;
@@ -107,6 +109,9 @@ public class TokenExchangeDelegationTest {
 
     private static final String USERNAME = "test-user@localhost";
     private static final String PASSWORD = "password";
+
+    @InjectRunOnServer(permittedPackages = "org.keycloak.tests.oauth.tokenexchange")
+    RunOnServerClient runOnServer;
 
     @InjectRealm(config = TokenExchangeDelegationRealmConfig.class)
     ManagedRealm realm;
@@ -439,14 +444,10 @@ public class TokenExchangeDelegationTest {
         ProtocolMapperModel actorMapper = HardcodedClaim.create(
                 "introspection-act-sub-mapper", "act.sub", "mapper-actor", "String", false, false, true);
 
-        String clientId = oauth.getClientId();
-        String mapperId;
         try (Response response = oauth.clientResource().getProtocolMappers()
                 .createMapper(ModelToRepresentation.toRepresentation(actorMapper))) {
-            Assertions.assertEquals(201, response.getStatus(), "Mapper creation should succeed");
-            mapperId = ApiUtil.getCreatedId(response);
+            Assertions.assertEquals(400, response.getStatus());
         }
-        realm.cleanup().add(r -> AdminApiUtil.findClientByClientId(r, clientId).getProtocolMappers().delete(mapperId));
 
         final String scope = OIDCLoginProtocolFactory.USER_DELEGATION_SCOPE + ClientScopeModel.VALUE_SEPARATOR + administrator.getUsername();
         AccessTokenResponse res = loginWithDelegation(scope);
@@ -1013,67 +1014,21 @@ public class TokenExchangeDelegationTest {
 
     @Test
     public void rejectMayActClientPolicyPermission() {
-        createHardcodedSubMapperForAdministrator();
-
-        // default config checks permission is not granted
-        realm.updateWithCleanup(r -> r.clientProfile(ClientProfileBuilder.create().name("executor").executor(RejectMayActClaimExecutorFactory.PROVIDER_ID, null).build())
-                .clientPolicy(ClientPolicyBuilder.create().name("policy").condition(AnyClientConditionFactory.PROVIDER_ID, null).profile("executor").build()));
-
-        AccessTokenResponse res = loginWithDelegationNoEvent(null, grants -> MatcherAssert.assertThat(grants,
-                Matchers.not(Matchers.hasItem(Matchers.containsString("Delegate token")))));
-        Assertions.assertEquals(Errors.INVALID_REQUEST, res.getError());
-        Assertions.assertEquals("Invalid may_act sub in the token", res.getErrorDescription());
-
+        AccessTokenResponse res = loginWithDelegationNoEvent(null, grants ->
+                MatcherAssert.assertThat(grants, Matchers.not(Matchers.hasItem(Matchers.containsString("Delegate token")))));
+        Assertions.assertTrue(res.isSuccess(), res.getErrorDescription());
+        DelegationPolicyAssertions.assertPolicy(runOnServer, oauth.verifyToken(res.getAccessToken()), administrator.getId(), true);
         AccountHelper.logout(realm.admin(), USERNAME);
-
-        // explicitly do not check permissions and consents
-        realm.updateWithCleanup(r -> r.resetClientProfiles().resetClientPolicies()
-                .clientProfile(ClientProfileBuilder.create().name("executor")
-                        .executor(RejectMayActClaimExecutorFactory.PROVIDER_ID, new RejectMayActClaimExecutor.Configuration(false, true, true))
-                        .build())
-                .clientPolicy(ClientPolicyBuilder.create().name("policy").condition(AnyClientConditionFactory.PROVIDER_ID, null).profile("executor").build()));
-
-        oauth.scope(null).openLoginForm();
-        oauth.fillLoginForm(USERNAME, PASSWORD);
-        res = oauth.doAccessTokenRequest(oauth.parseLoginResponse().getCode());
-        Assertions.assertTrue(res.isSuccess(), res.getError() + " - " + res.getErrorDescription());
-        assertMayActPresent(oauth.verifyToken(res.getAccessToken()), administrator.getId(), null, null);
-
-        LogoutResponse logout = oauth.doLogout(res.getRefreshToken());
-        Assertions.assertTrue(logout.isSuccess(), logout.getError() + " - " + logout.getErrorDescription());
     }
 
     @Test
     public void rejectMayActClientPolicyConsent() {
         addDelegationPermission();
-        createHardcodedSubMapperForAdministrator();
-
-        // default config checks consent is not granted
-        realm.updateWithCleanup(r -> r.clientProfile(ClientProfileBuilder.create().name("executor").executor(RejectMayActClaimExecutorFactory.PROVIDER_ID, null).build())
-                .clientPolicy(ClientPolicyBuilder.create().name("policy").condition(AnyClientConditionFactory.PROVIDER_ID, null).profile("executor").build()));
-
-        AccessTokenResponse res = loginWithDelegationNoEvent(null, grants -> MatcherAssert.assertThat(grants,
-                Matchers.not(Matchers.hasItem(Matchers.containsString("Delegate token")))));
-        Assertions.assertEquals(Errors.INVALID_REQUEST, res.getError());
-        Assertions.assertEquals("Invalid may_act sub in the token", res.getErrorDescription());
-
+        AccessTokenResponse res = loginWithDelegationNoEvent(null, grants ->
+                MatcherAssert.assertThat(grants, Matchers.not(Matchers.hasItem(Matchers.containsString("Delegate token")))));
+        Assertions.assertTrue(res.isSuccess(), res.getErrorDescription());
+        DelegationPolicyAssertions.assertPolicy(runOnServer, oauth.verifyToken(res.getAccessToken()), administrator.getId(), false);
         AccountHelper.logout(realm.admin(), USERNAME);
-
-        // explicitly do not check consents
-        realm.updateWithCleanup(r -> r.resetClientProfiles().resetClientPolicies()
-                .clientProfile(ClientProfileBuilder.create().name("executor")
-                        .executor(RejectMayActClaimExecutorFactory.PROVIDER_ID, new RejectMayActClaimExecutor.Configuration(false, false, true))
-                        .build())
-                .clientPolicy(ClientPolicyBuilder.create().name("policy").condition(AnyClientConditionFactory.PROVIDER_ID, null).profile("executor").build()));
-
-        oauth.scope(null).openLoginForm();
-        oauth.fillLoginForm(USERNAME, PASSWORD);
-        res = oauth.doAccessTokenRequest(oauth.parseLoginResponse().getCode());
-        Assertions.assertTrue(res.isSuccess(), res.getError() + " - " + res.getErrorDescription());
-        assertMayActPresent(oauth.verifyToken(res.getAccessToken()), administrator.getId(), null, null);
-
-        LogoutResponse logout = oauth.doLogout(res.getRefreshToken());
-        Assertions.assertTrue(logout.isSuccess(), logout.getError() + " - " + logout.getErrorDescription());
     }
 
     private ScopePermissionRepresentation addDelegationPermission() {
@@ -1233,23 +1188,6 @@ public class TokenExchangeDelegationTest {
                 .map(ClientScopeRepresentation::getId)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("delegation client scope not found"));
-    }
-
-    private void createHardcodedSubMapperForAdministrator() {
-        ProtocolMapperRepresentation subMapper = new ProtocolMapperRepresentation();
-        subMapper.setName("may-act-sub-mapper");
-        subMapper.setProtocol("openid-connect");
-        subMapper.setProtocolMapper("oidc-hardcoded-claim-mapper");
-        Map<String, String> config = new HashMap<>();
-        config.put(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME, "may_act.sub");
-        config.put(HardcodedClaim.CLAIM_VALUE, administrator.getId());
-        config.put(OIDCAttributeMapperHelper.JSON_TYPE, "String");
-        config.put(OIDCAttributeMapperHelper.INCLUDE_IN_ACCESS_TOKEN, Boolean.TRUE.toString());
-        subMapper.setConfig(config);
-        try (Response response = oauth.clientResource().getProtocolMappers().createMapper(subMapper)) {
-            subMapper.setId(ApiUtil.getCreatedId(response));
-        }
-        realm.cleanup().add(r -> AdminApiUtil.findClientByClientId(r, oauth.getClientId()).getProtocolMappers().delete(subMapper.getId()));
     }
 
     static class TokenExchangeDelegationServerConfig implements KeycloakServerConfig {

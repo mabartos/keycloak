@@ -37,6 +37,7 @@ import org.keycloak.models.ClientScopeModel;
 import org.keycloak.models.Constants;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
+import org.keycloak.models.ProtocolMapperContainerModel;
 import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.RoleModel;
@@ -45,12 +46,14 @@ import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.organization.protocol.mappers.oidc.OrganizationMembershipMapper;
 import org.keycloak.protocol.AbstractLoginProtocolFactory;
 import org.keycloak.protocol.LoginProtocol;
+import org.keycloak.protocol.ProtocolMapperConfigException;
 import org.keycloak.protocol.oidc.mappers.AcrProtocolMapper;
 import org.keycloak.protocol.oidc.mappers.AddressMapper;
 import org.keycloak.protocol.oidc.mappers.AdminApiAudienceMapper;
 import org.keycloak.protocol.oidc.mappers.AllowedWebOriginsProtocolMapper;
 import org.keycloak.protocol.oidc.mappers.AudienceResolveProtocolMapper;
 import org.keycloak.protocol.oidc.mappers.FullNameMapper;
+import org.keycloak.protocol.oidc.mappers.OIDCAttributeMapperHelper;
 import org.keycloak.protocol.oidc.mappers.ParameterizedScopeAudienceMapper;
 import org.keycloak.protocol.oidc.mappers.ParameterizedScopeClientSubMapper;
 import org.keycloak.protocol.oidc.mappers.ParameterizedScopeMapper;
@@ -195,6 +198,11 @@ public class OIDCLoginProtocolFactory extends AbstractLoginProtocolFactory {
     private OIDCProviderConfig providerConfig;
     private LocalCache<String, Integer> reqParamMaxLengthCache;
     private LocalCache<String, Integer> tokenParamMaxLengthCache;
+
+    @Override
+    public void validateProtocolMapper(ProtocolMapperContainerModel container, ProtocolMapperModel mapper) throws ProtocolMapperConfigException {
+        OIDCAttributeMapperHelper.validateClaimName(container, mapper);
+    }
 
     @Override
     public void init(Config.Scope config) {

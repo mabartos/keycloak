@@ -208,6 +208,7 @@ public class TokenExchangeDelegationProvider extends StandardTokenExchangeProvid
 
         // add the "act" claim using the "may_act" claim sent in the subjectToken, chain current actor if present
         Map act = new HashMap((Map) subjectAccessToken.getOtherClaims().get(IDToken.MAY_ACT)); // should be present at this point
+        act.remove(IDToken.ACT);
         Object prevAct = actorAccessToken.getOtherClaims().get(IDToken.ACT);
         if (prevAct != null) {
             act.put(IDToken.ACT, prevAct);

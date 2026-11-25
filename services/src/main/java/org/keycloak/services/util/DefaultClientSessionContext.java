@@ -44,6 +44,7 @@ import org.keycloak.models.utils.RoleUtils;
 import org.keycloak.protocol.ProtocolMapperUtils;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.protocol.oidc.TokenManager;
+import org.keycloak.protocol.oidc.mappers.OIDCAttributeMapperHelper;
 import org.keycloak.rar.AuthorizationRequestContext;
 import org.keycloak.rar.AuthorizationRequestSource;
 import org.keycloak.util.TokenUtil;
@@ -336,7 +337,9 @@ public class DefaultClientSessionContext implements ClientSessionContext {
         return getClientScopesStream()
                 .flatMap(clientScope -> clientScope.getProtocolMappersStream()
                         .filter(mapper -> Objects.equals(finalProtocol, mapper.getProtocol()) &&
-                                ProtocolMapperUtils.isEnabled(session, mapper)))
+                                ProtocolMapperUtils.isEnabled(session, mapper)
+                                && (!OIDCLoginProtocol.LOGIN_PROTOCOL.equals(finalProtocol)
+                                        || OIDCAttributeMapperHelper.isTokenMapperAllowed(mapper, clientScope))))
                 .collect(Collectors.toSet());
     }
 

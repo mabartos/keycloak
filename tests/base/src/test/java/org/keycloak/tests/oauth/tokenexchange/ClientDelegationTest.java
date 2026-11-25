@@ -18,10 +18,10 @@ import org.keycloak.events.Errors;
 import org.keycloak.events.EventType;
 import org.keycloak.models.ClientScopeModel;
 import org.keycloak.models.Constants;
+import org.keycloak.models.utils.ModelToRepresentation;
 import org.keycloak.protocol.oidc.OIDCConfigAttributes;
 import org.keycloak.protocol.oidc.OIDCLoginProtocolFactory;
 import org.keycloak.protocol.oidc.mappers.HardcodedClaim;
-import org.keycloak.protocol.oidc.mappers.OIDCAttributeMapperHelper;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.ClientScopeRepresentation;
@@ -298,80 +298,33 @@ public class ClientDelegationTest {
     }
 
     @Test
-    public void clientIdMismatchOnExchange() {
-        replaceMayActClientIdMapper("wrong-client", "String");
+    public void delegationScopeProtectsActorIdentityAndAllowsMetadata() {
+        String scopeId = findClientDelegationScopeId();
+        var mappers = realm.admin().clientScopes().get(scopeId).getProtocolMappers();
 
-        AccessTokenResponse res = loginWithDelegation(AGENT_DELEGATION_SCOPE);
-        assertScopeContains(res.getScope(), AGENT_DELEGATION_SCOPE);
-
-        // actor token is from agent-app (azp = "agent-app") but may_act.client_id is "wrong-client"
-        String actorToken = getActorToken();
-        ExpectedActor clientActor = new ExpectedActor(Details.ACTOR_TYPE_CLIENT, AGENT_CLIENT_ID, getServiceAccountUserId());
-        assertTokenExchangeError(AGENT_CLIENT_ID, AGENT_CLIENT_SECRET, res.getAccessToken(), actorToken,
-                AGENT_CLIENT_ID, "Actor token client does not match the client_id in the may_act claim", clientActor);
-
-        logout(res.getRefreshToken());
-    }
-
-    @Test
-    public void nonStringClientIdOnExchange() {
-        // a non-string client_id is a malformed may_act claim and must not silently skip the client binding checks
-        replaceMayActClientIdMapper("12345", "int");
-
-        AccessTokenResponse res = loginWithDelegation(AGENT_DELEGATION_SCOPE);
-        assertScopeContains(res.getScope(), AGENT_DELEGATION_SCOPE);
-
-        String actorToken = getActorToken();
-        ExpectedActor clientActor = new ExpectedActor(Details.ACTOR_TYPE_CLIENT, AGENT_CLIENT_ID, getServiceAccountUserId());
-
-        // the client named in the claim cannot complete the exchange...
-        assertTokenExchangeError(AGENT_CLIENT_ID, AGENT_CLIENT_SECRET, res.getAccessToken(), actorToken,
-                AGENT_CLIENT_ID, "Invalid may_act claim in the subject_token", clientActor);
-
-        // ... and neither can any other client
-        assertTokenExchangeError(TEST_CLIENT_ID, TEST_CLIENT_SECRET, res.getAccessToken(), actorToken,
-                TEST_CLIENT_ID, "Invalid may_act claim in the subject_token", clientActor);
-
-        logout(res.getRefreshToken());
-    }
-
-    /**
-     * Replaces the built-in {@code may_act.client_id} mapper of the delegation client scope with a hardcoded
-     * claim mapper producing the given value and JSON type.
-     */
-    private void replaceMayActClientIdMapper(String claimValue, String jsonType) {
-        String clientDelegationScopeId = findClientDelegationScopeId();
-
-        // Remove the original client_id mapper so the hardcoded one takes effect
-        ProtocolMapperRepresentation originalMapper = realm.admin().clientScopes().get(clientDelegationScopeId)
-                .getProtocolMappers().getMappers().stream()
-                .filter(m -> OIDCLoginProtocolFactory.CLIENT_DELEGATION_MAY_ACT_CLIENT_ID.equals(m.getName()))
-                .findFirst()
-                .orElseThrow(() -> new AssertionError("Original client_id mapper not found"));
-        realm.admin().clientScopes().get(clientDelegationScopeId)
-                .getProtocolMappers().delete(originalMapper.getId());
-        realm.cleanup().add(r -> r.clientScopes().get(clientDelegationScopeId)
-                .getProtocolMappers().createMapper(originalMapper));
-
-        ProtocolMapperRepresentation clientIdMapper = new ProtocolMapperRepresentation();
-        clientIdMapper.setName("hardcoded-client-id-mapper");
-        clientIdMapper.setProtocol("openid-connect");
-        clientIdMapper.setProtocolMapper("oidc-hardcoded-claim-mapper");
-        Map<String, String> config = new HashMap<>();
-        config.put(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME, "may_act.client_id");
-        config.put(HardcodedClaim.CLAIM_VALUE, claimValue);
-        config.put(OIDCAttributeMapperHelper.JSON_TYPE, jsonType);
-        config.put(OIDCAttributeMapperHelper.INCLUDE_IN_ACCESS_TOKEN, Boolean.TRUE.toString());
-        clientIdMapper.setConfig(config);
-
-        String mapperId;
-        try (var response = realm.admin().clientScopes().get(clientDelegationScopeId)
-                .getProtocolMappers().createMapper(clientIdMapper)) {
-            Assertions.assertEquals(201, response.getStatus(), "Mapper creation should succeed");
-            mapperId = ApiUtil.getCreatedId(response);
+        for (String path : List.of("may_act", "may_act.sub", "may_act.client_id", "may_act.act", "may_act.act.sub")) {
+            try (Response response = mappers.createMapper(ModelToRepresentation.toRepresentation(
+                    HardcodedClaim.create("actor-mapper", path, "custom", "String", true, false, false)))) {
+                Assertions.assertEquals(400, response.getStatus(), path);
+            }
         }
-        realm.cleanup().add(r -> r.clientScopes().get(clientDelegationScopeId)
-                .getProtocolMappers().delete(mapperId));
+
+        var metadata = ModelToRepresentation.toRepresentation(
+                HardcodedClaim.create("actor-metadata", "may_act.custom_value", "custom", "String", true, false, false));
+        try (Response response = oauth.clientResource().getProtocolMappers().createMapper(metadata)) {
+            Assertions.assertEquals(400, response.getStatus());
+        }
+        String mapperId = ApiUtil.getCreatedId(mappers.createMapper(metadata));
+        realm.cleanup().add(r -> r.clientScopes().get(scopeId).getProtocolMappers().delete(mapperId));
+
+        AccessTokenResponse res = loginWithDelegation(AGENT_DELEGATION_SCOPE);
+        AccessToken subject = oauth.verifyToken(res.getAccessToken());
+        assertMayActPresent(subject, getServiceAccountUserId(), AGENT_CLIENT_ID);
+        Assertions.assertEquals("custom", ((Map<?, ?>) subject.getOtherClaims().get("may_act")).get("custom_value"));
+
+        AccessToken delegated = assertTokenExchangeSuccess(res.getAccessToken(), getActorToken(), getServiceAccountUserId());
+        Assertions.assertEquals("custom", ((Map<?, ?>) delegated.getOtherClaims().get(ACT)).get("custom_value"));
+        logout(res.getRefreshToken());
     }
 
     @Test
@@ -558,7 +511,7 @@ public class ClientDelegationTest {
         return uuid;
     }
 
-    private void assertTokenExchangeSuccess(String subjectToken, String actorToken, String expectedActorId) {
+    private AccessToken assertTokenExchangeSuccess(String subjectToken, String actorToken, String expectedActorId) {
         AccessTokenResponse tokenExchangeRes = oauth.client(AGENT_CLIENT_ID, AGENT_CLIENT_SECRET).tokenExchangeRequest(subjectToken)
                 .actorToken(actorToken)
                 .actorTokenType(ACCESS_TOKEN_TYPE)
@@ -594,6 +547,7 @@ public class ClientDelegationTest {
         } catch (IOException e) {
             Assertions.fail(e);
         }
+        return teToken;
     }
 
     private void assertTokenExchangeError(String requestingClientId, String requestingClientSecret,

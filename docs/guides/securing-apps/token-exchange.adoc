@@ -568,7 +568,8 @@ The resulting token will then include:
 }
 ----
 
-NOTE: {project_name} validates only `sub`, `client_id` and `iss` inside `may_act`. Every other claim is copied unchanged into the `act` claim of the delegated token, so it serves to identify and describe the actor for the parties reading the token, never as an input to an authorization decision.
+NOTE: {project_name} reserves `sub` and `client_id` for the built-in delegation mappers and validates the optional `iss` against the realm when exchanging the token.
+Custom metadata on a delegation scope is copied to `act`, while nested `act` entries are reserved for delegation history.
 
 NOTE: A *Hardcoded claim* is the same for every actor client, and no mapper resolves an attribute of the actor client itself. *Parameterized Scope User Property* cannot be reused here, since it treats the scope parameter as a username.
 
@@ -641,9 +642,11 @@ The delegated token is issued in a transient session, so no refresh token is ret
 
 === Restricting the `may_act` claim with a client policy
 
-The delegation client scopes enforce the permission check and the user consent before adding a `may_act` claim. A claim with that name can reach a token by other routes though, such as a *Hardcoded claim* protocol mapper set directly on a client. That claim never passed either check, yet the exchange endpoint would honor it.
+The delegation client scopes enforce the permission check and user consent before adding `may_act`.
+Protocol mappers can add metadata to `may_act` on those scopes, and {project_name} writes `act` during delegation and impersonation.
 
-The `may-act` client policy executor closes this gap. It re-validates any `may_act` claim it finds in a token response, whatever produced it: the issuer must match the realm, the `sub` must be an existing enabled user other than the token's own user, that user must hold the `delegate` permission, and the matching delegation scope must have been consented. Tokens without a `may_act` claim are untouched, and tokens that fail are rejected with `invalid_request`.
+The `may-act` client policy executor re-validates the optional issuer, actor identity, delegation permission, and matching consent on token responses that carry `may_act`.
+It rejects tokens that fail validation with `invalid_request`.
 
 Configure it under *Realm settings* -> *Client policies* by adding the *may-act* executor to a profile and attaching that profile to a policy. All three options are off by default:
 
@@ -652,7 +655,7 @@ Configure it under *Realm settings* -> *Client policies* by adding the *may-act*
 |Option |Effect when switched on
 |*Reject any may_act claim* |Rejects every token carrying a `may_act` claim, for clients that must never take part in delegation
 |*Avoid permission check* |Skips the revalidation of the `delegate` FGAP permission. The `may_act` validity checks on `iss` and `sub` still apply
-|*Avoid consent check* |The user's login consent is still enforced by the normal flows. What is dropped is catching a `may_act` that a protocol mapper added without the user ever consenting to that delegation
+|*Avoid consent check* |Skips revalidation of the matching delegation consent on the token response
 |===
 
 NOTE: The executor runs on the token response of every grant type, but only acts when that response carries a `may_act` claim. That is the login and refresh responses where the claim is minted, not the exchange itself, since the delegated token carries `act` and not `may_act`. Combine it with the *grant-type* condition to narrow it further.

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.keycloak.models.ProtocolMapperModel;
+import org.keycloak.representations.AccessToken;
 import org.keycloak.utils.JsonUtils;
 
 import org.hamcrest.Matchers;
@@ -43,6 +44,16 @@ public class OIDCAttributeMapperHelperTest {
         config.put(OIDCAttributeMapperHelper.JSON_TYPE, jsonType);
         mappingModel.setConfig(config);
         return mappingModel;
+    }
+
+    @Test
+    public void delegationClaimWritesAreBlockedForOrdinaryMappers() {
+        AccessToken token = new AccessToken();
+        for (String path : List.of("act", "act.sub", "may_act", "may_act.sub", "may_act.client_id", "may_act.act.sub")) {
+            ProtocolMapperModel mapper = HardcodedClaim.create("reserved-claim", path, "value", "String", true, false, false);
+            OIDCAttributeMapperHelper.mapClaim(token, mapper, "value");
+        }
+        assertEquals(Map.of(), token.getOtherClaims());
     }
 
     @Test

@@ -1,7 +1,6 @@
 package org.keycloak.tests.oauth.tokenexchange;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,12 +20,9 @@ import org.keycloak.models.Constants;
 import org.keycloak.protocol.oidc.OIDCConfigAttributes;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.protocol.oidc.OIDCLoginProtocolFactory;
-import org.keycloak.protocol.oidc.mappers.HardcodedClaim;
-import org.keycloak.protocol.oidc.mappers.OIDCAttributeMapperHelper;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.ClientScopeRepresentation;
 import org.keycloak.representations.idm.EventRepresentation;
-import org.keycloak.representations.idm.ProtocolMapperRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.authorization.ClientPolicyRepresentation;
 import org.keycloak.representations.idm.authorization.ScopePermissionRepresentation;
@@ -51,6 +47,8 @@ import org.keycloak.testframework.realm.ManagedRealm;
 import org.keycloak.testframework.realm.RealmBuilder;
 import org.keycloak.testframework.realm.RealmConfig;
 import org.keycloak.testframework.realm.UserBuilder;
+import org.keycloak.testframework.remote.runonserver.InjectRunOnServer;
+import org.keycloak.testframework.remote.runonserver.RunOnServerClient;
 import org.keycloak.testframework.server.KeycloakServerConfig;
 import org.keycloak.testframework.server.KeycloakServerConfigBuilder;
 import org.keycloak.testframework.ui.annotations.InjectPage;
@@ -101,6 +99,9 @@ public class ClientAgentDelegationTest {
     static final String RESOURCE_ACCESS_SCOPE = "resource-api-access";
     static final String DELEGATION_SCOPE = OIDCLoginProtocolFactory.CLIENT_DELEGATION_SCOPE
             + ClientScopeModel.VALUE_SEPARATOR + ACTOR_CLIENT_ID;
+
+    @InjectRunOnServer(permittedPackages = "org.keycloak.tests.oauth.tokenexchange")
+    RunOnServerClient runOnServer;
 
     @InjectRealm(config = DelegationRealmConfig.class)
     ManagedRealm realm;
@@ -363,85 +364,24 @@ public class ClientAgentDelegationTest {
 
     @Test
     public void rejectMayActClientPolicyPermission() {
-        createHardcodedSubMapperForClientId();
         removeDelegationPermission();
-
-        // default config checks permission is not granted
-        realm.updateWithCleanup(r -> r.clientProfile(ClientProfileBuilder.create().name("executor").executor(RejectMayActClaimExecutorFactory.PROVIDER_ID, null).build())
-                .clientPolicy(ClientPolicyBuilder.create().name("policy").condition(AnyClientConditionFactory.PROVIDER_ID, null).profile("executor").build()));
-
-        AccessTokenResponse res = loginWithDelegationNoEvent(null, grants -> MatcherAssert.assertThat(grants,
-                Matchers.not(Matchers.hasItem("Allow " + ACTOR_CLIENT_ID + " to act on your behalf?"))));
-        Assertions.assertEquals(Errors.INVALID_REQUEST, res.getError());
-        Assertions.assertEquals("Invalid may_act sub in the token", res.getErrorDescription());
-
+        AccessTokenResponse res = loginWithDelegationNoEvent(null, grants ->
+                MatcherAssert.assertThat(grants, Matchers.not(Matchers.hasItem("Allow " + ACTOR_CLIENT_ID + " to act on your behalf?"))));
+        Assertions.assertTrue(res.isSuccess(), res.getErrorDescription());
+        DelegationPolicyAssertions.assertPolicy(runOnServer, oauth.verifyToken(res.getAccessToken()), getServiceAccountUserId(), true);
         AccountHelper.logout(realm.admin(), USERNAME);
-
-        // explicitly do not check permissions and consents
-        realm.updateWithCleanup(r -> r.resetClientProfiles().resetClientPolicies()
-                .clientProfile(ClientProfileBuilder.create().name("executor")
-                        .executor(RejectMayActClaimExecutorFactory.PROVIDER_ID, new RejectMayActClaimExecutor.Configuration(false, true, true))
-                        .build())
-                .clientPolicy(ClientPolicyBuilder.create().name("policy").condition(AnyClientConditionFactory.PROVIDER_ID, null).profile("executor").build()));
-
-        oauth.scope(null).openLoginForm();
-        oauth.fillLoginForm(USERNAME, PASSWORD);
-        res = oauth.doAccessTokenRequest(oauth.parseLoginResponse().getCode());
-        Assertions.assertTrue(res.isSuccess(), res.getError() + " - " + res.getErrorDescription());
-        assertMayActPresent(oauth.verifyToken(res.getAccessToken()), getServiceAccountUserId(), null, null);
-
-        logout(res.getRefreshToken());
     }
 
     @Test
     public void rejectMayActClientPolicyConsent() {
-        createHardcodedSubMapperForClientId();
-
-        // default config checks consent is not granted
-        realm.updateWithCleanup(r -> r.clientProfile(ClientProfileBuilder.create().name("executor").executor(RejectMayActClaimExecutorFactory.PROVIDER_ID, null).build())
-                .clientPolicy(ClientPolicyBuilder.create().name("policy").condition(AnyClientConditionFactory.PROVIDER_ID, null).profile("executor").build()));
-
-        AccessTokenResponse res = loginWithDelegationNoEvent(null, grants -> MatcherAssert.assertThat(grants,
-                Matchers.not(Matchers.hasItem("Allow " + ACTOR_CLIENT_ID + " to act on your behalf?"))));
-        Assertions.assertEquals(Errors.INVALID_REQUEST, res.getError());
-        Assertions.assertEquals("Invalid may_act sub in the token", res.getErrorDescription());
-
+        AccessTokenResponse res = loginWithDelegationNoEvent(null, grants ->
+                MatcherAssert.assertThat(grants, Matchers.not(Matchers.hasItem("Allow " + ACTOR_CLIENT_ID + " to act on your behalf?"))));
+        Assertions.assertTrue(res.isSuccess(), res.getErrorDescription());
+        DelegationPolicyAssertions.assertPolicy(runOnServer, oauth.verifyToken(res.getAccessToken()), getServiceAccountUserId(), false);
         AccountHelper.logout(realm.admin(), USERNAME);
-
-        // explicitly do not check consents
-        realm.updateWithCleanup(r -> r.resetClientProfiles().resetClientPolicies()
-                .clientProfile(ClientProfileBuilder.create().name("executor")
-                        .executor(RejectMayActClaimExecutorFactory.PROVIDER_ID, new RejectMayActClaimExecutor.Configuration(false, false, true))
-                        .build())
-                .clientPolicy(ClientPolicyBuilder.create().name("policy").condition(AnyClientConditionFactory.PROVIDER_ID, null).profile("executor").build()));
-
-        oauth.scope(null).openLoginForm();
-        oauth.fillLoginForm(USERNAME, PASSWORD);
-        res = oauth.doAccessTokenRequest(oauth.parseLoginResponse().getCode());
-        Assertions.assertTrue(res.isSuccess(), res.getError() + " - " + res.getErrorDescription());
-        assertMayActPresent(oauth.verifyToken(res.getAccessToken()), getServiceAccountUserId(), null, null);
-
-        logout(res.getRefreshToken());
     }
 
     // ===== Setup helpers =====
-
-    private void createHardcodedSubMapperForClientId() {
-        ProtocolMapperRepresentation subMapper = new ProtocolMapperRepresentation();
-        subMapper.setName("may-act-sub-mapper");
-        subMapper.setProtocol("openid-connect");
-        subMapper.setProtocolMapper("oidc-hardcoded-claim-mapper");
-        Map<String, String> config = new HashMap<>();
-        config.put(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME, "may_act.sub");
-        config.put(HardcodedClaim.CLAIM_VALUE, getServiceAccountUserId());
-        config.put(OIDCAttributeMapperHelper.JSON_TYPE, "String");
-        config.put(OIDCAttributeMapperHelper.INCLUDE_IN_ACCESS_TOKEN, Boolean.TRUE.toString());
-        subMapper.setConfig(config);
-        try (Response response = AdminApiUtil.findClientByClientId(realm.admin(), SUBJECT_CLIENT_ID).getProtocolMappers().createMapper(subMapper)) {
-            subMapper.setId(ApiUtil.getCreatedId(response));
-        }
-        realm.cleanup().add(r -> AdminApiUtil.findClientByClientId(r, SUBJECT_CLIENT_ID).getProtocolMappers().delete(subMapper.getId()));
-    }
 
     private void createResourceApiRoles() {
         for (String roleName : List.of(READ_DATA_ROLE, WRITE_DATA_ROLE)) {

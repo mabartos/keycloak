@@ -367,7 +367,7 @@ public class ProtocolMappersResource {
         try {
             ProtocolMapper mapper = (ProtocolMapper)session.getKeycloakSessionFactory().getProviderFactory(ProtocolMapper.class, model.getProtocolMapper());
             if (mapper != null) {
-                mapper.validateConfig(session, realm, client, model);
+                ProtocolMapperValidationUtil.validateConfig(session, realm, client, model, mapper);
             } else {
                 throw new NotFoundException("ProtocolMapper provider not found");
             }

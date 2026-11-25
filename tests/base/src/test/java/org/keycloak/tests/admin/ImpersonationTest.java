@@ -259,18 +259,13 @@ public class ImpersonationTest {
 
     @Test
     public void testActClaimCannotBeOverriddenByMapper() {
-        String mapperId;
         try (Response response = oauth.clientResource().getProtocolMappers().createMapper(
                 ModelToRepresentation.toRepresentation(
                         HardcodedClaim.create("act-override-mapper", "act",
                                 "{\"sub\": \"fake-id\", \"preferred_username\": \"fake-user\"}", "JSON",
                                 true, true, false)))) {
-            mapperId = ApiUtil.getCreatedId(response);
+            assertThat(response.getStatus(), is(400));
         }
-        managedRealm.cleanup().add(r -> {
-            String clientId = oauth.clientResource().toRepresentation().getId();
-            r.clients().get(clientId).getProtocolMappers().delete(mapperId);
-        });
 
         AccessTokenResponse tokenResponse = impersonateAndGetTokenResponse("realm-admin", managedRealm.getName());
         Map<String, Object> act = assertActClaimInTokens(tokenResponse, "realm-admin");
